@@ -9,16 +9,16 @@
     "format:check": "prettier --check .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:push": "dotenv -e .env.local -- drizzle-kit push",
+    "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
+    "db:seed": "dotenv -e .env.local -- tsx src/db/seed.ts"
   },
   "dependencies": {
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "bcrypt-ts": "^5.0.0",
-    "drizzle-orm": "^0.29.2",
+    "drizzle-orm": "^0.45.1",
     "geist": "^1.2.0",
     "next": "^14.0.4",
     "next-auth": "5.0.0-beta.4",
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
+    "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.8",
     "eslint": "8.56.0",
     "eslint-config-next": "^14.0.4",

@@ -40,12 +40,14 @@ jinyong-go/
 ```
 
 ### 1.3 数据库初始化
-- [ ] 创建Drizzle数据库schema
+- [x] 创建Drizzle数据库schema
   - users表（用户账户）
   - gameProgress表（游戏进度）
   - chessRecords表（对战记录）
-- [ ] 执行数据库迁移
-- [ ] 创建种子数据（NPC、剧情数据）
+  - npcs表（NPC数据）
+  - quests表（任务数据）
+- [x] 执行数据库迁移
+- [x] 创建种子数据（NPC、剧情数据）
 
 ### 1.4 认证系统基础
 - [ ] 配置NextAuth.js基础认证
