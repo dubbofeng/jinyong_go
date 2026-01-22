@@ -13,11 +13,11 @@
 ## 第一阶段：项目搭建与基础框架（第1周）
 
 ### 1.1 技术环境搭建
-- [ ] 初始化Next.js 14项目（使用App Router）
-- [ ] 配置TypeScript + ESLint + Prettier
-- [ ] 集成Vercel Postgres + Drizzle ORM
-- [ ] 设置环境变量和配置文件
-- [ ] 初始化Git仓库，配置GitHub集成
+- [x] 初始化Next.js 14项目（使用App Router）
+- [x] 配置TypeScript + ESLint + Prettier
+- [x] 集成Vercel Postgres + Drizzle ORM
+- [x] 设置环境变量和配置文件
+- [x] 初始化Git仓库，配置GitHub集成
 
 ### 1.2 项目结构初始化
 ```
