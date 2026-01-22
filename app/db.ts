@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { db, users, gameProgress } from '@/src/db';
-import type { User } from '@/src/db/schema';
+import { db, users, gameProgress } from '../src/db';
+import type { User } from '../src/db/schema';
 
 export async function getUser(email: string) {
   const result = await db.select().from(users).where(eq(users.email, email));
