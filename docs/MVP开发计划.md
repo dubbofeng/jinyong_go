@@ -21,7 +21,7 @@
 
 ### 1.2 项目结构初始化
 ```
-jinyong-chess/
+jinyong-go/
 ├── app/
 │   ├── api/              # API路由
 │   ├── game/             # 游戏主页面
