@@ -61,9 +61,9 @@ jinyong-go/
 
 ### 2.1 RPG-JS引擎集成
 - [x] 下载并配置RPG-JS v4框架
-- [ ] 创建游戏入口HTML（/public/game/index.html）
-- [ ] 配置游戏主循环和事件系统
-- [ ] 实现基础输入控制（键盘/鼠标）
+- [x] 创建游戏入口HTML（/public/game/index.html）
+- [x] 配置游戏主循环和事件系统
+- [x] 实现基础输入控制（键盘/鼠标）
 
 ### 2.2 地图系统
 - [ ] 创建3个基础地图
