@@ -1,37 +1,36 @@
 import Link from 'next/link';
-import { Form } from 'app/form';
+import { LoginForm } from 'app/auth-forms';
 import { signIn } from 'app/auth';
 import { SubmitButton } from 'app/submit-button';
 
 export default function Login() {
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
-      <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-xl">
+    <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-2xl">
         <div className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-16">
-          <h3 className="text-xl font-semibold">Sign In</h3>
+          <h3 className="text-2xl font-bold text-gray-900">金庸围棋</h3>
           <p className="text-sm text-gray-500">
-            Use your email and password to sign in
+            登录您的账户开始游戏
           </p>
         </div>
-        <Form
+        <LoginForm
           action={async (formData: FormData) => {
             'use server';
             await signIn('credentials', {
-              redirectTo: '/protected',
+              redirectTo: '/game',
               email: formData.get('email') as string,
               password: formData.get('password') as string,
             });
           }}
         >
-          <SubmitButton>Sign in</SubmitButton>
+          <SubmitButton>登录</SubmitButton>
           <p className="text-center text-sm text-gray-600">
-            {"Don't have an account? "}
-            <Link href="/register" className="font-semibold text-gray-800">
-              Sign up
+            {'还没有账户？ '}
+            <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+              免费注册
             </Link>
-            {' for free.'}
           </p>
-        </Form>
+        </LoginForm>
       </div>
     </div>
   );

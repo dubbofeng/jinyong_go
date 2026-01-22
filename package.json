@@ -1,9 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbo -p 9999",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 9999",
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
