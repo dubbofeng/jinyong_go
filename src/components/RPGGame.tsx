@@ -6,8 +6,14 @@ import { GameEngine } from '../lib/game-engine';
 import { GameMap, getAllMaps } from '../lib/game-map';
 import { Player, NPC } from '../lib/game-character';
 import { DialogueEngine, loadDialogueTree } from '../lib/dialogue-engine';
+import { TilesetManager, TilemapEngine, createDefaultTileset, type TilemapConfig } from '../lib/tilemap-engine';
 import DialogueBox from './DialogueBox';
 import type { DialogueTree } from '../types/dialogue';
+
+// 导入地图配置
+import huashanMapData from '../data/maps/huashan.json';
+import shaolinMapData from '../data/maps/shaolin.json';
+import xiangyangMapData from '../data/maps/xiangyang.json';
 
 export default function RPGGame() {
   const locale = useLocale(); // 获取当前语言
@@ -15,7 +21,8 @@ export default function RPGGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const playerRef = useRef<Player | null>(null);
-  const mapsRef = useRef<Map<string, GameMap>>(new Map());
+  const tilemapEnginesRef = useRef<Map<string, TilemapEngine>>(new Map());
+  const tilesetManagerRef = useRef<TilesetManager | null>(null);
   const currentMapIdRef = useRef<string>('huashan');
   const npcsRef = useRef<NPC[]>([]);
   const isDialogueVisibleRef = useRef(false);
@@ -27,14 +34,30 @@ export default function RPGGame() {
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
   const [dialogueUpdateTrigger, setDialogueUpdateTrigger] = useState(0); // 用于强制更新
   const dialogueDataRef = useRef<Map<string, DialogueTree>>(new Map());
+  
+  // 传送门确认状态
+  const [portalConfirm, setPortalConfirm] = useState<{
+    show: boolean;
+    portal: any;
+  }>({ show: false, portal: null });
 
   // 加载地图的NPC
   const loadMapNPCs = (mapId: string) => {
-    const map = mapsRef.current.get(mapId);
-    if (!map) return [];
+    console.log('[NPC加载] 开始加载地图:', mapId);
+    console.log('[NPC加载] 当前已加载的地图:', Array.from(tilemapEnginesRef.current.keys()));
+    
+    const tilemapEngine = tilemapEnginesRef.current.get(mapId);
+    if (!tilemapEngine) {
+      console.log('[NPC加载] 未找到地图引擎:', mapId);
+      return [];
+    }
 
-    const spawnPoints = map.getNPCSpawnPoints();
-    return spawnPoints.map(
+    console.log('[NPC加载] 找到地图引擎，地图配置:', tilemapEngine.getConfig());
+    const spawnPoints = tilemapEngine.getNPCSpawnPoints();
+    console.log(`[NPC加载] 地图 ${mapId} 的NPC生成点:`, spawnPoints);
+    console.log(`[NPC加载] 生成点详情:`, JSON.stringify(spawnPoints, null, 2));
+    
+    const npcs = spawnPoints.map(
       (spawn) =>
         new NPC(
           {
@@ -48,21 +71,37 @@ export default function RPGGame() {
           spawn.dialogue
         )
     );
+    
+    console.log(`[NPC加载] 创建了 ${npcs.length} 个NPC:`, npcs.map(n => ({ id: n.getId(), name: n.getName() })));
+    return npcs;
   };
 
   // 切换地图
   const switchMap = (targetMapId: string, targetX: number, targetY: number) => {
-    const newMap = mapsRef.current.get(targetMapId);
-    if (!newMap || !playerRef.current) return;
+    console.log(`[地图切换] ========== 开始切换地图 ==========`);
+    console.log(`[地图切换] 参数 - targetMapId: ${targetMapId}, targetX: ${targetX}, targetY: ${targetY}`);
+    console.log(`[地图切换] 当前地图: ${currentMapIdRef.current}`);
+    console.log(`[地图切换] 目标地图: ${targetMapId}`);
+    
+    const newTilemapEngine = tilemapEnginesRef.current.get(targetMapId);
+    if (!newTilemapEngine || !playerRef.current) {
+      console.error('[地图切换] 未找到目标地图或玩家');
+      return;
+    }
 
     currentMapIdRef.current = targetMapId;
-    setCurrentMapName(newMap.getConfig().name);
+    setCurrentMapName(newTilemapEngine.getConfig().name);
+    console.log(`[地图切换] 已更新 currentMapIdRef.current 为: ${currentMapIdRef.current}`);
+    console.log(`[地图切换] 新地图名称: ${newTilemapEngine.getConfig().name}`);
 
     // 移动玩家到目标位置
     playerRef.current.setPosition(targetX, targetY);
+    console.log(`[地图切换] 玩家移动到: (${targetX}, ${targetY})`);
 
     // 加载新地图的NPC
+    console.log(`[地图切换] 准备加载新地图的NPC，传递的mapId: ${targetMapId}`);
     npcsRef.current = loadMapNPCs(targetMapId);
+    console.log(`[地图切换] ========== 地图切换完成 ==========`);
   };
 
   useEffect(() => {
@@ -70,15 +109,38 @@ export default function RPGGame() {
 
     const config = {
       width: 800,
-      height: 600,
+      height: 576,
       tileSize: 32,
     };
 
     const engine = new GameEngine(canvasRef.current, config);
     engineRef.current = engine;
 
-    // 加载所有地图
-    mapsRef.current = getAllMaps();
+    // 初始化瓦片集管理器
+    const tilesetManager = new TilesetManager();
+    tilesetManager.registerTileset(createDefaultTileset());
+    tilesetManagerRef.current = tilesetManager;
+
+    // 加载所有地图配置
+    const mapConfigs = [
+      huashanMapData as TilemapConfig,
+      shaolinMapData as TilemapConfig,
+      xiangyangMapData as TilemapConfig,
+    ];
+
+    // 为每个地图创建 TilemapEngine 实例
+    const tilemapEngines = new Map<string, TilemapEngine>();
+    mapConfigs.forEach((mapConfig) => {
+      const tilemapEngine = new TilemapEngine(mapConfig, tilesetManager);
+      tilemapEngines.set(mapConfig.id, tilemapEngine);
+    });
+    tilemapEnginesRef.current = tilemapEngines;
+
+    // 设置初始地图名称
+    const initialMap = tilemapEngines.get('huashan');
+    if (initialMap) {
+      setCurrentMapName(initialMap.getConfig().name);
+    }
 
     // 创建玩家（从华山开始）
     const player = new Player({
@@ -136,8 +198,8 @@ export default function RPGGame() {
           return;
       }
 
-      const currentMap = mapsRef.current.get(currentMapIdRef.current);
-      if (currentMap && currentMap.isWalkable(newX, newY)) {
+      const tilemapEngine = tilemapEnginesRef.current.get(currentMapIdRef.current);
+      if (tilemapEngine && tilemapEngine.isWalkable(newX, newY)) {
         player.moveTo(newX, newY);
       }
     });
@@ -178,15 +240,13 @@ export default function RPGGame() {
 
     // 检查传送门
     const checkPortal = (playerX: number, playerY: number) => {
-      const currentMap = mapsRef.current.get(currentMapIdRef.current);
-      if (!currentMap) return;
+      const tilemapEngine = tilemapEnginesRef.current.get(currentMapIdRef.current);
+      if (!tilemapEngine) return;
 
-      const portal = currentMap.getPortalAt(playerX, playerY);
+      const portal = tilemapEngine.getPortalAt(playerX, playerY);
       if (portal) {
-        const confirm = window.confirm(`是否${portal.label}？`);
-        if (confirm) {
-          switchMap(portal.targetMapId, portal.targetX, portal.targetY);
-        }
+        console.log('[传送门] 检测到传送门:', portal);
+        setPortalConfirm({ show: true, portal });
       }
     };
 
@@ -194,13 +254,19 @@ export default function RPGGame() {
     engine.on('update', (deltaTime: number) => {
       player.update(deltaTime, config.tileSize);
       npcsRef.current.forEach((npc) => npc.update(deltaTime, config.tileSize));
+      
+      // 更新当前地图的 Tilemap 引擎动画
+      const tilemapEngine = tilemapEnginesRef.current.get(currentMapIdRef.current);
+      if (tilemapEngine) {
+        tilemapEngine.update(deltaTime);
+      }
     });
 
     // 渲染循环
     engine.on('render', (ctx: CanvasRenderingContext2D) => {
-      const currentMap = mapsRef.current.get(currentMapIdRef.current);
-      if (currentMap) {
-        currentMap.render(ctx);
+      const tilemapEngine = tilemapEnginesRef.current.get(currentMapIdRef.current);
+      if (tilemapEngine) {
+        tilemapEngine.render(ctx);
       }
 
       npcsRef.current.forEach((npc) => npc.render(ctx, config.tileSize));
@@ -227,7 +293,7 @@ export default function RPGGame() {
       engine.stop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentMapName]);
+  }, []); // 只在组件挂载时初始化一次，不依赖 currentMapName
 
   // 当语言切换时重新加载 NPC 名称
   useEffect(() => {
@@ -343,6 +409,68 @@ export default function RPGGame() {
         <div className="text-center text-sm text-gray-300">
           <p>{t('instructions.ready')}</p>
           <p className="mt-2">{t('instructions.portal')}</p>
+        </div>
+      )}
+
+      {/* 传送门确认对话框 */}
+      {portalConfirm.show && portalConfirm.portal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          }}
+          onClick={() => setPortalConfirm({ show: false, portal: null })}
+        >
+          <div 
+            className="transform transition-all"
+            style={{
+              width: '100%',
+              maxWidth: '28rem',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div 
+              style={{padding: '0 2rem'}}
+              className="bg-gradient-to-br from-gray-900 to-gray-800 border-4 border-amber-600 rounded-xl shadow-2xl p-6"
+            >
+              <div className="text-center">
+                <div className="text-5xl mb-4">🚪</div>
+                <h3 className="text-2xl font-bold text-amber-400 mb-4">
+                  {t(portalConfirm.portal.label)}
+                </h3>
+                <p className="text-gray-300 text-lg mb-6">
+                  {t('portal.confirmMessage')}
+                </p>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => {
+                      switchMap(
+                        portalConfirm.portal.targetMapId,
+                        portalConfirm.portal.targetX,
+                        portalConfirm.portal.targetY
+                      );
+                      setPortalConfirm({ show: false, portal: null });
+                    }}
+                    className="px-6 py-3 bg-amber-700 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors text-base"
+                  >
+                    {t('portal.confirm')}
+                  </button>
+                  <button
+                    onClick={() => setPortalConfirm({ show: false, portal: null })}
+                    className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors text-base"
+                  >
+                    {t('portal.cancel')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

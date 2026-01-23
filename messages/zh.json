@@ -31,6 +31,15 @@
       "continueHint": "空格/Enter",
       "keyboardHint": "数字键 1-{count} 选择 · 空格/Enter 继续 · ESC 关闭 · 点击背景关闭"
     },
+    "portal": {
+      "confirmMessage": "确定要传送吗？",
+      "confirm": "确定",
+      "cancel": "取消",
+      "toShaolin": "前往少林寺",
+      "toHuashan": "返回华山",
+      "toXiangyang": "前往襄阳",
+      "backToShaolin": "返回少林寺"
+    },
     "instructions": {
       "ready": "游戏已就绪！探索华山、少林、襄阳三个地图，与洪七公、令狐冲、郭靖对话",
       "portal": "紫色方块是传送门，站在上面按空格键可以传送"

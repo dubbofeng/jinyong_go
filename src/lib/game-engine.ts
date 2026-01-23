@@ -74,7 +74,7 @@ export class GameEngine {
     if (!this.running) return;
 
     const now = performance.now();
-    const deltaTime = (now - this.lastTime) / 1000;
+    const deltaTime = Math.min((now - this.lastTime), 100); // 以毫秒为单位，限制最大值
     this.lastTime = now;
 
     this.emit('update', deltaTime);

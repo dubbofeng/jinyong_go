@@ -31,6 +31,15 @@
       "continueHint": "Space/Enter",
       "keyboardHint": "Number keys 1-{count} to select · Space/Enter to continue · ESC to close · Click backdrop to close"
     },
+    "portal": {
+      "confirmMessage": "Confirm teleportation?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "toShaolin": "To Shaolin Temple",
+      "toHuashan": "Back to Mount Hua",
+      "toXiangyang": "To Xiangyang City",
+      "backToShaolin": "Back to Shaolin Temple"
+    },
     "instructions": {
       "ready": "Game ready! Explore three maps: Mount Hua, Shaolin Temple, and Xiangyang City. Talk to Hong Qigong, Linghu Chong, and Guo Jing",
       "portal": "Purple tiles are portals. Stand on them and press Space to teleport"
