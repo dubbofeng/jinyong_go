@@ -14,10 +14,6 @@
     "db:seed": "dotenv -e .env.local -- tsx src/db/seed.ts"
   },
   "dependencies": {
-    "@rpgjs/client": "^4",
-    "@rpgjs/common": "^4",
-    "@rpgjs/compiler": "^4",
-    "@rpgjs/server": "^4",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",

@@ -60,7 +60,7 @@ jinyong-go/
 ## 第二阶段：RPG-JS集成与基础游戏（第2周）
 
 ### 2.1 RPG-JS引擎集成
-- [x] 下载并配置RPG-JS v4框架
+- [x] 下载并配置RPG-JS v4框架（改用自定义引擎）
 - [x] 创建游戏入口HTML（/public/game/index.html）
 - [x] 配置游戏主循环和事件系统
 - [x] 实现基础输入控制（键盘/鼠标）

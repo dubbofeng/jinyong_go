@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { auth } from '../auth';
 import { redirect } from 'next/navigation';
+import RPGGame from '../../src/components/RPGGame';
 
 export const metadata: Metadata = {
   title: '金庸围棋 - 游戏',
@@ -23,10 +24,7 @@ export default async function GamePage() {
         </p>
       </div>
       
-      <div className="text-center">
-        <p className="text-gray-300 mb-4">游戏正在开发中...</p>
-        <p className="text-sm text-gray-400">RPG引擎已集成，即将推出</p>
-      </div>
+      <RPGGame />
       
       <div className="mt-8 text-center">
         <a
