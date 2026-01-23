@@ -90,6 +90,14 @@ export class Character {
   getName(): string {
     return this.config.name;
   }
+
+  setPosition(x: number, y: number) {
+    this.config.x = x;
+    this.config.y = y;
+    this.targetX = x;
+    this.targetY = y;
+    this.moving = false;
+  }
 }
 
 export class Player extends Character {
