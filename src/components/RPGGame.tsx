@@ -20,12 +20,14 @@ export default function RPGGame() {
   const mapsRef = useRef<Map<string, GameMap>>(new Map());
   const currentMapIdRef = useRef<string>('huashan');
   const npcsRef = useRef<NPC[]>([]);
+  const isDialogueVisibleRef = useRef(false);
   const [isReady, setIsReady] = useState(false);
   const [currentMapName, setCurrentMapName] = useState('华山传功厅');
   
   // 对话系统状态
   const [dialogueEngine, setDialogueEngine] = useState<DialogueEngine | null>(null);
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
+  const [dialogueUpdateTrigger, setDialogueUpdateTrigger] = useState(0); // 用于强制更新
   const dialogueDataRef = useRef<Map<string, DialogueTree>>(new Map());
 
   // 初始化对话数据
@@ -105,6 +107,12 @@ export default function RPGGame() {
 
     // 键盘控制
     engine.on('keydown', (e: KeyboardEvent) => {
+      // 如果对话框打开，不处理游戏控制
+      if (isDialogueVisibleRef.current) {
+        console.log('[游戏引擎] 对话框打开，跳过游戏键盘处理');
+        return;
+      }
+      
       if (player.isMoving()) return;
 
       const pos = player.getTilePosition();
@@ -134,6 +142,7 @@ export default function RPGGame() {
           break;
         case ' ':
         case 'Enter':
+          e.preventDefault(); // 阻止默认行为（页面滚动）
           checkNPCInteraction(pos.x, pos.y);
           checkPortal(pos.x, pos.y);
           return;
@@ -168,6 +177,7 @@ export default function RPGGame() {
             });
             setDialogueEngine(engine);
             setIsDialogueVisible(true);
+            isDialogueVisibleRef.current = true;
           }
         }
       });
@@ -227,60 +237,116 @@ export default function RPGGame() {
 
   // 对话框控制函数
   const handleSelectOption = (index: number) => {
+    console.log('[对话系统] 选择选项:', index);
     if (!dialogueEngine) return;
+    
+    const beforeNode = dialogueEngine.getCurrentNode();
+    console.log('[对话系统] 选择前节点:', beforeNode?.id);
+    
     dialogueEngine.selectOption(index);
+    
+    const afterNode = dialogueEngine.getCurrentNode();
+    console.log('[对话系统] 选择后节点:', afterNode?.id);
+    console.log('[对话系统] 是否完成:', dialogueEngine.isCompleted());
     
     // 如果对话完成，关闭对话框
     if (dialogueEngine.isCompleted()) {
+      console.log('[对话系统] 对话已完成，关闭对话框');
       setIsDialogueVisible(false);
+      isDialogueVisibleRef.current = false;
       setDialogueEngine(null);
+    } else {
+      console.log('[对话系统] 强制重新渲染');
+      // 创建新引用触发重新渲染
+      setDialogueUpdateTrigger(prev => prev + 1);
     }
   };
 
   const handleContinue = () => {
-    if (!dialogueEngine) return;
+    console.log('[对话系统] 点击继续按钮');
+    if (!dialogueEngine) {
+      console.log('[对话系统] 错误: dialogueEngine 为空');
+      return;
+    }
+    
+    const currentNode = dialogueEngine.getCurrentNode();
+    console.log('[对话系统] 当前节点:', currentNode?.id, currentNode?.text);
+    console.log('[对话系统] 当前节点的 nextNodeId:', currentNode?.nextNodeId);
     
     const hasNext = dialogueEngine.continue();
+    console.log('[对话系统] continue() 返回:', hasNext);
+    
+    const newNode = dialogueEngine.getCurrentNode();
+    console.log('[对话系统] 新节点:', newNode?.id, newNode?.text);
+    console.log('[对话系统] 是否完成:', dialogueEngine.isCompleted());
+    
     if (!hasNext || dialogueEngine.isCompleted()) {
+      console.log('[对话系统] 对话结束，关闭对话框');
       setIsDialogueVisible(false);
+      isDialogueVisibleRef.current = false;
       setDialogueEngine(null);
+    } else {
+      console.log('[对话系统] 强制重新渲染');
+      // 创建新引用触发重新渲染
+      setDialogueUpdateTrigger(prev => prev + 1);
     }
   };
 
   const handleCloseDialogue = () => {
     setIsDialogueVisible(false);
+    isDialogueVisibleRef.current = false;
     setDialogueEngine(null);
   };
 
   // 对话框快捷键
   useEffect(() => {
     const handleDialogueKeys = (e: KeyboardEvent) => {
-      if (!isDialogueVisible || !dialogueEngine) return;
+      console.log('[对话系统] 按键事件触发:', e.key);
+      console.log('[对话系统] isDialogueVisible:', isDialogueVisible, 'dialogueEngine:', !!dialogueEngine);
+      
+      if (!isDialogueVisible || !dialogueEngine) {
+        console.log('[对话系统] 跳过处理：对话框不可见或引擎为空');
+        return;
+      }
 
       const currentNode = dialogueEngine.getCurrentNode();
       const options = dialogueEngine.getAvailableOptions();
+      console.log('[对话系统] 当前选项数量:', options.length);
 
       if (e.key === 'Escape') {
+        e.preventDefault();
+        console.log('[对话系统] ESC键，关闭对话');
         handleCloseDialogue();
       } else if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault(); // 阻止默认行为（页面滚动）
+        console.log('[对话系统] 空格/Enter键，选项数量:', options.length);
         if (options.length === 0) {
+          console.log('[对话系统] 无选项，调用 handleContinue');
           handleContinue();
+        } else {
+          console.log('[对话系统] 有选项，不处理空格键');
         }
       } else if (e.key >= '1' && e.key <= '9') {
+        e.preventDefault();
         const index = parseInt(e.key) - 1;
+        console.log('[对话系统] 数字键:', e.key, '选项索引:', index);
         if (index < options.length) {
           handleSelectOption(index);
         }
       }
     };
 
+    console.log('[对话系统] 注册键盘事件监听器, isDialogueVisible:', isDialogueVisible);
     window.addEventListener('keydown', handleDialogueKeys);
-    return () => window.removeEventListener('keydown', handleDialogueKeys);
+    return () => {
+      console.log('[对话系统] 移除键盘事件监听器');
+      window.removeEventListener('keydown', handleDialogueKeys);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDialogueVisible, dialogueEngine]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="relative flex flex-col items-center gap-4">
       <canvas
         ref={canvasRef}
         className="border-4 border-gray-700 rounded-lg shadow-2xl"
@@ -293,15 +359,18 @@ export default function RPGGame() {
         </div>
       )}
 
-      {/* 对话框 */}
-      <DialogueBox
-        node={dialogueEngine?.getCurrentNode() || null}
-        options={dialogueEngine?.getAvailableOptions() || []}
-        onSelectOption={handleSelectOption}
-        onContinue={handleContinue}
-        onClose={handleCloseDialogue}
-        isVisible={isDialogueVisible}
-      />
+      {/* 对话框 - 覆盖在整个页面上 */}
+      {isDialogueVisible && (
+        <DialogueBox
+          key={dialogueUpdateTrigger}
+          node={dialogueEngine?.getCurrentNode() || null}
+          options={dialogueEngine?.getAvailableOptions() || []}
+          onSelectOption={handleSelectOption}
+          onContinue={handleContinue}
+          onClose={handleCloseDialogue}
+          isVisible={isDialogueVisible}
+        />
+      )}
     </div>
   );
 }
