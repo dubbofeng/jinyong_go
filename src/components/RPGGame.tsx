@@ -4,6 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { GameEngine } from '../lib/game-engine';
 import { GameMap, getAllMaps } from '../lib/game-map';
 import { Player, NPC } from '../lib/game-character';
+import { DialogueEngine } from '../lib/dialogue-engine';
+import DialogueBox from './DialogueBox';
+import type { DialogueTree } from '../types/dialogue';
+
+// 导入对话数据
+import hongQigongDialogue from '../data/dialogues/hong_qigong.json';
+import linghuChongDialogue from '../data/dialogues/linghu_chong.json';
+import guoJingDialogue from '../data/dialogues/guo_jing.json';
 
 export default function RPGGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,6 +22,20 @@ export default function RPGGame() {
   const npcsRef = useRef<NPC[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [currentMapName, setCurrentMapName] = useState('华山传功厅');
+  
+  // 对话系统状态
+  const [dialogueEngine, setDialogueEngine] = useState<DialogueEngine | null>(null);
+  const [isDialogueVisible, setIsDialogueVisible] = useState(false);
+  const dialogueDataRef = useRef<Map<string, DialogueTree>>(new Map());
+
+  // 初始化对话数据
+  useEffect(() => {
+    const dialogues = new Map<string, DialogueTree>();
+    dialogues.set('hong_qigong', hongQigongDialogue as DialogueTree);
+    dialogues.set('linghu_chong', linghuChongDialogue as DialogueTree);
+    dialogues.set('guo_jing', guoJingDialogue as DialogueTree);
+    dialogueDataRef.current = dialogues;
+  }, []);
 
   // 加载地图的NPC
   const loadMapNPCs = (mapId: string) => {
@@ -125,14 +147,27 @@ export default function RPGGame() {
 
     // 检查NPC交互
     const checkNPCInteraction = (playerX: number, playerY: number) => {
+      // 如果对话框已打开，不处理
+      if (isDialogueVisible) return;
+
       npcsRef.current.forEach((npc) => {
         const npcPos = npc.getTilePosition();
         const distance = Math.abs(npcPos.x - playerX) + Math.abs(npcPos.y - playerY);
 
         if (distance <= 1) {
-          const dialogue = npc.getDialogue();
-          if (dialogue.length > 0) {
-            alert(`${npc.getName()}: ${dialogue.join('\n')}`);
+          // 获取NPC的对话树
+          const npcId = npc.getId();
+          const dialogueTree = dialogueDataRef.current.get(npcId);
+          
+          if (dialogueTree) {
+            // 创建对话引擎
+            const engine = new DialogueEngine(dialogueTree, {
+              level: 1, // 可以从玩家状态获取
+              completedQuests: [],
+              inventory: [],
+            });
+            setDialogueEngine(engine);
+            setIsDialogueVisible(true);
           }
         }
       });
@@ -190,6 +225,60 @@ export default function RPGGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMapName]);
 
+  // 对话框控制函数
+  const handleSelectOption = (index: number) => {
+    if (!dialogueEngine) return;
+    dialogueEngine.selectOption(index);
+    
+    // 如果对话完成，关闭对话框
+    if (dialogueEngine.isCompleted()) {
+      setIsDialogueVisible(false);
+      setDialogueEngine(null);
+    }
+  };
+
+  const handleContinue = () => {
+    if (!dialogueEngine) return;
+    
+    const hasNext = dialogueEngine.continue();
+    if (!hasNext || dialogueEngine.isCompleted()) {
+      setIsDialogueVisible(false);
+      setDialogueEngine(null);
+    }
+  };
+
+  const handleCloseDialogue = () => {
+    setIsDialogueVisible(false);
+    setDialogueEngine(null);
+  };
+
+  // 对话框快捷键
+  useEffect(() => {
+    const handleDialogueKeys = (e: KeyboardEvent) => {
+      if (!isDialogueVisible || !dialogueEngine) return;
+
+      const currentNode = dialogueEngine.getCurrentNode();
+      const options = dialogueEngine.getAvailableOptions();
+
+      if (e.key === 'Escape') {
+        handleCloseDialogue();
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        if (options.length === 0) {
+          handleContinue();
+        }
+      } else if (e.key >= '1' && e.key <= '9') {
+        const index = parseInt(e.key) - 1;
+        if (index < options.length) {
+          handleSelectOption(index);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleDialogueKeys);
+    return () => window.removeEventListener('keydown', handleDialogueKeys);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDialogueVisible, dialogueEngine]);
+
   return (
     <div className="flex flex-col items-center gap-4">
       <canvas
@@ -203,6 +292,16 @@ export default function RPGGame() {
           <p className="mt-2">紫色方块是传送门，站在上面按空格键可以传送</p>
         </div>
       )}
+
+      {/* 对话框 */}
+      <DialogueBox
+        node={dialogueEngine?.getCurrentNode() || null}
+        options={dialogueEngine?.getAvailableOptions() || []}
+        onSelectOption={handleSelectOption}
+        onContinue={handleContinue}
+        onClose={handleCloseDialogue}
+        isVisible={isDialogueVisible}
+      />
     </div>
   );
 }

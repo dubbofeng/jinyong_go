@@ -1,0 +1,157 @@
+{
+  "npcId": "guo_jing",
+  "npcName": "郭靖",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "郭靖",
+      "text": "这位朋友，你好。在下郭靖，正在此处钻研兵法与棋道。",
+      "nextNodeId": "ask_purpose"
+    },
+    {
+      "id": "ask_purpose",
+      "speaker": "郭靖",
+      "text": "看你风尘仆仆，莫非是来襄阳寻高手切磋棋艺的？",
+      "options": [
+        {
+          "text": "正是！久仰郭大侠威名",
+          "nextNodeId": "respect_response"
+        },
+        {
+          "text": "想向郭大侠学习围棋",
+          "nextNodeId": "learn_request"
+        },
+        {
+          "text": "只是路过看看",
+          "nextNodeId": "just_visit"
+        }
+      ]
+    },
+    {
+      "id": "respect_response",
+      "speaker": "郭靖",
+      "text": "不敢当，不敢当。靖哥哥武功虽有些根基，但论起围棋，还是蓉儿更胜一筹。",
+      "nextNodeId": "talk_rong"
+    },
+    {
+      "id": "talk_rong",
+      "speaker": "郭靖",
+      "text": "蓉儿常说，围棋如用兵，需懂得虚实相生，攻守兼备。这些年守卫襄阳，我对此倒是有些体会。",
+      "options": [
+        {
+          "text": "愿闻其详",
+          "nextNodeId": "teach_wisdom"
+        },
+        {
+          "text": "想挑战郭大侠的棋艺",
+          "nextNodeId": "challenge"
+        }
+      ]
+    },
+    {
+      "id": "learn_request",
+      "speaker": "郭靖",
+      "text": "靖哥哥资质愚钝，多亏恩师和蓉儿教导，才学得一些本事。既然你诚心求教，我便倾囊相授。",
+      "nextNodeId": "teach_wisdom"
+    },
+    {
+      "id": "teach_wisdom",
+      "speaker": "郭靖",
+      "text": "守城如守棋，要知道何处当固守，何处可舍弃。我这里有一招「腹语传音」，能让你在关键时刻得到高人指点。",
+      "nextNodeId": "teach_skill"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "郭靖",
+      "text": "此招实则是请AI高手为你出谋划策，就如同蓉儿在旁为我指点迷津。切记，真正的高手不能只依赖外力，要靠自己的判断。",
+      "action": {
+        "type": "quest",
+        "value": "unlock_skill_fuyu"
+      },
+      "nextNodeId": "after_teach"
+    },
+    {
+      "id": "after_teach",
+      "speaker": "郭靖",
+      "text": "棋道漫漫，需要日积月累。你可以多和各地高手切磋，必有所获。",
+      "options": [
+        {
+          "text": "多谢郭大侠指点！",
+          "nextNodeId": "thank_you"
+        },
+        {
+          "text": "想和郭大侠下一局",
+          "nextNodeId": "challenge"
+        }
+      ]
+    },
+    {
+      "id": "challenge",
+      "speaker": "郭靖",
+      "text": "好！有志气！不过靖哥哥最近公务繁忙，要等襄阳城防布置妥当才有空闲。",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "郭靖",
+      "text": "你先去多加练习，等你棋力提升到一定程度，咱们再来一局如何？",
+      "options": [
+        {
+          "text": "好的，我会努力的！",
+          "nextNodeId": "accept_challenge"
+        },
+        {
+          "text": "我已经准备好了！",
+          "nextNodeId": "ready_challenge",
+          "condition": {
+            "type": "level",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "accept_challenge",
+      "speaker": "郭靖",
+      "text": "嗯，年轻人就该有这股冲劲！去吧，待你有所长进，随时来找我。",
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "ready_challenge",
+      "speaker": "郭靖",
+      "text": "哦？看你气度不凡，想必棋力已有根基。好，那咱们就来战上一局！",
+      "action": {
+        "type": "battle",
+        "value": "guo_jing_battle_1"
+      },
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "just_visit",
+      "speaker": "郭靖",
+      "text": "襄阳城地处要冲，近年来蒙古兵犯边，局势紧张。你若只是游历，还请多加小心。",
+      "options": [
+        {
+          "text": "多谢提醒，告辞",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "其实我是想学围棋的",
+          "nextNodeId": "learn_request"
+        }
+      ]
+    },
+    {
+      "id": "thank_you",
+      "speaker": "郭靖",
+      "text": "不必客气。为国为民，侠之大者。学棋亦是如此，不可只为个人胜负，要有更高的追求。",
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "farewell",
+      "speaker": "郭靖",
+      "text": "保重！襄阳城随时欢迎你。若有空闲，咱们再论道棋艺！"
+    }
+  ]
+}

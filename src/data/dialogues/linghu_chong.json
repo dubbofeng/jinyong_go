@@ -1,0 +1,133 @@
+{
+  "npcId": "linghu_chong",
+  "npcName": "令狐冲",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "令狐冲",
+      "text": "这位朋友，看你面生，是第一次来少林寺吧？",
+      "nextNodeId": "introduce"
+    },
+    {
+      "id": "introduce",
+      "speaker": "令狐冲",
+      "text": "在下令狐冲，正在此处参悟剑法与棋道的关系。师父说，剑法与棋道皆是破招之术。",
+      "options": [
+        {
+          "text": "久仰令狐大侠！请指教围棋之道",
+          "nextNodeId": "teach_request"
+        },
+        {
+          "text": "独孤九剑和围棋有什么关系？",
+          "nextNodeId": "explain_connection"
+        },
+        {
+          "text": "只是路过，告辞",
+          "nextNodeId": "farewell_early"
+        }
+      ]
+    },
+    {
+      "id": "explain_connection",
+      "speaker": "令狐冲",
+      "text": "独孤九剑讲究的是料敌机先，无招胜有招。围棋何尝不是如此？看清对手的意图，洞悉棋局的形势，便能先发制人。",
+      "nextNodeId": "explain_skill"
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "令狐冲",
+      "text": "我这里有一招「独孤九剑·判断篇」，能让你在对局中看清形势，判断优劣。",
+      "options": [
+        {
+          "text": "愿闻其详！",
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "我需要再想想",
+          "nextNodeId": "think_again"
+        }
+      ]
+    },
+    {
+      "id": "teach_request",
+      "speaker": "令狐冲",
+      "text": "哈哈，不敢当。洪七公老前辈的本事，在下可比不上。不过我这独孤九剑倒是可以和棋道相通。",
+      "nextNodeId": "explain_skill"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "令狐冲",
+      "text": "这招能让你随时看清棋盘上的优劣形势，就像独孤九剑看穿对手的招式破绽一样。记住，知己知彼，百战不殆！",
+      "action": {
+        "type": "quest",
+        "value": "unlock_skill_dugu"
+      },
+      "nextNodeId": "after_teach"
+    },
+    {
+      "id": "after_teach",
+      "speaker": "令狐冲",
+      "text": "襄阳城有位郭大侠，他的棋力深不可测。你若学有所成，不妨去找他切磋一番。",
+      "options": [
+        {
+          "text": "多谢令狐大侠！",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "能否再讲讲独孤九剑？",
+          "nextNodeId": "talk_sword"
+        }
+      ]
+    },
+    {
+      "id": "talk_sword",
+      "speaker": "令狐冲",
+      "text": "独孤九剑分为总诀式、破剑式、破刀式等九式。其精髓在于「无招」，以无招破有招，以变化应万变。",
+      "nextNodeId": "talk_sword_2"
+    },
+    {
+      "id": "talk_sword_2",
+      "speaker": "令狐冲",
+      "text": "围棋亦是如此，不拘泥于定式，随机应变，方为上乘。",
+      "options": [
+        {
+          "text": "受益匪浅！",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "think_again",
+      "speaker": "令狐冲",
+      "text": "无妨，学武学棋都要循序渐进，不可急于求成。",
+      "options": [
+        {
+          "text": "多谢理解",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "farewell_early",
+      "speaker": "令狐冲",
+      "text": "既是有缘相见，改日再聊。在下还要继续参悟剑法。",
+      "options": [
+        {
+          "text": "后会有期",
+          "nextNodeId": "end"
+        }
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "令狐冲",
+      "text": "后会有期！江湖路远，愿你棋艺精进，剑法通神！"
+    },
+    {
+      "id": "end",
+      "speaker": "令狐冲",
+      "text": "保重！"
+    }
+  ]
+}

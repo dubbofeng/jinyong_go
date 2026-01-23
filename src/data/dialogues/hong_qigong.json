@@ -1,0 +1,111 @@
+{
+  "npcId": "hong_qigong",
+  "npcName": "洪七公",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "洪七公",
+      "text": "哟！小娃娃，老叫花我看你骨骼精奇，是个下棋的料子。",
+      "nextNodeId": "ask_learn"
+    },
+    {
+      "id": "ask_learn",
+      "speaker": "洪七公",
+      "text": "想不想学点围棋的本事？",
+      "options": [
+        {
+          "text": "请前辈指教！",
+          "nextNodeId": "teach_intro"
+        },
+        {
+          "text": "我想先了解一下围棋",
+          "nextNodeId": "explain_go"
+        },
+        {
+          "text": "我还没准备好",
+          "nextNodeId": "not_ready"
+        }
+      ]
+    },
+    {
+      "id": "explain_go",
+      "speaker": "洪七公",
+      "text": "围棋嘛，黑白两色，纵横十九道，看似简单，实则变化无穷。就如同江湖中的武功，讲究的是气势与布局。",
+      "nextNodeId": "explain_go_2"
+    },
+    {
+      "id": "explain_go_2",
+      "speaker": "洪七公",
+      "text": "咱们先从九路小棋盘开始练，等你有了些火候，再上十三路、十九路大棋盘。",
+      "options": [
+        {
+          "text": "明白了，请前辈教我！",
+          "nextNodeId": "teach_intro"
+        },
+        {
+          "text": "我再考虑考虑",
+          "nextNodeId": "not_ready"
+        }
+      ]
+    },
+    {
+      "id": "teach_intro",
+      "speaker": "洪七公",
+      "text": "好！有志气！老叫花我这一身本事，除了降龙十八掌，就数围棋最拿手了。",
+      "nextNodeId": "teach_skill"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "洪七公",
+      "text": "我先传你「亢龙有悔」这一招。下棋时难免失误，这招能让你有反悔一次的机会。不过记住，江湖规矩，每局只能用一次！",
+      "action": {
+        "type": "quest",
+        "value": "unlock_skill_kanglong"
+      },
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "洪七公",
+      "text": "去吧，去少林寺找令狐冲那小子切磋切磋，他的独孤九剑很有些门道。",
+      "options": [
+        {
+          "text": "多谢前辈！",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "我还想再听听您的教诲",
+          "nextNodeId": "daily_chat"
+        }
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "洪七公",
+      "text": "下棋如行军打仗，要知进退，懂虚实。记住：金角银边草肚皮，开局别急着去中间乱打。",
+      "options": [
+        {
+          "text": "受教了！",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "洪七公",
+      "text": "无妨，无妨。老叫花我哪儿也不去，等你准备好了随时来找我。",
+      "options": [
+        {
+          "text": "好的，前辈保重",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "洪七公",
+      "text": "去吧去吧，老叫花我要去找点吃的了，这华山上的叫花鸡可是一绝！"
+    }
+  ]
+}
