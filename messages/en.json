@@ -1,0 +1,72 @@
+{
+  "game": {
+    "title": "Jin Yong's Go",
+    "description": "Experience Go battles in Jin Yong's Wuxia world",
+    "controls": {
+      "move": "Move",
+      "interact": "Interact",
+      "portal": "Portal",
+      "close": "Close"
+    },
+    "ui": {
+      "currentMap": "Current Map: {name}",
+      "moveKeys": "Arrow keys or WASD to move",
+      "interactKeys": "Space or Enter to interact/teleport"
+    },
+    "npcs": {
+      "hong_qigong": "Hong Qigong",
+      "linghu_chong": "Linghu Chong",
+      "guo_jing": "Guo Jing"
+    },
+    "maps": {
+      "huashan": "Mount Hua Martial Hall",
+      "shaolin": "Shaolin Temple Meditation Room",
+      "xiangyang": "Xiangyang City Teahouse"
+    },
+    "dialogue": {
+      "continue": "Continue",
+      "close": "Close",
+      "selectOption": "Select Option",
+      "skipPrompt": "Click text to skip animation",
+      "continueHint": "Space/Enter",
+      "keyboardHint": "Number keys 1-{count} to select · Space/Enter to continue · ESC to close · Click backdrop to close"
+    },
+    "instructions": {
+      "ready": "Game ready! Explore three maps: Mount Hua, Shaolin Temple, and Xiangyang City. Talk to Hong Qigong, Linghu Chong, and Guo Jing",
+      "portal": "Purple tiles are portals. Stand on them and press Space to teleport"
+    },
+    "loading": "Loading...",
+    "error": "An error occurred"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "emailPlaceholder": "Enter email",
+    "passwordPlaceholder": "Enter password",
+    "usernamePlaceholder": "Enter username",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",    "registerNow": "Sign up for free",
+    "loginNow": "Sign in now",
+    "loginPrompt": "Login to your account to start playing",
+    "registerPrompt": "Create an account and begin your Wuxia Go adventure",    "registerLink": "Register now",
+    "loginLink": "Login now",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "userExists": "User already exists",
+      "serverError": "Server error, please try again later"
+    }
+  },
+  "common": {
+    "welcome": "Welcome",
+    "level": "Level",
+    "experience": "Experience",
+    "skills": "Skills",
+    "quests": "Quests",
+    "settings": "Settings",
+    "language": "Language"
+  }
+}

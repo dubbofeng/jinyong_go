@@ -1,19 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { GameEngine } from '../lib/game-engine';
 import { GameMap, getAllMaps } from '../lib/game-map';
 import { Player, NPC } from '../lib/game-character';
-import { DialogueEngine } from '../lib/dialogue-engine';
+import { DialogueEngine, loadDialogueTree } from '../lib/dialogue-engine';
 import DialogueBox from './DialogueBox';
 import type { DialogueTree } from '../types/dialogue';
 
-// 导入对话数据
-import hongQigongDialogue from '../data/dialogues/hong_qigong.json';
-import linghuChongDialogue from '../data/dialogues/linghu_chong.json';
-import guoJingDialogue from '../data/dialogues/guo_jing.json';
-
 export default function RPGGame() {
+  const locale = useLocale(); // 获取当前语言
+  const t = useTranslations('game'); // 获取翻译函数
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const playerRef = useRef<Player | null>(null);
@@ -30,15 +28,6 @@ export default function RPGGame() {
   const [dialogueUpdateTrigger, setDialogueUpdateTrigger] = useState(0); // 用于强制更新
   const dialogueDataRef = useRef<Map<string, DialogueTree>>(new Map());
 
-  // 初始化对话数据
-  useEffect(() => {
-    const dialogues = new Map<string, DialogueTree>();
-    dialogues.set('hong_qigong', hongQigongDialogue as DialogueTree);
-    dialogues.set('linghu_chong', linghuChongDialogue as DialogueTree);
-    dialogues.set('guo_jing', guoJingDialogue as DialogueTree);
-    dialogueDataRef.current = dialogues;
-  }, []);
-
   // 加载地图的NPC
   const loadMapNPCs = (mapId: string) => {
     const map = mapsRef.current.get(mapId);
@@ -50,7 +39,7 @@ export default function RPGGame() {
         new NPC(
           {
             id: spawn.npcId,
-            name: spawn.name,
+            name: t(`npcs.${spawn.npcId}`), // 使用翻译后的名称
             x: spawn.x,
             y: spawn.y,
             speed: 0,
@@ -109,7 +98,6 @@ export default function RPGGame() {
     engine.on('keydown', (e: KeyboardEvent) => {
       // 如果对话框打开，不处理游戏控制
       if (isDialogueVisibleRef.current) {
-        console.log('[游戏引擎] 对话框打开，跳过游戏键盘处理');
         return;
       }
       
@@ -155,20 +143,22 @@ export default function RPGGame() {
     });
 
     // 检查NPC交互
-    const checkNPCInteraction = (playerX: number, playerY: number) => {
+    const checkNPCInteraction = async (playerX: number, playerY: number) => {
       // 如果对话框已打开，不处理
       if (isDialogueVisible) return;
 
-      npcsRef.current.forEach((npc) => {
+      for (const npc of npcsRef.current) {
         const npcPos = npc.getTilePosition();
         const distance = Math.abs(npcPos.x - playerX) + Math.abs(npcPos.y - playerY);
 
         if (distance <= 1) {
           // 获取NPC的对话树
           const npcId = npc.getId();
-          const dialogueTree = dialogueDataRef.current.get(npcId);
           
-          if (dialogueTree) {
+          try {
+            // 动态加载对话树（根据当前语言）
+            const dialogueTree = await loadDialogueTree(npcId, locale);
+            
             // 创建对话引擎
             const engine = new DialogueEngine(dialogueTree, {
               level: 1, // 可以从玩家状态获取
@@ -178,9 +168,12 @@ export default function RPGGame() {
             setDialogueEngine(engine);
             setIsDialogueVisible(true);
             isDialogueVisibleRef.current = true;
+          } catch (error) {
+            console.error(`Failed to load dialogue for ${npcId}:`, error);
           }
+          break; // 只处理最近的一个NPC
         }
-      });
+      }
     };
 
     // 检查传送门
@@ -220,10 +213,11 @@ export default function RPGGame() {
       ctx.fillStyle = '#fff';
       ctx.font = '16px Arial';
       ctx.textAlign = 'left';
-      ctx.fillText(`当前地图：${currentMapName}`, 10, 20);
+      const mapNameTranslated = t(`maps.${currentMapIdRef.current}`);
+      ctx.fillText(t('ui.currentMap', { name: mapNameTranslated }), 10, 20);
       ctx.font = '14px Arial';
-      ctx.fillText('方向键或WASD移动', 10, 40);
-      ctx.fillText('空格键或Enter与NPC对话/传送', 300, 40);
+      ctx.fillText(t('ui.moveKeys'), 10, 40);
+      ctx.fillText(t('ui.interactKeys'), 300, 40);
     });
 
     engine.start();
@@ -235,23 +229,22 @@ export default function RPGGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMapName]);
 
+  // 当语言切换时重新加载 NPC 名称
+  useEffect(() => {
+    if (isReady) {
+      npcsRef.current = loadMapNPCs(currentMapIdRef.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, isReady]);
+
   // 对话框控制函数
   const handleSelectOption = (index: number) => {
-    console.log('[对话系统] 选择选项:', index);
     if (!dialogueEngine) return;
-    
-    const beforeNode = dialogueEngine.getCurrentNode();
-    console.log('[对话系统] 选择前节点:', beforeNode?.id);
     
     dialogueEngine.selectOption(index);
     
-    const afterNode = dialogueEngine.getCurrentNode();
-    console.log('[对话系统] 选择后节点:', afterNode?.id);
-    console.log('[对话系统] 是否完成:', dialogueEngine.isCompleted());
-    
     // 如果对话完成，关闭对话框
     if (dialogueEngine.isCompleted()) {
-      console.log('[对话系统] 对话已完成，关闭对话框');
       setIsDialogueVisible(false);
       isDialogueVisibleRef.current = false;
       setDialogueEngine(null);
@@ -301,11 +294,7 @@ export default function RPGGame() {
   // 对话框快捷键
   useEffect(() => {
     const handleDialogueKeys = (e: KeyboardEvent) => {
-      console.log('[对话系统] 按键事件触发:', e.key);
-      console.log('[对话系统] isDialogueVisible:', isDialogueVisible, 'dialogueEngine:', !!dialogueEngine);
-      
       if (!isDialogueVisible || !dialogueEngine) {
-        console.log('[对话系统] 跳过处理：对话框不可见或引擎为空');
         return;
       }
 
@@ -336,10 +325,8 @@ export default function RPGGame() {
       }
     };
 
-    console.log('[对话系统] 注册键盘事件监听器, isDialogueVisible:', isDialogueVisible);
     window.addEventListener('keydown', handleDialogueKeys);
     return () => {
-      console.log('[对话系统] 移除键盘事件监听器');
       window.removeEventListener('keydown', handleDialogueKeys);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -354,8 +341,8 @@ export default function RPGGame() {
       />
       {isReady && (
         <div className="text-center text-sm text-gray-300">
-          <p>游戏已就绪！探索华山、少林、襄阳三个地图，与洪七公、令狐冲、郭靖对话</p>
-          <p className="mt-2">紫色方块是传送门，站在上面按空格键可以传送</p>
+          <p>{t('instructions.ready')}</p>
+          <p className="mt-2">{t('instructions.portal')}</p>
         </div>
       )}
 

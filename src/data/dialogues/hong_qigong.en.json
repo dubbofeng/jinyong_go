@@ -1,0 +1,116 @@
+{
+  "npcId": "hong_qigong",
+  "npcName": "Hong Qigong",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Hong Qigong",
+      "text": "Haha, young friend! I am Hong Qigong, the Northern Beggar and leader of the Beggar's Gang. You look quite intelligent. How about I teach you a move?",
+      "options": [
+        {
+          "text": "Please teach me, Senior Hong!",
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "What is the Northern Beggar?",
+          "nextNodeId": "explain_title"
+        },
+        {
+          "text": "I'll come back later.",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Hong Qigong",
+      "text": "Good! This move is called 'Mighty Dragon Repents' - one of the eighteen palms of subduing dragons. When used in Go, it can create overwhelming momentum to intimidate your opponent!",
+      "action": {
+        "type": "reward",
+        "skill": "mighty_dragon_repents"
+      },
+      "nextNodeId": "skill_taught"
+    },
+    {
+      "id": "skill_taught",
+      "speaker": "Hong Qigong",
+      "text": "Remember, the key to this move lies in its momentum. When playing Go, one must dare to advance, be willing to sacrifice, and create irresistible pressure!",
+      "options": [
+        {
+          "text": "Thank you for your teaching, Senior!",
+          "nextNodeId": "thanks"
+        },
+        {
+          "text": "How do I use this skill?",
+          "nextNodeId": "explain_skill"
+        }
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Hong Qigong",
+      "text": "In Go matches, when your attack momentum is strong, this skill will activate automatically. It increases your stone influence by 20%, making your attacks more powerful!",
+      "nextNodeId": "thanks"
+    },
+    {
+      "id": "thanks",
+      "speaker": "Hong Qigong",
+      "text": "Haha, good! Practice well. When you reach level 5, come find me again, and I'll teach you more advanced techniques!",
+      "nextNodeId": null
+    },
+    {
+      "id": "explain_title",
+      "speaker": "Hong Qigong",
+      "text": "The 'Five Greats' of the martial world - Eastern Heretic, Western Venom, Southern Emperor, Northern Beggar, and Central Divine. I am the Northern Beggar, leader of the world's largest gang, the Beggar's Gang!",
+      "options": [
+        {
+          "text": "So impressive! Please teach me a move!",
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "I understand now.",
+          "nextNodeId": "greeting"
+        }
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "Hong Qigong",
+      "text": "Alright, young friend. When you've made up your mind, come back anytime. This old beggar will be waiting here!",
+      "nextNodeId": null
+    },
+    {
+      "id": "already_learned",
+      "speaker": "Hong Qigong",
+      "text": "You've already learned 'Mighty Dragon Repents'! Practice well, young one. When you reach level 5, come find me for advanced techniques!",
+      "options": [
+        {
+          "text": "Yes, Senior!",
+          "nextNodeId": null
+        }
+      ]
+    },
+    {
+      "id": "level_too_low",
+      "speaker": "Hong Qigong",
+      "text": "Young friend, your foundation is still insufficient. Go gain more experience first, then come back!",
+      "options": [
+        {
+          "text": "I'll work hard to improve!",
+          "nextNodeId": null
+        }
+      ]
+    },
+    {
+      "id": "advanced_teaching",
+      "speaker": "Hong Qigong",
+      "text": "Good! You've reached level 5. Let me teach you the essence of the Eighteen Palms - 'Seeing the Dragon in the Field'!",
+      "action": {
+        "type": "reward",
+        "skill": "dragon_in_field"
+      },
+      "nextNodeId": null
+    }
+  ]
+}

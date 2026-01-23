@@ -1,0 +1,172 @@
+{
+  "npcId": "guo_jing",
+  "npcName": "Guo Jing",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Guo Jing",
+      "text": "You must be the young hero everyone's been talking about. I am Guo Jing, defender of Xiangyang. I see you have a righteous spirit - would you like to learn something?",
+      "options": [
+        {
+          "text": "Hero Guo! Please teach me!",
+          "nextNodeId": "willing_to_learn"
+        },
+        {
+          "text": "What can you teach me?",
+          "nextNodeId": "explain_skills"
+        },
+        {
+          "text": "Just looking around.",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "willing_to_learn",
+      "speaker": "Guo Jing",
+      "text": "Good! I have a skill called 'Ventriloquism Transmission' - it allows silent communication during Go matches, which can confuse your opponent!",
+      "options": [
+        {
+          "text": "Sounds amazing! Please teach me!",
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "How does this help in Go?",
+          "nextNodeId": "explain_skill_use"
+        }
+      ]
+    },
+    {
+      "id": "explain_skill_use",
+      "speaker": "Guo Jing",
+      "text": "In Go matches, you can use this skill to silently transmit your intent, making your opponent unable to predict your next move. It reduces their analysis time by 20%!",
+      "nextNodeId": "teach_skill"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Guo Jing",
+      "text": "This skill requires reaching level 3 to master. Come back when you're ready!",
+      "options": [
+        {
+          "text": "I'm already level 3!",
+          "nextNodeId": "check_level",
+          "condition": {
+            "type": "level",
+            "value": 3
+          }
+        },
+        {
+          "text": "I'll work hard to level up!",
+          "nextNodeId": "encourage"
+        }
+      ]
+    },
+    {
+      "id": "check_level",
+      "speaker": "Guo Jing",
+      "text": "Good! You have sufficient foundation. Now I'll teach you 'Ventriloquism Transmission'!",
+      "action": {
+        "type": "reward",
+        "skill": "ventriloquism"
+      },
+      "nextNodeId": "skill_learned"
+    },
+    {
+      "id": "skill_learned",
+      "speaker": "Guo Jing",
+      "text": "You've learned 'Ventriloquism Transmission'! Use it well. When you reach level 5, I'll teach you more advanced techniques!",
+      "options": [
+        {
+          "text": "Thank you, Hero Guo!",
+          "nextNodeId": "thanks"
+        }
+      ]
+    },
+    {
+      "id": "encourage",
+      "speaker": "Guo Jing",
+      "text": "Good! As the saying goes, 'Iron pestle ground into a needle' - with diligent practice, you'll surely succeed!",
+      "nextNodeId": null
+    },
+    {
+      "id": "explain_skills",
+      "speaker": "Guo Jing",
+      "text": "I can teach you some military strategy and special Go techniques. But you must have sufficient foundation - at least level 3!",
+      "options": [
+        {
+          "text": "I'm ready to learn!",
+          "nextNodeId": "willing_to_learn"
+        },
+        {
+          "text": "What other skills do you have?",
+          "nextNodeId": "more_skills"
+        }
+      ]
+    },
+    {
+      "id": "more_skills",
+      "speaker": "Guo Jing",
+      "text": "Besides 'Ventriloquism Transmission', I also know the 'Eighteen Palms of Subduing Dragons' and strategic techniques for defending cities. But those require higher levels to learn!",
+      "nextNodeId": "willing_to_learn"
+    },
+    {
+      "id": "thanks",
+      "speaker": "Guo Jing",
+      "text": "Defending the country is everyone's duty. Practice your skills well - one day, you might help defend Xiangyang too!",
+      "nextNodeId": null
+    },
+    {
+      "id": "farewell",
+      "speaker": "Guo Jing",
+      "text": "Feel free to walk around. Xiangyang welcomes all righteous heroes!",
+      "nextNodeId": null
+    },
+    {
+      "id": "battle_invitation",
+      "speaker": "Guo Jing",
+      "text": "I see you've reached level 5! How about a Go match to test your skills?",
+      "options": [
+        {
+          "text": "I'd be honored to learn from you, Hero Guo!",
+          "nextNodeId": "accept_battle",
+          "condition": {
+            "type": "level",
+            "value": 5
+          }
+        },
+        {
+          "text": "Let me prepare more first.",
+          "nextNodeId": "decline_battle"
+        }
+      ]
+    },
+    {
+      "id": "accept_battle",
+      "speaker": "Guo Jing",
+      "text": "Good! Let's begin. I'll use a 7x7 board - don't worry, I'll go easy on you!",
+      "action": {
+        "type": "battle",
+        "npcId": "guo_jing",
+        "difficulty": "medium"
+      },
+      "nextNodeId": null
+    },
+    {
+      "id": "decline_battle",
+      "speaker": "Guo Jing",
+      "text": "No problem. Come challenge me anytime when you're ready!",
+      "nextNodeId": null
+    },
+    {
+      "id": "after_battle_win",
+      "speaker": "Guo Jing",
+      "text": "Excellent! Your Go skills are remarkable. Here's a secret manual I've treasured - use it well!",
+      "action": {
+        "type": "reward",
+        "item": "strategy_manual"
+      },
+      "nextNodeId": null
+    }
+  ]
+}

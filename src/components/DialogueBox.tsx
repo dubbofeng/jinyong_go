@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import type { DialogueNode, DialogueOption } from '../types/dialogue';
 
 interface DialogueBoxProps {
@@ -20,12 +21,12 @@ export default function DialogueBox({
   onClose,
   isVisible,
 }: DialogueBoxProps) {
+  const t = useTranslations('game.dialogue');
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
   // 打字机效果
   useEffect(() => {
-    console.log('[DialogueBox] useEffect 触发, node:', node?.id, 'isVisible:', isVisible);
     if (!node || !isVisible) {
       setDisplayedText('');
       setIsTyping(false);
@@ -36,12 +37,10 @@ export default function DialogueBox({
     setDisplayedText('');
 
     const text = node.text;
-    console.log('[DialogueBox] 开始打字机效果, 文本长度:', text.length);
     let index = 0;
     
     const interval = setInterval(() => {
       if (index >= text.length) {
-        console.log('[DialogueBox] 打字机完成');
         setDisplayedText(text);
         setIsTyping(false);
         clearInterval(interval);
@@ -66,7 +65,6 @@ export default function DialogueBox({
   if (!isVisible || !node) return null;
 
   const hasOptions = options.length > 0;
-  console.log('[DialogueBox] 渲染, node:', node.id, 'isTyping:', isTyping, 'hasOptions:', hasOptions, 'options:', options.length);
 
   return (
     <div 
@@ -124,7 +122,7 @@ export default function DialogueBox({
 
           {/* 提示文字 */}
           {isTyping && (
-            <p className="text-gray-400 text-sm text-center mb-2">点击文本跳过动画</p>
+            <p className="text-gray-400 text-sm text-center mb-2">{t('skipPrompt')}</p>
           )}
 
           {/* 选项或继续按钮 */}
@@ -148,7 +146,7 @@ export default function DialogueBox({
                   onClick={onContinue}
                   className="w-full bg-amber-700 hover:bg-amber-600 text-white py-2.5 px-4 rounded transition-colors text-sm"
                 >
-                  继续 <span className="text-amber-300">(空格/Enter)</span>
+                  {t('continue')} <span className="text-amber-300">({t('continueHint')})</span>
                 </button>
               )}
             </div>
@@ -157,7 +155,7 @@ export default function DialogueBox({
 
         {/* 按键提示 */}
         <div className="text-center mt-2 text-gray-400 text-xs">
-          <p>数字键 1-{options.length} 选择 · 空格/Enter 继续 · ESC 关闭 · 点击背景关闭</p>
+          <p>{t('keyboardHint', { count: options.length })}</p>
         </div>
       </div>
     </div>

@@ -1,0 +1,74 @@
+{
+  "game": {
+    "title": "金庸棋侠传",
+    "description": "在金庸武侠世界中体验围棋对战",
+    "controls": {
+      "move": "移动",
+      "interact": "互动",
+      "portal": "传送",
+      "close": "关闭"
+    },
+    "ui": {
+      "currentMap": "当前地图：{name}",
+      "moveKeys": "方向键或WASD移动",
+      "interactKeys": "空格键或Enter与NPC对话/传送"
+    },
+    "npcs": {
+      "hong_qigong": "洪七公",
+      "linghu_chong": "令狐冲",
+      "guo_jing": "郭靖"
+    },
+    "maps": {
+      "huashan": "华山传功厅",
+      "shaolin": "少林寺禅房",
+      "xiangyang": "襄阳城茶馆"
+    },
+    "dialogue": {
+      "continue": "继续",
+      "close": "关闭",
+      "selectOption": "选择选项",
+      "skipPrompt": "点击文本跳过动画",
+      "continueHint": "空格/Enter",
+      "keyboardHint": "数字键 1-{count} 选择 · 空格/Enter 继续 · ESC 关闭 · 点击背景关闭"
+    },
+    "instructions": {
+      "ready": "游戏已就绪！探索华山、少林、襄阳三个地图，与洪七公、令狐冲、郭靖对话",
+      "portal": "紫色方块是传送门，站在上面按空格键可以传送"
+    },
+    "loading": "加载中...",
+    "error": "出错了"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "登出",
+    "email": "邮箱",
+    "password": "密码",
+    "username": "用户名",
+    "emailPlaceholder": "输入邮箱",
+    "passwordPlaceholder": "输入密码",
+    "usernamePlaceholder": "输入用户名",
+    "noAccount": "还没有账户？",
+    "hasAccount": "已有账户？",
+    "registerNow": "免费注册",
+    "loginNow": "立即登录",
+    "loginPrompt": "登录您的账户开始游戏",
+    "registerPrompt": "创建账户，开启武侠围棋之旅",
+    "registerLink": "立即注册",
+    "loginLink": "立即登录",
+    "errors": {
+      "invalidCredentials": "邮箱或密码错误",
+      "userExists": "用户已存在",
+      "serverError": "服务器错误，请稍后重试"
+    }
+  },
+  "common": {
+    "welcome": "欢迎",
+    "level": "等级",
+    "experience": "经验",
+    "skills": "技能",
+    "quests": "任务",
+    "settings": "设置",
+    "language": "语言"
+  }
+}

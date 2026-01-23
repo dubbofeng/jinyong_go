@@ -1,8 +1,10 @@
+'use client';
+
 export function LoginForm({
   action,
   children,
 }: {
-  action: any;
+  action: (formData: FormData) => Promise<void | string>;
   children: React.ReactNode;
 }) {
   return (
@@ -13,7 +15,7 @@ export function LoginForm({
       <div>
         <label
           htmlFor="email"
-          className="block text-xs text-gray-600 uppercase font-medium"
+          className="block text-xs text-gray-600 uppercase"
         >
           邮箱
         </label>
@@ -21,7 +23,7 @@ export function LoginForm({
           id="email"
           name="email"
           type="email"
-          placeholder="your@email.com"
+          placeholder="user@example.com"
           autoComplete="email"
           required
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -30,7 +32,7 @@ export function LoginForm({
       <div>
         <label
           htmlFor="password"
-          className="block text-xs text-gray-600 uppercase font-medium"
+          className="block text-xs text-gray-600 uppercase"
         >
           密码
         </label>
@@ -38,7 +40,8 @@ export function LoginForm({
           id="password"
           name="password"
           type="password"
-          placeholder="••••••"
+          placeholder="••••••••"
+          autoComplete="current-password"
           required
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
         />
@@ -52,7 +55,7 @@ export function RegisterForm({
   action,
   children,
 }: {
-  action: any;
+  action: (formData: FormData) => Promise<void | string>;
   children: React.ReactNode;
 }) {
   return (
@@ -63,7 +66,7 @@ export function RegisterForm({
       <div>
         <label
           htmlFor="username"
-          className="block text-xs text-gray-600 uppercase font-medium"
+          className="block text-xs text-gray-600 uppercase"
         >
           用户名
         </label>
@@ -71,7 +74,7 @@ export function RegisterForm({
           id="username"
           name="username"
           type="text"
-          placeholder="您的用户名"
+          placeholder="请输入用户名"
           autoComplete="username"
           required
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -80,7 +83,7 @@ export function RegisterForm({
       <div>
         <label
           htmlFor="email"
-          className="block text-xs text-gray-600 uppercase font-medium"
+          className="block text-xs text-gray-600 uppercase"
         >
           邮箱
         </label>
@@ -88,7 +91,7 @@ export function RegisterForm({
           id="email"
           name="email"
           type="email"
-          placeholder="your@email.com"
+          placeholder="user@example.com"
           autoComplete="email"
           required
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -97,7 +100,7 @@ export function RegisterForm({
       <div>
         <label
           htmlFor="password"
-          className="block text-xs text-gray-600 uppercase font-medium"
+          className="block text-xs text-gray-600 uppercase"
         >
           密码
         </label>
@@ -105,7 +108,8 @@ export function RegisterForm({
           id="password"
           name="password"
           type="password"
-          placeholder="至少6个字符"
+          placeholder="••••••••"
+          autoComplete="new-password"
           required
           minLength={6}
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"

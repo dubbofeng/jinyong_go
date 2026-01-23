@@ -1,0 +1,138 @@
+{
+  "npcId": "linghu_chong",
+  "npcName": "Linghu Chong",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Linghu Chong",
+      "text": "Brother, I am Linghu Chong of the Huashan Sect. I see you have some martial talent. Interested in learning about swordplay?",
+      "options": [
+        {
+          "text": "Please teach me, Brother Linghu!",
+          "nextNodeId": "ask_go_skill"
+        },
+        {
+          "text": "What is the Dugu Nine Swords?",
+          "nextNodeId": "explain_dugu"
+        },
+        {
+          "text": "Just passing by.",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "ask_go_skill",
+      "speaker": "Linghu Chong",
+      "text": "Haha, I don't teach swordplay. But I can teach you a Go technique I've developed - 'Dugu Nine Swords: Breaking All Techniques'!",
+      "options": [
+        {
+          "text": "The Dugu Nine Swords can be used in Go?",
+          "nextNodeId": "explain_go_sword"
+        },
+        {
+          "text": "Sounds impressive! Please teach me!",
+          "nextNodeId": "teach_skill"
+        }
+      ]
+    },
+    {
+      "id": "explain_go_sword",
+      "speaker": "Linghu Chong",
+      "text": "Of course! The essence of the Dugu Nine Swords is 'breaking all techniques'. In Go, it means seeing through your opponent's intentions and finding the flaws in their formation!",
+      "nextNodeId": "teach_skill"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Linghu Chong",
+      "text": "Good! This technique is called 'Breaking Formation Sword Style'. When playing Go, you can see your opponent's weak points and target them precisely!",
+      "action": {
+        "type": "reward",
+        "skill": "dugu_nine_swords"
+      },
+      "nextNodeId": "skill_taught"
+    },
+    {
+      "id": "skill_taught",
+      "speaker": "Linghu Chong",
+      "text": "Remember, Go is like swordplay - timing and positioning are crucial. A good swordsman doesn't rely on flashy moves, but on seeing the opponent's flaws!",
+      "options": [
+        {
+          "text": "Thank you for your teaching!",
+          "nextNodeId": "thanks"
+        },
+        {
+          "text": "How does this skill work in Go?",
+          "nextNodeId": "explain_skill_detail"
+        }
+      ]
+    },
+    {
+      "id": "explain_skill_detail",
+      "speaker": "Linghu Chong",
+      "text": "When facing an opponent, this skill helps you see their weakest stone. If you attack there, you can break their entire formation! It increases your capture efficiency by 30%!",
+      "nextNodeId": "thanks"
+    },
+    {
+      "id": "thanks",
+      "speaker": "Linghu Chong",
+      "text": "Haha, practice well! If you want to discuss Go strategy or swordplay, come find me anytime!",
+      "nextNodeId": null
+    },
+    {
+      "id": "explain_dugu",
+      "speaker": "Linghu Chong",
+      "text": "The Dugu Nine Swords is my master's unique skill, created by Senior Dugu Qiubai. Its essence is 'no moves' - no fixed forms, only adapting to break the opponent's techniques!",
+      "options": [
+        {
+          "text": "So profound! Can you teach me?",
+          "nextNodeId": "ask_go_skill"
+        },
+        {
+          "text": "I'll think about it.",
+          "nextNodeId": "greeting"
+        }
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "Linghu Chong",
+      "text": "Alright, brother. Come find me anytime if you want to learn. I'm always here drinking wine and playing Go!",
+      "nextNodeId": null
+    },
+    {
+      "id": "discuss_go",
+      "speaker": "Linghu Chong",
+      "text": "Want to discuss Go? Great! I've been pondering a game situation recently - how would you handle a crosscut?",
+      "options": [
+        {
+          "text": "Extend and separate!",
+          "nextNodeId": "correct_answer"
+        },
+        {
+          "text": "Directly capture!",
+          "nextNodeId": "wrong_answer"
+        }
+      ]
+    },
+    {
+      "id": "correct_answer",
+      "speaker": "Linghu Chong",
+      "text": "Excellent! You understand well. Extend and separate - just like swordplay, don't get entangled with the opponent, maintain your rhythm!",
+      "nextNodeId": null
+    },
+    {
+      "id": "wrong_answer",
+      "speaker": "Linghu Chong",
+      "text": "Hmm, directly capturing might fall into the opponent's trap. In Go, as in swordplay, don't be too greedy - maintain flexibility!",
+      "nextNodeId": null
+    },
+    {
+      "id": "drunk",
+      "speaker": "Linghu Chong",
+      "text": "*Burp* Haha, brother, I've had too much wine today... Come back tomorrow, and I'll teach you properly!",
+      "nextNodeId": null
+    }
+  ]
+}

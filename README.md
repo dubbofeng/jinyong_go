@@ -1,36 +1,214 @@
-# Next.js + PostgreSQL Auth Starter
+# 金庸棋侠传 (Jin Yong's Go) 🎮⚔️🀀
 
-This is a [Next.js](https://nextjs.org/) starter kit that uses [NextAuth.js](https://next-auth.js.org/) for simple email + password login, [Drizzle](https://orm.drizzle.team) as the ORM, and a [Neon Postgres](https://vercel.com/postgres) database to persist the data.
+一款融合金庸武侠世界与围棋对战的创新RPG游戏。在这里，你将化身为一名初入江湖的少侠，通过与武林高手下棋学艺，掌握独特的武侠技能，最终成为棋坛宗师！
 
-## Deploy Your Own
+> **A unique RPG game that combines Jin Yong's Wuxia world with Go gameplay. Play Go against martial arts masters, learn special skills, and become a grandmaster!**
 
-You can clone & deploy it to Vercel with one click:
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-title=Next.js%20Prisma%20PostgreSQL%20Auth%20Starter&demo-description=Simple%20Next.js%2013%20starter%20kit%20that%20uses%20Next-Auth%20for%20auth%20and%20Prisma%20PostgreSQL%20as%20a%20database.&demo-url=https%3A%2F%2Fnextjs-postgres-auth.vercel.app%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F7rsVQ1ZBSiWe9JGO6FUeZZ%2F210cba91036ca912b2770e0bd5d6cc5d%2Fthumbnail.png&project-name=Next.js%%20Prisma%20PostgreSQL%20Auth%20Starter&repository-name=nextjs-postgres-auth-starter&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnextjs-postgres-auth-starter&from=templates&skippable-integrations=1&env=AUTH_SECRET&envDescription=Generate%20a%20random%20secret%3A&envLink=https://generate-secret.vercel.app/&stores=%5B%7B"type"%3A"postgres"%7D%5D)
+## ✨ 特色功能 | Features
 
-## Developing Locally
+- 🗺️ **武侠世界探索** - 在华山、少林寺、襄阳城等经典场景中自由探索
+- 💬 **NPC对话系统** - 与洪七公、令狐冲、郭靖等武侠大师互动交流
+- 🎯 **围棋对战** - 9路/13路/19路棋盘，挑战AI或其他玩家
+- ⚡ **武侠技能** - 亢龙有悔、独孤九剑等独特技能影响围棋对局
+- 🌍 **多语言支持** - 完整的中文/英文双语界面和对话
+- 🎨 **精美UI** - 武侠风格的界面设计和打字机对话效果
+- 🎮 **流畅体验** - 60 FPS游戏引擎，平滑的角色移动和交互
 
-You can clone & create this repo with the following command
+---
 
+## 🚀 快速开始 | Quick Start
+
+### 环境要求 | Prerequisites
+
+- Node.js 18+ 
+- pnpm (推荐) 或 npm
+- PostgreSQL 数据库
+
+### 安装步骤 | Installation
+
+1. **克隆项目 | Clone the repository**
 ```bash
-npx create-next-app nextjs-typescript-starter --example "https://github.com/vercel/nextjs-postgres-auth-starter"
+git clone https://github.com/yourusername/jinyong_go.git
+cd jinyong_go
 ```
 
-## Getting Started
+2. **安装依赖 | Install dependencies**
+```bash
+pnpm install
+```
 
-First, run the development server:
+3. **配置环境变量 | Configure environment variables**
+```bash
+cp .env.example .env.local
+```
 
+编辑 `.env.local`，填入你的数据库连接信息：
+```env
+POSTGRES_URL="your-postgres-connection-string"
+AUTH_SECRET="your-auth-secret"
+```
+
+4. **初始化数据库 | Initialize database**
+```bash
+pnpm drizzle-kit push
+pnpm db:seed
+```
+
+5. **启动开发服务器 | Start development server**
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. **访问游戏 | Open the game**
+- 中文版: http://localhost:9999/game
+- English: http://localhost:9999/en/game
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🎯 当前进度 | Development Status
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ✅ 已完成 | Completed
+- ✅ 自定义2D游戏引擎（Canvas渲染，60 FPS）
+- ✅ 3个完整地图（华山、少林寺、襄阳）+ 传送门系统
+- ✅ NPC对话系统（分支对话树，打字机效果，键盘快捷键）
+- ✅ 3个NPC完整对话（洪七公10节点，令狐冲13节点，郭靖15节点）
+- ✅ 多语言系统（中文/英文双语，动态切换）
+- ✅ 用户认证系统（NextAuth.js + JWT）
+- ✅ 数据库集成（PostgreSQL + Drizzle ORM）
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 🔄 开发中 | In Progress
+- 🔄 任务系统
+- 🔄 围棋棋盘系统
+- 🔄 技能系统
+- 🔄 AI对战系统
+
+### 📅 计划中 | Planned
+- 📅 排行榜系统
+- 📅 棋谱分享功能
+- 📅 更多NPC和地图
+- 📅 高级技能和装备系统
+
+详细进度请查看 [开发进度总览](./docs/开发进度总览.md)
+
+---
+
+## 📚 技术栈 | Tech Stack
+
+### 前端 | Frontend
+- **Next.js 14.0.4** - React框架，App Router
+- **TypeScript 5.3.3** - 类型安全
+- **Tailwind CSS 3.4.0** - 样式框架
+- **next-intl 4.7.0** - 国际化
+- **自定义Canvas 2D引擎** - 游戏渲染
+
+### 后端 | Backend
+- **Vercel Postgres** - 数据库（开发环境可使用本地PostgreSQL）
+- **Drizzle ORM 0.45.1** - ORM框架
+- **NextAuth.js 5.0.0-beta.4** - 身份认证
+- **Vercel Serverless** - 部署平台
+
+---
+
+## 🎮 游戏玩法 | How to Play
+
+1. **注册账号** - 创建你的角色
+2. **探索世界** - 使用 WASD 或方向键移动
+3. **与NPC交互** - 走到NPC旁边按空格键对话
+4. **学习技能** - 通过对话解锁武侠技能
+5. **围棋对战** - 挑战NPC或其他玩家（开发中）
+6. **完成任务** - 完成主线和支线任务提升等级（开发中）
+
+### 键盘快捷键 | Keyboard Shortcuts
+- **WASD / 方向键** - 角色移动
+- **空格** - 交互/传送/继续对话
+- **1-9** - 对话选项快捷选择
+- **Enter** - 继续对话
+- **ESC** - 关闭对话框
+
+---
+
+## 🌍 多语言 | Internationalization
+
+游戏完整支持中文和英文：
+
+- **UI界面** - 所有按钮、提示、说明
+- **NPC对话** - 所有对话内容
+- **动态切换** - 右上角语言切换器随时切换
+
+详细说明请查看 [多语言支持说明](./docs/多语言支持说明.md)
+
+---
+
+## 📖 文档 | Documentation
+
+- [MVP开发计划](./docs/MVP开发计划.md) - 第一阶段开发规划
+- [完整开发计划](./docs/完整开发计划.md) - 全部版本规划
+- [技术选型](./docs/技术选型.md) - 技术架构说明
+- [游戏策划](./docs/游戏策划.md) - 游戏设计文档
+- [多语言支持说明](./docs/多语言支持说明.md) - i18n实现细节
+- [开发进度总览](./docs/开发进度总览.md) - 当前开发状态
+
+---
+
+## 🛠️ 开发命令 | Development Commands
+
+```bash
+# 开发服务器
+pnpm dev
+
+# 构建生产版本
+pnpm build
+
+# 启动生产服务器
+pnpm start
+
+# 代码检查
+pnpm lint
+
+# 数据库操作
+pnpm drizzle-kit studio   # 打开数据库管理界面
+pnpm drizzle-kit push     # 推送schema变更
+pnpm db:seed              # 运行种子数据
+```
+
+---
+
+## 🤝 贡献 | Contributing
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+---
+
+## 📄 许可证 | License
+
+MIT License - 详见 [LICENSE](./LICENSE) 文件
+
+---
+
+## 🙏 致谢 | Acknowledgments
+
+- 金庸先生的武侠世界观
+- Next.js 和 Vercel 团队
+- 围棋AI社区（KataGo）
+- 所有开源贡献者
+
+---
+
+## 📞 联系方式 | Contact
+
+- **项目主页**: https://github.com/yourusername/jinyong_go
+- **问题反馈**: https://github.com/yourusername/jinyong_go/issues
+
+---
+
+**让我们一起打造最好的武侠围棋游戏！**
+
+**Let's build the best Wuxia Go game together!** 🚀
