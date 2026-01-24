@@ -32,7 +32,7 @@ export default async function AdminDashboard({
       description: t('modules.npcsDesc'),
       icon: '🧙',
       href: `/${locale}/admin/npcs`,
-      status: 'planned'
+      status: 'active'
     },
     {
       id: 'quests',
@@ -40,7 +40,7 @@ export default async function AdminDashboard({
       description: t('modules.questsDesc'),
       icon: '📜',
       href: `/${locale}/admin/quests`,
-      status: 'planned'
+      status: 'active'
     },
     {
       id: 'users',
@@ -48,7 +48,7 @@ export default async function AdminDashboard({
       description: t('modules.usersDesc'),
       icon: '👥',
       href: `/${locale}/admin/users`,
-      status: 'planned'
+      status: 'active'
     },
     {
       id: 'settings',

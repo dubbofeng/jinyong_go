@@ -120,7 +120,9 @@
       "assets": "Assets",
       "maps": "Maps",
       "npcs": "NPCs",
+      "dialogues": "Dialogues",
       "quests": "Quests",
+      "users": "Users",
       "backToGame": "Back to Game"
     },
     "maps": {
@@ -217,6 +219,116 @@
           "mapName": "Map Name",
           "description": "Description"
         }
+      }
+    },
+    "npcs": {
+      "title": "NPC Management",
+      "subtitle": "Manage all NPCs in the game",
+      "createNew": "Create NPC",
+      "empty": "No NPCs found",
+      "table": {
+        "id": "NPC ID",
+        "name": "Name",
+        "type": "Type",
+        "location": "Location",
+        "difficulty": "Difficulty",
+        "skills": "Skills",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "editDialogues": "Edit Dialogues",
+        "delete": "Delete"
+      },
+      "stats": {
+        "total": "Total NPCs",
+        "teachers": "Teachers",
+        "opponents": "Opponents",
+        "merchants": "Merchants"
+      }
+    },
+    "dialogues": {
+      "title": "Dialogue Management",
+      "subtitle": "Manage NPC dialogue trees and multilingual content",
+      "createNew": "Create Dialogue",
+      "empty": "No dialogues found",
+      "nodes": "nodes",
+      "table": {
+        "npcId": "NPC ID",
+        "chinese": "Chinese Version",
+        "english": "English Version",
+        "totalNodes": "Total Nodes",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "complete": "Complete",
+        "incomplete": "Incomplete"
+      },
+      "actions": {
+        "editZh": "Edit Chinese",
+        "editEn": "Edit English",
+        "preview": "Preview"
+      },
+      "stats": {
+        "totalNPCs": "Total NPCs",
+        "complete": "Complete Dialogues",
+        "totalNodes": "Total Nodes",
+        "avgNodesPerNPC": "Avg Nodes per NPC"
+      },
+      "info": {
+        "title": "Dialogue Data Info",
+        "description": "Dialogue data is stored in JSON format under src/data/dialogues/. Each NPC has two files: Chinese (.zh.json) and English (.en.json)."
+      }
+    },
+    "quests": {
+      "title": "Quest Management",
+      "subtitle": "Manage game quests, requirements and rewards",
+      "createNew": "Create Quest",
+      "empty": "No quests found",
+      "chapter": "Chapter {number}",
+      "table": {
+        "id": "Quest ID",
+        "title": "Title",
+        "type": "Type",
+        "chapter": "Chapter",
+        "prerequisites": "Prerequisites",
+        "rewards": "Rewards",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "stats": {
+        "total": "Total Quests",
+        "main": "Main Quests",
+        "side": "Side Quests",
+        "tutorial": "Tutorial Quests"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "View user data and game progress",
+      "empty": "No users found",
+      "table": {
+        "id": "User ID",
+        "username": "Username",
+        "email": "Email",
+        "level": "Level",
+        "gamesPlayed": "Games Played",
+        "winRate": "Win Rate",
+        "joinDate": "Join Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View Details"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "totalGames": "Total Games",
+        "avgLevel": "Avg Level",
+        "activeToday": "Active Today"
       }
     }
   }

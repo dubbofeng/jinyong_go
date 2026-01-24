@@ -1,35 +1,87 @@
-/**
- * 任务系统 API 路由示例
- * GET /api/quests - 获取所有任务
- * GET /api/quests/[questId] - 获取单个任务
- */
-
 import { NextRequest, NextResponse } from 'next/server';
-import { loadQuest, loadAllQuests } from '@/src/lib/data-loader';
+import { db } from '@/app/db';
+import { quests } from '@/src/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
-// 获取所有任务
+// GET /api/quests - 获取所有任务
+// GET /api/quests?chapter=1 - 获取指定章节的任务
+// GET /api/quests?type=main - 获取指定类型的任务
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const chapter = searchParams.get('chapter');
     const questType = searchParams.get('type');
 
-    // 加载所有任务（优先从数据库）
-    let quests = await loadAllQuests();
+    let allQuests = await db.select().from(quests).orderBy(desc(quests.chapter), desc(quests.createdAt));
 
-    // 过滤
+    // 应用过滤器
     if (chapter) {
-      quests = quests.filter((q: any) => q.chapter === parseInt(chapter));
+      allQuests = allQuests.filter(q => q.chapter === parseInt(chapter));
     }
     if (questType) {
-      quests = quests.filter((q: any) => q.questType === questType);
+      allQuests = allQuests.filter(q => q.questType === questType);
     }
 
-    return NextResponse.json(quests);
+    return NextResponse.json({
+      success: true,
+      data: allQuests,
+      count: allQuests.length,
+    });
   } catch (error) {
-    console.error('Error loading quests:', error);
+    console.error('Error fetching quests:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Failed to fetch quests' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/quests - 创建新任务
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const {
+      questId,
+      title,
+      description,
+      questType,
+      chapter,
+      requirements,
+      rewards,
+      prerequisiteQuests,
+    } = body;
+
+    // 验证必填字段
+    if (!questId || !title || !description || !questType || !chapter || !requirements || !rewards) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // 插入新任务
+    const [newQuest] = await db
+      .insert(quests)
+      .values({
+        questId,
+        title,
+        description,
+        questType,
+        chapter,
+        requirements,
+        rewards,
+        prerequisiteQuests: prerequisiteQuests || [],
+      })
+      .returning();
+
+    return NextResponse.json({
+      success: true,
+      data: newQuest,
+    });
+  } catch (error) {
+    console.error('Error creating quest:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create quest' },
       { status: 500 }
     );
   }

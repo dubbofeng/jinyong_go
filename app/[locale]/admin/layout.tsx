@@ -61,12 +61,30 @@ export default async function AdminLayout({
                 >
                   {t('nav.maps')}
                 </Link>
-                <span className="px-3 py-2 rounded-lg text-sm text-gray-500 cursor-not-allowed">
+                <Link
+                  href={`/${locale}/admin/npcs`}
+                  className="px-3 py-2 rounded-lg text-sm text-gray-200 hover:text-white hover:bg-gray-700 transition-colors"
+                >
                   {t('nav.npcs')}
-                </span>
-                <span className="px-3 py-2 rounded-lg text-sm text-gray-500 cursor-not-allowed">
+                </Link>
+                <Link
+                  href={`/${locale}/admin/dialogues`}
+                  className="px-3 py-2 rounded-lg text-sm text-gray-200 hover:text-white hover:bg-gray-700 transition-colors"
+                >
+                  {t('nav.dialogues')}
+                </Link>
+                <Link
+                  href={`/${locale}/admin/quests`}
+                  className="px-3 py-2 rounded-lg text-sm text-gray-200 hover:text-white hover:bg-gray-700 transition-colors"
+                >
                   {t('nav.quests')}
-                </span>
+                </Link>
+                <Link
+                  href={`/${locale}/admin/users`}
+                  className="px-3 py-2 rounded-lg text-sm text-gray-200 hover:text-white hover:bg-gray-700 transition-colors"
+                >
+                  {t('nav.users')}
+                </Link>
               </div>
             </div>
 

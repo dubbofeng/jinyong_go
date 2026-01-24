@@ -3,6 +3,10 @@ import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { db, users, gameProgress } from '../src/db';
 import type { User } from '../src/db/schema';
 
+// 重新导出 db 和 schema，以便其他模块可以从 @/app/db 导入
+export { db } from '../src/db';
+export * from '../src/db/schema';
+
 export async function getUser(email: string) {
   const result = await db.select().from(users).where(eq(users.email, email));
   return result;
