@@ -77,5 +77,147 @@
     "quests": "Quests",
     "settings": "Settings",
     "language": "Language"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Game Content Management System",
+    "brand": "Jin Yong Chess - Admin",
+    "backToGame": "Back to Game",
+    "planned": "Planned",
+    "active": "Active",
+    "modulesTitle": "Modules",
+    "quickActions": "Quick Actions",
+    "stats": {
+      "totalMaps": "Total Maps",
+      "totalNPCs": "Total NPCs",
+      "totalQuests": "Total Quests",
+      "totalAssets": "Total Assets"
+    },
+    "modules": {
+      "assets": "Asset Management",
+      "assetsDesc": "AI image generation and asset management",
+      "maps": "Map Management",
+      "mapsDesc": "Create and edit Isometric maps",
+      "npcs": "NPC Management",
+      "npcsDesc": "Manage NPC data and dialogues",
+      "quests": "Quest Management",
+      "questsDesc": "Create and manage game quests",
+      "users": "User Management",
+      "usersDesc": "View and manage player data",
+      "settings": "System Settings",
+      "settingsDesc": "Game configuration and parameters"
+    },
+    "actions": {
+      "generateAssets": "Generate Assets",
+      "generateAssetsDesc": "Use AI to generate scenes and skill icons",
+      "createMap": "Create New Map",
+      "createMapDesc": "Use map generator to create Isometric maps",
+      "viewStats": "View Statistics",
+      "viewStatsDesc": "Game data and performance statistics"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "assets": "Assets",
+      "maps": "Maps",
+      "npcs": "NPCs",
+      "quests": "Quests",
+      "backToGame": "Back to Game"
+    },
+    "maps": {
+      "title": "Map Management",
+      "subtitle": "Create and edit Isometric maps",
+      "createNew": "Create New Map",
+      "stats": {
+        "total": "Total Maps",
+        "worldMaps": "World Maps",
+        "sceneMaps": "Scene Maps"
+      },
+      "type": {
+        "world": "World",
+        "scene": "Scene"
+      },
+      "actions": {
+        "edit": "Edit",
+        "view": "View",
+        "delete": "Delete"
+      },
+      "empty": {
+        "title": "No Maps Yet",
+        "description": "Use the map generator to create your first Isometric map",
+        "action": "Create First Map"
+      },
+      "generator": {
+        "title": "Map Generator",
+        "subtitle": "Generate Isometric maps with AI",
+        "backToList": "Back to Map List",
+        "generate": "Generate Map",
+        "generating": "Generating...",
+        "cancel": "Cancel",
+        "sections": {
+          "basic": "Basic Info",
+          "type": "Map Type",
+          "size": "Map Size",
+          "theme": "Map Theme"
+        },
+        "fields": {
+          "mapId": "Map ID",
+          "mapIdHint": "Unique identifier, use letters, numbers and underscores",
+          "name": "Map Name",
+          "namePlaceholder": "e.g., Wudang Mountain",
+          "description": "Description",
+          "descriptionPlaceholder": "Briefly describe this map..."
+        },
+        "types": {
+          "world": "World Map",
+          "worldDesc": "Large world map with multiple scenes",
+          "scene": "Scene Map",
+          "sceneDesc": "Single scene or area"
+        },
+        "sizes": {
+          "small": "Small Scene",
+          "medium": "Medium Scene",
+          "large": "Large World"
+        },
+        "themes": {
+          "forest": "Forest",
+          "mountain": "Mountain",
+          "village": "Village",
+          "river": "River",
+          "desert": "Desert",
+          "temple": "Temple"
+        }
+      },
+      "editor": {
+        "loading": "Loading...",
+        "notFound": "Map Not Found",
+        "backToList": "Back to Map List",
+        "save": "Save",
+        "tools": {
+          "title": "Tools",
+          "brush": "Brush Tool",
+          "items": "Item Tool"
+        },
+        "tiles": {
+          "title": "Tile Types",
+          "dirt": "Dirt",
+          "gold": "Gold",
+          "wood": "Wood",
+          "fire": "Fire",
+          "water": "Water"
+        },
+        "items": {
+          "title": "Item Types",
+          "building": "Building",
+          "npc": "NPC",
+          "portal": "Portal",
+          "decoration": "Decoration"
+        },
+        "properties": {
+          "title": "Properties",
+          "mapName": "Map Name",
+          "description": "Description"
+        }
+      }
+    }
   }
 }

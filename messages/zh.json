@@ -79,5 +79,147 @@
     "quests": "任务",
     "settings": "设置",
     "language": "语言"
+  },
+  "admin": {
+    "title": "管理后台",
+    "subtitle": "游戏内容管理系统",
+    "brand": "金庸棋侠传 - 管理后台",
+    "backToGame": "返回游戏",
+    "planned": "计划中",
+    "active": "已启用",
+    "modulesTitle": "功能模块",
+    "quickActions": "快速操作",
+    "stats": {
+      "totalMaps": "地图总数",
+      "totalNPCs": "NPC 总数",
+      "totalQuests": "任务总数",
+      "totalAssets": "资源总数"
+    },
+    "modules": {
+      "assets": "美术资源管理",
+      "assetsDesc": "AI 图片生成和资源管理",
+      "maps": "地图管理",
+      "mapsDesc": "创建和编辑 Isometric 地图",
+      "npcs": "NPC 管理",
+      "npcsDesc": "管理 NPC 数据和对话",
+      "quests": "任务管理",
+      "questsDesc": "创建和管理游戏任务",
+      "users": "用户管理",
+      "usersDesc": "查看和管理玩家数据",
+      "settings": "系统设置",
+      "settingsDesc": "游戏配置和参数设置"
+    },
+    "actions": {
+      "generateAssets": "生成美术资源",
+      "generateAssetsDesc": "使用 AI 生成场景和技能图标",
+      "createMap": "创建新地图",
+      "createMapDesc": "使用地图生成器创建 Isometric 地图",
+      "viewStats": "查看统计数据",
+      "viewStatsDesc": "游戏数据和性能统计"
+    },
+    "nav": {
+      "dashboard": "仪表盘",
+      "assets": "美术资源",
+      "maps": "地图管理",
+      "npcs": "NPC 管理",
+      "quests": "任务管理",
+      "backToGame": "返回游戏"
+    },
+    "maps": {
+      "title": "地图管理",
+      "subtitle": "创建和编辑 Isometric 地图",
+      "createNew": "创建新地图",
+      "stats": {
+        "total": "地图总数",
+        "worldMaps": "世界地图",
+        "sceneMaps": "场景地图"
+      },
+      "type": {
+        "world": "世界地图",
+        "scene": "场景地图"
+      },
+      "actions": {
+        "edit": "编辑",
+        "view": "查看",
+        "delete": "删除"
+      },
+      "empty": {
+        "title": "还没有地图",
+        "description": "使用地图生成器创建第一个 Isometric 地图",
+        "action": "创建第一个地图"
+      },
+      "generator": {
+        "title": "地图生成器",
+        "subtitle": "使用 AI 生成 Isometric 地图",
+        "backToList": "返回地图列表",
+        "generate": "生成地图",
+        "generating": "生成中...",
+        "cancel": "取消",
+        "sections": {
+          "basic": "基本信息",
+          "type": "地图类型",
+          "size": "地图尺寸",
+          "theme": "地图主题"
+        },
+        "fields": {
+          "mapId": "地图ID",
+          "mapIdHint": "唯一标识符，使用英文字母、数字和下划线",
+          "name": "地图名称",
+          "namePlaceholder": "例如：武当山",
+          "description": "地图描述",
+          "descriptionPlaceholder": "简要描述这个地图..."
+        },
+        "types": {
+          "world": "世界地图",
+          "worldDesc": "大型世界地图，包含多个场景",
+          "scene": "场景地图",
+          "sceneDesc": "单个场景或区域"
+        },
+        "sizes": {
+          "small": "小型场景",
+          "medium": "中型场景",
+          "large": "大型世界"
+        },
+        "themes": {
+          "forest": "森林",
+          "mountain": "山地",
+          "village": "村庄",
+          "river": "河流",
+          "desert": "沙漠",
+          "temple": "寺庙"
+        }
+      },
+      "editor": {
+        "loading": "加载中...",
+        "notFound": "地图未找到",
+        "backToList": "返回地图列表",
+        "save": "保存",
+        "tools": {
+          "title": "工具",
+          "brush": "画笔工具",
+          "items": "物品工具"
+        },
+        "tiles": {
+          "title": "瓦片类型",
+          "dirt": "泥土",
+          "gold": "金色",
+          "wood": "木质",
+          "fire": "火焰",
+          "water": "水域"
+        },
+        "items": {
+          "title": "物品类型",
+          "building": "建筑物",
+          "npc": "NPC",
+          "portal": "传送门",
+          "decoration": "装饰物"
+        },
+        "properties": {
+          "title": "属性",
+          "mapName": "地图名称",
+          "description": "描述"
+        }
+      }
+    }
   }
 }
