@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getAllPrompts, PromptTemplate } from '@/src/lib/image-prompts';
 import Image from 'next/image';
 
@@ -21,8 +21,47 @@ export default function AssetsPage() {
   const [generatedImages, setGeneratedImages] = useState<Map<string, GeneratedImage>>(new Map());
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [generatingIds, setGeneratingIds] = useState<Set<string>>(new Set());
+  const [isCheckingFiles, setIsCheckingFiles] = useState(true);
 
   const categories = ['all', 'scene', 'skill', 'ui'];
+
+  // 检查已存在的图片文件
+  useEffect(() => {
+    const checkExistingImages = async () => {
+      const newGeneratedImages = new Map<string, GeneratedImage>();
+
+      for (const prompt of prompts) {
+        const imagePath = `/generated/${prompt.category}/${prompt.id}.png`;
+        
+        try {
+          // 尝试加载图片
+          const response = await fetch(imagePath, { method: 'HEAD' });
+          
+          if (response.ok) {
+            // 图片存在
+            newGeneratedImages.set(prompt.id, {
+              id: prompt.id,
+              category: prompt.category,
+              name: prompt.name,
+              url: imagePath,
+              width: prompt.width,
+              height: prompt.height,
+              prompt: prompt.prompt,
+              generatedAt: new Date().toISOString(),
+              status: 'cached'
+            });
+          }
+        } catch (error) {
+          // 图片不存在，跳过
+        }
+      }
+
+      setGeneratedImages(newGeneratedImages);
+      setIsCheckingFiles(false);
+    };
+
+    checkExistingImages();
+  }, [prompts]);
 
   const filteredPrompts = selectedCategory === 'all' 
     ? prompts 
@@ -233,7 +272,7 @@ export default function AssetsPage() {
                         : 'bg-amber-600 hover:bg-amber-700'
                     }`}
                   >
-                    {isGenerating ? '生成中...' : generatedImage ? '重新生成' : '生成图片'}
+                    {isGenerating ? '生成中...' : generatedImage?.status === 'cached' ? '已存在 - 重新生成' : generatedImage ? '重新生成' : '生成图片'}
                   </button>
                 </div>
               </div>
