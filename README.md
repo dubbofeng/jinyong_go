@@ -52,18 +52,61 @@ AUTH_SECRET="your-auth-secret"
 
 4. **初始化数据库 | Initialize database**
 ```bash
-pnpm drizzle-kit push
-pnpm db:seed
+# 推送数据库结构
+pnpm db:push
+
+# 加载种子数据（NPC、任务、地图）
+pnpm seed:all
 ```
 
-5. **启动开发服务器 | Start development server**
+5. **启动开发服务器 | Start dev server**
 ```bash
 pnpm dev
 ```
 
-6. **访问游戏 | Open the game**
-- 中文版: http://localhost:9999/game
-- English: http://localhost:9999/en/game
+访问 http://localhost:9999 开始游戏！
+
+---
+
+## 📚 数据管理 | Data Management
+
+本项目采用 **混合数据源策略**：
+
+### 📁 JSON 文件（静态配置）
+- **对话数据**：`src/data/dialogues/` - 便于编辑和版本控制
+- **Tilemap 地图**：`src/data/maps/` - 传统地图模板
+- **AI 提示词**：`src/lib/image-prompts.ts` - AI 图片生成配置
+
+### 💾 数据库（动态数据）
+- **Isometric 地图**：动态生成和编辑的等距地图
+- **用户数据**：游戏进度、等级、经验
+- **对战记录**：围棋对局历史
+
+### 🌱 种子数据（JSON → 数据库）
+- **NPC 配置**：`src/data/npcs.json` → `npcs` 表
+- **任务配置**：`src/data/quests.json` → `quests` 表
+
+### 常用命令
+```bash
+# 加载 NPC 和任务数据
+pnpm seed
+
+# 加载示例地图
+pnpm seed:maps
+
+# 加载所有种子数据
+pnpm seed:all
+
+# 重置数据库到初始状态
+pnpm db:reset
+
+# 打开数据库可视化界面
+pnpm db:studio
+```
+
+详细说明请查看：
+- [数据管理策略完整文档](./docs/数据管理策略.md)
+- [数据管理快速入门](./docs/数据管理快速入门.md)
 
 ---
 
@@ -71,17 +114,21 @@ pnpm dev
 
 ### ✅ 已完成 | Completed
 - ✅ 自定义2D游戏引擎（Canvas渲染，60 FPS）
-- ✅ 3个完整地图（华山、少林寺、襄阳）+ 传送门系统
+- ✅ Tilemap 地图系统（3个完整地图 + 传送门）
+- ✅ Isometric 地图系统（数据库驱动，支持生成和编辑）
 - ✅ NPC对话系统（分支对话树，打字机效果，键盘快捷键）
 - ✅ 3个NPC完整对话（洪七公10节点，令狐冲13节点，郭靖15节点）
 - ✅ 多语言系统（中文/英文双语，动态切换）
 - ✅ 用户认证系统（NextAuth.js + JWT）
 - ✅ 数据库集成（PostgreSQL + Drizzle ORM）
+- ✅ 数据加载器（混合数据源策略）
+- ✅ 种子数据系统（NPC、任务、地图）
+- ✅ 美术资源管理（AI 图片生成集成）
 
 ### 🔄 开发中 | In Progress
-- 🔄 任务系统
-- 🔄 围棋棋盘系统
-- 🔄 技能系统
+- 🔄 后台管理系统（Admin Panel）
+- 🔄 Isometric 地图生成器界面
+- 🔄 地图物品编辑器
 - 🔄 AI对战系统
 
 ### 📅 计划中 | Planned

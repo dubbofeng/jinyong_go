@@ -1,0 +1,41 @@
+[
+  {
+    "npcId": "hong_qigong",
+    "name": "洪七公",
+    "description": "丐帮帮主，降龙十八掌传人，武功高强，性格豪爽",
+    "mapId": "huashan",
+    "positionX": 12,
+    "positionY": 9,
+    "npcType": "teacher",
+    "difficulty": 3,
+    "teachableSkills": ["kanglongyouhui"],
+    "avatarColor": "#f59e0b",
+    "spriteSheet": "/sprites/hong_qigong.png"
+  },
+  {
+    "npcId": "linghu_chong",
+    "name": "令狐冲",
+    "description": "华山派大弟子，独孤九剑传人，剑术超群",
+    "mapId": "shaolin",
+    "positionX": 12,
+    "positionY": 9,
+    "npcType": "teacher",
+    "difficulty": 5,
+    "teachableSkills": ["dugujiujian"],
+    "avatarColor": "#10b981",
+    "spriteSheet": "/sprites/linghu_chong.png"
+  },
+  {
+    "npcId": "guo_jing",
+    "name": "郭靖",
+    "description": "大侠郭靖，武功高强，为人正直，守护襄阳多年",
+    "mapId": "xiangyang",
+    "positionX": 12,
+    "positionY": 9,
+    "npcType": "opponent",
+    "difficulty": 7,
+    "teachableSkills": [],
+    "avatarColor": "#f97316",
+    "spriteSheet": "/sprites/guo_jing.png"
+  }
+]
