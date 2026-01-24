@@ -1,0 +1,197 @@
+{
+  "cols": 4,
+  "rows": 7,
+  "tileWidth": 128,
+  "tileHeight": 64,
+  "tiles": [
+    {
+      "index": 0,
+      "col": 0,
+      "row": 0,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 1,
+      "col": 1,
+      "row": 0,
+      "description": "Water to dirt bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 2,
+      "col": 2,
+      "row": 0,
+      "description": "Water to dirt bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 3,
+      "col": 3,
+      "row": 0,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    },
+    {
+      "index": 4,
+      "col": 0,
+      "row": 1,
+      "description": "Water to dirt top-left",
+      "gradientDirection": "top-left"
+    },
+    {
+      "index": 5,
+      "col": 1,
+      "row": 1,
+      "description": "Water to dirt top-left and bottom-left",
+      "gradientDirection": "top-left, bottom-left"
+    },
+    {
+      "index": 6,
+      "col": 2,
+      "row": 1,
+      "description": "Water to dirt top-right and bottom-right",
+      "gradientDirection": "top-right, bottom-right"
+    },
+    {
+      "index": 7,
+      "col": 3,
+      "row": 1,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    },
+    {
+      "index": 8,
+      "col": 0,
+      "row": 2,
+      "description": "Water to dirt top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 9,
+      "col": 1,
+      "row": 2,
+      "description": "Full dirt terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 10,
+      "col": 2,
+      "row": 2,
+      "description": "Full dirt terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 11,
+      "col": 3,
+      "row": 2,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    },
+    {
+      "index": 12,
+      "col": 0,
+      "row": 3,
+      "description": "Full dirt terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 13,
+      "col": 1,
+      "row": 3,
+      "description": "Water to dirt top-right and bottom-left",
+      "gradientDirection": "top-right, bottom-left"
+    },
+    {
+      "index": 14,
+      "col": 2,
+      "row": 3,
+      "description": "Water to dirt top-left and bottom-right",
+      "gradientDirection": "top-left, bottom-right"
+    },
+    {
+      "index": 15,
+      "col": 3,
+      "row": 3,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    },
+    {
+      "index": 16,
+      "col": 0,
+      "row": 4,
+      "description": "Water to dirt bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 17,
+      "col": 1,
+      "row": 4,
+      "description": "Water to dirt top-left and bottom-left",
+      "gradientDirection": "top-left, bottom-left"
+    },
+    {
+      "index": 18,
+      "col": 2,
+      "row": 4,
+      "description": "Water to dirt top-right and bottom-right",
+      "gradientDirection": "top-right, bottom-right"
+    },
+    {
+      "index": 19,
+      "col": 3,
+      "row": 4,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    },
+    {
+      "index": 20,
+      "col": 0,
+      "row": 5,
+      "description": "Water to dirt bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 21,
+      "col": 1,
+      "row": 5,
+      "description": "Water to dirt top-left and bottom-right",
+      "gradientDirection": "top-left, bottom-right"
+    },
+    {
+      "index": 22,
+      "col": 2,
+      "row": 5,
+      "description": "Water to dirt top-right and bottom-left",
+      "gradientDirection": "top-right, bottom-left"
+    },
+    {
+      "index": 23,
+      "col": 3,
+      "row": 5,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    },
+    {
+      "index": 24,
+      "col": 0,
+      "row": 6,
+      "description": "Water to dirt top-left",
+      "gradientDirection": "top-left"
+    },
+    {
+      "index": 25,
+      "col": 1,
+      "row": 6,
+      "description": "Water to dirt top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 26,
+      "col": 2,
+      "row": 6,
+      "description": "Dirt surrounded by water",
+      "gradientDirection": "all sides"
+    }
+  ]
+}

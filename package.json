@@ -29,12 +29,15 @@
     "next-auth": "5.0.0-beta.4",
     "next-intl": "^4.7.0",
     "noisejs": "^2.1.0",
+    "pathfinding": "^0.4.18",
     "postgres": "^3.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/pathfinding": "^0.1.0",
     "autoprefixer": "^10.4.16",
+    "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.8",
     "eslint": "8.56.0",

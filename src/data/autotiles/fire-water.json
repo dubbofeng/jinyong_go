@@ -1,0 +1,204 @@
+{
+  "cols": 4,
+  "rows": 7,
+  "tileWidth": 128,
+  "tileHeight": 64,
+  "tiles": [
+    {
+      "index": 0,
+      "col": 0,
+      "row": 0,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 1,
+      "col": 1,
+      "row": 0,
+      "description": "Water to sand top-left",
+      "gradientDirection": "top-left"
+    },
+    {
+      "index": 2,
+      "col": 2,
+      "row": 0,
+      "description": "Water to sand top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 3,
+      "col": 3,
+      "row": 0,
+      "description": "Water with sand island",
+      "gradientDirection": "mixed"
+    },
+    {
+      "index": 4,
+      "col": 0,
+      "row": 1,
+      "description": "Water to sand bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 5,
+      "col": 1,
+      "row": 1,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 6,
+      "col": 2,
+      "row": 1,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 7,
+      "col": 3,
+      "row": 1,
+      "description": "Sand with water island",
+      "gradientDirection": "mixed"
+    },
+    {
+      "index": 8,
+      "col": 0,
+      "row": 2,
+      "description": "Water to sand bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 9,
+      "col": 1,
+      "row": 2,
+      "description": "Sand with water island",
+      "gradientDirection": "mixed"
+    },
+    {
+      "index": 10,
+      "col": 2,
+      "row": 2,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 11,
+      "col": 3,
+      "row": 2,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 12,
+      "col": 0,
+      "row": 3,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 13,
+      "col": 1,
+      "row": 3,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 14,
+      "col": 2,
+      "row": 3,
+      "description": "Sand with water island",
+      "gradientDirection": "mixed"
+    },
+    {
+      "index": 15,
+      "col": 3,
+      "row": 3,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 16,
+      "col": 0,
+      "row": 4,
+      "description": "Sand with water island",
+      "gradientDirection": "mixed"
+    },
+    {
+      "index": 17,
+      "col": 1,
+      "row": 4,
+      "description": "Water to sand bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 18,
+      "col": 2,
+      "row": 4,
+      "description": "Water to sand bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 19,
+      "col": 3,
+      "row": 4,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 20,
+      "col": 0,
+      "row": 5,
+      "description": "Water to sand top-left",
+      "gradientDirection": "top-left"
+    },
+    {
+      "index": 21,
+      "col": 1,
+      "row": 5,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 22,
+      "col": 2,
+      "row": 5,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 23,
+      "col": 3,
+      "row": 5,
+      "description": "Water to sand top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 24,
+      "col": 0,
+      "row": 6,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 25,
+      "col": 1,
+      "row": 6,
+      "description": "Water to sand bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 26,
+      "col": 2,
+      "row": 6,
+      "description": "Water to sand bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 27,
+      "col": 3,
+      "row": 6,
+      "description": "Full sand terrain",
+      "gradientDirection": "none"
+    }
+  ]
+}

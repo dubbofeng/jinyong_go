@@ -1,0 +1,204 @@
+{
+  "cols": 4,
+  "rows": 7,
+  "tileWidth": 128,
+  "tileHeight": 64,
+  "tiles": [
+    {
+      "index": 0,
+      "col": 0,
+      "row": 0,
+      "description": "Full water terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 1,
+      "col": 1,
+      "row": 0,
+      "description": "Water to dirt bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 2,
+      "col": 2,
+      "row": 0,
+      "description": "Water to dirt bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 3,
+      "col": 3,
+      "row": 0,
+      "description": "Water to dirt bottom",
+      "gradientDirection": "bottom"
+    },
+    {
+      "index": 4,
+      "col": 0,
+      "row": 1,
+      "description": "Water to dirt top-left",
+      "gradientDirection": "top-left"
+    },
+    {
+      "index": 5,
+      "col": 1,
+      "row": 1,
+      "description": "Full dirt terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 6,
+      "col": 2,
+      "row": 1,
+      "description": "Dirt to water top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 7,
+      "col": 3,
+      "row": 1,
+      "description": "Dirt to water top",
+      "gradientDirection": "top"
+    },
+    {
+      "index": 8,
+      "col": 0,
+      "row": 2,
+      "description": "Water to dirt top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 9,
+      "col": 1,
+      "row": 2,
+      "description": "Dirt to water bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 10,
+      "col": 2,
+      "row": 2,
+      "description": "Dirt to water bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 11,
+      "col": 3,
+      "row": 2,
+      "description": "Dirt to water bottom",
+      "gradientDirection": "bottom"
+    },
+    {
+      "index": 12,
+      "col": 0,
+      "row": 3,
+      "description": "Water to dirt left",
+      "gradientDirection": "left"
+    },
+    {
+      "index": 13,
+      "col": 1,
+      "row": 3,
+      "description": "Dirt to water left",
+      "gradientDirection": "left"
+    },
+    {
+      "index": 14,
+      "col": 2,
+      "row": 3,
+      "description": "Full dirt terrain",
+      "gradientDirection": "none"
+    },
+    {
+      "index": 15,
+      "col": 3,
+      "row": 3,
+      "description": "Dirt to water right",
+      "gradientDirection": "right"
+    },
+    {
+      "index": 16,
+      "col": 0,
+      "row": 4,
+      "description": "Water to dirt bottom",
+      "gradientDirection": "bottom"
+    },
+    {
+      "index": 17,
+      "col": 1,
+      "row": 4,
+      "description": "Dirt to water top-left",
+      "gradientDirection": "top-left"
+    },
+    {
+      "index": 18,
+      "col": 2,
+      "row": 4,
+      "description": "Dirt to water top-right",
+      "gradientDirection": "top-right"
+    },
+    {
+      "index": 19,
+      "col": 3,
+      "row": 4,
+      "description": "Dirt to water top",
+      "gradientDirection": "top"
+    },
+    {
+      "index": 20,
+      "col": 0,
+      "row": 5,
+      "description": "Water to dirt right",
+      "gradientDirection": "right"
+    },
+    {
+      "index": 21,
+      "col": 1,
+      "row": 5,
+      "description": "Dirt to water bottom-left",
+      "gradientDirection": "bottom-left"
+    },
+    {
+      "index": 22,
+      "col": 2,
+      "row": 5,
+      "description": "Dirt to water bottom-right",
+      "gradientDirection": "bottom-right"
+    },
+    {
+      "index": 23,
+      "col": 3,
+      "row": 5,
+      "description": "Dirt to water bottom",
+      "gradientDirection": "bottom"
+    },
+    {
+      "index": 24,
+      "col": 0,
+      "row": 6,
+      "description": "Water to dirt top",
+      "gradientDirection": "top"
+    },
+    {
+      "index": 25,
+      "col": 1,
+      "row": 6,
+      "description": "Dirt to water left",
+      "gradientDirection": "left"
+    },
+    {
+      "index": 26,
+      "col": 2,
+      "row": 6,
+      "description": "Dirt to water right",
+      "gradientDirection": "right"
+    },
+    {
+      "index": 27,
+      "col": 3,
+      "row": 6,
+      "description": "Dirt to water bottom-left",
+      "gradientDirection": "bottom-left"
+    }
+  ]
+}
