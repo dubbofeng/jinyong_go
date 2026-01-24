@@ -14,11 +14,13 @@ export async function GET(
   }
 
   try {
+    // Check if mapId is a number (database id) or string (mapId field)
+    const isNumericId = /^\d+$/.test(mapId);
+    
     // Get map info
-    const [map] = await db
-      .select()
-      .from(maps)
-      .where(eq(maps.mapId, mapId));
+    const [map] = isNumericId
+      ? await db.select().from(maps).where(eq(maps.id, parseInt(mapId)))
+      : await db.select().from(maps).where(eq(maps.mapId, mapId));
 
     if (!map) {
       return NextResponse.json({ error: "Map not found" }, { status: 404 });
