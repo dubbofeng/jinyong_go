@@ -144,3 +144,58 @@ export type NewNPC = typeof npcs.$inferInsert;
 
 export type Quest = typeof quests.$inferSelect;
 export type NewQuest = typeof quests.$inferInsert;
+
+// =============== Isometric 地图系统 ===============
+
+// 地图表（用于世界地图和场景地图）
+export const maps = pgTable('maps', {
+  id: serial('id').primaryKey(),
+  mapId: varchar('map_id', { length: 100 }).notNull().unique(), // 'world_map', 'huashan_scene', etc.
+  name: varchar('name', { length: 200 }).notNull(),
+  mapType: varchar('map_type', { length: 50 }).notNull(), // 'world' or 'scene'
+  description: text('description'),
+  width: integer('width').default(32).notNull(), // 地图宽度（瓦片数）
+  height: integer('height').default(32).notNull(), // 地图高度（瓦片数）
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// 地图瓦片表
+export const mapTiles = pgTable('map_tiles', {
+  id: serial('id').primaryKey(),
+  mapId: integer('map_id').notNull().references(() => maps.id),
+  x: integer('x').notNull(),
+  y: integer('y').notNull(),
+  tileType: varchar('tile_type', { length: 50 }).notNull(), // water, gold, wood, fire, dirt
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// 地图物品/建筑/装饰位置表
+export const mapItems = pgTable('map_items', {
+  id: serial('id').primaryKey(),
+  mapId: integer('map_id').notNull().references(() => maps.id),
+  itemName: text('item_name').notNull(),
+  itemPath: text('item_path').notNull(),
+  itemType: varchar('item_type', { length: 50 }).notNull(), // 'building', 'plant', 'decoration', 'portal'
+  x: integer('x').notNull(),
+  y: integer('y').notNull(),
+  width: integer('width'),
+  height: integer('height'),
+  animated: integer('animated'), // 动画帧数
+  // 传送门相关（如果是传送门类型）
+  targetMapId: varchar('target_map_id', { length: 100 }),
+  targetX: integer('target_x'),
+  targetY: integer('target_y'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export type Map = typeof maps.$inferSelect;
+export type NewMap = typeof maps.$inferInsert;
+
+export type MapTile = typeof mapTiles.$inferSelect;
+export type NewMapTile = typeof mapTiles.$inferInsert;
+
+export type MapItem = typeof mapItems.$inferSelect;
+export type NewMapItem = typeof mapItems.$inferInsert;

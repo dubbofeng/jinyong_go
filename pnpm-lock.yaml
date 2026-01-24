@@ -38,6 +38,9 @@ importers:
       next-intl:
         specifier: ^4.7.0
         version: 4.7.0(next@14.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.97.3))(react@18.2.0)(typescript@5.3.3)
+      noisejs:
+        specifier: ^2.1.0
+        version: 2.1.0
       postgres:
         specifier: ^3.4.3
         version: 3.4.3
@@ -1906,6 +1909,9 @@ packages:
 
   node-releases@2.0.14:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
+
+  noisejs@2.1.0:
+    resolution: {integrity: sha512-sw39KaUS2YBta6apZ0/H+nnCsUyxT/ZRxgv/HnDxx6pWO2e2nUmWgLhpOaQdlxxkFepIpxDrlXy3fHVx0S3SLg==}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -4141,6 +4147,8 @@ snapshots:
   node-addon-api@7.1.1: {}
 
   node-releases@2.0.14: {}
+
+  noisejs@2.1.0: {}
 
   normalize-path@3.0.0: {}
 

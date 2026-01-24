@@ -8,6 +8,13 @@
       "when": 1769122601810,
       "tag": "0000_opposite_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769253662140,
+      "tag": "0001_tearful_banshee",
+      "breakpoints": true
     }
   ]
 }
