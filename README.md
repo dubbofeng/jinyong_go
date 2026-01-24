@@ -70,74 +70,26 @@ pnpm dev
 
 ## 📚 数据管理 | Data Management
 
-本项目采用 **混合数据源策略**：
-
-### 📁 JSON 文件（静态配置）
-- **对话数据**：`src/data/dialogues/` - 便于编辑和版本控制
-- **Tilemap 地图**：`src/data/maps/` - 传统地图模板
-- **AI 提示词**：`src/lib/image-prompts.ts` - AI 图片生成配置
-
-### 💾 数据库（动态数据）
-- **Isometric 地图**：动态生成和编辑的等距地图
-- **用户数据**：游戏进度、等级、经验
-- **对战记录**：围棋对局历史
-
-### 🌱 种子数据（JSON → 数据库）
-- **NPC 配置**：`src/data/npcs.json` → `npcs` 表
-- **任务配置**：`src/data/quests.json` → `quests` 表
+本项目采用 **混合数据源策略**：JSON 文件用于静态配置，数据库用于动态数据。
 
 ### 常用命令
 ```bash
-# 加载 NPC 和任务数据
-pnpm seed
-
-# 加载示例地图
-pnpm seed:maps
-
-# 加载所有种子数据
-pnpm seed:all
-
-# 重置数据库到初始状态
-pnpm db:reset
-
-# 打开数据库可视化界面
-pnpm db:studio
+pnpm seed:all    # 加载所有初始数据（NPC、任务、地图）
+pnpm db:reset    # 重置数据库到初始状态
+pnpm db:studio   # 打开数据库可视化界面
 ```
 
-详细说明请查看：
-- [数据管理策略完整文档](./docs/数据管理策略.md)
-- [数据管理快速入门](./docs/数据管理快速入门.md)
+详见：[数据管理策略](./docs/数据管理策略.md) | [快速入门](./docs/数据管理快速入门.md)
 
 ---
 
-## 🎯 当前进度 | Development Status
+## 🎯 开发进度 | Development Status
 
-### ✅ 已完成 | Completed
-- ✅ 自定义2D游戏引擎（Canvas渲染，60 FPS）
-- ✅ Tilemap 地图系统（3个完整地图 + 传送门）
-- ✅ Isometric 地图系统（数据库驱动，支持生成和编辑）
-- ✅ NPC对话系统（分支对话树，打字机效果，键盘快捷键）
-- ✅ 3个NPC完整对话（洪七公10节点，令狐冲13节点，郭靖15节点）
-- ✅ 多语言系统（中文/英文双语，动态切换）
-- ✅ 用户认证系统（NextAuth.js + JWT）
-- ✅ 数据库集成（PostgreSQL + Drizzle ORM）
-- ✅ 数据加载器（混合数据源策略）
-- ✅ 种子数据系统（NPC、任务、地图）
-- ✅ 美术资源管理（AI 图片生成集成）
+✅ **核心系统** - 游戏引擎、双地图系统、NPC对话、多语言、数据管理  
+🔄 **开发中** - 后台管理、围棋对战、技能系统  
+📅 **计划中** - 排行榜、棋谱分享、更多内容
 
-### 🔄 开发中 | In Progress
-- 🔄 后台管理系统（Admin Panel）
-- 🔄 Isometric 地图生成器界面
-- 🔄 地图物品编辑器
-- 🔄 AI对战系统
-
-### 📅 计划中 | Planned
-- 📅 排行榜系统
-- 📅 棋谱分享功能
-- 📅 更多NPC和地图
-- 📅 高级技能和装备系统
-
-详细进度请查看 [开发进度总览](./docs/开发进度总览.md)
+详见：[开发进度总览](./docs/开发进度总览.md) | [MVP开发计划](./docs/MVP开发计划.md)
 
 ---
 
@@ -202,21 +154,22 @@ pnpm db:studio
 ## 🛠️ 开发命令 | Development Commands
 
 ```bash
-# 开发服务器
-pnpm dev
+# 开发
+pnpm dev            # 启动开发服务器
+pnpm build          # 构建生产版本
+pnpm lint           # 代码检查
 
-# 构建生产版本
-pnpm build
+# 数据库
+pnpm db:push        # 推送数据库结构
+pnpm seed:all       # 加载所有初始数据
+pnpm db:studio      # 打开数据库管理界面
+- [数据管理策略](./docs/数据管理策略.md) - 混合数据源设计
+- [地图系统使用指南](./docs/地图系统使用指南.md) - Tilemap + Isometric
+- [AI图片生成指南](./docs/AI图片生成指南.md) - 美术资源生成
+- [多语言支持说明](./docs/多语言支持说明.md) - 国际化实现
 
-# 启动生产服务器
-pnpm start
-
-# 代码检查
-pnpm lint
-
-# 数据库操作
-pnpm drizzle-kit studio   # 打开数据库管理界面
-pnpm drizzle-kit push     # 推送schema变更
+### 设计文档
+- [游戏策划](./docs/游戏策划.md) - 游戏设计更
 pnpm db:seed              # 运行种子数据
 ```
 
