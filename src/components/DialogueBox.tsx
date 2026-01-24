@@ -11,6 +11,7 @@ interface DialogueBoxProps {
   onContinue: () => void;
   onClose: () => void;
   isVisible: boolean;
+  npcAvatar: string | null; // SVG字符串
 }
 
 export default function DialogueBox({
@@ -20,6 +21,7 @@ export default function DialogueBox({
   onContinue,
   onClose,
   isVisible,
+  npcAvatar,
 }: DialogueBoxProps) {
   const t = useTranslations('game.dialogue');
   const [displayedText, setDisplayedText] = useState('');
@@ -101,11 +103,18 @@ export default function DialogueBox({
 
           {/* NPC名称 */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center text-xl">
-              {node.speaker === '洪七公' ? '🧙' : node.speaker === '令狐冲' ? '⚔️' : '🛡️'}
-            </div>
+            {npcAvatar ? (
+              <div 
+                className="w-20 h-20 rounded-full overflow-hidden border-4 border-amber-600 bg-gradient-to-br from-amber-100 to-amber-50"
+                dangerouslySetInnerHTML={{ __html: npcAvatar }}
+              />
+            ) : (
+              <div className="w-20 h-20 bg-amber-600 rounded-full flex items-center justify-center text-3xl border-4 border-amber-700">
+                {node.speaker === '洪七公' ? '🧙' : node.speaker === '令狐冲' ? '⚔️' : '🛡️'}
+              </div>
+            )}
             <div>
-              <h3 className="text-lg font-bold text-amber-400">{node.speaker}</h3>
+              <h3 className="text-xl font-bold text-amber-400">{node.speaker}</h3>
             </div>
           </div>
 

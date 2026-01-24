@@ -33,6 +33,7 @@ export default function RPGGame() {
   const [dialogueEngine, setDialogueEngine] = useState<DialogueEngine | null>(null);
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
   const [dialogueUpdateTrigger, setDialogueUpdateTrigger] = useState(0); // 用于强制更新
+  const [currentNPC, setCurrentNPC] = useState<NPC | null>(null); // 当前交互的NPC
   const dialogueDataRef = useRef<Map<string, DialogueTree>>(new Map());
   
   // 传送门确认状态
@@ -148,7 +149,7 @@ export default function RPGGame() {
       name: '玩家',
       x: 12,
       y: 10,
-      speed: 3,
+      speed: 0.003, // 每毫秒移动的瓦片数 (约3秒走1格)
       color: '#4a90e2',
     });
     playerRef.current = player;
@@ -228,6 +229,7 @@ export default function RPGGame() {
               inventory: [],
             });
             setDialogueEngine(engine);
+            setCurrentNPC(npc); // 保存当前NPC引用
             setIsDialogueVisible(true);
             isDialogueVisibleRef.current = true;
           } catch (error) {
@@ -314,6 +316,7 @@ export default function RPGGame() {
       setIsDialogueVisible(false);
       isDialogueVisibleRef.current = false;
       setDialogueEngine(null);
+      setCurrentNPC(null);
     } else {
       console.log('[对话系统] 强制重新渲染');
       // 创建新引用触发重新渲染
@@ -344,6 +347,7 @@ export default function RPGGame() {
       setIsDialogueVisible(false);
       isDialogueVisibleRef.current = false;
       setDialogueEngine(null);
+      setCurrentNPC(null);
     } else {
       console.log('[对话系统] 强制重新渲染');
       // 创建新引用触发重新渲染
@@ -355,6 +359,7 @@ export default function RPGGame() {
     setIsDialogueVisible(false);
     isDialogueVisibleRef.current = false;
     setDialogueEngine(null);
+    setCurrentNPC(null);
   };
 
   // 对话框快捷键
@@ -484,6 +489,7 @@ export default function RPGGame() {
           onContinue={handleContinue}
           onClose={handleCloseDialogue}
           isVisible={isDialogueVisible}
+          npcAvatar={currentNPC?.getAvatar() || null}
         />
       )}
     </div>
