@@ -287,6 +287,7 @@
       "createNew": "Create Quest",
       "empty": "No quests found",
       "chapter": "Chapter {number}",
+      "backToList": "Back to List",
       "table": {
         "id": "Quest ID",
         "title": "Title",
@@ -305,6 +306,18 @@
         "main": "Main Quests",
         "side": "Side Quests",
         "tutorial": "Tutorial Quests"
+      },
+      "edit": {
+        "title": "Title",
+        "subtitle": "Update quest information",
+        "description": "Description",
+        "type": "Type",
+        "chapter": "Chapter",
+        "requirements": "Requirements",
+        "rewards": "Rewards",
+        "prerequisites": "Prerequisite Quests",
+        "save": "Save Changes",
+        "cancel": "Cancel"
       }
     },
     "users": {

@@ -29,6 +29,11 @@ export const gameProgress = pgTable('game_progress', {
   currentChapter: integer('current_chapter').default(1).notNull(),
   completedTasks: json('completed_tasks').$type<string[]>().default([]).notNull(),
   
+  // 任务系统
+  currentQuest: varchar('current_quest', { length: 100 }),
+  activeQuests: json('active_quests').$type<string[]>().default([]).notNull(),
+  completedQuests: json('completed_quests').$type<string[]>().default([]).notNull(),
+  
   // 技能系统
   unlockedSkills: json('unlocked_skills').$type<string[]>().default([]).notNull(),
   skillLevels: json('skill_levels').$type<Record<string, number>>().default({}).notNull(),

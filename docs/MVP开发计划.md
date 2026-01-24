@@ -170,14 +170,25 @@ jinyong-go/
 2. 访问 `http://localhost:9999/zh/admin/assets` 生成图片
 3. 生成的图片自动缓存，直接引用：`/generated/{category}/{id}.png`
 
-### 2.7 基础任务系统
-- [ ] 创建任务数据结构
-- [ ] 实现主线任务流程
-  - 任务触发、追踪、完成
-  - 奖励发放机制
-- [ ] 创建5个主线任务
-  - 新手教学任务
-  - 三场基础对战任务
+### 2.7 基础任务系统 ✅
+- [x] 创建任务数据结构
+- [x] 实现主线任务流程
+  - [x] 任务触发（检查前置条件）
+  - [x] 任务追踪（活跃任务列表）
+  - [x] 任务完成（状态更新）
+  - [x] 奖励发放机制（经验、技能、物品）
+- [x] 创建任务引擎系统
+  - [x] checkQuestRequirements - 检查任务要求
+  - [x] startQuest - 开始任务
+  - [x] completeQuest - 完成任务并发放奖励
+  - [x] getAvailableQuests - 获取可用任务
+  - [x] getActiveQuests - 获取活跃任务
+- [x] 任务管理API
+  - [x] GET /api/quests/player/[userId]?type=available
+  - [x] GET /api/quests/player/[userId]?type=active
+  - [x] POST /api/quests/player/[userId] (start/complete)
+- [x] 任务编辑界面
+  - [x] /admin/quests/[questId]/edit - 编辑任务详情
 
 ---
 

@@ -289,6 +289,7 @@
       "createNew": "创建任务",
       "empty": "暂无任务数据",
       "chapter": "第{number}章",
+      "backToList": "返回列表",
       "table": {
         "id": "任务ID",
         "title": "标题",
@@ -307,6 +308,18 @@
         "main": "主线任务",
         "side": "支线任务",
         "tutorial": "教学任务"
+      },
+      "edit": {
+        "title": "标题",
+        "subtitle": "更新任务信息",
+        "description": "描述",
+        "type": "类型",
+        "chapter": "章节",
+        "requirements": "完成要求",
+        "rewards": "奖励",
+        "prerequisites": "前置任务",
+        "save": "保存更改",
+        "cancel": "取消"
       }
     },
     "users": {
