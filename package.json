@@ -15,7 +15,15 @@
     "seed": "dotenv -e .env.local -- tsx scripts/seed-data.ts",
     "seed:maps": "dotenv -e .env.local -- tsx scripts/init-maps.ts",
     "seed:all": "pnpm seed && pnpm seed:maps",
-    "db:reset": "pnpm db:push && pnpm seed:all"
+    "db:reset": "pnpm db:push && pnpm seed:all",
+    "generate:player": "tsx scripts/generate-player-sprite.ts",
+    "generate:npcs": "tsx scripts/generate-npc-sprites.ts",
+    "generate:sprites-ai": "dotenv -e .env.local -- tsx scripts/generate-sprites-ai.ts",
+    "generate:player-spritesheet": "dotenv -e .env.local -- tsx scripts/generate-player-spritesheet.ts",
+    "generate:player-walk": "tsx scripts/generate-player-walk-animation.ts",
+    "resize:sprites": "tsx scripts/resize-sprites.ts",
+    "remove:background": "tsx scripts/remove-background.ts",
+    "add:npcs": "dotenv -e .env.local -- tsx scripts/add-npcs-to-map.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -37,6 +45,7 @@
   "devDependencies": {
     "@types/pathfinding": "^0.1.0",
     "autoprefixer": "^10.4.16",
+    "canvas": "^3.2.1",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.8",
@@ -44,6 +53,7 @@
     "eslint-config-next": "^14.0.4",
     "postcss": "^8.4.32",
     "prettier": "^3.8.1",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.0",
     "tsx": "^4.21.0",
     "typescript": "^5.3.3"

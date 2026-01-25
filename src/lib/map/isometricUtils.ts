@@ -24,8 +24,8 @@ export function isometricToCartesian(
   const x = (screenX / (tileWidth / 2) + screenY / (tileHeight / 2)) / 2;
   const y = (screenY / (tileHeight / 2) - screenX / (tileWidth / 2)) / 2;
   return {
-    x: Math.floor(x),
-    y: Math.floor(y),
+    x: Math.round(x),  // 使用round代替floor，更准确地定位到最近的瓦片
+    y: Math.round(y),
   };
 }
 

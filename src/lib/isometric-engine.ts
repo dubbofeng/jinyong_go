@@ -5,6 +5,8 @@
 
 import { cartesianToIsometric, isometricToCartesian } from './map/isometricUtils';
 import { selectAutotileByCorners } from './autotile-helper';
+import { Player } from './player';
+import * as PF from 'pathfinding';
 
 // ==================== 类型定义 ====================
 
@@ -33,13 +35,18 @@ export interface TileData {
 }
 
 export interface MapItem {
-  id: string;
+  id: number;
+  itemName: string;
+  itemPath: string;      // 精灵图路径
   x: number;
   y: number;
-  itemType: 'building' | 'npc' | 'portal' | 'decoration';
-  spriteId: string;
+  itemType: 'building' | 'npc' | 'portal' | 'decoration' | 'plant';
   properties?: Record<string, any>;
   blocking?: boolean;    // 是否阻挡移动
+  // 传送门相关
+  targetMapId?: string;
+  targetX?: number;
+  targetY?: number;
 }
 
 // Autotile 精灵图集配置
@@ -137,6 +144,12 @@ export class IsometricEngine {
   
   // 地图数据
   private mapData: MapData | null = null;
+  
+  // 玩家
+  private player: Player | null = null;
+  
+  // 路径寻找
+  private pathfinder: PF.AStarFinder;
   
   // 离屏Canvas缓存
   private staticLayerCache: HTMLCanvasElement | null = null;
@@ -252,6 +265,12 @@ export class IsometricEngine {
     this.config = config;
     this.resourceLoader = new ResourceLoader();
     
+    // 初始化A*寻路算法
+    this.pathfinder = new PF.AStarFinder({
+      allowDiagonal: false,  // 不允许对角移动
+      dontCrossCorners: true,
+    });
+    
     // 初始化视口
     this.viewport = {
       x: config.mapWidth / 2,
@@ -311,21 +330,20 @@ export class IsometricEngine {
     
     // 生成静态层缓存
     this.generateStaticLayerCache();
+    
+    // 初始化玩家（在实际地图的中心）
+    const centerX = Math.floor(mapData.width / 2);
+    const centerY = Math.floor(mapData.height / 2);
+    console.log(`🎮 Spawning player at map center: (${centerX}, ${centerY}) of ${mapData.width}x${mapData.height} map`);
+    await this.spawnPlayer(centerX, centerY);
   }
 
   /**
    * 获取物品精灵图URL
    */
   private getSpriteUrl(item: MapItem): string {
-    const typeFolder: Record<MapItem['itemType'], string> = {
-      building: 'buildings',
-      npc: 'npcs',
-      portal: 'items',
-      decoration: 'plants',
-    };
-    
-    const folder = typeFolder[item.itemType] || 'items';
-    return `/game/isometric/${folder}/${item.spriteId}.png`;
+    // 使用数据库中的itemPath
+    return item.itemPath;
   }
 
   // ==================== 坐标转换 ====================
@@ -530,11 +548,13 @@ export class IsometricEngine {
     
     const screenPos = this.cartesianToScreen(item.x, item.y);
     
-    // 绘制精灵图（底部中心对齐）
+    // 绘制精灵图（NPC脚部对齐到瓦片底部中心）
+    // 瓦片是菱形，底部顶点在中心向下tileHeight/2的位置
+    // NPC图片底部应该对齐到菱形底部顶点
     this.ctx.drawImage(
       img,
       screenPos.x - img.width / 2,
-      screenPos.y - img.height,
+      screenPos.y + this.config.tileHeight / 2 - img.height,
       img.width,
       img.height
     );
@@ -550,16 +570,26 @@ export class IsometricEngine {
     
     const tiles: TileData[] = [];
     
-    // 简单实现：裁剪到视口范围 +1 边界
-    const minX = Math.max(0, Math.floor(this.viewport.x - this.viewport.width / this.config.tileWidth / 2) - 1);
-    const maxX = Math.min(this.config.mapWidth, Math.ceil(this.viewport.x + this.viewport.width / this.config.tileWidth / 2) + 1);
-    const minY = Math.max(0, Math.floor(this.viewport.y - this.viewport.height / this.config.tileHeight / 2) - 1);
-    const maxY = Math.min(this.config.mapHeight, Math.ceil(this.viewport.y + this.viewport.height / this.config.tileHeight / 2) + 1);
+    // 等距视角下，对角线方向需要更多瓦片，所以扩大渲染范围
+    // 使用更大的倍数确保完全覆盖屏幕
+    const tilesWide = Math.ceil(this.viewport.width / this.config.tileWidth * 2) + 10;
+    const tilesHigh = Math.ceil(this.viewport.height / this.config.tileHeight * 2) + 10;
     
-    for (let y = minY; y < maxY; y++) {
-      for (let x = minX; x < maxX; x++) {
-        if (this.mapData.tiles[y] && this.mapData.tiles[y][x]) {
-          tiles.push(this.mapData.tiles[y][x]);
+    // 计算起始位置（视口中心向左上扩展）
+    const startX = Math.floor(this.viewport.x - tilesWide / 2);
+    const startY = Math.floor(this.viewport.y - tilesHigh / 2);
+    
+    // 渲染足够多的瓦片以填满视口（使用模运算实现无限平铺）
+    for (let y = startY; y < startY + tilesHigh; y++) {
+      for (let x = startX; x < startX + tilesWide; x++) {
+        // 使用模运算将坐标映射到地图范围内（无限重复）
+        const mapX = ((x % this.mapData.width) + this.mapData.width) % this.mapData.width;
+        const mapY = ((y % this.mapData.height) + this.mapData.height) % this.mapData.height;
+        
+        if (this.mapData.tiles[mapY] && this.mapData.tiles[mapY][mapX]) {
+          // 创建一个新的瓦片对象，使用实际的渲染坐标
+          const tile = { ...this.mapData.tiles[mapY][mapX], x, y };
+          tiles.push(tile);
         }
       }
     }
@@ -568,13 +598,43 @@ export class IsometricEngine {
   }
 
   /**
-   * 获取可见物品
+   * 获取可见物品（支持无限平铺）
    */
   private getVisibleItems(): MapItem[] {
     if (!this.mapData) return [];
     
-    // 简单实现：返回所有物品（后续可优化）
-    return this.mapData.items;
+    const items: MapItem[] = [];
+    
+    // 计算视口范围
+    const tilesWide = Math.ceil(this.viewport.width / this.config.tileWidth) + 4;
+    const tilesHigh = Math.ceil(this.viewport.height / this.config.tileHeight) + 4;
+    const startX = Math.floor(this.viewport.x - tilesWide / 2);
+    const startY = Math.floor(this.viewport.y - tilesHigh / 2);
+    
+    // 计算需要重复物品的网格范围
+    const gridMinX = Math.floor(startX / this.mapData.width);
+    const gridMaxX = Math.ceil((startX + tilesWide) / this.mapData.width);
+    const gridMinY = Math.floor(startY / this.mapData.height);
+    const gridMaxY = Math.ceil((startY + tilesHigh) / this.mapData.height);
+    
+    // 在每个网格中重复物品
+    for (let gridY = gridMinY; gridY <= gridMaxY; gridY++) {
+      for (let gridX = gridMinX; gridX <= gridMaxX; gridX++) {
+        for (const item of this.mapData.items) {
+          // 计算物品在当前网格中的位置
+          const offsetX = gridX * this.mapData.width;
+          const offsetY = gridY * this.mapData.height;
+          
+          items.push({
+            ...item,
+            x: item.x + offsetX,
+            y: item.y + offsetY,
+          });
+        }
+      }
+    }
+    
+    return items;
   }
 
   // ==================== 深度排序 ====================
@@ -608,6 +668,35 @@ export class IsometricEngine {
   moveViewport(dx: number, dy: number): void {
     this.viewport.x += dx;
     this.viewport.y += dy;
+    this.clampViewport();
+    this.cacheValid = false;
+  }
+
+  /**
+   * 限制视口范围，防止超出地图边界
+   */
+  private clampViewport(): void {
+    if (!this.mapData) return;
+    
+    // 限制视口不超出地图范围（留出边距）
+    const margin = 5; // 边距（单位：瓦片）
+    this.viewport.x = Math.max(margin, Math.min(this.config.mapWidth - margin, this.viewport.x));
+    this.viewport.y = Math.max(margin, Math.min(this.config.mapHeight - margin, this.viewport.y));
+  }
+
+  /**
+   * 将摄像机中心对准玩家位置（立即跟随，不插值）
+   */
+  centerCameraOnPlayer(): void {
+    if (!this.player) return;
+    
+    const playerPos = this.player.getPosition();
+    
+    // 直接设置视口位置（不使用平滑插值）
+    this.viewport.x = playerPos.x;
+    this.viewport.y = playerPos.y;
+    
+    this.clampViewport();
     this.cacheValid = false;
   }
 
@@ -734,5 +823,297 @@ export class IsometricEngine {
    */
   getMapData(): MapData | null {
     return this.mapData;
+  }
+
+  /**
+   * 初始化玩家
+   */
+  async spawnPlayer(x: number, y: number): Promise<void> {
+    this.player = new Player(x, y, 3); // 3 tiles/second
+    console.log(`🎮 Player spawned at (${x}, ${y})`);
+  }
+
+  /**
+   * 创建可行走网格（用于路径寻找）
+   */
+  private createWalkableGrid(): number[][] {
+    if (!this.mapData) {
+      return [];
+    }
+
+    const grid: number[][] = [];
+    for (let y = 0; y < this.config.mapHeight; y++) {
+      grid[y] = [];
+      for (let x = 0; x < this.config.mapWidth; x++) {
+        const tile = this.getTileAt(x, y);
+        // 0 = 可行走, 1 = 障碍
+        grid[y][x] = (tile && tile.walkable) ? 0 : 1;
+      }
+    }
+    return grid;
+  }
+
+  /**
+   * 移动玩家到指定位置（使用A*路径寻找）
+   */
+  movePlayerTo(targetX: number, targetY: number): boolean {
+    if (!this.player || !this.mapData) {
+      return false;
+    }
+
+    // 检查目标是否可行走
+    const targetTile = this.getTileAt(targetX, targetY);
+    if (!targetTile || !targetTile.walkable) {
+      console.log('⛔ Target tile not walkable:', targetX, targetY);
+      return false;
+    }
+
+    // 创建可行走网格
+    const walkableGrid = this.createWalkableGrid();
+    const pfGrid = new PF.Grid(walkableGrid);
+
+    // 获取当前位置
+    const { x: startX, y: startY } = this.player.getPosition();
+
+    // 运行A*算法
+    const path = this.pathfinder.findPath(
+      Math.floor(startX),
+      Math.floor(startY),
+      targetX,
+      targetY,
+      pfGrid
+    );
+
+    if (path.length === 0) {
+      console.log('⛔ No path found to:', targetX, targetY);
+      return false;
+    }
+
+    // 转换路径格式
+    const formattedPath = path.map(([x, y]) => ({ x, y }));
+    this.player.setPath(formattedPath);
+    
+    console.log(`🚶 Moving player from (${startX}, ${startY}) to (${targetX}, ${targetY}), path length: ${path.length}`);
+    return true;
+  }
+
+  /**
+   * 更新玩家状态（每帧调用）
+   */
+  updatePlayer(deltaTime: number): void {
+    if (this.player) {
+      this.player.update(deltaTime);
+    }
+  }
+
+  /**
+   * 渲染玩家
+   */
+  renderPlayer(ctx: CanvasRenderingContext2D): void {
+    if (!this.player) return;
+
+    const { x, y } = this.player.getPosition();
+    
+    // 转换为屏幕坐标
+    const screenPos = this.cartesianToScreen(x, y);
+    
+    this.player.render(
+      ctx,
+      screenPos.x,
+      screenPos.y,
+      this.config.tileWidth,
+      this.config.tileHeight
+    );
+  }
+
+  /**
+   * 获取玩家位置
+   */
+  getPlayerPosition(): { x: number; y: number } | null {
+    return this.player ? this.player.getPosition() : null;
+  }
+
+  /**
+   * 玩家是否正在移动
+   */
+  isPlayerMoving(): boolean {
+    return this.player ? this.player.isMoving() : false;
+  }
+
+  /**
+   * 获取指定位置的物品（NPC、建筑等）
+   * 支持扩大的点击区域，因为精灵图会向上渲染
+   */
+  getItemAt(x: number, y: number): MapItem | null {
+    if (!this.mapData) return null;
+    
+    // 在等距视图中，要形成视觉上1x2的竖直点击区域（匹配NPC精灵图形状）
+    // 需要沿对角线方向检查：NPC脚在(x,y)，头部在屏幕正上方对应(x-1,y-1)
+    // 检查两个位置形成1x2的视觉效果（1格宽，2格高）
+    for (let d = 0; d <= 1; d++) {  // d=0: 当前位置(脚部), d=1: 对角上方(头部)
+      const checkX = x - d;  // x坐标向左上移动
+      const checkY = y - d;  // y坐标向左上移动
+      
+      // 查找该位置的物品
+      for (const item of this.mapData.items) {
+        // 使用模运算处理无限平铺地图
+        const itemX = ((item.x % this.mapData.width) + this.mapData.width) % this.mapData.width;
+        const itemY = ((item.y % this.mapData.height) + this.mapData.height) % this.mapData.height;
+        const targetX = ((checkX % this.mapData.width) + this.mapData.width) % this.mapData.width;
+        const targetY = ((checkY % this.mapData.height) + this.mapData.height) % this.mapData.height;
+        
+        if (itemX === targetX && itemY === targetY) {
+          return item;
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * 像素级点击检测：检查屏幕坐标是否点击到NPC精灵图的非透明像素
+   * 同时检查玩家是否在NPC附近（交互距离内）
+   */
+  getItemAtPixel(screenX: number, screenY: number, checkDistance: boolean = true): MapItem | null {
+    if (!this.mapData) return null;
+    
+    const visibleItems = this.getVisibleItems();
+    const sortedItems = this.sortByDepth(visibleItems).reverse(); // 从前往后检测（深度大的在前）
+    
+    // 获取玩家位置（用于距离检测）
+    const playerPos = this.player ? this.player.getPosition() : null;
+    const interactionDistance = 3; // 交互距离：3格以内
+    
+    for (const item of sortedItems) {
+      const spriteUrl = this.getSpriteUrl(item);
+      const img = this.resourceLoader.getImage(spriteUrl);
+      if (!img) continue;
+      
+      // 检查距离（如果需要且有玩家位置）
+      if (checkDistance && playerPos) {
+        const dx = item.x - playerPos.x;
+        const dy = item.y - playerPos.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // 如果距离超过交互距离，跳过此物品
+        if (distance > interactionDistance) {
+          continue;
+        }
+      }
+      
+      // 计算NPC在屏幕上的位置
+      const screenPos = this.cartesianToScreen(item.x, item.y);
+      const spriteX = screenPos.x - img.width / 2;
+      const spriteY = screenPos.y + this.config.tileHeight / 2 - img.height;
+      
+      // 检查鼠标是否在精灵图的矩形范围内
+      if (screenX < spriteX || screenX > spriteX + img.width ||
+          screenY < spriteY || screenY > spriteY + img.height) {
+        continue;
+      }
+      
+      // 检查该像素是否透明
+      const pixelX = Math.floor(screenX - spriteX);
+      const pixelY = Math.floor(screenY - spriteY);
+      
+      if (this.isPixelOpaque(img, pixelX, pixelY)) {
+        return item;
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * 检查图片指定像素是否不透明
+   */
+  private isPixelOpaque(img: HTMLImageElement, x: number, y: number): boolean {
+    // 创建临时canvas来读取像素数据
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = img.width;
+    tempCanvas.height = img.height;
+    const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    if (!tempCtx) return false;
+    
+    tempCtx.drawImage(img, 0, 0);
+    
+    try {
+      const imageData = tempCtx.getImageData(x, y, 1, 1);
+      const alpha = imageData.data[3]; // alpha通道
+      return alpha > 10; // alpha > 10 认为是不透明（容忍一点点透明度）
+    } catch (e) {
+      // 跨域图片可能无法读取像素数据，回退到矩形检测
+      console.warn('Cannot read pixel data (CORS?):', e);
+      return true;
+    }
+  }
+
+  /**
+   * 获取所有NPC
+   */
+  getAllNPCs(): MapItem[] {
+    if (!this.mapData) return [];
+    return this.mapData.items.filter(item => item.itemType === 'npc');
+  }
+
+  /**
+   * 渲染悬停高亮效果
+   */
+  renderHoverHighlight(ctx: CanvasRenderingContext2D, tileX: number, tileY: number): void {
+    // 转换为屏幕坐标
+    const screenPos = this.cartesianToScreen(tileX, tileY);
+    
+    // 绘制脉冲圆圈
+    const time = Date.now() / 1000;
+    const pulseScale = 0.7 + Math.sin(time * 5) * 0.3; // 0.4 - 1.0之间脉冲
+    const radius = 50 * pulseScale;
+    
+    ctx.save();
+    
+    // 背景发光（更大的圆，更明显）
+    const gradient = ctx.createRadialGradient(screenPos.x, screenPos.y, 0, screenPos.x, screenPos.y, radius + 20);
+    gradient.addColorStop(0, `rgba(255, 215, 0, ${0.3 * pulseScale})`);
+    gradient.addColorStop(0.5, `rgba(255, 215, 0, ${0.15 * pulseScale})`);
+    gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, radius + 20, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 外圈（黄色发光）
+    ctx.strokeStyle = `rgba(255, 215, 0, ${0.9 * pulseScale})`;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // 中圈（白色）
+    ctx.strokeStyle = `rgba(255, 255, 255, ${0.8 * pulseScale})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, radius - 8, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // 内圈（黄色）
+    ctx.strokeStyle = `rgba(255, 215, 0, ${0.6 * pulseScale})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, radius - 15, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // 中心点（更大更明显）
+    ctx.fillStyle = `rgba(255, 215, 0, ${0.6 * pulseScale})`;
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, 12, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 中心白点
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.8 * pulseScale})`;
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
   }
 }

@@ -2,17 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
-import { AutotileDebugger } from '@/src/lib/autotile-debugger';
-import { AutotileTrainer } from '@/src/lib/autotile-trainer';
-import { AutotilePicker } from './AutotilePicker';
-import { getCornerTerrain } from '@/src/lib/autotile-helper';
+import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
+import DialogueBox from '@/src/components/DialogueBox';
+import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 
 interface IsometricGameProps {
   mapId?: string;
   initialMap?: MapData;
 }
 
-export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
+export default function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<IsometricEngine | null>(null);
   const animationFrameRef = useRef<number>(0);
@@ -21,18 +20,15 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(initialMap || null);
-  const [editMode, setEditMode] = useState(false);
-  const [pickerData, setPickerData] = useState<{
-    x: number;
-    y: number;
-    autotileType: string;
-    currentIndex: number;
-    spriteSheetSrc: string;
-    terrain1: string;
-    terrain2: string;
-    corners: any;
-    neighbors: any;
-  } | null>(null);
+  const [showInfo, setShowInfo] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<{ x: number; y: number } | null>(null);
+  
+  // 对话系统状态
+  const [dialogueEngine, setDialogueEngine] = useState<DialogueEngine | null>(null);
+  const [currentDialogueNode, setCurrentDialogueNode] = useState<DialogueNode | null>(null);
+  const [dialogueOptions, setDialogueOptions] = useState<DialogueOption[]>([]);
+  const [isDialogueVisible, setIsDialogueVisible] = useState(false);
+  const [currentNpcAvatar, setCurrentNpcAvatar] = useState<string | null>(null);
 
   // ==================== 地图加载 ====================
 
@@ -101,9 +97,7 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 启用Autotile调试
-    AutotileDebugger.enable();
-    console.log('🎮 Isometric Game initialized with debug mode');
+    console.log('🎮 Isometric Game initialized');
 
     // 初始化引擎
     const engine = new IsometricEngine(canvas, {
@@ -201,7 +195,15 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
    * 更新游戏状态
    */
   const update = (deltaTime: number) => {
-    // TODO: 更新玩家位置、动画等
+    if (engineRef.current) {
+      // 更新玩家（移动、动画等）
+      // deltaTime已经是毫秒，需要转换为秒
+      const deltaSeconds = deltaTime / 1000;
+      engineRef.current.updatePlayer(deltaSeconds);
+      
+      // 摄像机始终跟随玩家（保持玩家在屏幕中心）
+      engineRef.current.centerCameraOnPlayer();
+    }
   };
 
   /**
@@ -210,6 +212,16 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   const render = () => {
     if (engineRef.current) {
       engineRef.current.render();
+      // 在地图之上渲染玩家
+      const ctx = canvasRef.current?.getContext('2d');
+      if (ctx) {
+        engineRef.current.renderPlayer(ctx);
+        
+        // 渲染悬停高亮效果
+        if (hoveredItem) {
+          engineRef.current.renderHoverHighlight(ctx, hoveredItem.x, hoveredItem.y);
+        }
+      }
     }
   };
 
@@ -218,7 +230,7 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   /**
    * 处理Canvas点击事件
    */
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleCanvasClick = async (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     const engine = engineRef.current;
     if (!canvas || !engine) return;
@@ -228,87 +240,189 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    // 首先检查是否点击了物品（NPC、传送门等）- 使用像素级检测
+    const item = engine.getItemAtPixel(x, y);
+    if (item) {
+      console.log(`📦 Clicked item:`, item);
+      
+      // 处理NPC点击
+      if (item.itemType === 'npc') {
+        console.log(`🗣️ Interacting with NPC: ${item.itemName}`);
+        await startDialogue(item);
+        return;
+      }
+      
+      // 处理传送门点击
+      if (item.itemType === 'portal') {
+        console.log(`🌀 Clicked portal to ${item.targetMapId}`);
+        // TODO: 传送到目标地图
+        alert(`传送门：${item.targetMapId}\n(传送系统待实现)`);
+        return;
+      }
+      
+      // 点击到物品后不继续执行移动逻辑
+      return;
+    }
+
     // 转换为世界坐标
     const worldPos = engine.screenToCartesian(x, y);
     const tileX = Math.floor(worldPos.x);
     const tileY = Math.floor(worldPos.y);
 
-    // 获取tile信息和邻居信息
+    // 获取tile信息
     const tile = engine.getTileAt(tileX, tileY);
-    const neighbors = {
-      top: engine.getTileAt(tileX, tileY - 1)?.tileType || null,
-      right: engine.getTileAt(tileX + 1, tileY)?.tileType || null,
-      bottom: engine.getTileAt(tileX, tileY + 1)?.tileType || null,
-      left: engine.getTileAt(tileX - 1, tileY)?.tileType || null,
-    };
-    
-    AutotileDebugger.logTileClick(tileX, tileY, tile, neighbors);
+    console.log(`🖱️ Clicked tile @ (${tileX}, ${tileY})`, tile);
 
-    // 如果是编辑模式且点击的是autotile，打开选择器
-    if (editMode && tile && tile.autotileIndex !== undefined) {
-      const config = engine.getAutotileConfig(tile.tileType);
-      if (config) {
-        // 计算corners
-        const mapData = engine.getMapData();
-        if (mapData) {
-          const corners = {
-            topLeft: getCornerTerrain(mapData, tileX, tileY, 'topLeft', config.terrain1, config.terrain2),
-            topRight: getCornerTerrain(mapData, tileX, tileY, 'topRight', config.terrain1, config.terrain2),
-            bottomLeft: getCornerTerrain(mapData, tileX, tileY, 'bottomLeft', config.terrain1, config.terrain2),
-            bottomRight: getCornerTerrain(mapData, tileX, tileY, 'bottomRight', config.terrain1, config.terrain2),
-          };
-          
-          setPickerData({
-            x: tileX,
-            y: tileY,
-            autotileType: tile.tileType,
-            currentIndex: tile.autotileIndex,
-            spriteSheetSrc: config.src,
-            terrain1: config.terrain1,
-            terrain2: config.terrain2,
-            corners,
-            neighbors,
-          });
-        }
+    // 点击移动玩家
+    if (tile && tile.walkable) {
+      const success = engine.movePlayerTo(tileX, tileY);
+      if (success) {
+        console.log(`✅ Player moving to (${tileX}, ${tileY})`);
       }
+    } else {
+      console.log('⛔ Cannot walk to this tile');
     }
-
-    // TODO: 处理点击瓦片（移动玩家、交互等）
   };
 
   /**
-   * 处理键盘事件
+   * 处理鼠标移动事件（悬停高亮）
+   */
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const engine = engineRef.current;
+    if (!canvas || !engine) return;
+
+    // 获取Canvas相对坐标
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // 检查是否悬停在物品上（使用像素级检测）
+    const item = engine.getItemAtPixel(x, y);
+    
+    if (item) {
+      // 使用物品的实际坐标来渲染高亮
+      setHoveredItem({ x: item.x, y: item.y });
+      canvas.style.cursor = 'pointer';
+    } else {
+      setHoveredItem(null);
+      canvas.style.cursor = 'default';
+    }
+  };
+
+  /**
+   * 处理键盘事件（已禁用WASD视口控制）
    */
   useEffect(() => {
+    // 为了保持玩家始终在屏幕中心，禁用WASD手动控制视口
+    // 只能通过点击地面来移动玩家
+    
+    // ESC键关闭对话
     const handleKeyDown = (e: KeyboardEvent) => {
-      const engine = engineRef.current;
-      if (!engine) return;
-
-      const moveSpeed = 0.5;
-
-      switch (e.key) {
-        case 'ArrowUp':
-        case 'w':
-          engine.moveViewport(0, -moveSpeed);
-          break;
-        case 'ArrowDown':
-        case 's':
-          engine.moveViewport(0, moveSpeed);
-          break;
-        case 'ArrowLeft':
-        case 'a':
-          engine.moveViewport(-moveSpeed, 0);
-          break;
-        case 'ArrowRight':
-        case 'd':
-          engine.moveViewport(moveSpeed, 0);
-          break;
+      if (e.key === 'Escape' && isDialogueVisible) {
+        closeDialogue();
       }
     };
-
+    
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isDialogueVisible]);
+
+  // ==================== 对话系统函数 ====================
+
+  /**
+   * 开始与NPC对话
+   */
+  const startDialogue = async (item: any) => {
+    try {
+      // 根据NPC ID加载对话树
+      // NPC ID格式：从itemName提取（如"洪七公" -> "hong_qigong"）
+      const npcIdMap: Record<string, string> = {
+        '洪七公': 'hong_qigong',
+        '郭靖': 'guo_jing',
+        '令狐冲': 'linghu_chong',
+        '黄蓉': 'huang_rong',
+      };
+      
+      const npcId = npcIdMap[item.itemName];
+      if (!npcId) {
+        console.warn(`未找到 NPC ${item.itemName} 的对话文件`);
+        alert(`${item.itemName}：还没有准备好对话内容...`);
+        return;
+      }
+      
+      // 加载对话树（使用中文）
+      const dialogueTree = await loadDialogueTree(npcId, 'zh');
+      const engine = new DialogueEngine(dialogueTree);
+      
+      setDialogueEngine(engine);
+      setCurrentNpcAvatar(null); // 暂时不使用头像，可以后续添加
+      
+      // 更新当前对话节点和选项
+      updateDialogueState(engine);
+      
+      // 显示对话框
+      setIsDialogueVisible(true);
+    } catch (error) {
+      console.error('启动对话失败:', error);
+      alert(`无法与 ${item.itemName} 对话`);
+    }
+  };
+
+  /**
+   * 更新对话状态
+   */
+  const updateDialogueState = (engine: DialogueEngine) => {
+    const node = engine.getCurrentNode();
+    const options = engine.getAvailableOptions();
+    
+    setCurrentDialogueNode(node);
+    setDialogueOptions(options);
+    
+    // 如果对话结束，自动关闭
+    if (engine.isCompleted()) {
+      setTimeout(() => {
+        closeDialogue();
+      }, 1000);
+    }
+  };
+
+  /**
+   * 选择对话选项
+   */
+  const handleSelectOption = (optionIndex: number) => {
+    if (!dialogueEngine) return;
+    
+    const success = dialogueEngine.selectOption(optionIndex);
+    if (success) {
+      updateDialogueState(dialogueEngine);
+    }
+  };
+
+  /**
+   * 继续对话（无选项时）
+   */
+  const handleContinueDialogue = () => {
+    if (!dialogueEngine) return;
+    
+    const success = dialogueEngine.continue();
+    if (success) {
+      updateDialogueState(dialogueEngine);
+    } else {
+      closeDialogue();
+    }
+  };
+
+  /**
+   * 关闭对话
+   */
+  const closeDialogue = () => {
+    setIsDialogueVisible(false);
+    setDialogueEngine(null);
+    setCurrentDialogueNode(null);
+    setDialogueOptions([]);
+    setCurrentNpcAvatar(null);
+  };
 
   // ==================== 辅助函数 ====================
 
@@ -405,12 +519,22 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
-        className="absolute inset-0 w-full h-full cursor-pointer"
+        onMouseMove={handleCanvasMouseMove}
+        className="absolute inset-0 w-full h-full"
         style={{ imageRendering: 'pixelated', zIndex: 0 }}
       />
 
+      {/* 右上角信息按钮 */}
+      <button
+        onClick={() => setShowInfo(!showInfo)}
+        className="absolute top-4 right-4 z-30 bg-black/70 hover:bg-black/90 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
+      >
+        <span>{showInfo ? '隐藏信息' : '显示信息'}</span>
+        <span className="text-lg">{showInfo ? '✕' : 'ℹ️'}</span>
+      </button>
+
       {/* 调试信息 - 左下角 */}
-      {mapData && (
+      {showInfo && mapData && engineRef.current && (
         <div 
           className="absolute bg-black/70 text-white p-3 rounded-lg text-sm max-w-xs z-20"
           style={{ bottom: '1rem', left: '1rem' }}
@@ -418,128 +542,70 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
           <div className="font-bold mb-2 text-xs">{mapData.name}</div>
           <div className="text-xs">尺寸: {mapData.width} × {mapData.height}</div>
           <div className="text-xs">物品数: {mapData.items.length}</div>
+          {(() => {
+            const playerPos = engineRef.current?.getPlayerPosition();
+            return playerPos && (
+              <div className="text-xs mt-1">
+                玩家位置: ({Math.floor(playerPos.x)}, {Math.floor(playerPos.y)})
+                {engineRef.current?.isPlayerMoving() && ' 🚶'}
+              </div>
+            );
+          })()}
           <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
-            WASD / 方向键: 移动视口<br />
-            点击瓦片: 查看信息
+            🖱️ 点击地面移动玩家<br />
+            📷 摄像机自动跟随玩家
           </div>
         </div>
       )}
 
-      {/* 地形说明 - 右上角 */}
-      <div 
-        className="absolute bg-black/70 text-white p-4 rounded-lg text-sm w-64 z-20"
-        style={{ top: '1rem', right: '1rem' }}
-      >
-        <div className="font-bold mb-3 text-center">地形区域</div>
-        <div className="space-y-1 text-xs">
-          <div>🌊 <span className="font-semibold">左上角</span>: 水域 (15×15)</div>
-          <div>🏜️ <span className="font-semibold">右上角</span>: 金地 (20×15)</div>
-          <div>🟤 <span className="font-semibold">左下角</span>: 土地 (15×20)</div>
-          <div>🌊 <span className="font-semibold">右下角</span>: 水域 (12×12)</div>
-          <div>🔥 <span className="font-semibold">中间偏左</span>: 火地 (8×8)</div>
-          <div>🟢 <span className="font-semibold">其他</span>: 木地</div>
-        </div>
-        <div className="mt-3 pt-2 border-t border-gray-600 text-xs text-gray-400">
-          使用center.png基础瓦片<br/>
-          5种地形：木、金、土、火、水
-        </div>
-        
-        {/* 编辑模式开关 */}
-        <div className="mt-3 pt-2 border-t border-gray-600">
-          <button
-            onClick={() => setEditMode(!editMode)}
-            className={`w-full px-3 py-2 rounded text-sm font-bold transition-colors ${
-              editMode 
-                ? 'bg-green-600 hover:bg-green-700' 
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
-          >
-            {editMode ? '✏️ 编辑模式 ON' : '👁️ 查看模式'}
-          </button>
-          {editMode && (
-            <div className="mt-2 text-xs text-yellow-300 text-center">
-              点击autotile来手动选择瓦片
+      {/* 地形说明 - 右侧面板 */}
+      {showInfo && (
+        <div 
+          className="absolute bg-black/70 text-white p-4 rounded-lg text-sm w-64 z-20"
+          style={{ top: '4.5rem', right: '1rem' }}
+        >
+          <div className="font-bold mb-3 text-center">等距地图系统</div>
+          <div className="space-y-1 text-xs">
+            <div>🖱️ 点击地面: 移动玩家</div>
+            <div>🚶 玩家自动寻路 (A*算法)</div>
+            <div>📷 摄像机始终跟随玩家</div>
+            <div className="mt-2 pt-2 border-t border-gray-500">
+              <div className="font-semibold mb-1">地形类型:</div>
+              <div>🟫 木地板 (可行走)</div>
+              <div>🟨 金色地板 (可行走)</div>
+              <div>🟤 黑土地 (可行走)</div>
+              <div>🟧 火焰地 (可行走)</div>
+              <div>🟦 水域 (不可行走)</div>
             </div>
-          )}
-        </div>
-        
-        {/* 训练数据管理 */}
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <button
-            onClick={() => {
-              AutotileTrainer.printAnalysis();
-            }}
-            className="px-2 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs transition-colors"
-            title="在控制台打印分析报告"
-          >
-            📊
-          </button>
-          <button
-            onClick={() => {
-              const data = AutotileTrainer.exportJSON();
-              const blob = new Blob([data], { type: 'application/json' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `autotile-training-${Date.now()}.json`;
-              a.click();
-            }}
-            className="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 rounded text-xs transition-colors"
-            title="导出训练数据"
-          >
-            💾
-          </button>
-          <button
-            onClick={() => {
-              if (confirm('确定要清空所有训练数据吗？')) {
-                AutotileTrainer.clear();
-              }
-            }}
-            className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs transition-colors"
-            title="清空所有训练数据"
-          >
-            🗑️
-          </button>
-        </div>
-      </div>
+          </div>
 
-      {/* Autotile Picker */}
-      {pickerData && (
-        <AutotilePicker
-          autotileType={pickerData.autotileType}
-          currentIndex={pickerData.currentIndex}
-          spriteSheetSrc={pickerData.spriteSheetSrc}
-          tileInfo={{
-            x: pickerData.x,
-            y: pickerData.y,
-            corners: pickerData.corners,
-            neighbors: pickerData.neighbors,
-          }}
-          onSelect={(newIndex) => {
-            const engine = engineRef.current;
-            if (engine && mapData) {
-              // 记录训练数据
-              AutotileTrainer.recordChoice({
-                timestamp: Date.now(),
-                position: { x: pickerData.x, y: pickerData.y },
-                autotileType: pickerData.autotileType,
-                terrain1: pickerData.terrain1,
-                terrain2: pickerData.terrain2,
-                corners: pickerData.corners,
-                neighbors: pickerData.neighbors,
-                algorithmIndex: pickerData.currentIndex,
-                userIndex: newIndex,
-              });
-              
-              // 更新tile
-              engine.setTileAutotileIndex(pickerData.x, pickerData.y, newIndex);
-              
-              console.log(`✅ Updated tile (${pickerData.x}, ${pickerData.y}) from index ${pickerData.currentIndex} → ${newIndex}`);
-            }
-          }}
-          onClose={() => setPickerData(null)}
-        />
+          <div className="mt-3 pt-2 border-t border-gray-600 text-xs text-gray-400">
+            5种基础地形瓦片<br/>
+            木、金、土、火、水
+          </div>
+
+          {/* 退出登录 */}
+          <div className="mt-3 pt-2 border-t border-gray-600">
+            <a
+              href="/api/auth/signout"
+              className="block w-full text-center px-3 py-2 rounded text-sm bg-red-600 hover:bg-red-700 transition-colors"
+            >
+              退出登录
+            </a>
+          </div>
+        </div>
       )}
+      
+      {/* 对话框 */}
+      <DialogueBox
+        node={currentDialogueNode}
+        options={dialogueOptions}
+        onSelectOption={handleSelectOption}
+        onContinue={handleContinueDialogue}
+        onClose={closeDialogue}
+        isVisible={isDialogueVisible}
+        npcAvatar={currentNpcAvatar}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
-import { mapTiles, maps } from "@/src/db/schema";
+import { mapTiles, maps, mapItems } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(
@@ -33,9 +33,46 @@ export async function GET(
       .where(eq(mapTiles.mapId, map.id))
       .orderBy(mapTiles.y, mapTiles.x);
 
+    // Get all items for this map (NPCs, buildings, portals, decorations)
+    const items = await db
+      .select()
+      .from(mapItems)
+      .where(eq(mapItems.mapId, map.id));
+
+    // Convert tiles to 2D array for easier rendering
+    const tilesArray: any[][] = Array.from({ length: map.height }, () =>
+      Array.from({ length: map.width }, () => null)
+    );
+
+    for (const tile of tiles) {
+      if (tile.y >= 0 && tile.y < map.height && tile.x >= 0 && tile.x < map.width) {
+        tilesArray[tile.y][tile.x] = {
+          x: tile.x,
+          y: tile.y,
+          tileType: tile.tileType,
+          walkable: tile.tileType !== 'water', // Water is not walkable
+        };
+      }
+    }
+
     return NextResponse.json({
-      map,
-      tiles,
+      id: map.mapId,
+      name: map.name,
+      width: map.width,
+      height: map.height,
+      tiles: tilesArray,
+      items: items.map(item => ({
+        id: item.id,
+        itemName: item.itemName,
+        itemPath: item.itemPath,
+        itemType: item.itemType,
+        x: item.x,
+        y: item.y,
+        blocking: item.itemType === 'building' || item.itemType === 'npc',
+        targetMapId: item.targetMapId,
+        targetX: item.targetX,
+        targetY: item.targetY,
+      })),
     });
   } catch (error) {
     console.error("Error fetching map data:", error);

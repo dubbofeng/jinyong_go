@@ -1,4 +1,4 @@
-import { IsometricGame } from '@/src/components/IsometricGame';
+import IsometricGame from '@/src/components/IsometricGame';
 
 export default function IsometricTestPage() {
   return (
