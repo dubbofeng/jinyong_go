@@ -98,6 +98,7 @@ async function setupSceneMaps() {
       itemPath: '/game/isometric/characters/npc_hong_qigong.png',
       x: 16,
       y: 12,
+      blocking: true,
       targetMapId: null,
       targetX: null,
       targetY: null
@@ -130,6 +131,7 @@ async function setupSceneMaps() {
       itemPath: '/game/isometric/characters/npc_linghu_chong.png',
       x: 16,
       y: 12,
+      blocking: true,
       targetMapId: null,
       targetX: null,
       targetY: null
@@ -162,6 +164,7 @@ async function setupSceneMaps() {
       itemPath: '/game/isometric/characters/npc_guo_jing.png',
       x: 16,
       y: 12,
+      blocking: true,
       targetMapId: null,
       targetX: null,
       targetY: null

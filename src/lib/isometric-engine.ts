@@ -931,9 +931,8 @@ export class IsometricEngine {
     for (let y = 0; y < this.config.mapHeight; y++) {
       grid[y] = [];
       for (let x = 0; x < this.config.mapWidth; x++) {
-        const tile = this.getTileAt(x, y);
-        // 0 = 可行走, 1 = 障碍
-        grid[y][x] = (tile && tile.walkable) ? 0 : 1;
+        // 使用isWalkable()检查瓦片和物品阻挡
+        grid[y][x] = this.isWalkable(x, y) ? 0 : 1;
       }
     }
     return grid;

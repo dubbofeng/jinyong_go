@@ -1,0 +1,1 @@
+ALTER TABLE "map_items" ADD COLUMN "blocking" boolean DEFAULT false;

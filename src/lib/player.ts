@@ -11,7 +11,7 @@ export interface PlayerState {
   speed: number;          // 移动速度（瓦片/秒）
   path: { x: number; y: number }[];  // 当前路径
   pathIndex: number;      // 路径中的当前索引
-  direction: 0 | 1 | 2 | 3; // 当前方向：0=下 1=左 2=右 3=上
+  direction: 0 | 1 | 2 | 3; // 当前方向：0=下 1=右 2=左 3=上
   animationFrame: number; // 当前动画帧（0-3）
   animationTime: number;  // 动画计时器
 }
@@ -22,8 +22,9 @@ export class Player {
   private spriteLoaded: boolean = false;
   private spriteSheet: HTMLImageElement | null = null;
   
-  // 精灵图表配置
-  private readonly FRAME_SIZE = 128;  // 每帧尺寸
+  // 精灵图表配置（新图：512x640，4列x4行）
+  private readonly FRAME_WIDTH = 128;  // 每帧宽度 (512/4)
+  private readonly FRAME_HEIGHT = 160; // 每帧高度 (640/4)
   private readonly FRAMES_PER_DIR = 4; // 每个方向的帧数
   private readonly ANIMATION_FPS = 10; // 动画帧率
 
@@ -37,7 +38,7 @@ export class Player {
       speed,
       path: [],
       pathIndex: 0,
-      direction: 0, // 默认向下
+      direction: 1, // 默认向右
       animationFrame: 0,
       animationTime: 0,
     };
@@ -107,9 +108,10 @@ export class Player {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     // 根据移动方向更新朝向
+    // 第0行=下, 第1行=右, 第2行=左, 第3行=上
     if (Math.abs(dx) > Math.abs(dy)) {
       // 水平移动为主
-      this.state.direction = dx > 0 ? 2 : 1; // 右或左
+      this.state.direction = dx > 0 ? 1 : 2; // 右或左
     } else {
       // 垂直移动为主
       this.state.direction = dy > 0 ? 0 : 3; // 下或上
@@ -159,9 +161,10 @@ export class Player {
   ): void {
     if (!this.spriteLoaded || !this.spriteSheet) return;
 
-    // 计算玩家渲染尺寸（比瓦片大一些）
-    const playerWidth = tileWidth * 1.5;
-    const playerHeight = tileHeight * 2;
+    // 计算玩家渲染尺寸（保持128:160的宽高比）
+    const aspectRatio = this.FRAME_HEIGHT / this.FRAME_WIDTH; // 160/128 = 1.25
+    const playerWidth = tileWidth * 0.6;
+    const playerHeight = playerWidth * aspectRatio;
     
     // 计算渲染位置（玩家底部对齐瓦片中心）
     const renderX = screenX - playerWidth / 2;
@@ -169,16 +172,17 @@ export class Player {
 
     // 从精灵图表中提取当前帧
     // 精灵图表布局：4行（方向）x 4列（帧）
-    const sourceX = this.state.animationFrame * this.FRAME_SIZE;
-    const sourceY = this.state.direction * this.FRAME_SIZE;
+    // 新图尺寸：512x640
+    const sourceX = this.state.animationFrame * this.FRAME_WIDTH;
+    const sourceY = this.state.direction * this.FRAME_HEIGHT;
 
     // 绘制当前动画帧
     ctx.drawImage(
       this.spriteSheet,
       sourceX,               // 源X
       sourceY,               // 源Y
-      this.FRAME_SIZE,       // 源宽度
-      this.FRAME_SIZE,       // 源高度
+      this.FRAME_WIDTH,      // 源宽度
+      this.FRAME_HEIGHT,     // 源高度
       renderX,               // 目标X
       renderY,               // 目标Y
       playerWidth,           // 目标宽度

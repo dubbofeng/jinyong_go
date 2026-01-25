@@ -182,12 +182,13 @@ export const mapItems = pgTable('map_items', {
   mapId: integer('map_id').notNull().references(() => maps.id),
   itemName: text('item_name').notNull(),
   itemPath: text('item_path').notNull(),
-  itemType: varchar('item_type', { length: 50 }).notNull(), // 'building', 'plant', 'decoration', 'portal'
+  itemType: varchar('item_type', { length: 50 }).notNull(), // 'building', 'plant', 'decoration', 'portal', 'npc'
   x: integer('x').notNull(),
   y: integer('y').notNull(),
   width: integer('width'),
   height: integer('height'),
   animated: integer('animated'), // 动画帧数
+  blocking: boolean('blocking').default(false), // 是否阻挡移动
   // 传送门相关（如果是传送门类型）
   targetMapId: varchar('target_map_id', { length: 100 }),
   targetX: integer('target_x'),
