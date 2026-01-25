@@ -16,11 +16,23 @@ export async function GET(
   }
 
   try {
-    // Get map info
-    const [map] = await db
-      .select()
-      .from(maps)
-      .where(eq(maps.mapId, mapId));
+    // Check if mapId is a number (database ID) or a string (mapId)
+    const isNumericId = /^\d+$/.test(mapId);
+    
+    let map;
+    if (isNumericId) {
+      // Query by database ID
+      [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.id, parseInt(mapId)));
+    } else {
+      // Query by mapId string
+      [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.mapId, mapId));
+    }
 
     if (!map) {
       return NextResponse.json({ error: "Map not found" }, { status: 404 });
@@ -55,11 +67,23 @@ export async function POST(
   }
 
   try {
-    // Get map info
-    const [map] = await db
-      .select()
-      .from(maps)
-      .where(eq(maps.mapId, mapId));
+    // Check if mapId is a number (database ID) or a string (mapId)
+    const isNumericId = /^\d+$/.test(mapId);
+    
+    let map;
+    if (isNumericId) {
+      // Query by database ID
+      [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.id, parseInt(mapId)));
+    } else {
+      // Query by mapId string
+      [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.mapId, mapId));
+    }
 
     if (!map) {
       return NextResponse.json({ error: "Map not found" }, { status: 404 });
@@ -142,11 +166,23 @@ export async function DELETE(
   }
 
   try {
-    // Get map info
-    const [map] = await db
-      .select()
-      .from(maps)
-      .where(eq(maps.mapId, mapId));
+    // Check if mapId is a number (database ID) or a string (mapId)
+    const isNumericId = /^\d+$/.test(mapId);
+    
+    let map;
+    if (isNumericId) {
+      // Query by database ID
+      [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.id, parseInt(mapId)));
+    } else {
+      // Query by mapId string
+      [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.mapId, mapId));
+    }
 
     if (!map) {
       return NextResponse.json({ error: "Map not found" }, { status: 404 });

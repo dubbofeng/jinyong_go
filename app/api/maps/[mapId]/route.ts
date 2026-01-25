@@ -82,3 +82,76 @@ export async function GET(
     );
   }
 }
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { mapId: string } }
+) {
+  const mapId = params.mapId;
+
+  if (!mapId) {
+    return NextResponse.json({ error: "Invalid map ID" }, { status: 400 });
+  }
+
+  try {
+    const body = await req.json();
+    const { name, description, tiles } = body;
+
+    // Check if mapId is a number (database id) or string (mapId field)
+    const isNumericId = /^\d+$/.test(mapId);
+    
+    // Get map info
+    const [map] = isNumericId
+      ? await db.select().from(maps).where(eq(maps.id, parseInt(mapId)))
+      : await db.select().from(maps).where(eq(maps.mapId, mapId));
+
+    if (!map) {
+      return NextResponse.json({ error: "Map not found" }, { status: 404 });
+    }
+
+    // Update map metadata if provided
+    if (name || description !== undefined) {
+      await db
+        .update(maps)
+        .set({
+          ...(name && { name }),
+          ...(description !== undefined && { description }),
+        })
+        .where(eq(maps.id, map.id));
+    }
+
+    // Update tiles if provided
+    if (tiles && Array.isArray(tiles)) {
+      // Delete existing tiles
+      await db.delete(mapTiles).where(eq(mapTiles.mapId, map.id));
+
+      // Insert new tiles
+      const tilesToInsert = [];
+      for (let y = 0; y < tiles.length; y++) {
+        for (let x = 0; x < tiles[y].length; x++) {
+          const tile = tiles[y][x];
+          if (tile) {
+            tilesToInsert.push({
+              mapId: map.id,
+              x,
+              y,
+              tileType: tile.tileType,
+            });
+          }
+        }
+      }
+
+      if (tilesToInsert.length > 0) {
+        await db.insert(mapTiles).values(tilesToInsert);
+      }
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error updating map:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

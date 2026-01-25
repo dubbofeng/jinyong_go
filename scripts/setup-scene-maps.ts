@@ -19,9 +19,9 @@ async function setupSceneMaps() {
 
   console.log('找到的地图：');
   console.log(`  主世界: ${worldMap.name} (ID: ${worldMap.id})`);
-  console.log(`  华山传功厅: ${huashanHall.name} (ID: ${huashanHall.id})`);
-  console.log(`  少林寺禅房: ${shaolinTemple.name} (ID: ${shaolinTemple.id})`);
-  console.log(`  襄阳城茶馆: ${xiangyangTeahouse.name} (ID: ${xiangyangTeahouse.id})\n`);
+  console.log(`  华山: ${huashanHall.name} (ID: ${huashanHall.id})`);
+  console.log(`  少林寺: ${shaolinTemple.name} (ID: ${shaolinTemple.id})`);
+  console.log(`  襄阳城: ${xiangyangTeahouse.name} (ID: ${xiangyangTeahouse.id})\n`);
 
   // 清除现有场景地图的物品（如果有的话）
   console.log('🧹 清理现有场景地图物品...');
@@ -51,7 +51,7 @@ async function setupSceneMaps() {
     {
       mapId: worldMap.id,
       itemType: 'portal',
-      itemName: '华山传功厅入口',
+      itemName: '华山入口',
       itemPath: '/game/isometric/items/gate-opened01.png',
       x: 10,
       y: 10,
@@ -62,7 +62,7 @@ async function setupSceneMaps() {
     {
       mapId: worldMap.id,
       itemType: 'portal',
-      itemName: '少林寺禅房入口',
+      itemName: '少林寺入口',
       itemPath: '/game/isometric/items/gate-opened02.png',
       x: 50,
       y: 10,
@@ -73,7 +73,7 @@ async function setupSceneMaps() {
     {
       mapId: worldMap.id,
       itemType: 'portal',
-      itemName: '襄阳城茶馆入口',
+      itemName: '襄阳城入口',
       itemPath: '/game/isometric/items/gate-opened03.png',
       x: 30,
       y: 50,
@@ -88,8 +88,8 @@ async function setupSceneMaps() {
     console.log(`  ✓ 创建传送门: ${portal.itemName} (${portal.x}, ${portal.y})`);
   }
 
-  // 在华山传功厅添加洪七公和返回传送门
-  console.log('\n🏔️ 设置华山传功厅...');
+  // 在华山添加洪七公和返回传送门
+  console.log('\n🏔️ 设置华山...');
   const huashanItems = [
     {
       mapId: huashanHall.id,
@@ -120,8 +120,8 @@ async function setupSceneMaps() {
     console.log(`  ✓ 创建${item.itemType === 'npc' ? 'NPC' : '传送门'}: ${item.itemName}`);
   }
 
-  // 在少林寺禅房添加令狐冲和返回传送门
-  console.log('\n🏯 设置少林寺禅房...');
+  // 在少林寺添加令狐冲和返回传送门
+  console.log('\n🏯 设置少林寺...');
   const shaolinItems = [
     {
       mapId: shaolinTemple.id,
@@ -152,8 +152,8 @@ async function setupSceneMaps() {
     console.log(`  ✓ 创建${item.itemType === 'npc' ? 'NPC' : '传送门'}: ${item.itemName}`);
   }
 
-  // 在襄阳城茶馆添加郭靖和返回传送门
-  console.log('\n🏛️ 设置襄阳城茶馆...');
+  // 在襄阳城添加郭靖和返回传送门
+  console.log('\n🏛️ 设置襄阳城...');
   const xiangyangItems = [
     {
       mapId: xiangyangTeahouse.id,
@@ -187,16 +187,16 @@ async function setupSceneMaps() {
   console.log('\n✅ 场景地图设置完成！');
   console.log('\n📍 地图位置总览：');
   console.log('主世界传送门：');
-  console.log('  - 华山传功厅入口: (10, 10) → 华山传功厅 (16, 16)');
-  console.log('  - 少林寺禅房入口: (50, 10) → 少林寺禅房 (16, 16)');
-  console.log('  - 襄阳城茶馆入口: (30, 50) → 襄阳城茶馆 (16, 16)');
-  console.log('\n华山传功厅：');
+  console.log('  - 华山入口: (10, 10) → 华山 (16, 16)');
+  console.log('  - 少林寺入口: (50, 10) → 少林寺 (16, 16)');
+  console.log('  - 襄阳城入口: (30, 50) → 襄阳城 (16, 16)');
+  console.log('\n华山：');
   console.log('  - 洪七公: (16, 12)');
   console.log('  - 返回传送门: (16, 28) → 主世界 (10, 12)');
-  console.log('\n少林寺禅房：');
+  console.log('\n少林寺：');
   console.log('  - 令狐冲: (16, 12)');
   console.log('  - 返回传送门: (16, 28) → 主世界 (50, 12)');
-  console.log('\n襄阳城茶馆：');
+  console.log('\n襄阳城：');
   console.log('  - 郭靖: (16, 12)');
   console.log('  - 返回传送门: (16, 28) → 主世界 (30, 52)');
 }

@@ -212,7 +212,10 @@
           "building": "Building",
           "npc": "NPC",
           "portal": "Portal",
-          "decoration": "Decoration"
+          "decoration": "Decoration",
+          "categories": "Categories",
+          "current": "Current Items",
+          "empty": "No items"
         },
         "properties": {
           "title": "Properties",

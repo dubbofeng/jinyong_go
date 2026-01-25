@@ -214,7 +214,10 @@
           "building": "建筑物",
           "npc": "NPC",
           "portal": "传送门",
-          "decoration": "装饰物"
+          "decoration": "装饰物",
+          "categories": "类别",
+          "current": "当前物品",
+          "empty": "暂无物品"
         },
         "properties": {
           "title": "属性",
