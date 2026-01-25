@@ -14,8 +14,39 @@ interface AutotileAnalysis {
     index: number;
     col: number;
     row: number;
+    isEmpty?: boolean;           // 是否为空白瓦片
     description: string;
-    gradientDirection?: string;
+    terrain1: string;            // 第一种地形（通常是背景/主要地形）
+    terrain2?: string;           // 第二种地形（过渡目标地形）
+    edgeConnections: {           // 每条边可以连接什么
+      top: {
+        canConnectPure?: string[];      // 可以连接的纯地形 ["water", "sand"]
+        requiresTransition?: boolean;   // 是否需要过渡瓦片
+        transitionDetails?: string;     // 需要什么样的过渡
+      };
+      right: {
+        canConnectPure?: string[];
+        requiresTransition?: boolean;
+        transitionDetails?: string;
+      };
+      bottom: {
+        canConnectPure?: string[];
+        requiresTransition?: boolean;
+        transitionDetails?: string;
+      };
+      left: {
+        canConnectPure?: string[];
+        requiresTransition?: boolean;
+        transitionDetails?: string;
+      };
+    };
+    corners: {                   // 四个角的地形
+      topLeft: string;
+      topRight: string;
+      bottomLeft: string;
+      bottomRight: string;
+    };
+    gradientDirection?: string;  // 渐变方向描述
   }[];
 }
 
@@ -52,16 +83,28 @@ export async function analyzeAutotileSpriteSheet(
             {
               parts: [
                 {
-                  text: `Analyze this isometric autotile sprite sheet. It contains multiple diamond-shaped tiles arranged in a grid (4 columns × 7 rows, each tile is 128×64 pixels).
+                  text: `Analyze this isometric autotile TRANSITION sprite sheet. This shows transitions between TWO terrain types (e.g., "water" and "sand/fire").
 
-Please describe:
-1. The overall dimensions and grid layout
-2. For each tile (starting from top-left, going left to right, top to bottom):
-   - Its position (row, col)
-   - The terrain types it shows (e.g., "dirt", "sand", "grass")
-   - The gradient/transition direction (e.g., "full dirt", "dirt to sand top-right", "sand corners")
+CRITICAL: For each tile, determine what neighboring tiles can connect to each edge.
 
-Format your response as JSON:
+ISOMETRIC TILE EDGES (diamond shape):
+- TOP: Upper point, connects to tile at (x, y-1)
+- RIGHT: Right diagonal edge, connects to tile at (x+1, y)
+- BOTTOM: Lower point, connects to tile at (x, y+1)
+- LEFT: Left diagonal edge, connects to tile at (x-1, y)
+
+For EACH edge, determine:
+1. Can it connect to PURE terrain? (100% water or 100% sand from center.png)
+2. Or does it REQUIRE a transition tile? If so, what kind?
+
+EXAMPLE ANALYSIS for tile [0,0]:
+- If it's "mostly water with sand at top-left corner":
+  - TOP edge: Has sand intrusion → REQUIRES transition tile with "sand at bottom-right"
+  - LEFT edge: Has sand intrusion → REQUIRES transition tile with "sand at bottom-right"
+  - RIGHT edge: Pure water → CAN connect to pure water
+  - BOTTOM edge: Pure water → CAN connect to pure water
+
+Return JSON:
 {
   "cols": 4,
   "rows": 7,
@@ -72,12 +115,42 @@ Format your response as JSON:
       "index": 0,
       "col": 0,
       "row": 0,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
-    },
-    ...
+      "isEmpty": false,
+      "description": "Mostly water with small sand at top-left corner",
+      "terrain1": "water",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": ["water"],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": ["water"],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "water",
+        "bottomLeft": "water",
+        "bottomRight": "water"
+      },
+      "gradientDirection": "sand intrusion at top-left corner only"
+    }
   ]
-}`,
+}
+
+IMPORTANT: Analyze ALL 28 tiles. Mark empty tiles with isEmpty=true.`,
                 },
                 {
                   inline_data: {
@@ -90,7 +163,7 @@ Format your response as JSON:
           ],
           generationConfig: {
             temperature: 0.1,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 16000,
           },
         }),
       }
@@ -156,10 +229,30 @@ export async function analyzeAndSaveAutotile(
   console.log(`Grid: ${analysis.cols} × ${analysis.rows}`);
   console.log(`Tile size: ${analysis.tileWidth} × ${analysis.tileHeight}`);
   console.log(`Total tiles: ${analysis.tiles.length}`);
-  console.log(`\nTile descriptions:`);
+  
+  const emptyTiles = analysis.tiles.filter(t => t.isEmpty);
+  if (emptyTiles.length > 0) {
+    console.log(`Empty tiles: ${emptyTiles.map(t => `[${t.row},${t.col}]`).join(', ')}`);
+  }
+  
+  console.log(`\nDetailed tile analysis:`);
   
   analysis.tiles.forEach(tile => {
-    console.log(`  [${tile.row},${tile.col}] ${tile.description}`);
+    if (tile.isEmpty) {
+      console.log(`  [${tile.row},${tile.col}] EMPTY`);
+    } else {
+      console.log(`  [${tile.row},${tile.col}] ${tile.description}`);
+      console.log(`    Terrains: ${tile.terrain1}${tile.terrain2 ? ' ↔ ' + tile.terrain2 : ''}`);
+      console.log(`    Edge Connections:`);
+      console.log(`      TOP: ${tile.edgeConnections.top.canConnectPure?.join(', ') || 'none'} ${tile.edgeConnections.top.requiresTransition ? `(requires: ${tile.edgeConnections.top.transitionDetails})` : ''}`);
+      console.log(`      RIGHT: ${tile.edgeConnections.right.canConnectPure?.join(', ') || 'none'} ${tile.edgeConnections.right.requiresTransition ? `(requires: ${tile.edgeConnections.right.transitionDetails})` : ''}`);
+      console.log(`      BOTTOM: ${tile.edgeConnections.bottom.canConnectPure?.join(', ') || 'none'} ${tile.edgeConnections.bottom.requiresTransition ? `(requires: ${tile.edgeConnections.bottom.transitionDetails})` : ''}`);
+      console.log(`      LEFT: ${tile.edgeConnections.left.canConnectPure?.join(', ') || 'none'} ${tile.edgeConnections.left.requiresTransition ? `(requires: ${tile.edgeConnections.left.transitionDetails})` : ''}`);
+      console.log(`    Corners: ↖${tile.corners.topLeft} ↗${tile.corners.topRight} ↙${tile.corners.bottomLeft} ↘${tile.corners.bottomRight}`);
+      if (tile.gradientDirection) {
+        console.log(`    Gradient: ${tile.gradientDirection}`);
+      }
+    }
   });
 
   return analysis;

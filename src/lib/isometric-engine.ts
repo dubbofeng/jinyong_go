@@ -4,6 +4,7 @@
  */
 
 import { cartesianToIsometric, isometricToCartesian } from './map/isometricUtils';
+import { selectAutotileByCorners } from './autotile-helper';
 
 // ==================== 类型定义 ====================
 
@@ -26,7 +27,7 @@ export interface MapData {
 export interface TileData {
   x: number;
   y: number;
-  tileType: string;      // 'grass', 'water', 'mountain', etc.
+  tileType: string;      // 'wood', 'water', 'dirt', 'gold', 'fire' etc.
   walkable: boolean;
   autotileIndex?: number; // 用于autotile的索引（0-27，对应4x7网格）
 }
@@ -48,6 +49,8 @@ export interface AutotileConfig {
   rows: number;          // 行数
   tileWidth: number;     // 单个瓦片宽度
   tileHeight: number;    // 单个瓦片高度
+  terrain1: string;      // 第一种地形（主要/背景）
+  terrain2: string;      // 第二种地形（过渡目标）
 }
 
 export interface Viewport {
@@ -145,11 +148,11 @@ export class IsometricEngine {
   // 瓦片精灵图映射（使用center.png精灵图集）
   private readonly centerSpriteSheet = '/game/isometric/autotiles/center.png';
   private tileSprites: Map<string, { src: string; sx: number; sy: number; sw: number; sh: number }> = new Map([
-    ['grass', { src: this.centerSpriteSheet, sx: 0, sy: 0, sw: 128, sh: 64 }],      // 草地
-    ['swamp', { src: this.centerSpriteSheet, sx: 128, sy: 0, sw: 128, sh: 64 }],    // 沼泽
-    ['dirt', { src: this.centerSpriteSheet, sx: 256, sy: 0, sw: 128, sh: 64 }],     // 黑土
-    ['desert', { src: this.centerSpriteSheet, sx: 384, sy: 0, sw: 128, sh: 64 }],   // 沙漠
-    ['water', { src: this.centerSpriteSheet, sx: 512, sy: 0, sw: 128, sh: 64 }],    // 水
+    ['wood', { src: this.centerSpriteSheet, sx: 0, sy: 0, sw: 128, sh: 64 }],      // 木地 (位置0)
+    ['gold', { src: this.centerSpriteSheet, sx: 128, sy: 0, sw: 128, sh: 64 }],    // 金地 (位置1)
+    ['dirt', { src: this.centerSpriteSheet, sx: 256, sy: 0, sw: 128, sh: 64 }],    // 土地 (位置2)
+    ['fire', { src: this.centerSpriteSheet, sx: 384, sy: 0, sw: 128, sh: 64 }],    // 火地 (位置3)
+    ['water', { src: this.centerSpriteSheet, sx: 512, sy: 0, sw: 128, sh: 64 }],   // 水 (位置4)
     ['mountain', { src: '/game/isometric/autotiles/gold-dirt.png', sx: 0, sy: 0, sw: 128, sh: 64 }],
     ['stone', { src: '/game/isometric/autotiles/wood-gold.png', sx: 0, sy: 0, sw: 128, sh: 64 }],
   ]);
@@ -162,6 +165,8 @@ export class IsometricEngine {
       rows: 7,
       tileWidth: 128,
       tileHeight: 64,
+      terrain1: 'dirt',
+      terrain2: 'fire',
     }],
     ['wood-water', {
       src: '/game/isometric/autotiles/wood-water.png',
@@ -169,6 +174,8 @@ export class IsometricEngine {
       rows: 7,
       tileWidth: 128,
       tileHeight: 64,
+      terrain1: 'wood',
+      terrain2: 'water',
     }],
     ['gold-dirt', {
       src: '/game/isometric/autotiles/gold-dirt.png',
@@ -176,6 +183,62 @@ export class IsometricEngine {
       rows: 7,
       tileWidth: 128,
       tileHeight: 64,
+      terrain1: 'gold',
+      terrain2: 'dirt',
+    }],
+    ['gold-water', {
+      src: '/game/isometric/autotiles/gold-water.png',
+      cols: 4,
+      rows: 7,
+      tileWidth: 128,
+      tileHeight: 64,
+      terrain1: 'gold',
+      terrain2: 'water',
+    }],
+    ['wood-gold', {
+      src: '/game/isometric/autotiles/wood-gold.png',
+      cols: 4,
+      rows: 7,
+      tileWidth: 128,
+      tileHeight: 64,
+      terrain1: 'wood',
+      terrain2: 'gold',
+    }],
+    ['wood-dirt', {
+      src: '/game/isometric/autotiles/wood-dirt.png',
+      cols: 4,
+      rows: 7,
+      tileWidth: 128,
+      tileHeight: 64,
+      terrain1: 'wood',
+      terrain2: 'dirt',
+    }],
+    ['fire-water', {
+      src: '/game/isometric/autotiles/fire-water.png',
+      cols: 4,
+      rows: 7,
+      tileWidth: 128,
+      tileHeight: 64,
+      terrain1: 'fire',
+      terrain2: 'water',
+    }],
+    ['dirt-water', {
+      src: '/game/isometric/autotiles/dirt-water.png',
+      cols: 4,
+      rows: 7,
+      tileWidth: 128,
+      tileHeight: 64,
+      terrain1: 'dirt',
+      terrain2: 'water',
+    }],
+    ['wood-fire', {
+      src: '/game/isometric/autotiles/wood-fire.png',
+      cols: 4,
+      rows: 7,
+      tileWidth: 128,
+      tileHeight: 64,
+      terrain1: 'wood',
+      terrain2: 'fire',
     }],
   ]);
 
@@ -204,8 +267,24 @@ export class IsometricEngine {
    * 加载地图数据
    */
   async loadMap(mapData: MapData): Promise<void> {
+    console.log('🗺️ IsometricEngine loadMap:', mapData.name, `${mapData.width}x${mapData.height}`);
+    console.log('Sample tiles from engine:', mapData.tiles[0]?.slice(0, 3));
+    
     this.mapData = mapData;
     this.cacheValid = false;
+    
+    // 为所有autotile瓦片自动计算索引
+    for (let y = 0; y < mapData.height; y++) {
+      for (let x = 0; x < mapData.width; x++) {
+        const tile = mapData.tiles[y]?.[x];
+        if (tile && this.autotileConfigs.has(tile.tileType)) {
+          // 这是一个autotile瓦片，自动计算索引
+          if (tile.autotileIndex === undefined) {
+            tile.autotileIndex = this.calculateAutotileIndex(x, y, tile.tileType);
+          }
+        }
+      }
+    }
     
     // 收集所有需要加载的精灵图URL
     const spriteUrls = new Set<string>();
@@ -226,6 +305,9 @@ export class IsometricEngine {
     }
     
     await this.resourceLoader.preloadImages(Array.from(spriteUrls));
+    
+    console.log('✅ Resources loaded:', spriteUrls.size, 'images');
+    console.log('Images:', Array.from(spriteUrls));
     
     // 生成静态层缓存
     this.generateStaticLayerCache();
@@ -358,10 +440,16 @@ export class IsometricEngine {
     
     // 使用普通瓦片精灵
     const tileSprite = this.tileSprites.get(tile.tileType);
-    if (!tileSprite) return;
+    if (!tileSprite) {
+      console.warn(`⚠️ No sprite found for tileType: ${tile.tileType}`);
+      return;
+    }
     
     const img = this.resourceLoader.getImage(tileSprite.src);
-    if (!img) return;
+    if (!img) {
+      console.warn(`⚠️ Image not loaded: ${tileSprite.src}`);
+      return;
+    }
     
     const screenPos = this.cartesianToScreen(tile.x, tile.y);
     
@@ -592,29 +680,17 @@ export class IsometricEngine {
   calculateAutotileIndex(x: number, y: number, tileType: string): number {
     if (!this.mapData) return 0;
     
-    // 检查周围8个方向
-    const top = this.getTileAt(x, y - 1)?.tileType === tileType;
-    const bottom = this.getTileAt(x, y + 1)?.tileType === tileType;
-    const left = this.getTileAt(x - 1, y)?.tileType === tileType;
-    const right = this.getTileAt(x + 1, y)?.tileType === tileType;
+    const config = this.autotileConfigs.get(tileType);
+    if (!config) return 0;
     
-    const topLeft = this.getTileAt(x - 1, y - 1)?.tileType === tileType;
-    const topRight = this.getTileAt(x + 1, y - 1)?.tileType === tileType;
-    const bottomLeft = this.getTileAt(x - 1, y + 1)?.tileType === tileType;
-    const bottomRight = this.getTileAt(x + 1, y + 1)?.tileType === tileType;
-    
-    // 简化的autotile索引计算（4x7 = 28种组合）
-    // 这是一个基础实现，可以根据实际的autotile图集调整
-    let index = 0;
-    
-    // 四个主方向的权重
-    if (top) index += 1;
-    if (right) index += 2;
-    if (bottom) index += 4;
-    if (left) index += 8;
-    
-    // 限制在0-27范围内
-    return Math.min(index, 27);
+    return selectAutotileByCorners(
+      this.mapData,
+      x,
+      y,
+      tileType,
+      config.terrain1,
+      config.terrain2
+    );
   }
 
   /**
@@ -633,5 +709,30 @@ export class IsometricEngine {
     }
     
     this.cacheValid = false; // 需要重新渲染
+  }
+
+  /**
+   * 获取autotile配置
+   */
+  getAutotileConfig(autotileType: string): AutotileConfig | undefined {
+    return this.autotileConfigs.get(autotileType);
+  }
+
+  /**
+   * 设置tile的autotile索引
+   */
+  setTileAutotileIndex(x: number, y: number, index: number): void {
+    const tile = this.getTileAt(x, y);
+    if (tile && tile.autotileIndex !== undefined) {
+      tile.autotileIndex = index;
+      this.cacheValid = false; // 需要重新渲染
+    }
+  }
+
+  /**
+   * 获取地图数据（用于外部访问）
+   */
+  getMapData(): MapData | null {
+    return this.mapData;
   }
 }

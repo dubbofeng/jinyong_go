@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等距瓦片方向说明</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #e0e0e0;
+        }
+        h1, h2 {
+            color: #4fc3f7;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .diagram {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .tile {
+            width: 200px;
+            height: 100px;
+            margin: 50px auto;
+            position: relative;
+            transform: rotateX(60deg) rotateZ(45deg);
+            transform-style: preserve-3d;
+        }
+        .diamond {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            position: relative;
+            transform: rotate(45deg);
+            background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
+            border: 3px solid #81d4fa;
+        }
+        .label {
+            position: absolute;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            padding: 5px 10px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 5px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .top { top: -40px; left: 50%; transform: translateX(-50%) rotate(-45deg); }
+        .right { right: -80px; top: 50%; transform: translateY(-50%) rotate(-45deg); }
+        .bottom { bottom: -40px; left: 50%; transform: translateX(-50%) rotate(-45deg); }
+        .left { left: -80px; top: 50%; transform: translateY(-50%) rotate(-45deg); }
+        
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        .tl { top: -10px; left: -10px; }
+        .tr { top: -10px; right: -10px; }
+        .bl { bottom: -10px; left: -10px; }
+        .br { bottom: -10px; right: -10px; }
+        
+        .corner-label {
+            position: absolute;
+            font-size: 12px;
+            color: #ff6b6b;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        .tl-label { top: -50px; left: -100px; }
+        .tr-label { top: -50px; right: -100px; }
+        .bl-label { bottom: -50px; left: -100px; }
+        .br-label { bottom: -50px; right: -100px; }
+        
+        .connection-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .mini-tile {
+            width: 80px;
+            height: 80px;
+            transform: rotate(45deg);
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            border: 2px solid #81c784;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mini-tile span {
+            transform: rotate(-45deg);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #ffa726;
+        }
+        
+        code {
+            background: #3d3d3d;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #a5d6a7;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .example {
+            background: #2d2d2d;
+            border-left: 4px solid #4fc3f7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        
+        th {
+            background: #3d3d3d;
+            color: #4fc3f7;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 等距瓦片方向说明</h1>
+    
+    <div class="container">
+        <div class="diagram">
+            <h2>瓦片结构 - 边缘(Edges)</h2>
+            <div class="diamond">
+                <div class="label top">TOP<br/>上边</div>
+                <div class="label right">RIGHT<br/>右边</div>
+                <div class="label bottom">BOTTOM<br/>下边</div>
+                <div class="label left">LEFT<br/>左边</div>
+            </div>
+            <p style="text-align: center; margin-top: 30px;">
+                等距瓦片是菱形，有4条边<br/>
+                每条边可以是不同的地形
+            </p>
+        </div>
+        
+        <div class="diagram">
+            <h2>瓦片结构 - 角落(Corners)</h2>
+            <div class="diamond">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+                <div class="corner-label tl-label">topLeft</div>
+                <div class="corner-label tr-label">topRight</div>
+                <div class="corner-label bl-label">bottomLeft</div>
+                <div class="corner-label br-label">bottomRight</div>
+            </div>
+            <p style="text-align: center; margin-top: 30px;">
+                4个角落用于精确描述<br/>
+                地形过渡的位置
+            </p>
+        </div>
+    </div>
+    
+    <h2>📍 坐标系统</h2>
+    <div class="example">
+        <p>在笛卡尔坐标系(x, y)中，瓦片的邻居位置：</p>
+        <div style="text-align: center; font-family: monospace; font-size: 18px; margin: 20px 0;">
+            <div>(x, y-1) ← TOP</div>
+            <div style="margin: 10px 0;">
+                (x-1, y) ← LEFT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [当前瓦片] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RIGHT → (x+1, y)
+            </div>
+            <div>BOTTOM → (x, y+1)</div>
+        </div>
+    </div>
+    
+    <h2>🔗 瓦片连接示例</h2>
+    <div class="connection-demo">
+        <div class="mini-tile"><span>A</span></div>
+        <div class="mini-tile"><span>B</span></div>
+    </div>
+    <p style="text-align: center; color: #ffa726;">
+        ← A的RIGHT边 连接 B的LEFT边 →
+    </p>
+    
+    <div class="connection-demo">
+        <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+            <div class="mini-tile"><span>C</span></div>
+            <div class="arrow">↓</div>
+            <div class="mini-tile"><span>D</span></div>
+        </div>
+    </p>
+    <p style="text-align: center; color: #ffa726;">
+        C的BOTTOM边 连接 D的TOP边
+    </p>
+    
+    <h2>📊 JSON数据格式</h2>
+    <table>
+        <tr>
+            <th>字段</th>
+            <th>说明</th>
+            <th>示例</th>
+        </tr>
+        <tr>
+            <td><code>edges.top</code></td>
+            <td>上边的地形类型</td>
+            <td>"water", "sand", "transition"</td>
+        </tr>
+        <tr>
+            <td><code>edges.right</code></td>
+            <td>右边的地形类型</td>
+            <td>"water", "sand", "transition"</td>
+        </tr>
+        <tr>
+            <td><code>edges.bottom</code></td>
+            <td>下边的地形类型</td>
+            <td>"water", "sand", "transition"</td>
+        </tr>
+        <tr>
+            <td><code>edges.left</code></td>
+            <td>左边的地形类型</td>
+            <td>"water", "sand", "transition"</td>
+        </tr>
+    </table>
+    
+    <h2>🎯 实际应用</h2>
+    <div class="example">
+        <h3>示例：fire-water.png 瓦片[0,0]</h3>
+        <pre style="background: #1e1e1e; padding: 15px; border-radius: 5px; overflow-x: auto;">
+{
+  "description": "Mostly water with small sand intrusion at top edge",
+  "terrain1": "water",
+  "terrain2": "sand",
+  "edges": {
+    "top": "sand",      // ← 上方应该是沙地
+    "right": "water",   // ← 右方应该是水域
+    "bottom": "water",  // ← 下方应该是水域
+    "left": "water"     // ← 左方应该是水域
+  }
+}</pre>
+        <p>这表示：</p>
+        <ul>
+            <li>这个瓦片的 <strong>TOP边</strong> 有沙地侵入，所以它<strong>上方(y-1)</strong>的瓦片应该是沙地或包含沙地</li>
+            <li>它的 <strong>RIGHT/BOTTOM/LEFT边</strong> 都是水域，所以那些方向的瓦片应该是水域或包含水域</li>
+        </ul>
+    </div>
+    
+    <div class="example">
+        <h3>自动选择瓦片算法</h3>
+        <pre style="background: #1e1e1e; padding: 15px; border-radius: 5px; overflow-x: auto;">
+// 1. 检查当前位置(x, y)和邻居的地形
+const currentTerrain = map[y][x];
+const topTerrain = map[y-1]?.[x];    // 上方瓦片
+const rightTerrain = map[y][x+1];    // 右方瓦片
+const bottomTerrain = map[y+1]?.[x]; // 下方瓦片
+const leftTerrain = map[y][x-1];     // 左方瓦片
+
+// 2. 遍历autotile配置，找到edges匹配的瓦片
+for (const tile of autotileConfig.tiles) {
+  if (tile.isEmpty) continue;
+  
+  // 检查边缘是否匹配
+  const topMatch = (tile.edges.top === topTerrain || tile.edges.top === 'transition');
+  const rightMatch = (tile.edges.right === rightTerrain || tile.edges.right === 'transition');
+  const bottomMatch = (tile.edges.bottom === bottomTerrain || tile.edges.bottom === 'transition');
+  const leftMatch = (tile.edges.left === leftTerrain || tile.edges.left === 'transition');
+  
+  if (topMatch && rightMatch && bottomMatch && leftMatch) {
+    return tile.index; // ← 找到匹配的瓦片索引
+  }
+}</pre>
+    </div>
+    
+    <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #444; text-align: center; color: #888;">
+        <p>📁 位置：src/data/autotiles/</p>
+        <p>🎮 用于武侠游戏的等距地图系统</p>
+    </footer>
+</body>
+</html>

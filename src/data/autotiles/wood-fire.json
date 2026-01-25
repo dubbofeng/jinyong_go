@@ -8,197 +8,1003 @@
       "index": 0,
       "col": 0,
       "row": 0,
-      "description": "Full grass terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Mostly grass with small sand at top-left corner",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-right corner"
+        },
+        "right": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "sand intrusion at top-left corner only"
     },
     {
       "index": 1,
       "col": 1,
       "row": 0,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly grass with small sand at top-right corner",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "sand",
+        "bottomLeft": "grass",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "sand intrusion at top-right corner only"
     },
     {
       "index": 2,
       "col": 2,
       "row": 0,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly grass with small sand at bottom-right corner",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "sand intrusion at bottom-right corner only"
     },
     {
       "index": 3,
       "col": 3,
       "row": 0,
-      "description": "Full grass terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Mostly grass with small sand at bottom-left corner",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "sand",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "sand intrusion at bottom-left corner only"
     },
     {
       "index": 4,
       "col": 0,
       "row": 1,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly sand with small grass at top-left corner",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-right corner"
+        },
+        "right": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "sand",
+        "bottomLeft": "sand",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at top-left corner only"
     },
     {
       "index": 5,
       "col": 1,
       "row": 1,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Mostly sand with small grass at top-right corner",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "sand",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at top-right corner only"
     },
     {
       "index": 6,
       "col": 2,
       "row": 1,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Mostly sand with small grass at bottom-right corner",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "sand",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "grass intrusion at bottom-right corner only"
     },
     {
       "index": 7,
       "col": 3,
       "row": 1,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly sand with small grass at bottom-left corner",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at bottom-left corner only"
     },
     {
       "index": 8,
       "col": 0,
       "row": 2,
-      "description": "Full grass terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Grass with sand at top-left and bottom-right",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-right corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "sand intrusion at top-left and bottom-right corners"
     },
     {
       "index": 9,
       "col": 1,
       "row": 2,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": true,
+      "description": "Empty",
+      "terrain1": null,
+      "terrain2": null,
+      "edgeConnections": {},
+      "corners": {},
+      "gradientDirection": null
     },
     {
       "index": 10,
       "col": 2,
       "row": 2,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Sand with grass at top-right and bottom-left",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at top-right and bottom-left corners"
     },
     {
       "index": 11,
       "col": 3,
       "row": 2,
-      "description": "Full grass terrain",
-      "gradientDirection": "none"
+      "isEmpty": true,
+      "description": "Empty",
+      "terrain1": null,
+      "terrain2": null,
+      "edgeConnections": {},
+      "corners": {},
+      "gradientDirection": null
     },
     {
       "index": 12,
       "col": 0,
       "row": 3,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Grass with sand at top-right and bottom-left",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "sand",
+        "bottomLeft": "sand",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "sand intrusion at top-right and bottom-left corners"
     },
     {
       "index": 13,
       "col": 1,
       "row": 3,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly grass with sand at top and bottom",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "sand",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "sand intrusion at top and bottom"
     },
     {
       "index": 14,
       "col": 2,
       "row": 3,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Grass with sand at top-left and bottom-right",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-right corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "sand intrusion at top-left and bottom-right corners"
     },
     {
       "index": 15,
       "col": 3,
       "row": 3,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": true,
+      "description": "Empty",
+      "terrain1": null,
+      "terrain2": null,
+      "edgeConnections": {},
+      "corners": {},
+      "gradientDirection": null
     },
     {
       "index": 16,
       "col": 0,
       "row": 4,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Sand with grass at top-right and bottom-left",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at top-right and bottom-left corners"
     },
     {
       "index": 17,
       "col": 1,
       "row": 4,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly sand with grass at top and bottom",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "grass intrusion at top and bottom"
     },
     {
       "index": 18,
       "col": 2,
       "row": 4,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Sand with grass at top-right and bottom-left",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-left corner"
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at top-right and bottom-left corners"
     },
     {
       "index": 19,
       "col": 3,
       "row": 4,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": true,
+      "description": "Empty",
+      "terrain1": null,
+      "terrain2": null,
+      "edgeConnections": {},
+      "corners": {},
+      "gradientDirection": null
     },
     {
       "index": 20,
       "col": 0,
       "row": 5,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly sand with grass at bottom-right corner",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "sand",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "grass intrusion at bottom-right corner only"
     },
     {
       "index": 21,
       "col": 1,
       "row": 5,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Mostly sand with grass at bottom-left corner",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "grass intrusion at bottom-left corner only"
     },
     {
       "index": 22,
       "col": 2,
       "row": 5,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Mostly grass with sand at bottom-right corner",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "sand intrusion at bottom-right corner only"
     },
     {
       "index": 23,
       "col": 3,
       "row": 5,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly grass with sand at bottom-left corner",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-right corner"
+        },
+        "left": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at bottom-right corner"
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "sand",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "sand intrusion at bottom-left corner only"
     },
     {
       "index": 24,
       "col": 0,
       "row": 6,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Pure sand",
+      "terrain1": "sand",
+      "terrain2": null,
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "sand",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "None"
     },
     {
       "index": 25,
       "col": 1,
       "row": 6,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly sand with small grass at bottom",
+      "terrain1": "sand",
+      "terrain2": "grass",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with grass at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "sand"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "sand",
+        "topRight": "sand",
+        "bottomLeft": "grass",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "grass intrusion at bottom"
     },
     {
       "index": 26,
       "col": 2,
       "row": 6,
-      "description": "Grass with dirt patch",
-      "gradientDirection": "dirt center"
+      "isEmpty": false,
+      "description": "Mostly grass with small sand at bottom",
+      "terrain1": "grass",
+      "terrain2": "sand",
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [],
+          "requiresTransition": true,
+          "transitionDetails": "Needs transition with sand at top-left corner"
+        },
+        "left": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "sand",
+        "bottomRight": "sand"
+      },
+      "gradientDirection": "sand intrusion at bottom"
     },
     {
       "index": 27,
       "col": 3,
       "row": 6,
-      "description": "Full dirt terrain",
-      "gradientDirection": "none"
+      "isEmpty": false,
+      "description": "Pure grass",
+      "terrain1": "grass",
+      "terrain2": null,
+      "edgeConnections": {
+        "top": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "right": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "bottom": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        },
+        "left": {
+          "canConnectPure": [
+            "grass"
+          ],
+          "requiresTransition": false
+        }
+      },
+      "corners": {
+        "topLeft": "grass",
+        "topRight": "grass",
+        "bottomLeft": "grass",
+        "bottomRight": "grass"
+      },
+      "gradientDirection": "None"
     }
   ]
 }

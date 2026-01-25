@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
+import { AutotileDebugger } from '@/src/lib/autotile-debugger';
+import { AutotileTrainer } from '@/src/lib/autotile-trainer';
+import { AutotilePicker } from './AutotilePicker';
+import { getCornerTerrain } from '@/src/lib/autotile-helper';
 
 interface IsometricGameProps {
   mapId?: string;
@@ -17,6 +21,18 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(initialMap || null);
+  const [editMode, setEditMode] = useState(false);
+  const [pickerData, setPickerData] = useState<{
+    x: number;
+    y: number;
+    autotileType: string;
+    currentIndex: number;
+    spriteSheetSrc: string;
+    terrain1: string;
+    terrain2: string;
+    corners: any;
+    neighbors: any;
+  } | null>(null);
 
   // ==================== 地图加载 ====================
 
@@ -70,7 +86,7 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
         grid[y][x] = tile || {
           x,
           y,
-          tileType: 'grass',
+          tileType: 'wood',
           walkable: true,
         };
       }
@@ -85,12 +101,16 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // 启用Autotile调试
+    AutotileDebugger.enable();
+    console.log('🎮 Isometric Game initialized with debug mode');
+
     // 初始化引擎
     const engine = new IsometricEngine(canvas, {
       tileWidth: 128,
       tileHeight: 64,
-      mapWidth: 32,
-      mapHeight: 32,
+      mapWidth: 50,
+      mapHeight: 50,
     });
 
     engineRef.current = engine;
@@ -213,7 +233,45 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
     const tileX = Math.floor(worldPos.x);
     const tileY = Math.floor(worldPos.y);
 
-    console.log(`Clicked tile: (${tileX}, ${tileY})`);
+    // 获取tile信息和邻居信息
+    const tile = engine.getTileAt(tileX, tileY);
+    const neighbors = {
+      top: engine.getTileAt(tileX, tileY - 1)?.tileType || null,
+      right: engine.getTileAt(tileX + 1, tileY)?.tileType || null,
+      bottom: engine.getTileAt(tileX, tileY + 1)?.tileType || null,
+      left: engine.getTileAt(tileX - 1, tileY)?.tileType || null,
+    };
+    
+    AutotileDebugger.logTileClick(tileX, tileY, tile, neighbors);
+
+    // 如果是编辑模式且点击的是autotile，打开选择器
+    if (editMode && tile && tile.autotileIndex !== undefined) {
+      const config = engine.getAutotileConfig(tile.tileType);
+      if (config) {
+        // 计算corners
+        const mapData = engine.getMapData();
+        if (mapData) {
+          const corners = {
+            topLeft: getCornerTerrain(mapData, tileX, tileY, 'topLeft', config.terrain1, config.terrain2),
+            topRight: getCornerTerrain(mapData, tileX, tileY, 'topRight', config.terrain1, config.terrain2),
+            bottomLeft: getCornerTerrain(mapData, tileX, tileY, 'bottomLeft', config.terrain1, config.terrain2),
+            bottomRight: getCornerTerrain(mapData, tileX, tileY, 'bottomRight', config.terrain1, config.terrain2),
+          };
+          
+          setPickerData({
+            x: tileX,
+            y: tileY,
+            autotileType: tile.tileType,
+            currentIndex: tile.autotileIndex,
+            spriteSheetSrc: config.src,
+            terrain1: config.terrain1,
+            terrain2: config.terrain2,
+            corners,
+            neighbors,
+          });
+        }
+      }
+    }
 
     // TODO: 处理点击瓦片（移动玩家、交互等）
   };
@@ -255,63 +313,63 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   // ==================== 辅助函数 ====================
 
   /**
-   * 创建默认测试地图
+   * 创建默认测试地图 - 自然地形布局
    */
   const createDefaultMap = (): MapData => {
-    const width = 32;
-    const height = 32;
+    const width = 50;
+    const height = 50;
+    
+    console.log('🗺️ Creating default map...');
     const tiles: any[][] = [];
 
-    // 生成多样化的地形
+    // 第一步：创建基础地形区域（不使用autotile）
     for (let y = 0; y < height; y++) {
       tiles[y] = [];
       for (let x = 0; x < width; x++) {
-        // 创建不同区域的地形
-        let tileType = 'grass';
-        let autotileIndex: number | undefined = undefined;
+        let tileType = 'wood';
         
-        // 中心区域 - 草地
-        if (x >= 10 && x < 22 && y >= 10 && y < 22) {
-          tileType = 'grass';
-        }
-        // 左上角 - 水
-        else if (x < 8 && y < 8) {
+        // 创建几个大的地形区域
+        // 左上角 - 大片水域 (15x15)
+        if (x < 15 && y < 15) {
           tileType = 'water';
         }
-        // 右上角 - 沙漠
-        else if (x >= 24 && y < 8) {
-          tileType = 'desert';
+        // 右上角 - 金地区域 (20x15)
+        else if (x >= 30 && y < 15) {
+          tileType = 'gold';
         }
-        // 左下角 - 使用dirt-fire autotile（黑土到沙漠过渡）
-        else if (x >= 8 && x < 16 && y >= 24) {
-          tileType = 'dirt-fire';
-          // 创建渐变效果：从左到右使用不同的autotile索引
-          const relX = x - 8;
-          autotileIndex = Math.floor((relX / 8) * 4); // 0-3列
-        }
-        // 右下角 - 黑土
-        else if (x >= 24 && y >= 24) {
+        // 左下角 - 黑土区域 (15x20)
+        else if (x < 15 && y >= 30) {
           tileType = 'dirt';
         }
-        // 其他区域 - 混合
+        // 右下角 - 另一片水域 (12x12)
+        else if (x >= 38 && y >= 38) {
+          tileType = 'water';
+        }
+        // 中间偏左 - 一片火地 (8x8)
+        else if (x >= 8 && x < 16 && y >= 20 && y < 28) {
+          tileType = 'fire';
+        }
+        // 其他都是木地
         else {
-          const types = ['grass', 'dirt', 'desert'];
-          tileType = types[(x + y) % types.length];
+          tileType = 'wood';
         }
         
         tiles[y][x] = {
           x,
           y,
           tileType,
-          walkable: tileType !== 'water', // 水不可行走
-          autotileIndex,
+          walkable: tileType !== 'water',
+          autotileIndex: undefined,
         };
       }
     }
 
+    console.log(`✅ Map created: ${width}x${height}, ${tiles.flat().length} tiles`);
+    console.log('Sample tiles:', tiles[0].slice(0, 3));
+
     return {
       id: 'default',
-      name: 'Test Map (Autotiles)',
+      name: '自然地形地图 - 基础瓦片展示',
       width,
       height,
       tiles,
@@ -333,10 +391,10 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
   }
 
   return (
-    <div className="relative w-full h-full bg-gray-900">
+    <div className="relative w-full h-screen bg-gray-900">
       {/* 加载提示 */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
           <div className="text-white text-xl">
             Loading map...
           </div>
@@ -347,21 +405,140 @@ export function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
-        className="w-full h-full cursor-pointer"
-        style={{ imageRendering: 'pixelated' }}
+        className="absolute inset-0 w-full h-full cursor-pointer"
+        style={{ imageRendering: 'pixelated', zIndex: 0 }}
       />
 
-      {/* 调试信息 */}
+      {/* 调试信息 - 左下角 */}
       {mapData && (
-        <div className="absolute top-4 left-4 bg-black/70 text-white p-4 rounded-lg text-sm">
-          <div className="font-bold mb-2">{mapData.name}</div>
-          <div>尺寸: {mapData.width} × {mapData.height}</div>
-          <div>物品数: {mapData.items.length}</div>
-          <div className="mt-2 text-xs text-gray-400">
+        <div 
+          className="absolute bg-black/70 text-white p-3 rounded-lg text-sm max-w-xs z-20"
+          style={{ bottom: '1rem', left: '1rem' }}
+        >
+          <div className="font-bold mb-2 text-xs">{mapData.name}</div>
+          <div className="text-xs">尺寸: {mapData.width} × {mapData.height}</div>
+          <div className="text-xs">物品数: {mapData.items.length}</div>
+          <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
             WASD / 方向键: 移动视口<br />
-            点击: 选择瓦片
+            点击瓦片: 查看信息
           </div>
         </div>
+      )}
+
+      {/* 地形说明 - 右上角 */}
+      <div 
+        className="absolute bg-black/70 text-white p-4 rounded-lg text-sm w-64 z-20"
+        style={{ top: '1rem', right: '1rem' }}
+      >
+        <div className="font-bold mb-3 text-center">地形区域</div>
+        <div className="space-y-1 text-xs">
+          <div>🌊 <span className="font-semibold">左上角</span>: 水域 (15×15)</div>
+          <div>🏜️ <span className="font-semibold">右上角</span>: 金地 (20×15)</div>
+          <div>🟤 <span className="font-semibold">左下角</span>: 土地 (15×20)</div>
+          <div>🌊 <span className="font-semibold">右下角</span>: 水域 (12×12)</div>
+          <div>🔥 <span className="font-semibold">中间偏左</span>: 火地 (8×8)</div>
+          <div>🟢 <span className="font-semibold">其他</span>: 木地</div>
+        </div>
+        <div className="mt-3 pt-2 border-t border-gray-600 text-xs text-gray-400">
+          使用center.png基础瓦片<br/>
+          5种地形：木、金、土、火、水
+        </div>
+        
+        {/* 编辑模式开关 */}
+        <div className="mt-3 pt-2 border-t border-gray-600">
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className={`w-full px-3 py-2 rounded text-sm font-bold transition-colors ${
+              editMode 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {editMode ? '✏️ 编辑模式 ON' : '👁️ 查看模式'}
+          </button>
+          {editMode && (
+            <div className="mt-2 text-xs text-yellow-300 text-center">
+              点击autotile来手动选择瓦片
+            </div>
+          )}
+        </div>
+        
+        {/* 训练数据管理 */}
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => {
+              AutotileTrainer.printAnalysis();
+            }}
+            className="px-2 py-1 bg-purple-600 hover:bg-purple-700 rounded text-xs transition-colors"
+            title="在控制台打印分析报告"
+          >
+            📊
+          </button>
+          <button
+            onClick={() => {
+              const data = AutotileTrainer.exportJSON();
+              const blob = new Blob([data], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `autotile-training-${Date.now()}.json`;
+              a.click();
+            }}
+            className="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 rounded text-xs transition-colors"
+            title="导出训练数据"
+          >
+            💾
+          </button>
+          <button
+            onClick={() => {
+              if (confirm('确定要清空所有训练数据吗？')) {
+                AutotileTrainer.clear();
+              }
+            }}
+            className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs transition-colors"
+            title="清空所有训练数据"
+          >
+            🗑️
+          </button>
+        </div>
+      </div>
+
+      {/* Autotile Picker */}
+      {pickerData && (
+        <AutotilePicker
+          autotileType={pickerData.autotileType}
+          currentIndex={pickerData.currentIndex}
+          spriteSheetSrc={pickerData.spriteSheetSrc}
+          tileInfo={{
+            x: pickerData.x,
+            y: pickerData.y,
+            corners: pickerData.corners,
+            neighbors: pickerData.neighbors,
+          }}
+          onSelect={(newIndex) => {
+            const engine = engineRef.current;
+            if (engine && mapData) {
+              // 记录训练数据
+              AutotileTrainer.recordChoice({
+                timestamp: Date.now(),
+                position: { x: pickerData.x, y: pickerData.y },
+                autotileType: pickerData.autotileType,
+                terrain1: pickerData.terrain1,
+                terrain2: pickerData.terrain2,
+                corners: pickerData.corners,
+                neighbors: pickerData.neighbors,
+                algorithmIndex: pickerData.currentIndex,
+                userIndex: newIndex,
+              });
+              
+              // 更新tile
+              engine.setTileAutotileIndex(pickerData.x, pickerData.y, newIndex);
+              
+              console.log(`✅ Updated tile (${pickerData.x}, ${pickerData.y}) from index ${pickerData.currentIndex} → ${newIndex}`);
+            }
+          }}
+          onClose={() => setPickerData(null)}
+        />
       )}
     </div>
   );
