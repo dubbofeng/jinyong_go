@@ -34,6 +34,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
   const [pendingPortal, setPendingPortal] = useState<any>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // WASD移动状态
+  const pressedKeysRef = useRef<Set<string>>(new Set());
 
   // 调试：监控传送门状态
   useEffect(() => {
@@ -207,9 +210,28 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    */
   const update = (deltaTime: number) => {
     if (engineRef.current) {
-      // 更新玩家（移动、动画等）
+      // 处理WASD键盘移动
+      const keys = pressedKeysRef.current;
+      let dx = 0;
+      let dy = 0;
+      
+      if (keys.has('w') || keys.has('W')) dy -= 1;
+      if (keys.has('s') || keys.has('S')) dy += 1;
+      if (keys.has('a') || keys.has('A')) dx -= 1;
+      if (keys.has('d') || keys.has('D')) dx += 1;
+      
       // deltaTime已经是毫秒，需要转换为秒
       const deltaSeconds = deltaTime / 1000;
+      
+      // 如果有键盘输入，使用键盘移动
+      if (dx !== 0 || dy !== 0) {
+        engineRef.current.movePlayerByKeyboard(dx, dy, deltaSeconds);
+      } else {
+        // 没有键盘输入时，停止键盘移动状态
+        engineRef.current.stopKeyboardMovement();
+      }
+      
+      // 更新玩家（移动动画等）
       engineRef.current.updatePlayer(deltaSeconds);
       
       // 摄像机始终跟随玩家（保持玩家在屏幕中心）
@@ -330,21 +352,57 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   };
 
   /**
-   * 处理键盘事件（已禁用WASD视口控制）
+   * 处理键盘事件（WASD移动 + 空格交互 + ESC关闭对话）
    */
   useEffect(() => {
-    // 为了保持玩家始终在屏幕中心，禁用WASD手动控制视口
-    // 只能通过点击地面来移动玩家
-    
-    // ESC键关闭对话
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      // 空格键触发附近NPC/传送门交互
+      if (e.key === ' ' && !isDialogueVisible && engineRef.current) {
+        e.preventDefault(); // 防止页面滚动
+        const nearbyItem = engineRef.current.getNearbyInteractableItem();
+        
+        if (nearbyItem) {
+          if (nearbyItem.itemType === 'npc') {
+            // 触发NPC对话
+            console.log(`🗣️ [Space] Interacting with NPC: ${nearbyItem.itemName}`);
+            await startDialogue(nearbyItem);
+          } else if (nearbyItem.itemType === 'portal') {
+            // 触发传送门交互
+            console.log(`🌀 [Space] Activating portal to ${nearbyItem.targetMapId}`);
+            if (nearbyItem.targetMapId) {
+              setPendingPortal(nearbyItem);
+              setShowPortalConfirm(true);
+            }
+          }
+        }
+        return;
+      }
+      
+      // ESC键关闭对话
       if (e.key === 'Escape' && isDialogueVisible) {
         closeDialogue();
+        return;
+      }
+      
+      // WASD移动
+      if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+        pressedKeysRef.current.add(e.key);
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+        pressedKeysRef.current.delete(e.key);
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
   }, [isDialogueVisible]);
 
   // ==================== 对话系统函数 ====================

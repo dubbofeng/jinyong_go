@@ -983,6 +983,95 @@ export class IsometricEngine {
   }
 
   /**
+   * 通过键盘移动玩家（像素级平滑移动）
+   */
+  movePlayerByKeyboard(dx: number, dy: number, deltaTime: number): void {
+    if (!this.player) return;
+    
+    // 归一化方向向量
+    const length = Math.sqrt(dx * dx + dy * dy);
+    if (length === 0) return;
+    
+    const normDx = dx / length;
+    const normDy = dy / length;
+    
+    // 计算移动距离（使用玩家速度）
+    const moveDistance = this.player.getSpeed() * deltaTime;
+    
+    // 获取当前位置
+    const currentPos = this.player.getPosition();
+    const newX = currentPos.x + normDx * moveDistance;
+    const newY = currentPos.y + normDy * moveDistance;
+    
+    // 检查新位置是否可行走
+    const tileX = Math.floor(newX);
+    const tileY = Math.floor(newY);
+    
+    // 边界检查
+    if (tileX < 0 || tileX >= this.config.mapWidth || tileY < 0 || tileY >= this.config.mapHeight) {
+      return;
+    }
+    
+    // 碰撞检测
+    if (!this.isWalkable(tileX, tileY)) {
+      return;
+    }
+    
+    // 更新玩家位置和方向
+    this.player.setPositionDirect(newX, newY);
+    this.player.setDirection(normDx, normDy);
+    this.player.setMoving(true);
+  }
+
+  /**
+   * 停止键盘移动（当没有按键时调用）
+   */
+  stopKeyboardMovement(): void {
+    if (!this.player) return;
+    
+    // 只停止键盘移动，不影响点击路径移动
+    // 检查玩家是否在跟随路径移动
+    if (!this.player.hasPath()) {
+      this.player.setMoving(false);
+    }
+  }
+
+  /**
+   * 获取玩家附近的可交互物品（NPC或传送门）
+   * @returns 最近的可交互物品，如果没有则返回null
+   */
+  getNearbyInteractableItem(): MapItem | null {
+    if (!this.mapData || !this.player) return null;
+    
+    const playerPos = this.player.getPosition();
+    const interactionDistance = 3; // 交互距离：3格以内
+    
+    let nearestItem: MapItem | null = null;
+    let nearestDistance = interactionDistance + 1;
+    
+    // 检查所有物品
+    for (const item of this.mapData.items) {
+      // 只检查NPC和传送门
+      if (item.itemType !== 'npc' && item.itemType !== 'portal') {
+        continue;
+      }
+      
+      // 计算距离
+      const dx = item.x - playerPos.x;
+      const dy = item.y - playerPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      // 如果在交互距离内且更近
+      if (distance <= interactionDistance && distance < nearestDistance) {
+        nearestItem = item;
+        nearestDistance = distance;
+      }
+    }
+    
+    return nearestItem;
+  }
+
+  /**
    * 更新玩家状态（每帧调用）
    */
   updatePlayer(deltaTime: number): void {

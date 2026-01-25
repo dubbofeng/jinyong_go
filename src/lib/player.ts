@@ -219,6 +219,50 @@ export class Player {
   }
 
   /**
+   * 直接设置位置（不清除路径，用于键盘移动）
+   */
+  setPositionDirect(x: number, y: number): void {
+    this.state.x = x;
+    this.state.y = y;
+  }
+
+  /**
+   * 设置移动状态
+   */
+  setMoving(moving: boolean): void {
+    this.state.isMoving = moving;
+  }
+
+  /**
+   * 根据移动方向设置动画方向
+   */
+  setDirection(dx: number, dy: number): void {
+    // 根据移动方向更新朝向
+    // 第0行=下, 第1行=右, 第2行=左, 第3行=上
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // 水平移动为主
+      this.state.direction = dx > 0 ? 1 : 2; // 右或左
+    } else {
+      // 垂直移动为主
+      this.state.direction = dy > 0 ? 0 : 3; // 下或上
+    }
+  }
+
+  /**
+   * 获取移动速度
+   */
+  getSpeed(): number {
+    return this.state.speed;
+  }
+
+  /**
+   * 检查是否有移动路径
+   */
+  hasPath(): boolean {
+    return this.state.path.length > 0 && this.state.pathIndex < this.state.path.length;
+  }
+
+  /**
    * 是否正在移动
    */
   isMoving(): boolean {
