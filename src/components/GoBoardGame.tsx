@@ -1,0 +1,536 @@
+'use client';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { GoBoard, type BoardSize } from '../lib/go-board';
+import { GoEngine } from '../lib/go-engine';
+import { 
+  SkillManager,
+  type TerritoryEvaluation,
+  type SuggestedMove
+} from '../lib/go-skills';
+
+interface GoBoardGameProps {
+  size?: BoardSize;
+  width?: number;
+  height?: number;
+}
+
+export default function GoBoardGame({ 
+  size = 9, 
+  width = 600, 
+  height = 600 
+}: GoBoardGameProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const boardRef = useRef<GoBoard | null>(null);
+  const engineRef = useRef<GoEngine | null>(null);
+  const skillManagerRef = useRef<SkillManager | null>(null);
+  
+  const [currentPlayer, setCurrentPlayer] = useState<'black' | 'white'>('black');
+  const [moveCount, setMoveCount] = useState(0);
+  const [capturedCount, setCapturedCount] = useState({ black: 0, white: 0 });
+  const [lastMessage, setLastMessage] = useState<string>('');
+  
+  // 技能系统状态
+  const [evaluation, setEvaluation] = useState<TerritoryEvaluation | null>(null);
+  const [suggestions, setSuggestions] = useState<SuggestedMove[]>([]);
+  const [skillsRefreshKey, setSkillsRefreshKey] = useState(0);
+  /**
+   * 处理落子
+   */
+  const handleStonePlace = useCallback((position: { row: number; col: number }) => {
+    const board = boardRef.current;
+    const engine = engineRef.current;
+    if (!board || !engine) return;
+
+    // 使用函数式更新来避免闭包问题
+    setCurrentPlayer((prevPlayer) => {
+      // 尝试通过规则引擎落子
+      const result = engine.placeStone(position, prevPlayer);
+      
+      if (result.success) {
+        console.log(`${prevPlayer} placed stone at (${position.row}, ${position.col})`);
+        
+        // 在棋盘上显示落子
+        board.placeStone(position, prevPlayer);
+        
+        // 处理提子
+        if (result.capturedStones.length > 0) {
+          console.log(`Captured ${result.capturedStones.length} stones`);
+          for (const captured of result.capturedStones) {
+            board.removeStone(captured);
+          }
+          
+          // 更新提子数
+          setCapturedCount(prev => ({
+            ...prev,
+            [prevPlayer]: prev[prevPlayer] + result.capturedStones.length
+          }));
+          
+          setLastMessage(`提取了${result.capturedStones.length}子！`);
+        } else {
+          setLastMessage('');
+        }
+        
+        // 计算下一个玩家
+        const nextPlayer = prevPlayer === 'black' ? 'white' : 'black';
+        
+        // 更新手数
+        setMoveCount((prev) => prev + 1);
+        
+        // 更新悬停提示的颜色
+        board.setNextStoneColor(nextPlayer);
+        
+        return nextPlayer;
+      } else {
+        // 落子失败
+        if (result.isKo) {
+          setLastMessage('❌ 劫争！不能立即回提');
+        } else if (result.error === 'Suicide move') {
+          setLastMessage('❌ 自杀手！不能自己没气');
+        } else {
+          setLastMessage('❌ 此位置不能落子');
+        }
+        console.log('Invalid move:', result.error);
+        return prevPlayer;
+      }
+    });
+  }, []);
+
+  // 初始化棋盘
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // 设置Canvas尺寸
+    canvas.width = width;
+    canvas.height = height;
+
+    // 创建棋盘实例
+    const board = new GoBoard(canvas, size);
+    boardRef.current = board;
+    
+    // 创建规则引擎实例
+    const engine = new GoEngine(size);
+    engineRef.current = engine;
+    
+    // 创建技能管理器实例
+    const skillManager = new SkillManager();
+    skillManagerRef.current = skillManager;
+    
+    // 设置落子回调
+    board.setOnStonePlace(handleStonePlace);
+    
+    board.render();
+
+    return () => {
+      // 清理
+    };
+  }, [size, width, height, handleStonePlace]);
+
+  const handlePass = () => {
+    setCurrentPlayer((prevPlayer) => {
+      console.log(`${prevPlayer} passes`);
+      const nextPlayer = prevPlayer === 'black' ? 'white' : 'black';
+      
+      if (boardRef.current) {
+        boardRef.current.setNextStoneColor(nextPlayer);
+      }
+      
+      return nextPlayer;
+    });
+  };
+
+  const handleResign = () => {
+    const winner = currentPlayer === 'black' ? 'white' : 'black';
+    alert(`${currentPlayer} resigns. ${winner} wins!`);
+  };
+
+  const handleReset = () => {
+    if (boardRef.current && engineRef.current) {
+      boardRef.current.clear();
+      engineRef.current.clear();
+      setCurrentPlayer('black');
+      setMoveCount(0);
+      setCapturedCount({ black: 0, white: 0 });
+      setLastMessage('');
+      setEvaluation(null);
+      setSuggestions([]);
+      
+      // 重置技能
+      if (skillManagerRef.current) {
+        skillManagerRef.current.resetAll();
+        setSkillsRefreshKey(k => k + 1);
+      }
+    }
+  };
+
+  const handleUndo = () => {
+    if (engineRef.current && boardRef.current) {
+      const success = engineRef.current.undo();
+      if (success) {
+        // 同步棋盘显示
+        const boardState = engineRef.current.getBoard();
+        boardRef.current.setBoardState(boardState);
+        
+        // 切换回上一个玩家
+        setCurrentPlayer(prev => prev === 'black' ? 'white' : 'black');
+        setMoveCount(prev => Math.max(0, prev - 1));
+        setLastMessage('悔棋成功');
+      } else {
+        setLastMessage('无法悔棋');
+      }
+    }
+  };
+
+  // ==================== 技能系统函数 ====================
+
+  /**
+   * 技能1：亢龙有悔（悔棋）
+   */
+  const useKangLongYouHui = () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('kanglongyouhui');
+    
+    if (!skill || !('use' in skill)) return;
+    
+    const engine = engineRef.current;
+    if (!engine) return;
+    
+    const success = (skill as any).use(engine);
+    if (success && boardRef.current) {
+      const boardState = engine.getBoard();
+      boardRef.current.setBoardState(boardState);
+      setCurrentPlayer(prev => prev === 'black' ? 'white' : 'black');
+      setMoveCount(prev => Math.max(0, prev - 1));
+      setLastMessage(`✨ 使用【亢龙有悔】悔棋成功！剩余${skill.currentUses}次`);
+      setSkillsRefreshKey(k => k + 1);
+    } else {
+      setLastMessage('❌ 无法使用【亢龙有悔】');
+    }
+  };
+
+  /**
+   * 技能2：独孤九剑（形势判断）
+   */
+  const useDuGuJiuJian = () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('dugujiujian');
+    
+    if (!skill || !('use' in skill)) return;
+    
+    const engine = engineRef.current;
+    if (!engine) return;
+    
+    const result = (skill as any).use(engine);
+    if (result) {
+      setEvaluation(result);
+      setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
+      setSkillsRefreshKey(k => k + 1);
+      
+      // 5秒后自动隐藏评估结果
+      setTimeout(() => setEvaluation(null), 8000);
+    } else {
+      setLastMessage('❌ 无法使用【独孤九剑】');
+    }
+  };
+
+  /**
+   * 技能3：腹语传音（AI建议）
+   */
+  const useFuYuChuanYin = () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('fuyuchuanyin');
+    
+    if (!skill || !('use' in skill)) return;
+    
+    const engine = engineRef.current;
+    if (!engine) return;
+    
+    const result = (skill as any).use(engine, currentPlayer) as SuggestedMove[];
+    if (result && result.length > 0) {
+      setSuggestions(result);
+      setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
+      setSkillsRefreshKey(k => k + 1);
+      
+      // 在棋盘上标记建议位置
+      if (boardRef.current) {
+        result.forEach((suggestion: SuggestedMove, index: number) => {
+          boardRef.current!.highlightPosition(suggestion.position, index + 1);
+        });
+      }
+      
+      // 8秒后自动隐藏建议并清除标记
+      setTimeout(() => {
+        setSuggestions([]);
+        if (boardRef.current) {
+          boardRef.current.clearHighlights();
+        }
+      }, 8000);
+    } else {
+      setLastMessage('❌ 无法使用【腹语传音】');
+    }
+  };
+
+  /**
+   * 技能4：机关算尽（变化图）
+   */
+  const useJiGuanSuanJin = () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('jiguansuanjin');
+    
+    if (!skill || !('use' in skill)) return;
+    
+    const engine = engineRef.current;
+    if (!engine) return;
+    
+    const result = (skill as any).use(engine);
+    if (result) {
+      setLastMessage(`✨ 使用【机关算尽】创建变化分支！剩余${skill.currentUses}次`);
+      setSkillsRefreshKey(k => k + 1);
+      // TODO: 实现变化图UI
+      alert('变化图功能开发中...');
+    } else {
+      setLastMessage('❌ 无法使用【机关算尽】');
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-4 p-4">
+      {/* 游戏信息 */}
+      <div className="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className={`w-6 h-6 rounded-full ${
+              currentPlayer === 'black' ? 'bg-black' : 'bg-white border border-gray-400'
+            }`} />
+            <span className="font-semibold">
+              {currentPlayer === 'black' ? '黑方' : '白方'}落子
+            </span>
+          </div>
+          <div className="text-sm text-gray-300">
+            手数: {moveCount}
+          </div>
+          <div className="text-sm text-gray-300">
+            棋盘: {size}路
+          </div>
+          <div className="text-sm text-gray-300">
+            提子: 黑{capturedCount.black} 白{capturedCount.white}
+          </div>
+        </div>
+        {lastMessage && (
+          <div className="mt-2 text-sm text-yellow-300">
+            {lastMessage}
+          </div>
+        )}
+      </div>
+
+      {/* 棋盘Canvas */}
+      <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl">
+        <canvas
+          ref={canvasRef}
+          className="border-2 border-yellow-800 rounded"
+        />
+      </div>
+
+      {/* 控制按钮 */}
+      <div className="flex gap-4">
+        <button
+          onClick={handlePass}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          停一手（Pass）
+        </button>
+        <button
+          onClick={handleUndo}
+          className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+        >
+          悔棋（Undo）
+        </button>
+        <button
+          onClick={handleResign}
+          className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          认输（Resign）
+        </button>
+        <button
+          onClick={handleReset}
+          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          重新开始
+        </button>
+      </div>
+
+      {/* 武侠技能快捷栏 */}
+      <div className="w-full max-w-4xl" key={skillsRefreshKey}>
+        <h3 className="text-center font-bold text-lg text-amber-800 mb-3">⚔️ 武侠技能 ⚔️</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {/* 技能1：亢龙有悔 */}
+          {(() => {
+            const skill = skillManagerRef.current?.getSkill('kanglongyouhui');
+            const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current);
+            return (
+              <button
+                onClick={useKangLongYouHui}
+                disabled={!canUse}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  canUse
+                    ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-orange-400 hover:scale-105 cursor-pointer shadow-lg'
+                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                title="快捷键: 1"
+              >
+                <div className="text-white text-center">
+                  <div className="text-2xl mb-1">🐉</div>
+                  <div className="font-bold text-sm">亢龙有悔</div>
+                  <div className="text-xs opacity-90">{skill?.character}</div>
+                  <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                </div>
+              </button>
+            );
+          })()}
+
+          {/* 技能2：独孤九剑 */}
+          {(() => {
+            const skill = skillManagerRef.current?.getSkill('dugujiujian');
+            const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+            return (
+              <button
+                onClick={useDuGuJiuJian}
+                disabled={!canUse}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  canUse
+                    ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 hover:scale-105 cursor-pointer shadow-lg'
+                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                title="快捷键: 2"
+              >
+                <div className="text-white text-center">
+                  <div className="text-2xl mb-1">⚔️</div>
+                  <div className="font-bold text-sm">独孤九剑</div>
+                  <div className="text-xs opacity-90">{skill?.character}</div>
+                  <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                </div>
+              </button>
+            );
+          })()}
+
+          {/* 技能3：腹语传音 */}
+          {(() => {
+            const skill = skillManagerRef.current?.getSkill('fuyuchuanyin');
+            const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+            return (
+              <button
+                onClick={useFuYuChuanYin}
+                disabled={!canUse}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  canUse
+                    ? 'bg-gradient-to-br from-purple-600 to-purple-800 border-purple-400 hover:scale-105 cursor-pointer shadow-lg'
+                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                title="快捷键: 3"
+              >
+                <div className="text-white text-center">
+                  <div className="text-2xl mb-1">🗨️</div>
+                  <div className="font-bold text-sm">腹语传音</div>
+                  <div className="text-xs opacity-90">{skill?.character}</div>
+                  <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                </div>
+              </button>
+            );
+          })()}
+
+          {/* 技能4：机关算尽 */}
+          {(() => {
+            const skill = skillManagerRef.current?.getSkill('jiguansuanjin');
+            const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+            const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
+            return (
+              <button
+                onClick={useJiGuanSuanJin}
+                disabled={!canUse}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  canUse
+                    ? 'bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 hover:scale-105 cursor-pointer shadow-lg'
+                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                }`}
+                title="快捷键: 4"
+              >
+                <div className="text-white text-center">
+                  <div className="text-2xl mb-1">🧩</div>
+                  <div className="font-bold text-sm">机关算尽</div>
+                  <div className="text-xs opacity-90">{skill?.character}</div>
+                  <div className="text-xs mt-1">
+                    {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+                  </div>
+                </div>
+              </button>
+            );
+          })()}
+        </div>
+      </div>
+
+      {/* 形势判断结果显示 */}
+      {evaluation && (
+        <div className="bg-gradient-to-br from-green-900 to-green-800 border-4 border-green-500 rounded-xl p-6 max-w-md text-white shadow-2xl">
+          <h3 className="text-xl font-bold text-center mb-4">⚔️ 独孤九剑 · 形势判断 ⚔️</h3>
+          <div className="space-y-3">
+            <div className="text-center text-2xl font-bold text-yellow-300">
+              {evaluation.evaluation}
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-black/30 p-3 rounded">
+                <div className="font-semibold">黑方</div>
+                <div>地盘: {evaluation.blackTerritory}</div>
+                <div>提子: {evaluation.blackCaptures}</div>
+                <div className="font-bold mt-1">总计: {evaluation.blackTerritory + evaluation.blackCaptures}</div>
+              </div>
+              <div className="bg-white/20 p-3 rounded">
+                <div className="font-semibold">白方</div>
+                <div>地盘: {evaluation.whiteTerritory}</div>
+                <div>提子: {evaluation.whiteCaptures}</div>
+                <div className="font-bold mt-1">总计: {evaluation.whiteTerritory + evaluation.whiteCaptures}</div>
+              </div>
+            </div>
+            <div className="text-center text-lg">
+              优势分数: <span className="font-bold text-yellow-300">{evaluation.score > 0 ? '+' : ''}{evaluation.score}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI建议结果显示 */}
+      {suggestions.length > 0 && (
+        <div className="bg-gradient-to-br from-purple-900 to-purple-800 border-4 border-purple-500 rounded-xl p-6 max-w-md text-white shadow-2xl">
+          <h3 className="text-xl font-bold text-center mb-4">🗨️ 腹语传音 · AI建议 🗨️</h3>
+          <div className="space-y-2">
+            {suggestions.map((suggestion, index) => (
+              <div key={index} className="bg-black/30 p-3 rounded flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-yellow-300">#{index + 1}</span>
+                  {' '}位置: ({suggestion.position.row}, {suggestion.position.col})
+                </div>
+                <div className="text-sm">
+                  <span className="text-purple-300">{suggestion.reason}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 操作说明 */}
+      <div className="bg-gray-100 p-4 rounded-lg max-w-md text-sm text-gray-700">
+        <h3 className="font-semibold mb-2">操作说明:</h3>
+        <ul className="list-disc list-inside space-y-1">
+          <li>点击交叉点落子</li>
+          <li>鼠标悬停显示落子预览</li>
+          <li>红色方框标记最后一手</li>
+          <li>黑方先行，双方轮流落子</li>
+          <li>✨ 自动提取无气的棋子</li>
+          <li>✨ 检测并禁止劫争</li>
+          <li>✨ 禁止自杀手（自己没气）</li>
+        </ul>
+      </div>
+    </div>
+  );
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
 import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
 import DialogueBox from '@/src/components/DialogueBox';
+import GoGameModal from '@/src/components/GoGameModal';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 
 interface IsometricGameProps {
@@ -29,6 +30,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [dialogueOptions, setDialogueOptions] = useState<DialogueOption[]>([]);
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
   const [currentNpcAvatar, setCurrentNpcAvatar] = useState<string | null>(null);
+  
+  // 围棋对弈状态
+  const [showGoGame, setShowGoGame] = useState(false);
+  const [goOpponentName, setGoOpponentName] = useState('对手');
+  const [showGoChallenge, setShowGoChallenge] = useState(false);
+  const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
@@ -501,11 +508,46 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    * 关闭对话
    */
   const closeDialogue = () => {
+    // 保存当前NPC信息用于后续围棋对弈
+    const npcName = currentNpcAvatar?.includes('hong') ? '洪七公' : 
+                    currentNpcAvatar?.includes('guo') ? '郭靖' :
+                    currentNpcAvatar?.includes('linghu') ? '令狐冲' : null;
+    
     setIsDialogueVisible(false);
     setDialogueEngine(null);
     setCurrentDialogueNode(null);
     setDialogueOptions([]);
     setCurrentNpcAvatar(null);
+    
+    // 对话关闭后显示围棋挑战对话框
+    if (npcName) {
+      setTimeout(() => {
+        setPendingGoOpponent(npcName);
+        setShowGoChallenge(true);
+      }, 500); // 稍微延迟以确保对话框已关闭
+    }
+  };
+
+  // ==================== 围棋挑战系统函数 ====================
+
+  /**
+   * 接受围棋挑战
+   */
+  const acceptGoChallenge = () => {
+    setShowGoChallenge(false);
+    if (pendingGoOpponent) {
+      setGoOpponentName(pendingGoOpponent);
+      setShowGoGame(true);
+      setPendingGoOpponent(null);
+    }
+  };
+
+  /**
+   * 拒绝围棋挑战
+   */
+  const declineGoChallenge = () => {
+    setShowGoChallenge(false);
+    setPendingGoOpponent(null);
   };
 
   // ==================== 传送门系统函数 ====================
@@ -755,6 +797,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         npcAvatar={currentNpcAvatar}
       />
 
+      {/* 围棋对弈Modal */}
+      <GoGameModal
+        isOpen={showGoGame}
+        onClose={() => setShowGoGame(false)}
+        opponentName={goOpponentName}
+        boardSize={9}
+      />
+
       {/* 传送门确认对话框 */}
       {showPortalConfirm && pendingPortal && (
         <div 
@@ -790,6 +840,47 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
                 className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
               >
                 取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 围棋挑战确认对话框 */}
+      {showGoChallenge && pendingGoOpponent && (
+        <div 
+          className="inset-0 flex items-center justify-center p-4"
+          style={{ 
+            position: 'fixed',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 60,
+          }}
+          onClick={declineGoChallenge}
+        >
+          <div 
+            className="bg-gradient-to-br from-amber-900 to-amber-800 border-4 border-amber-500 rounded-xl shadow-2xl p-6 max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-3">☯️</div>
+              <h3 className="text-xl font-bold text-white mb-3">围棋挑战</h3>
+              <p className="text-white text-lg">
+                要与 <span className="font-bold text-yellow-300">{pendingGoOpponent}</span> 切磋棋艺吗？
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={acceptGoChallenge}
+                className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-3 px-6 rounded-lg font-bold transition-colors whitespace-nowrap"
+              >
+                接受挑战
+              </button>
+              <button
+                onClick={declineGoChallenge}
+                className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
+              >
+                下次再说
               </button>
             </div>
           </div>

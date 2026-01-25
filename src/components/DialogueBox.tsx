@@ -91,7 +91,7 @@ export default function DialogueBox({
         onClick={(e) => e.stopPropagation()}
       >
         {/* 对话框主体 */}
-        <div style={{padding: '0 2rem',}} className="relative bg-gradient-to-br from-gray-900 to-gray-800 border-4 border-amber-600 rounded-xl shadow-2xl p-6 max-h-[80vh] overflow-y-auto">
+        <div style={{padding: '2rem',}} className="relative bg-gradient-to-br from-gray-900 to-gray-800 border-4 border-amber-600 rounded-xl shadow-2xl p-6 max-h-[80vh] overflow-y-auto">
           {/* 关闭按钮 */}
           <button
             onClick={onClose}
