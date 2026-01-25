@@ -62,8 +62,35 @@ export default function MapEditorPage({
       if (!response.ok) throw new Error('Failed to load map');
       
       const data = await response.json();
-      setMap(data.map);
-      setTiles(data.tiles);
+      
+      // API返回的是扁平结构，需要转换
+      setMap({
+        id: data.id,
+        mapId: data.id,
+        name: data.name,
+        description: null,
+        mapType: '',
+        width: data.width,
+        height: data.height
+      });
+      
+      // 将2D瓦片数组转换为扁平数组
+      const flatTiles: MapTile[] = [];
+      for (let y = 0; y < data.height; y++) {
+        for (let x = 0; x < data.width; x++) {
+          const tile = data.tiles[y]?.[x];
+          if (tile) {
+            flatTiles.push({
+              id: y * data.width + x,
+              mapId: 0,
+              x: tile.x,
+              y: tile.y,
+              tileType: tile.tileType
+            });
+          }
+        }
+      }
+      setTiles(flatTiles);
     } catch (error) {
       console.error('Error loading map:', error);
     } finally {

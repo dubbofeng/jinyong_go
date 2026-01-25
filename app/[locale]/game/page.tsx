@@ -27,7 +27,7 @@ export default async function GamePage({ params }: { params: Promise<{ locale: s
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 to-slate-800">
-      <IsometricGame mapId="world_map" />
+      <IsometricGame mapId="huashan_hall" />
     </div>
   );
 }

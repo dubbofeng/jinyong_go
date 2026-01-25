@@ -11,7 +11,7 @@ interface DialogueBoxProps {
   onContinue: () => void;
   onClose: () => void;
   isVisible: boolean;
-  npcAvatar: string | null; // SVG字符串
+  npcAvatar: string | null; // NPC图片路径
 }
 
 export default function DialogueBox({
@@ -102,19 +102,35 @@ export default function DialogueBox({
           </button>
 
           {/* NPC名称 */}
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-4 mb-4">
             {npcAvatar ? (
               <div 
-                className="w-20 h-20 rounded-full overflow-hidden border-4 border-amber-600 bg-gradient-to-br from-amber-100 to-amber-50"
-                dangerouslySetInnerHTML={{ __html: npcAvatar }}
-              />
+                className="rounded-full overflow-hidden border-4 border-amber-600 bg-gradient-to-br from-amber-100 to-amber-50 relative flex-shrink-0"
+                style={{ width: '120px', height: '120px' }}
+              >
+                <img 
+                  src={npcAvatar}
+                  alt={node.speaker}
+                  className="absolute w-full"
+                  style={{
+                    top: 0,
+                    left: 0,
+                    height: '300%',
+                    objectFit: 'cover',
+                    objectPosition: 'top center',
+                  }}
+                />
+              </div>
             ) : (
-              <div className="w-20 h-20 bg-amber-600 rounded-full flex items-center justify-center text-3xl border-4 border-amber-700">
+              <div 
+                className="bg-amber-600 rounded-full flex items-center justify-center border-4 border-amber-700 flex-shrink-0"
+                style={{ width: '120px', height: '120px', fontSize: '3rem' }}
+              >
                 {node.speaker === '洪七公' ? '🧙' : node.speaker === '令狐冲' ? '⚔️' : '🛡️'}
               </div>
             )}
             <div>
-              <h3 className="text-xl font-bold text-amber-400">{node.speaker}</h3>
+              <h3 className="text-2xl font-bold text-amber-400">{node.speaker}</h3>
             </div>
           </div>
 

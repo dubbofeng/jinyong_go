@@ -121,7 +121,25 @@ class ResourceLoader {
    * 预加载多个图片
    */
   async preloadImages(urls: string[]): Promise<void> {
-    await Promise.all(urls.map(url => this.loadImage(url)));
+    console.log('🔄 Preloading images:', urls);
+    const results = await Promise.allSettled(urls.map(url => this.loadImage(url)));
+    
+    // 检查失败的图片
+    const failures = results
+      .map((result, i) => ({ result, url: urls[i] }))
+      .filter(({ result }) => result.status === 'rejected');
+    
+    if (failures.length > 0) {
+      console.error('❌ Failed to load images:', failures.map(f => f.url));
+      failures.forEach(({ result, url }) => {
+        if (result.status === 'rejected') {
+          console.error(`  - ${url}:`, result.reason);
+        }
+      });
+    }
+    
+    const successes = results.filter(r => r.status === 'fulfilled').length;
+    console.log(`✅ Loaded ${successes}/${urls.length} images successfully`);
   }
 
   /**
@@ -287,6 +305,22 @@ export class IsometricEngine {
    */
   async loadMap(mapData: MapData): Promise<void> {
     console.log('🗺️ IsometricEngine loadMap:', mapData.name, `${mapData.width}x${mapData.height}`);
+    
+    // 更新配置以匹配实际地图尺寸
+    this.config.mapWidth = mapData.width;
+    this.config.mapHeight = mapData.height;
+    
+    // 统计瓦片类型分布
+    const typeCount: Record<string, number> = {};
+    for (let y = 0; y < mapData.height; y++) {
+      for (let x = 0; x < mapData.width; x++) {
+        const tile = mapData.tiles[y]?.[x];
+        if (tile) {
+          typeCount[tile.tileType] = (typeCount[tile.tileType] || 0) + 1;
+        }
+      }
+    }
+    console.log('瓦片类型分布:', typeCount);
     console.log('Sample tiles from engine:', mapData.tiles[0]?.slice(0, 3));
     
     this.mapData = mapData;
@@ -548,6 +582,11 @@ export class IsometricEngine {
     
     const screenPos = this.cartesianToScreen(item.x, item.y);
     
+    // 传送门特效：脉冲动画
+    if (item.itemType === 'portal') {
+      this.renderPortalEffect(screenPos.x, screenPos.y);
+    }
+    
     // 绘制精灵图（NPC脚部对齐到瓦片底部中心）
     // 瓦片是菱形，底部顶点在中心向下tileHeight/2的位置
     // NPC图片底部应该对齐到菱形底部顶点
@@ -558,6 +597,53 @@ export class IsometricEngine {
       img.width,
       img.height
     );
+  }
+
+  /**
+   * 渲染传送门脉冲特效
+   */
+  private renderPortalEffect(x: number, y: number): void {
+    const time = Date.now() / 1000;
+    const pulse = 0.5 + Math.sin(time * Math.PI * 2) * 0.5; // 0-1之间脉冲，1秒周期
+    
+    this.ctx.save();
+    
+    // 外圈光晕（紫色）
+    const outerRadius = 60 + pulse * 20;
+    const outerGradient = this.ctx.createRadialGradient(x, y, 0, x, y, outerRadius);
+    outerGradient.addColorStop(0, `rgba(138, 43, 226, ${0.3 * pulse})`); // 蓝紫色
+    outerGradient.addColorStop(0.5, `rgba(147, 51, 234, ${0.2 * pulse})`);
+    outerGradient.addColorStop(1, 'rgba(138, 43, 226, 0)');
+    this.ctx.fillStyle = outerGradient;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, outerRadius, 0, Math.PI * 2);
+    this.ctx.fill();
+    
+    // 中圈（亮紫色）
+    const midRadius = 40 + pulse * 10;
+    const midGradient = this.ctx.createRadialGradient(x, y, 0, x, y, midRadius);
+    midGradient.addColorStop(0, `rgba(168, 85, 247, ${0.5 * pulse})`);
+    midGradient.addColorStop(0.7, `rgba(147, 51, 234, ${0.3 * pulse})`);
+    midGradient.addColorStop(1, 'rgba(138, 43, 226, 0)');
+    this.ctx.fillStyle = midGradient;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, midRadius, 0, Math.PI * 2);
+    this.ctx.fill();
+    
+    // 内圈脉冲圆环
+    this.ctx.strokeStyle = `rgba(192, 132, 252, ${0.8 * pulse})`;
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, 25 + pulse * 5, 0, Math.PI * 2);
+    this.ctx.stroke();
+    
+    // 中心点
+    this.ctx.fillStyle = `rgba(216, 180, 254, ${0.9 * pulse})`;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, 8, 0, Math.PI * 2);
+    this.ctx.fill();
+    
+    this.ctx.restore();
   }
 
   // ==================== 视口裁剪 ====================

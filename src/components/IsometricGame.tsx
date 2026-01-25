@@ -29,6 +29,17 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [dialogueOptions, setDialogueOptions] = useState<DialogueOption[]>([]);
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
   const [currentNpcAvatar, setCurrentNpcAvatar] = useState<string | null>(null);
+  
+  // 传送门状态
+  const [showPortalConfirm, setShowPortalConfirm] = useState(false);
+  const [pendingPortal, setPendingPortal] = useState<any>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // 调试：监控传送门状态
+  useEffect(() => {
+    console.log('🔍 showPortalConfirm changed:', showPortalConfirm);
+    console.log('🔍 pendingPortal changed:', pendingPortal);
+  }, [showPortalConfirm, pendingPortal]);
 
   // ==================== 地图加载 ====================
 
@@ -53,7 +64,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         name: data.name,
         width: data.width,
         height: data.height,
-        tiles: convertTilesToGrid(data.tiles, data.width, data.height),
+        tiles: data.tiles, // API已经返回二维数组格式，直接使用
         items: data.items || [],
       };
       
@@ -255,8 +266,16 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       // 处理传送门点击
       if (item.itemType === 'portal') {
         console.log(`🌀 Clicked portal to ${item.targetMapId}`);
-        // TODO: 传送到目标地图
-        alert(`传送门：${item.targetMapId}\n(传送系统待实现)`);
+        console.log('Portal item data:', item);
+        if (item.targetMapId) {
+          // 显示确认对话框
+          console.log('Setting pendingPortal and showPortalConfirm...');
+          setPendingPortal(item);
+          setShowPortalConfirm(true);
+          console.log('State set, should show dialog');
+        } else {
+          console.error('❌ Portal has no targetMapId');
+        }
         return;
       }
       
@@ -356,7 +375,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       const engine = new DialogueEngine(dialogueTree);
       
       setDialogueEngine(engine);
-      setCurrentNpcAvatar(null); // 暂时不使用头像，可以后续添加
+      
+      // 根据NPC名称设置头像路径
+      const avatarMap: Record<string, string> = {
+        '洪七公': '/game/isometric/characters/npc_hong_qigong.png',
+        '令狐冲': '/game/isometric/characters/npc_linghu_chong.png',
+        '郭靖': '/game/isometric/characters/npc_guo_jing.png',
+      };
+      setCurrentNpcAvatar(avatarMap[item.itemName] || null);
       
       // 更新当前对话节点和选项
       updateDialogueState(engine);
@@ -422,6 +448,70 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     setCurrentDialogueNode(null);
     setDialogueOptions([]);
     setCurrentNpcAvatar(null);
+  };
+
+  // ==================== 传送门系统函数 ====================
+
+  /**
+   * 确认传送
+   */
+  const confirmPortal = async () => {
+    console.log('🚪 confirmPortal called, pendingPortal:', pendingPortal);
+    
+    if (!pendingPortal || !pendingPortal.targetMapId) {
+      console.error('❌ No pending portal or targetMapId');
+      return;
+    }
+    
+    console.log(`🎯 Teleporting to ${pendingPortal.targetMapId}...`);
+    
+    setShowPortalConfirm(false);
+    setIsTransitioning(true);
+    
+    try {
+      // 淡出效果（500ms）
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // 加载目标地图
+      console.log(`📥 Loading map: ${pendingPortal.targetMapId}`);
+      const newMapData = await loadMapData(pendingPortal.targetMapId);
+      
+      if (newMapData && engineRef.current) {
+        console.log(`✅ Map loaded: ${newMapData.name} (${newMapData.width}x${newMapData.height})`);
+        
+        // 重新加载地图
+        await engineRef.current.loadMap(newMapData);
+        
+        // 设置玩家位置（如果传送门指定了目标位置）
+        const targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
+        const targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+        
+        console.log(`🧍 Spawning player at (${targetX}, ${targetY})`);
+        await engineRef.current.spawnPlayer(targetX, targetY);
+        
+        console.log(`✅ Teleported to ${pendingPortal.targetMapId} at (${targetX}, ${targetY})`);
+      } else {
+        console.error('❌ Failed to load map or engine not ready');
+      }
+      
+      // 淡入效果（500ms）
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+    } catch (error) {
+      console.error('❌ 传送失败:', error);
+      alert('传送失败，请重试');
+    } finally {
+      setIsTransitioning(false);
+      setPendingPortal(null);
+    }
+  };
+
+  /**
+   * 取消传送
+   */
+  const cancelPortal = () => {
+    setShowPortalConfirm(false);
+    setPendingPortal(null);
   };
 
   // ==================== 辅助函数 ====================
@@ -606,6 +696,59 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         isVisible={isDialogueVisible}
         npcAvatar={currentNpcAvatar}
       />
+
+      {/* 传送门确认对话框 */}
+      {showPortalConfirm && pendingPortal && (
+        <div 
+          className="inset-0 flex items-center justify-center p-4"
+          style={{ 
+            position: 'fixed',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 60,
+          }}
+          onClick={cancelPortal}
+        >
+          <div 
+            className="bg-gradient-to-br from-purple-900 to-purple-800 border-4 border-purple-500 rounded-xl shadow-2xl p-6 max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-3">🌀</div>
+              <h3 className="text-xl font-bold text-white mb-3">传送门</h3>
+              <p className="text-white">
+                是否要传送到 <span className="font-bold text-yellow-300">{pendingPortal.itemName || '目标地图'}</span>？
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={confirmPortal}
+                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-3 px-6 rounded-lg font-bold transition-colors whitespace-nowrap"
+              >
+                确认传送
+              </button>
+              <button
+                onClick={cancelPortal}
+                className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 传送过渡效果 */}
+      {isTransitioning && (
+        <div 
+          className="fixed inset-0 z-[60] bg-black flex items-center justify-center"
+          style={{
+            animation: 'fadeInOut 1s ease-in-out',
+          }}
+        >
+          <div className="text-white text-2xl animate-pulse">传送中...</div>
+        </div>
+      )}
     </div>
   );
 }
