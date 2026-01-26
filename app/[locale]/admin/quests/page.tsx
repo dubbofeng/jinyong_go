@@ -89,7 +89,7 @@ export default async function QuestsPage({
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                  {t('chapter')} {quest.chapter}
+                  {t('chapter', { number: quest.chapter })}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                   {quest.prerequisiteQuests && Array.isArray(quest.prerequisiteQuests)

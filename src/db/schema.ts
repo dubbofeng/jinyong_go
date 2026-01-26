@@ -205,3 +205,209 @@ export type NewMapTile = typeof mapTiles.$inferInsert;
 
 export type MapItem = typeof mapItems.$inferSelect;
 export type NewMapItem = typeof mapItems.$inferInsert;
+
+// =============== 玩家成长系统 ===============
+
+// 玩家属性表（体力、内力、等级）
+export const playerStats = pgTable('player_stats', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().unique().references(() => users.id),
+  
+  // 等级属性
+  level: integer('level').notNull().default(1),
+  experience: integer('experience').notNull().default(0),
+  experienceToNext: integer('experience_to_next').notNull().default(100),
+  
+  // 体力系统
+  stamina: integer('stamina').notNull().default(100),
+  maxStamina: integer('max_stamina').notNull().default(100),
+  staminaRegenRate: integer('stamina_regen_rate').notNull().default(1), // 点/5分钟
+  lastStaminaRegen: timestamp('last_stamina_regen').notNull().defaultNow(),
+  
+  // 内力系统
+  qi: integer('qi').notNull().default(100),
+  maxQi: integer('max_qi').notNull().default(100),
+  qiRegenRate: integer('qi_regen_rate').notNull().default(2), // 点/5分钟
+  lastQiRegen: timestamp('last_qi_regen').notNull().defaultNow(),
+  
+  // 货币
+  coins: integer('coins').notNull().default(0),
+  silver: integer('silver').notNull().default(100),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// 玩家技能表（解锁、等级、使用统计）
+export const playerSkills = pgTable('player_skills', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  skillId: varchar('skill_id', { length: 50 }).notNull(),
+  
+  // 技能状态
+  unlocked: boolean('unlocked').notNull().default(false),
+  level: integer('level').notNull().default(1),
+  experience: integer('experience').notNull().default(0),
+  
+  // 解锁信息
+  unlockedByQuest: varchar('unlocked_by_quest', { length: 50 }),
+  unlockedAt: timestamp('unlocked_at'),
+  
+  // 使用统计
+  timesUsed: integer('times_used').notNull().default(0),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// 物品定义表（药品、道具配置）
+export const items = pgTable('items', {
+  id: serial('id').primaryKey(),
+  itemId: varchar('item_id', { length: 50 }).notNull().unique(),
+  name: varchar('name', { length: 100 }).notNull(),
+  nameEn: varchar('name_en', { length: 100 }),
+  description: text('description').notNull(),
+  
+  // 分类
+  itemType: varchar('item_type', { length: 50 }).notNull(), // 'potion', 'material', 'equipment', 'quest'
+  rarity: varchar('rarity', { length: 20 }).notNull(), // 'common', 'uncommon', 'rare', 'epic', 'legendary'
+  
+  // 效果
+  effects: json('effects').$type<{
+    stamina?: number;
+    qi?: number;
+    experience?: number;
+    maxStamina?: number;
+    maxQi?: number;
+  }>().notNull(),
+  
+  // 经济
+  price: integer('price').notNull().default(0),
+  sellPrice: integer('sell_price').notNull().default(0),
+  stackable: boolean('stackable').notNull().default(true),
+  maxStack: integer('max_stack').default(99),
+  
+  // 图标
+  iconPath: varchar('icon_path', { length: 200 }),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// 玩家背包表（持有物品）
+export const playerInventory = pgTable('player_inventory', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  itemId: varchar('item_id', { length: 50 }).notNull(),
+  
+  // 数量
+  quantity: integer('quantity').notNull().default(1),
+  
+  // 装备
+  equipped: boolean('equipped').notNull().default(false),
+  slot: varchar('slot', { length: 50 }),
+  
+  obtainedAt: timestamp('obtained_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// 任务进度表（详细追踪）
+export const questProgress = pgTable('quest_progress', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  questId: varchar('quest_id', { length: 50 }).notNull(),
+  
+  // 状态
+  status: varchar('status', { length: 20 }).notNull().default('not_started'), // 'not_started', 'in_progress', 'completed', 'failed'
+  
+  // 进度
+  progress: json('progress').$type<{
+    wins?: number;
+    losses?: number;
+    target_wins?: number;
+    opponent?: string;
+    [key: string]: any;
+  }>().notNull().default({}),
+  currentStep: integer('current_step').notNull().default(0),
+  totalSteps: integer('total_steps').notNull().default(1),
+  
+  // 时间
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// NPC关系表（好感度、交互）
+export const npcRelationships = pgTable('npc_relationships', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  npcId: varchar('npc_id', { length: 50 }).notNull(),
+  
+  // 好感度
+  affection: integer('affection').notNull().default(0), // 0-100
+  affectionLevel: varchar('affection_level', { length: 20 }).notNull().default('stranger'), // 'stranger', 'acquaintance', 'friend', 'close_friend', 'master'
+  
+  // 交互统计
+  dialoguesCount: integer('dialogues_count').notNull().default(0),
+  giftsGiven: integer('gifts_given').notNull().default(0),
+  battlesWon: integer('battles_won').notNull().default(0),
+  battlesLost: integer('battles_lost').notNull().default(0),
+  
+  // 特殊标记
+  defeated: boolean('defeated').notNull().default(false), // 是否已击败（对手类NPC）
+  learnedFrom: boolean('learned_from').notNull().default(false), // 是否已拜师（导师类NPC）
+  
+  firstMetAt: timestamp('first_met_at').defaultNow(),
+  lastInteractionAt: timestamp('last_interaction_at').defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// 游戏设置表（偏好配置）
+export const gameSettings = pgTable('game_settings', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().unique().references(() => users.id),
+  
+  // 语言
+  language: varchar('language', { length: 10 }).notNull().default('zh'), // 'zh', 'en'
+  
+  // 音效
+  musicVolume: integer('music_volume').notNull().default(80), // 0-100
+  sfxVolume: integer('sfx_volume').notNull().default(80),
+  musicEnabled: boolean('music_enabled').notNull().default(true),
+  sfxEnabled: boolean('sfx_enabled').notNull().default(true),
+  
+  // 图形
+  graphicsQuality: varchar('graphics_quality', { length: 20 }).notNull().default('high'), // 'low', 'medium', 'high'
+  showCoordinates: boolean('show_coordinates').notNull().default(false),
+  
+  // 游戏
+  autoSave: boolean('auto_save').notNull().default(true),
+  autoSaveInterval: integer('auto_save_interval').notNull().default(5), // 分钟
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export type PlayerStats = typeof playerStats.$inferSelect;
+export type NewPlayerStats = typeof playerStats.$inferInsert;
+
+export type PlayerSkill = typeof playerSkills.$inferSelect;
+export type NewPlayerSkill = typeof playerSkills.$inferInsert;
+
+export type Item = typeof items.$inferSelect;
+export type NewItem = typeof items.$inferInsert;
+
+export type PlayerInventoryItem = typeof playerInventory.$inferSelect;
+export type NewPlayerInventoryItem = typeof playerInventory.$inferInsert;
+
+export type QuestProgress = typeof questProgress.$inferSelect;
+export type NewQuestProgress = typeof questProgress.$inferInsert;
+
+export type NpcRelationship = typeof npcRelationships.$inferSelect;
+export type NewNpcRelationship = typeof npcRelationships.$inferInsert;
+
+export type GameSettings = typeof gameSettings.$inferSelect;
+export type NewGameSettings = typeof gameSettings.$inferInsert;
