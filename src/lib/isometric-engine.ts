@@ -685,16 +685,12 @@ export class IsometricEngine {
     const startX = Math.floor(this.viewport.x - tilesWide / 2);
     const startY = Math.floor(this.viewport.y - tilesHigh / 2);
     
-    // 渲染足够多的瓦片以填满视口（使用模运算实现无限平铺）
+    // 渲染足够多的瓦片以填满视口
     for (let y = startY; y < startY + tilesHigh; y++) {
       for (let x = startX; x < startX + tilesWide; x++) {
-        // 使用模运算将坐标映射到地图范围内（无限重复）
-        const mapX = ((x % this.mapData.width) + this.mapData.width) % this.mapData.width;
-        const mapY = ((y % this.mapData.height) + this.mapData.height) % this.mapData.height;
-        
-        if (this.mapData.tiles[mapY] && this.mapData.tiles[mapY][mapX]) {
-          // 创建一个新的瓦片对象，使用实际的渲染坐标
-          const tile = { ...this.mapData.tiles[mapY][mapX], x, y };
+        // 使用 getTileAt 获取瓦片，超出范围会返回火焰边界
+        const tile = this.getTileAt(x, y);
+        if (tile) {
           tiles.push(tile);
         }
       }
@@ -820,9 +816,17 @@ export class IsometricEngine {
    */
   getTileAt(x: number, y: number): TileData | null {
     if (!this.mapData) return null;
+    
+    // 超出地图范围，返回火焰边界瓦片
     if (x < 0 || x >= this.config.mapWidth || y < 0 || y >= this.config.mapHeight) {
-      return null;
+      return {
+        x,
+        y,
+        tileType: 'fire',
+        walkable: false,
+      };
     }
+    
     return this.mapData.tiles[y]?.[x] || null;
   }
 

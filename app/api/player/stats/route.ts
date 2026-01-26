@@ -9,6 +9,7 @@ import { auth } from '../../../auth';
 import { db } from '../../../../src/db';
 import { playerStats, users } from '../../../../src/db/schema';
 import { eq } from 'drizzle-orm';
+import { getExperienceForLevel } from '../../../../src/lib/rank-system';
 
 export async function GET(request: NextRequest) {
   try {
@@ -76,14 +77,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 创建新玩家属性
+    // 创建新玩家属性 (从18k开始 = level 1)
+    const initialLevel = 1; // 18k
+    const expToNext = getExperienceForLevel(initialLevel);
+    
     const newStats = await db
       .insert(playerStats)
       .values({
         userId,
-        level: 1,
+        level: initialLevel,
         experience: 0,
-        experienceToNext: 100,
+        experienceToNext: expToNext,
         stamina: 100,
         maxStamina: 100,
         staminaRegenRate: 1,

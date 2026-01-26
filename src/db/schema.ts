@@ -192,6 +192,7 @@ export const mapItems = pgTable('map_items', {
   sceneLinkMapId: varchar('scene_link_map_id', { length: 100 }), // 进入后传送到的地图ID（兼容旧的targetMapId）
   sceneLinkX: integer('scene_link_x'), // 传送后的X坐标（兼容旧的targetX）
   sceneLinkY: integer('scene_link_y'), // 传送后的Y坐标（兼容旧的targetY）
+  facing: varchar('facing', { length: 20 }), // 实例朝向（可覆盖item默认朝向）
   
   // 状态（地图实例特定）
   enabled: boolean('enabled').notNull().default(true), // 是否启用（可用于任务控制）
@@ -316,6 +317,9 @@ export const items = pgTable('items', {
   
   // 建筑特殊属性（注意：这些是默认值，map_items中可覆盖）
   enterable: boolean('enterable').notNull().default(false), // 是否可进入
+  facing: varchar('facing', { length: 20 }).default('down'), // 默认朝向: 'up', 'down', 'left', 'right'
+  doorOffsetX: integer('door_offset_x').default(0), // 门相对物品起始位置的X偏移
+  doorOffsetY: integer('door_offset_y').default(0), // 门相对物品起始位置的Y偏移
   
   // 动画属性
   animated: boolean('animated').notNull().default(false), // 是否有动画

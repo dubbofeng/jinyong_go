@@ -6,6 +6,7 @@
 import { db } from '../src/db';
 import { users, playerStats, playerSkills, gameSettings, playerInventory } from '../src/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { getExperienceForLevel } from '../src/lib/rank-system';
 
 async function initExistingUsers() {
   console.log('👥 开始为现有用户初始化数据...\n');
@@ -25,11 +26,14 @@ async function initExistingUsers() {
       .limit(1);
 
     if (existingStats.length === 0) {
+      const initialLevel = 1; // 18k
+      const expToNext = getExperienceForLevel(initialLevel);
+      
       await db.insert(playerStats).values({
         userId: user.id,
-        level: 1,
+        level: initialLevel,
         experience: 0,
-        experienceToNext: 100,
+        experienceToNext: expToNext,
         stamina: 100,
         maxStamina: 100,
         staminaRegenRate: 1,
@@ -39,7 +43,7 @@ async function initExistingUsers() {
         coins: 0,
         silver: 100,
       });
-      console.log('  ✅ 创建玩家属性');
+      console.log('  ✅ 创建玩家属性 (18k)');
     } else {
       console.log('  ⏭️  玩家属性已存在');
     }

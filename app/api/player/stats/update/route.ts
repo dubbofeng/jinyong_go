@@ -8,6 +8,7 @@ import { auth } from '../../../../auth';
 import { db } from '../../../../../src/db';
 import { playerStats } from '../../../../../src/db/schema';
 import { eq } from 'drizzle-orm';
+import { getExperienceForLevel } from '../../../../../src/lib/rank-system';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -63,23 +64,37 @@ export async function PATCH(request: NextRequest) {
       let newExp = stats.experience + body.experienceDelta;
       let newLevel = stats.level;
       let expToNext = stats.experienceToNext;
+      let maxStamina = stats.maxStamina;
+      let maxQi = stats.maxQi;
 
-      // 检查升级
-      while (newExp >= expToNext && newLevel < 100) {
+      // 检查升级 (最高段位是9d = level 27)
+      while (newExp >= expToNext && newLevel < 27) {
         newExp -= expToNext;
         newLevel++;
-        expToNext = Math.floor(100 * newLevel * 1.5);
+        expToNext = getExperienceForLevel(newLevel);
         
         // 升级奖励：+10 最大体力和内力
-        updates.maxStamina = stats.maxStamina + 10;
-        updates.maxQi = stats.maxQi + 10;
-        updates.stamina = updates.maxStamina; // 满血满蓝
-        updates.qi = updates.maxQi;
+        maxStamina += 10;
+        maxQi += 10;
+      }
+      
+      // 如果达到最高段位，经验不再累积
+      if (newLevel >= 27) {
+        newExp = 0;
+        expToNext = 0;
       }
 
       updates.experience = newExp;
       updates.level = newLevel;
       updates.experienceToNext = expToNext;
+      
+      // 如果有升级，应用升级奖励
+      if (newLevel > stats.level) {
+        updates.maxStamina = maxStamina;
+        updates.maxQi = maxQi;
+        updates.stamina = maxStamina; // 满血满蓝
+        updates.qi = maxQi;
+      }
     }
 
     // 货币变化

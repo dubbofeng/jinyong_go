@@ -8,13 +8,17 @@ interface GoGameModalProps {
   onClose: () => void;
   opponentName?: string;
   boardSize?: 9 | 13 | 19;
+  vsAI?: boolean; // 是否对战AI
+  aiDifficulty?: 'easy' | 'medium' | 'hard'; // AI难度
 }
 
 export default function GoGameModal({ 
   isOpen, 
   onClose, 
   opponentName = '对手',
-  boardSize = 9 
+  boardSize = 9,
+  vsAI = true, // 默认对战AI
+  aiDifficulty = 'medium' // 默认中等难度
 }: GoGameModalProps) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -96,12 +100,26 @@ export default function GoGameModal({
 
         {/* 棋盘游戏 */}
         <div className="flex justify-center">
-          <GoBoardGame size={boardSize} width={600} height={600} />
+          <GoBoardGame 
+            size={boardSize} 
+            width={600} 
+            height={600}
+            vsAI={vsAI}
+            aiDifficulty={aiDifficulty}
+          />
         </div>
 
         {/* 提示信息 */}
         <div className="mt-6 text-center text-sm text-gray-400">
           <p>按 ESC 键可随时关闭棋盘</p>
+          {vsAI && (
+            <p className="mt-1">
+              对战AI难度：
+              {aiDifficulty === 'easy' && '简单'}
+              {aiDifficulty === 'medium' && '中等'}
+              {aiDifficulty === 'hard' && '困难'}
+            </p>
+          )}
         </div>
       </div>
     </div>

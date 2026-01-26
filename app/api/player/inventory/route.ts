@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
           sellPrice: items.sellPrice,
           stackable: items.stackable,
           maxStack: items.maxStack,
-          iconPath: items.iconPath,
+          imagePath: items.imagePath, // 修复：使用正确的字段名
         },
       })
       .from(playerInventory)

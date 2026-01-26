@@ -23,6 +23,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [mapData, setMapData] = useState<MapData | null>(initialMap || null);
   const [showInfo, setShowInfo] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<{ x: number; y: number } | null>(null);
+  const [playerPosition, setPlayerPosition] = useState<{ x: number; y: number } | null>(null);
   
   // 对话系统状态
   const [dialogueEngine, setDialogueEngine] = useState<DialogueEngine | null>(null);
@@ -44,6 +45,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
+
+  // 地图ID到名称的映射
+  const mapNames: Record<string, string> = {
+    'world_map': '武林世界',
+    'huashan_scene': '华山',
+    'shaolin_scene': '少林寺',
+    'wudang_scene': '武当山',
+    'taohua_scene': '桃花岛',
+  };
 
   // 调试：监控传送门状态
   useEffect(() => {
@@ -199,6 +209,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
       // 更新游戏状态
       update(deltaTime);
+
+      // 更新玩家位置显示
+      const pos = engineRef.current?.getPlayerPosition();
+      if (pos) {
+        setPlayerPosition({ x: Math.floor(pos.x), y: Math.floor(pos.y) });
+      }
 
       // 渲染
       render();
@@ -731,7 +747,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       </button>
 
       {/* 调试信息 - 左下角 */}
-      {showInfo && mapData && engineRef.current && (
+      {showInfo && mapData && (
         <div 
           className="absolute bg-black/70 text-white p-3 rounded-lg text-sm max-w-xs z-20"
           style={{ bottom: '1rem', left: '1rem' }}
@@ -739,56 +755,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           <div className="font-bold mb-2 text-xs">{mapData.name}</div>
           <div className="text-xs">尺寸: {mapData.width} × {mapData.height}</div>
           <div className="text-xs">物品数: {mapData.items.length}</div>
-          {(() => {
-            const playerPos = engineRef.current?.getPlayerPosition();
-            return playerPos && (
-              <div className="text-xs mt-1">
-                玩家位置: ({Math.floor(playerPos.x)}, {Math.floor(playerPos.y)})
-                {engineRef.current?.isPlayerMoving() && ' 🚶'}
-              </div>
-            );
-          })()}
+          {playerPosition && (
+            <div className="text-xs mt-1">
+              玩家位置: ({playerPosition.x}, {playerPosition.y})
+              {engineRef.current?.isPlayerMoving() && ' 🚶'}
+            </div>
+          )}
           <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
             🖱️ 点击地面移动玩家<br />
             📷 摄像机自动跟随玩家
-          </div>
-        </div>
-      )}
-
-      {/* 地形说明 - 右侧面板 */}
-      {showInfo && (
-        <div 
-          className="absolute bg-black/70 text-white p-4 rounded-lg text-sm w-64 z-20"
-          style={{ top: '4.5rem', right: '1rem' }}
-        >
-          <div className="font-bold mb-3 text-center">等距地图系统</div>
-          <div className="space-y-1 text-xs">
-            <div>🖱️ 点击地面: 移动玩家</div>
-            <div>🚶 玩家自动寻路 (A*算法)</div>
-            <div>📷 摄像机始终跟随玩家</div>
-            <div className="mt-2 pt-2 border-t border-gray-500">
-              <div className="font-semibold mb-1">地形类型:</div>
-              <div>🟫 木地板 (可行走)</div>
-              <div>🟨 金色地板 (可行走)</div>
-              <div>🟤 黑土地 (可行走)</div>
-              <div>🟧 火焰地 (可行走)</div>
-              <div>🟦 水域 (不可行走)</div>
-            </div>
-          </div>
-
-          <div className="mt-3 pt-2 border-t border-gray-600 text-xs text-gray-400">
-            5种基础地形瓦片<br/>
-            木、金、土、火、水
-          </div>
-
-          {/* 退出登录 */}
-          <div className="mt-3 pt-2 border-t border-gray-600">
-            <a
-              href="/api/auth/signout"
-              className="block w-full text-center px-3 py-2 rounded text-sm bg-red-600 hover:bg-red-700 transition-colors"
-            >
-              退出登录
-            </a>
           </div>
         </div>
       )}
@@ -831,7 +806,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
               <div className="text-4xl mb-3">🌀</div>
               <h3 className="text-xl font-bold text-white mb-3">传送门</h3>
               <p className="text-white">
-                是否要传送到 <span className="font-bold text-yellow-300">{pendingPortal.itemName || '目标地图'}</span>？
+                是否要传送到 <span className="font-bold text-yellow-300">
+                  {pendingPortal.targetMapId ? mapNames[pendingPortal.targetMapId] || pendingPortal.targetMapId : '未知地点'}
+                </span>？
               </p>
             </div>
             

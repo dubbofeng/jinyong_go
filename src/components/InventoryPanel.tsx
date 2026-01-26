@@ -51,7 +51,19 @@ export function InventoryPanel() {
       const response = await fetch('/api/player/inventory');
       const data = await response.json();
       
+      console.log('📦 背包API返回:', data);
+      
       if (data.success) {
+        console.log('📦 背包物品总数:', data.data.length);
+        data.data.forEach((item: any, index: number) => {
+          console.log(`  物品${index + 1}:`, {
+            id: item.id,
+            itemId: item.itemId,
+            quantity: item.quantity,
+            hasItemData: !!item.item,
+            itemData: item.item
+          });
+        });
         setInventory(data.data);
       }
     } catch (error) {
@@ -140,7 +152,7 @@ export function InventoryPanel() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
-          {inventory.map((item) => (
+          {inventory.filter(item => item.item !== null).map((item) => (
             <div
               key={item.id}
               className={`relative border-2 rounded-lg p-2 cursor-pointer hover:shadow-lg transition-all ${
@@ -158,10 +170,15 @@ export function InventoryPanel() {
 
               {/* 图标 */}
               <div className="flex items-center justify-center h-12 mb-1 text-3xl">
+                {item.item.itemType === 'consumable' && '🧪'}
                 {item.item.itemType === 'potion' && '🧪'}
                 {item.item.itemType === 'material' && '⚙️'}
                 {item.item.itemType === 'quest' && '📜'}
                 {item.item.itemType === 'equipment' && '⚔️'}
+                {item.item.itemType === 'decoration' && '🏮'}
+                {item.item.itemType === 'plant' && '🌿'}
+                {item.item.itemType === 'building' && '🏠'}
+                {!['consumable', 'potion', 'material', 'quest', 'equipment', 'decoration', 'plant', 'building'].includes(item.item.itemType) && '📦'}
               </div>
 
               {/* 名称 */}
@@ -171,13 +188,13 @@ export function InventoryPanel() {
 
               {/* 效果 */}
               <div className="text-xs text-center text-slate-600 mt-1">
-                {item.item.effects.stamina && (
+                {item.item.effects?.stamina && (
                   <span className="text-red-600">❤️+{item.item.effects.stamina} </span>
                 )}
-                {item.item.effects.qi && (
+                {item.item.effects?.qi && (
                   <span className="text-blue-600">⚡+{item.item.effects.qi} </span>
                 )}
-                {item.item.effects.experience && (
+                {item.item.effects?.experience && (
                   <span className="text-yellow-600">✨+{item.item.effects.experience}</span>
                 )}
               </div>

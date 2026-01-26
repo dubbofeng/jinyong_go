@@ -1,11 +1,12 @@
 /**
  * 玩家信息面板
- * 显示等级、经验、体力、内力
+ * 显示段位、经验、体力、内力
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
+import { levelToRank, getExperienceForLevel, getRankColor, getRankBorderColor, getRankBgColor } from '@/src/lib/rank-system';
 
 interface PlayerStats {
   level: number;
@@ -89,14 +90,22 @@ export function PlayerStatsPanel() {
   const expPercentage = (stats.experience / stats.experienceToNext) * 100;
   const staminaPercentage = (stats.stamina / stats.maxStamina) * 100;
   const qiPercentage = (stats.qi / stats.maxQi) * 100;
+  
+  // 获取段位信息
+  const rankInfo = levelToRank(stats.level);
+  const rankColor = getRankColor(stats.level);
+  const rankBorderColor = getRankBorderColor(stats.level);
+  const rankBgColor = getRankBgColor(stats.level);
 
   return (
     <div className="bg-amber-50 rounded-lg p-4 shadow-md border-2 border-amber-200">
-      {/* 标题 */}
+      {/* 标题和段位 */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold text-amber-900">玩家属性</h3>
-        <div className="text-sm text-amber-700 font-semibold">
-          Lv.{stats.level}
+        <div className={`px-3 py-1 rounded-lg border-2 ${rankBorderColor} ${rankBgColor}`}>
+          <span className={`text-sm font-bold ${rankColor}`}>
+            {rankInfo.display}
+          </span>
         </div>
       </div>
 
@@ -106,6 +115,16 @@ export function PlayerStatsPanel() {
           <span className="text-xs text-amber-700">经验</span>
           <span className="text-xs text-amber-600">
             {stats.experience}/{stats.experienceToNext}
+            {stats.level < 27 && (
+              <span className="ml-1 text-gray-500">
+                (下一段位: {levelToRank(stats.level + 1).display})
+              </span>
+            )}
+            {stats.level === 27 && (
+              <span className="ml-1 text-yellow-600">
+                (已达最高段位)
+              </span>
+            )}
           </span>
         </div>
         <div className="w-full bg-amber-200 rounded-full h-2 overflow-hidden">

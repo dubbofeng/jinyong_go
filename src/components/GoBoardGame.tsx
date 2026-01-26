@@ -8,27 +8,34 @@ import {
   type TerritoryEvaluation,
   type SuggestedMove
 } from '../lib/go-skills';
+import { KataGoWrapper } from '../lib/katago-wrapper';
 
 interface GoBoardGameProps {
   size?: BoardSize;
   width?: number;
   height?: number;
+  vsAI?: boolean; // 是否对战AI
+  aiDifficulty?: 'easy' | 'medium' | 'hard'; // AI难度
 }
 
 export default function GoBoardGame({ 
   size = 9, 
   width = 600, 
-  height = 600 
+  height = 600,
+  vsAI = true,
+  aiDifficulty = 'medium'
 }: GoBoardGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boardRef = useRef<GoBoard | null>(null);
   const engineRef = useRef<GoEngine | null>(null);
   const skillManagerRef = useRef<SkillManager | null>(null);
+  const aiEngineRef = useRef<KataGoWrapper | null>(null);
   
   const [currentPlayer, setCurrentPlayer] = useState<'black' | 'white'>('black');
   const [moveCount, setMoveCount] = useState(0);
   const [capturedCount, setCapturedCount] = useState({ black: 0, white: 0 });
   const [lastMessage, setLastMessage] = useState<string>('');
+  const [isAIThinking, setIsAIThinking] = useState(false); // AI思考状态
   
   // 技能系统状态
   const [evaluation, setEvaluation] = useState<TerritoryEvaluation | null>(null);
@@ -96,6 +103,90 @@ export default function GoBoardGame({
     });
   }, []);
 
+  /**
+   * AI落子
+   */
+  const makeAIMove = useCallback(async () => {
+    if (!vsAI || !engineRef.current || !boardRef.current || !aiEngineRef.current) {
+      return;
+    }
+
+    // 检查AI引擎是否已初始化
+    if (!aiEngineRef.current.isReady()) {
+      console.warn('⚠️ AI引擎尚未初始化完成，跳过本回合');
+      setLastMessage('🤖 AI初始化中，跳过回合');
+      setCurrentPlayer('black');
+      return;
+    }
+
+    setIsAIThinking(true);
+    setLastMessage('🤖 AI思考中...');
+
+    try {
+      // 根据难度设置延迟时间
+      const thinkDelay = aiDifficulty === 'easy' ? 500 : aiDifficulty === 'medium' ? 1000 : 1500;
+      
+      // 模拟思考延迟
+      await new Promise(resolve => setTimeout(resolve, thinkDelay));
+
+      // 获取AI建议的落点
+      const analysis = await aiEngineRef.current.analyzePosition(engineRef.current, 'white');
+      
+      if (analysis.bestMove) {
+        const position = analysis.bestMove;
+        
+        // AI落子
+        const result = engineRef.current.placeStone(position, 'white');
+        
+        if (result.success) {
+          boardRef.current.placeStone(position, 'white');
+          
+          // 处理提子
+          if (result.capturedStones.length > 0) {
+            for (const captured of result.capturedStones) {
+              boardRef.current.removeStone(captured);
+            }
+            
+            setCapturedCount(prev => ({
+              ...prev,
+              white: prev.white + result.capturedStones.length
+            }));
+            
+            setLastMessage(`🤖 AI提取了${result.capturedStones.length}子！`);
+          } else {
+            setLastMessage(`🤖 AI落子于 (${position.row + 1}, ${String.fromCharCode(65 + position.col)})`);
+          }
+          
+          setMoveCount(prev => prev + 1);
+          setCurrentPlayer('black');
+          boardRef.current.setNextStoneColor('black');
+        } else {
+          console.error('AI落子失败:', result.error);
+          setLastMessage('🤖 AI落子失败，跳过');
+          setCurrentPlayer('black');
+        }
+      } else {
+        // AI没有合法着点，认输
+        setLastMessage('🤖 AI没有合法着点，认输');
+        setCurrentPlayer('black');
+      }
+    } catch (error) {
+      console.error('AI分析失败:', error);
+      setLastMessage('🤖 AI出错，跳过回合');
+      setCurrentPlayer('black');
+    } finally {
+      setIsAIThinking(false);
+    }
+  }, [vsAI, aiDifficulty]);
+
+  // 监听玩家切换，触发AI落子
+  useEffect(() => {
+    if (vsAI && currentPlayer === 'white' && !isAIThinking) {
+      // 白棋是AI，需要AI落子
+      makeAIMove();
+    }
+  }, [vsAI, currentPlayer, isAIThinking, makeAIMove]);
+
   // 初始化棋盘
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -117,6 +208,24 @@ export default function GoBoardGame({
     const skillManager = new SkillManager();
     skillManagerRef.current = skillManager;
     
+    // 如果是AI对战，初始化AI引擎
+    if (vsAI) {
+      const aiEngine = new KataGoWrapper({
+        modelPath: '/katago/model.bin.gz',
+        wasmPath: '/katago/katago.wasm',
+        maxVisits: aiDifficulty === 'easy' ? 50 : aiDifficulty === 'medium' ? 100 : 200,
+        timeLimit: aiDifficulty === 'easy' ? 1000 : aiDifficulty === 'medium' ? 3000 : 5000,
+      });
+      aiEngineRef.current = aiEngine;
+      
+      // 异步初始化AI引擎
+      aiEngine.initialize().then(() => {
+        console.log(`🤖 AI引擎已初始化（难度: ${aiDifficulty}）`);
+      }).catch(error => {
+        console.error('❌ AI引擎初始化失败:', error);
+      });
+    }
+    
     // 设置落子回调
     board.setOnStonePlace(handleStonePlace);
     
@@ -125,7 +234,7 @@ export default function GoBoardGame({
     return () => {
       // 清理
     };
-  }, [size, width, height, handleStonePlace]);
+  }, [size, width, height, handleStonePlace, vsAI, aiDifficulty]);
 
   const handlePass = () => {
     setCurrentPlayer((prevPlayer) => {
@@ -306,6 +415,11 @@ export default function GoBoardGame({
             <span className="font-semibold">
               {currentPlayer === 'black' ? '黑方' : '白方'}落子
             </span>
+            {isAIThinking && (
+              <span className="ml-2 text-sm text-blue-400 animate-pulse">
+                🤖 AI思考中...
+              </span>
+            )}
           </div>
           <div className="text-sm text-gray-300">
             手数: {moveCount}
@@ -325,36 +439,48 @@ export default function GoBoardGame({
       </div>
 
       {/* 棋盘Canvas */}
-      <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl">
+      <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl relative">
         <canvas
           ref={canvasRef}
-          className="border-2 border-yellow-800 rounded"
+          className={`border-2 border-yellow-800 rounded ${isAIThinking ? 'opacity-50 cursor-wait' : ''}`}
+          style={{ pointerEvents: isAIThinking ? 'none' : 'auto' }}
         />
+        {isAIThinking && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-black bg-opacity-70 text-white px-6 py-3 rounded-lg text-sm">
+              🤖 AI正在思考...
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 控制按钮 */}
       <div className="flex gap-4">
         <button
           onClick={handlePass}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          disabled={isAIThinking}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           停一手（Pass）
         </button>
         <button
           onClick={handleUndo}
-          className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+          disabled={isAIThinking}
+          className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           悔棋（Undo）
         </button>
         <button
           onClick={handleResign}
-          className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          disabled={isAIThinking}
+          className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           认输（Resign）
         </button>
         <button
           onClick={handleReset}
-          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          disabled={isAIThinking}
+          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           重新开始
         </button>

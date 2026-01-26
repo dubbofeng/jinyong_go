@@ -68,13 +68,23 @@ export async function GET(
       Array.from({ length: map.width }, () => null)
     );
 
+    // 地形类型映射：数字 -> 字符串
+    const terrainTypeMap: { [key: number]: string } = {
+      1: 'wood',   // 草地
+      2: 'gold',   // 装饰
+      3: 'dirt',   // 道路
+      4: 'fire',   // 边界
+      5: 'water',  // 水域
+    };
+
     for (const tile of tiles) {
       if (tile.y >= 0 && tile.y < map.height && tile.x >= 0 && tile.x < map.width) {
+        const tileTypeStr = terrainTypeMap[tile.tileType as number] || 'wood';
         tilesArray[tile.y][tile.x] = {
           x: tile.x,
           y: tile.y,
-          tileType: tile.tileType,
-          walkable: tile.tileType !== 'water', // Water is not walkable
+          tileType: tileTypeStr,
+          walkable: tileTypeStr !== 'water', // Water is not walkable
         };
       }
     }
