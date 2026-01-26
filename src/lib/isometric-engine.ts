@@ -185,6 +185,12 @@ export class IsometricEngine {
   // 像素数据缓存（避免重复创建canvas）
   private pixelDataCache: Map<string, ImageData> = new Map();
   
+  // 记录最后一次阻挡玩家的树（用于触发树碰撞事件）
+  private lastBlockingTree: MapItem | undefined = undefined;
+  
+  // 树碰撞回调（当玩家被树阻挡时调用）
+  private onTreeCollision?: (tree: MapItem) => void;
+  
   // 瓦片精灵图映射（使用center.png精灵图集）
   private readonly centerSpriteSheet = '/game/isometric/autotiles/center.png';
   private tileSprites: Map<string, { src: string; sx: number; sy: number; sw: number; sh: number }> = new Map([
@@ -935,7 +941,14 @@ export class IsometricEngine {
         console.log(`  🎯 ${point.name}: 屏幕(${Math.round(point.x)},${Math.round(point.y)}) -> 像素(${pixelX},${pixelY}) = ${opaque ? '不透明❌' : '透明✅'}`);
         
         if (opaque) {
-          console.log(`  ❌ 碰撞！${item.itemName}的${point.name}位置有不透明像素`);
+          // 检查是否是树
+          if (item.itemType === 'plant' && (item.properties?.plantType === 'tree' || item.itemName?.includes('树'))) {
+            console.log(`  🌳 碰撞！被树阻挡: ${item.itemName}`);
+            this.lastBlockingTree = item; // 记录被阻挡的树
+          } else {
+            console.log(`  ❌ 碰撞！${item.itemName}的${point.name}位置有不透明像素`);
+            this.lastBlockingTree = undefined; // 不是树，清除记录
+          }
           return false;
         }
       }
@@ -1039,6 +1052,22 @@ export class IsometricEngine {
   }
 
   /**
+   * 设置玩家移动完成回调
+   */
+  setPlayerMoveCompleteCallback(callback: (x: number, y: number) => void): void {
+    if (this.player) {
+      this.player.setOnMoveComplete(callback);
+    }
+  }
+  
+  /**
+   * 设置树碰撞回调（当玩家被树阻挡时调用）
+   */
+  setTreeCollisionCallback(callback: (tree: MapItem) => void): void {
+    this.onTreeCollision = callback;
+  }
+
+  /**
    * 创建可行走网格（用于路径寻找）
    */
   private createWalkableGrid(): number[][] {
@@ -1059,17 +1088,36 @@ export class IsometricEngine {
 
   /**
    * 移动玩家到指定位置（使用A*路径寻找）
+   * @returns 返回对象：{ success: boolean, blockedByTree?: MapItem }
    */
-  movePlayerTo(targetX: number, targetY: number): boolean {
+  movePlayerTo(targetX: number, targetY: number): { success: boolean; blockedByTree?: MapItem } {
     if (!this.player || !this.mapData) {
-      return false;
+      return { success: false };
     }
 
-    // 检查目标是否可行走
+    // 清除之前的树阻挡记录
+    this.lastBlockingTree = undefined;
+    
+    // 检查目标是否可行走（包括瓦片和物品阻挡）
     const targetTile = this.getTileAt(targetX, targetY);
     if (!targetTile || !targetTile.walkable) {
       console.log('⛔ Target tile not walkable:', targetX, targetY);
-      return false;
+      return { success: false };
+    }
+    
+    // 使用 isWalkable() 检查物品阻挡（会自动检测树并记录到 lastBlockingTree）
+    if (!this.isWalkable(targetX, targetY)) {
+      // 立即保存树的引用，因为后续 createWalkableGrid 会覆盖 lastBlockingTree
+      const blockedTree = this.lastBlockingTree;
+      
+      // 如果被树阻挡，返回树信息
+      if (blockedTree) {
+        console.log('🌳 移动被树阻挡:', blockedTree.itemName);
+        this.lastBlockingTree = undefined; // 清除记录
+        return { success: false, blockedByTree: blockedTree };
+      }
+      console.log('⛔ Blocked by item at:', targetX, targetY);
+      return { success: false };
     }
 
     // 创建可行走网格
@@ -1090,7 +1138,7 @@ export class IsometricEngine {
 
     if (path.length === 0) {
       console.log('⛔ No path found to:', targetX, targetY);
-      return false;
+      return { success: false };
     }
 
     // 转换路径格式
@@ -1098,7 +1146,7 @@ export class IsometricEngine {
     this.player.setPath(formattedPath);
     
     console.log(`🚶 Moving player from (${startX}, ${startY}) to (${targetX}, ${targetY}), path length: ${path.length}`);
-    return true;
+    return { success: true };
   }
 
   /**
@@ -1133,6 +1181,12 @@ export class IsometricEngine {
     
     // 碰撞检测
     if (!this.isWalkable(tileX, tileY)) {
+      // 检查是否被树阻挡
+      if (this.lastBlockingTree && this.onTreeCollision) {
+        const tree = this.lastBlockingTree;
+        this.lastBlockingTree = undefined;
+        this.onTreeCollision(tree);
+      }
       return;
     }
     
@@ -1317,11 +1371,6 @@ export class IsometricEngine {
     
     return null;
   }
-
-  /**
-   * 像素数据缓存（避免重复创建canvas）
-   */
-  private pixelDataCache: Map<string, ImageData> = new Map();
 
   /**
    * 检查图片指定像素是否不透明（使用缓存优化）

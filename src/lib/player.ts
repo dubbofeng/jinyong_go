@@ -21,6 +21,7 @@ export class Player {
   private spriteSheetUrl: string; // 动画精灵图表路径
   private spriteLoaded: boolean = false;
   private spriteSheet: HTMLImageElement | null = null;
+  private onMoveComplete?: (x: number, y: number) => void; // 移动完成回调
   
   // 精灵图表配置（新图：512x640，4列x4行）
   private readonly FRAME_WIDTH = 128;  // 每帧宽度 (512/4)
@@ -131,12 +132,19 @@ export class Player {
         this.state.targetY = nextPoint.y;
       } else {
         // 路径完成
-        console.log('✅ Player reached destination:', this.state.x, this.state.y);
+        const finalX = this.state.x;
+        const finalY = this.state.y;
+        console.log('✅ Player reached destination:', finalX, finalY);
         this.state.isMoving = false;
         this.state.targetX = null;
         this.state.targetY = null;
         this.state.path = [];
         this.state.pathIndex = 0;
+        
+        // 调用移动完成回调
+        if (this.onMoveComplete) {
+          this.onMoveComplete(finalX, finalY);
+        }
       }
       return;
     }
@@ -196,6 +204,13 @@ export class Player {
       ctx.arc(screenX, screenY, 5, 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+
+  /**
+   * 设置移动完成回调
+   */
+  setOnMoveComplete(callback: (x: number, y: number) => void): void {
+    this.onMoveComplete = callback;
   }
 
   /**

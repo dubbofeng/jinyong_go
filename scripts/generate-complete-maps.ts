@@ -430,37 +430,8 @@ async function main() {
       console.log(`   ✅ 连接 ${buildings.length} 个建筑`);
     }
 
-    // 放置植物 (10-25个)
-    console.log('🌳 放置植物...');
-    const numPlants = 10 + Math.floor(Math.random() * 16); // 10-25
-    for (let i = 0; i < numPlants && plantItems.length > 0; i++) {
-      const item = plantItems[Math.floor(Math.random() * plantItems.length)];
-      const x = margin + Math.floor(Math.random() * (config.width - margin * 2));
-      const y = margin + Math.floor(Math.random() * (config.height - margin * 2));
-      
-      await db.insert(mapItems).values({
-        mapId: mapRecord.id,
-        itemId: item.id,
-        x, y,
-      });
-    }
-    console.log(`   ✅ 放置 ${numPlants} 个植物`);
-
-    // 放置装饰物品 (5-10个)
-    console.log('🎨 放置装饰...');
-    const numDecorations = 5 + Math.floor(Math.random() * 6); // 5-10
-    for (let i = 0; i < numDecorations && decorationItems.length > 0; i++) {
-      const item = decorationItems[Math.floor(Math.random() * decorationItems.length)];
-      const x = margin + Math.floor(Math.random() * (config.width - margin * 2));
-      const y = margin + Math.floor(Math.random() * (config.height - margin * 2));
-      
-      await db.insert(mapItems).values({
-        mapId: mapRecord.id,
-        itemId: item.id,
-        x, y,
-      });
-    }
-    console.log(`   ✅ 放置 ${numDecorations} 个装饰物`);
+    // 记录需要避开的位置（NPC和传送门周围）
+    const blockedPositions: {x: number, y: number}[] = [];
 
     // 放置NPC (使用地图配置指定的NPC)
     if (!config.isWorld && config.npcIds.length > 0) {
@@ -472,8 +443,38 @@ async function main() {
           continue;
         }
         
-        const x = margin + Math.floor(Math.random() * (config.width - margin * 2));
-        const y = margin + Math.floor(Math.random() * (config.height - margin * 2));
+        // NPC离玩家初始位置（地图中心）更远，至少10格以上
+        const centerX = Math.floor(config.width / 2);
+        const centerY = Math.floor(config.height / 2);
+        const minDistance = 10; // 距离中心最小距离
+        const minBuildingDistance = 5; // 距离建筑最小距离
+        let x, y;
+        let attempts = 0;
+        
+        do {
+          x = margin + Math.floor(Math.random() * (config.width - margin * 2));
+          y = margin + Math.floor(Math.random() * (config.height - margin * 2));
+          
+          // 检查距离中心
+          const distanceToCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+          if (distanceToCenter < minDistance) {
+            attempts++;
+            continue;
+          }
+          
+          // 检查距离所有建筑
+          let tooCloseToBuilding = false;
+          for (const building of buildings) {
+            const distanceToBuilding = Math.sqrt((x - building.x) ** 2 + (y - building.y) ** 2);
+            if (distanceToBuilding < minBuildingDistance) {
+              tooCloseToBuilding = true;
+              break;
+            }
+          }
+          
+          if (!tooCloseToBuilding) break;
+          attempts++;
+        } while (attempts < 100);
         
         await db.insert(mapItems).values({
           mapId: mapRecord.id,
@@ -481,15 +482,50 @@ async function main() {
           x, y,
         });
         
-        console.log(`   + ${item.name} @ (${x}, ${y})`);
+        // 记录NPC周围3格范围为禁区
+        for (let dy = -3; dy <= 3; dy++) {
+          for (let dx = -3; dx <= 3; dx++) {
+            blockedPositions.push({ x: x + dx, y: y + dy });
+          }
+        }
+        
+        console.log(`   + ${item.name} @ (${x}, ${y}) [距中心: ${Math.floor(Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2))}格]`);
       }
     }
 
     // 放置传送门 (场景地图返回世界地图)
     if (!config.isWorld && portalItem) {
       console.log('🌀 放置传送门...');
-      const x = Math.floor(config.width / 2);
-      const y = Math.floor(config.height / 2) + 5;
+      // 随机选择四个角之一放置传送门，但要确保离建筑足够远
+      const corners = [
+        { x: margin + 2, y: margin + 2 },                                     // 左上角
+        { x: config.width - margin - 3, y: margin + 2 },                      // 右上角
+        { x: margin + 2, y: config.height - margin - 3 },                     // 左下角
+        { x: config.width - margin - 3, y: config.height - margin - 3 },     // 右下角
+      ];
+      
+      // 找到离建筑最远的角落
+      const minBuildingDistance = 5;
+      let bestCorner = corners[0];
+      let maxMinDistance = 0;
+      
+      for (const corner of corners) {
+        // 计算这个角到所有建筑的最小距离
+        let minDistToBuilding = Infinity;
+        for (const building of buildings) {
+          const dist = Math.sqrt((corner.x - building.x) ** 2 + (corner.y - building.y) ** 2);
+          minDistToBuilding = Math.min(minDistToBuilding, dist);
+        }
+        
+        // 选择距离建筑最远的角
+        if (minDistToBuilding > maxMinDistance) {
+          maxMinDistance = minDistToBuilding;
+          bestCorner = corner;
+        }
+      }
+      
+      const x = bestCorner.x;
+      const y = bestCorner.y;
       
       await db.insert(mapItems).values({
         mapId: mapRecord.id,
@@ -500,8 +536,69 @@ async function main() {
         sceneLinkY: 32,
       });
       
+      // 记录传送门周围3格范围为禁区
+      for (let dy = -3; dy <= 3; dy++) {
+        for (let dx = -3; dx <= 3; dx++) {
+          blockedPositions.push({ x: x + dx, y: y + dy });
+        }
+      }
+      
       console.log(`   ✅ 传送门 @ (${x}, ${y}) → 世界地图`);
     }
+
+    // 放置植物 (10-25个) - 避开NPC和传送门周围
+    console.log('🌳 放置植物...');
+    const numPlants = 10 + Math.floor(Math.random() * 16); // 10-25
+    for (let i = 0; i < numPlants && plantItems.length > 0; i++) {
+      const item = plantItems[Math.floor(Math.random() * plantItems.length)];
+      let x, y;
+      let attempts = 0;
+      
+      // 尝试找到不在禁区的位置
+      do {
+        x = margin + Math.floor(Math.random() * (config.width - margin * 2));
+        y = margin + Math.floor(Math.random() * (config.height - margin * 2));
+        
+        const isBlocked = blockedPositions.some(pos => pos.x === x && pos.y === y);
+        if (!isBlocked) break;
+        
+        attempts++;
+      } while (attempts < 50);
+      
+      await db.insert(mapItems).values({
+        mapId: mapRecord.id,
+        itemId: item.id,
+        x, y,
+      });
+    }
+    console.log(`   ✅ 放置 ${numPlants} 个植物`);
+
+    // 放置装饰物品 (5-10个) - 避开NPC和传送门周围
+    console.log('🎨 放置装饰...');
+    const numDecorations = 5 + Math.floor(Math.random() * 6); // 5-10
+    for (let i = 0; i < numDecorations && decorationItems.length > 0; i++) {
+      const item = decorationItems[Math.floor(Math.random() * decorationItems.length)];
+      let x, y;
+      let attempts = 0;
+      
+      // 尝试找到不在禁区的位置
+      do {
+        x = margin + Math.floor(Math.random() * (config.width - margin * 2));
+        y = margin + Math.floor(Math.random() * (config.height - margin * 2));
+        
+        const isBlocked = blockedPositions.some(pos => pos.x === x && pos.y === y);
+        if (!isBlocked) break;
+        
+        attempts++;
+      } while (attempts < 50);
+      
+      await db.insert(mapItems).values({
+        mapId: mapRecord.id,
+        itemId: item.id,
+        x, y,
+      });
+    }
+    console.log(`   ✅ 放置 ${numDecorations} 个装饰物`);
 
     // 保存地形
     console.log('💾 保存地形...');

@@ -108,26 +108,38 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   // ==================== 死活题系统 ====================
   
   /**
-   * 触发死活题挑战
+   * 处理树木碰撞 - 触发死活题挑战
    */
-  const triggerTsumegoEncounter = async (mapId?: string) => {
-    // 先询问是否挑战
+  const handleTreeCollision = async () => {
+    // 显示挑战提示
     const shouldChallenge = await showConfirm(
-      '遭遇棋魔！是否接受死活题挑战？\n\n挑战成功可获得经验和奖励！',
-      '🐉 棋魔来袭'
+      '从树后跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"',
+      '⚔️ 遭遇挑战'
     );
-    if (!shouldChallenge) {
-      return;
-    }
     
+    if (shouldChallenge) {
+      // 树挑战使用 beginner 难度
+      triggerTsumegoEncounter(mapData?.id, 'beginner');
+    }
+  };
+  
+  /**
+   * 触发死活题挑战
+   * @param mapId 地图ID
+   * @param forceDifficulty 强制指定难度（用于建筑等特殊场景）
+   */
+  const triggerTsumegoEncounter = async (mapId?: string, forceDifficulty?: string) => {
     try {
-      // 根据地图确定难度
-      const currentMapId = mapId || mapData?.id;
-      let difficulty = 'beginner';
-      if (currentMapId === 'shaolin_scene') {
-        difficulty = 'intermediate';
-      } else if (currentMapId === 'wudang_scene' || currentMapId === 'taohua_scene') {
-        difficulty = 'advanced';
+      // 如果有强制难度，使用强制难度；否则根据地图确定难度
+      let difficulty = forceDifficulty || 'beginner';
+      
+      if (!forceDifficulty) {
+        const currentMapId = mapId || mapData?.id;
+        if (currentMapId === 'shaolin_scene') {
+          difficulty = 'intermediate';
+        } else if (currentMapId === 'wudang_scene' || currentMapId === 'taohua_scene') {
+          difficulty = 'advanced';
+        }
       }
       
       // 获取随机题目
@@ -230,6 +242,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     });
 
     engineRef.current = engine;
+
+    // 设置树碰撞回调（键盘移动时触发）
+    engine.setTreeCollisionCallback((tree) => {
+      console.log('🌳 键盘移动被树阻挡，触发对战:', tree.itemName);
+      handleTreeCollision();
+    });
 
     // 加载地图
     const initMap = async () => {
@@ -402,8 +420,16 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       // 处理建筑点击 - 触发死活题挑战
       if (item.itemType === 'building') {
         console.log(`🏛️ Clicked building:`, item);
-        // 触发死活题挑战
-        await triggerTsumegoEncounter(mapData?.id);
+        // 显示挑战确认对话框
+        const shouldChallenge = await showConfirm(
+          `你来到了${item.itemName || '棋馆'}门前。\n\n馆主："欢迎光临！敢不敢来挑战一下本馆的死活题？"`,
+          '🏛️ 棋馆挑战'
+        );
+        
+        if (shouldChallenge) {
+          // 触发死活题挑战（棋馆难度：intermediate）
+          await triggerTsumegoEncounter(mapData?.id, 'intermediate');
+        }
         return;
       }
       
@@ -419,7 +445,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return;
       }
       
-      // 点击到物品后不继续执行移动逻辑
+      // 处理树木点击（decoration 或 plant 类型）
+      if ((item.itemType === 'decoration' || item.itemType === 'plant') && 
+          (item.itemPath?.includes('tree') || item.itemName?.includes('树'))) {
+        console.log(`🌳 点击树木: ${item.itemName}，触发死活题挑战！`);
+        handleTreeCollision();
+        return;
+      }
+      
+      // 点击到其他物品后不继续执行移动逻辑
       return;
     }
 
@@ -434,9 +468,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
     // 点击移动玩家
     if (tile && tile.walkable) {
-      const success = engine.movePlayerTo(tileX, tileY);
-      if (success) {
+      const result = engine.movePlayerTo(tileX, tileY);
+      if (result.success) {
         console.log(`✅ Player moving to (${tileX}, ${tileY})`);
+      } else if (result.blockedByTree) {
+        // 被树阻挡，触发战斗
+        console.log('🌳 被树阻挡，触发死活题挑战！', result.blockedByTree);
+        await handleTreeCollision();
+      } else {
+        console.log('⛔ 移动失败，原因未知');
       }
     } else {
       console.log('⛔ Cannot walk to this tile');
