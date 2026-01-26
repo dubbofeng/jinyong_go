@@ -43,6 +43,7 @@ export interface MapItem {
   itemType: 'building' | 'npc' | 'portal' | 'decoration' | 'plant';
   properties?: Record<string, any>;
   blocking?: boolean;    // 是否阻挡移动
+  size?: number;         // 物品尺寸（占据size x size格子，默认1）
   // 传送门相关
   targetMapId?: string;
   targetX?: number;
@@ -91,6 +92,8 @@ class ResourceLoader {
     // 开始加载
     const promise = new Promise<HTMLImageElement>((resolve, reject) => {
       const img = new Image();
+      // 设置crossOrigin以支持像素数据读取
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         this.images.set(url, img);
         this.loading.delete(url);
@@ -175,6 +178,12 @@ export class IsometricEngine {
   
   // 视口
   private viewport: Viewport;
+  
+  // 调试标记
+  private debugRenderedItems: boolean = false;
+  
+  // 像素数据缓存（避免重复创建canvas）
+  private pixelDataCache: Map<string, ImageData> = new Map();
   
   // 瓦片精灵图映射（使用center.png精灵图集）
   private readonly centerSpriteSheet = '/game/isometric/autotiles/center.png';
@@ -305,6 +314,10 @@ export class IsometricEngine {
    */
   async loadMap(mapData: MapData): Promise<void> {
     console.log('🗺️ IsometricEngine loadMap:', mapData.name, `${mapData.width}x${mapData.height}`);
+    console.log('📦 地图物品数量:', mapData.items?.length || 0);
+    if (mapData.items && mapData.items.length > 0) {
+      console.log('📦 第一个物品:', mapData.items[0]);
+    }
     
     // 更新配置以匹配实际地图尺寸
     this.config.mapWidth = mapData.width;
@@ -578,6 +591,13 @@ export class IsometricEngine {
   private renderItem(item: MapItem): void {
     const spriteUrl = this.getSpriteUrl(item);
     const img = this.resourceLoader.getImage(spriteUrl);
+    
+    // 调试：记录第一次渲染失败
+    if (!img && !this.debugRenderedItems) {
+      console.warn('⚠️ 无法加载物品图片:', spriteUrl, item);
+      this.debugRenderedItems = true;
+    }
+    
     if (!img) return;
     
     const screenPos = this.cartesianToScreen(item.x, item.y);
@@ -811,19 +831,114 @@ export class IsometricEngine {
    */
   getItemsAt(x: number, y: number): MapItem[] {
     if (!this.mapData) return [];
-    return this.mapData.items.filter(item => item.x === x && item.y === y);
+    const foundItems = this.mapData.items.filter(item => {
+      // 物品的起始坐标
+      const itemX = item.x;
+      const itemY = item.y;
+      const itemSize = item.size || 1;
+      
+      // 检查(x,y)是否在物品占据的区域内
+      // 物品占据从(itemX, itemY)到(itemX + itemSize - 1, itemY + itemSize - 1)的区域
+      const isInside = x >= itemX && x < itemX + itemSize &&
+                       y >= itemY && y < itemY + itemSize;
+      
+      // 调试：记录所有找到的物品
+      if (isInside) {
+        console.log(`📦 getItemsAt(${x},${y}) 找到物品: ${item.itemName} @ (${itemX},${itemY}) size=${itemSize} blocking=${item.blocking}`);
+      }
+      
+      return isInside;
+    });
+    
+    if (foundItems.length > 0) {
+      console.log(`📦 getItemsAt(${x},${y}) 返回 ${foundItems.length} 个物品`);
+    }
+    return foundItems;
   }
 
   /**
-   * 检查坐标是否可行走
+   * 检查坐标是否可行走（使用像素级碰撞检测）
    */
   isWalkable(x: number, y: number): boolean {
-    const tile = this.getTileAt(x, y);
-    if (!tile || !tile.walkable) return false;
+    console.log(`\n🚶 isWalkable(${x}, ${y}) 开始检测...`);
     
-    // 检查是否有阻挡物品
-    const items = this.getItemsAt(x, y);
-    return !items.some(item => item.blocking);
+    const tile = this.getTileAt(x, y);
+    if (!tile || !tile.walkable) {
+      console.log(`❌ 瓦片不可行走: (${x},${y}) - tile=${tile?.tileType}, walkable=${tile?.walkable}`);
+      return false;
+    }
+    
+    if (!this.mapData) return true;
+    
+    // 计算要检测的瓦片的屏幕位置和测试点
+    const tileScreenPos = this.cartesianToScreen(x, y);
+    const testPoints = [
+      { x: tileScreenPos.x, y: tileScreenPos.y + this.config.tileHeight / 2, name: '底部中心' },
+      { x: tileScreenPos.x, y: tileScreenPos.y - this.config.tileHeight / 2, name: '顶部中心' },
+      { x: tileScreenPos.x - this.config.tileWidth / 2, y: tileScreenPos.y, name: '左侧' },
+      { x: tileScreenPos.x + this.config.tileWidth / 2, y: tileScreenPos.y, name: '右侧' },
+      { x: tileScreenPos.x, y: tileScreenPos.y, name: '中心' },
+    ];
+    
+    // 遍历所有物品，检查是否有阻挡物品的精灵图覆盖到这个位置
+    for (const item of this.mapData.items) {
+      if (!item.blocking) continue;
+      
+      const spriteUrl = this.getSpriteUrl(item);
+      const img = this.resourceLoader.getImage(spriteUrl);
+      if (!img) continue; // 图片未加载，跳过
+      
+      // 计算物品精灵的屏幕矩形（精灵总是在物品的起始坐标 item.x, item.y 绘制）
+      const itemScreenPos = this.cartesianToScreen(item.x, item.y);
+      const spriteX = itemScreenPos.x - img.width / 2;
+      const spriteY = itemScreenPos.y + this.config.tileHeight / 2 - img.height;
+      const spriteRight = spriteX + img.width;
+      const spriteBottom = spriteY + img.height;
+      
+      // 先粗略检查：测试点是否有任何一个在精灵图矩形范围内
+      let hasPointInSprite = false;
+      for (const point of testPoints) {
+        if (point.x >= spriteX && point.x <= spriteRight &&
+            point.y >= spriteY && point.y <= spriteBottom) {
+          hasPointInSprite = true;
+          break;
+        }
+      }
+      
+      if (!hasPointInSprite) {
+        // 没有任何测试点在这个精灵图范围内，跳过
+        continue;
+      }
+      
+      // 至少有一个点在精灵图范围内，进行详细检测
+      console.log(`🔍 检测阻挡物品: ${item.itemName} @ (${item.x},${item.y}), size=${item.size || 1}`);
+      console.log(`  📐 精灵图屏幕矩形: (${spriteX.toFixed(0)}, ${spriteY.toFixed(0)}) - (${spriteRight.toFixed(0)}, ${spriteBottom.toFixed(0)})`);
+      console.log(`  📏 精灵图尺寸: ${img.width}x${img.height}px`);
+      console.log(`  📍 检测格子(${x},${y})相对物品(${item.x},${item.y})偏移: dx=${x - item.x}, dy=${y - item.y}`);
+      
+      // 对每个在精灵图范围内的测试点进行像素检测
+      for (const point of testPoints) {
+        if (point.x < spriteX || point.x > spriteRight ||
+            point.y < spriteY || point.y > spriteBottom) {
+          continue; // 不在精灵图范围内
+        }
+        
+        // 计算相对于精灵图的像素坐标
+        const pixelX = Math.floor(point.x - spriteX);
+        const pixelY = Math.floor(point.y - spriteY);
+        
+        const opaque = this.isPixelOpaque(img, pixelX, pixelY);
+        console.log(`  🎯 ${point.name}: 屏幕(${Math.round(point.x)},${Math.round(point.y)}) -> 像素(${pixelX},${pixelY}) = ${opaque ? '不透明❌' : '透明✅'}`);
+        
+        if (opaque) {
+          console.log(`  ❌ 碰撞！${item.itemName}的${point.name}位置有不透明像素`);
+          return false;
+        }
+      }
+    }
+    
+    console.log(`✅ 位置(${x},${y})可行走，无碰撞`);
+    return true;
   }
 
   /**
@@ -1200,27 +1315,57 @@ export class IsometricEngine {
   }
 
   /**
-   * 检查图片指定像素是否不透明
+   * 像素数据缓存（避免重复创建canvas）
+   */
+  private pixelDataCache: Map<string, ImageData> = new Map();
+
+  /**
+   * 检查图片指定像素是否不透明（使用缓存优化）
    */
   private isPixelOpaque(img: HTMLImageElement, x: number, y: number): boolean {
-    // 创建临时canvas来读取像素数据
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = img.width;
-    tempCanvas.height = img.height;
-    const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-    if (!tempCtx) return false;
-    
-    tempCtx.drawImage(img, 0, 0);
-    
-    try {
-      const imageData = tempCtx.getImageData(x, y, 1, 1);
-      const alpha = imageData.data[3]; // alpha通道
-      return alpha > 10; // alpha > 10 认为是不透明（容忍一点点透明度）
-    } catch (e) {
-      // 跨域图片可能无法读取像素数据，回退到矩形检测
-      console.warn('Cannot read pixel data (CORS?):', e);
-      return true;
+    // 检查坐标是否在图片范围内
+    if (x < 0 || x >= img.width || y < 0 || y >= img.height) {
+      console.warn(`⚠️ 像素坐标越界: (${x},${y}), 图片尺寸: ${img.width}x${img.height}`);
+      return false;
     }
+    
+    // 使用图片URL作为缓存key
+    const cacheKey = img.src;
+    let imageData = this.pixelDataCache.get(cacheKey);
+    
+    // 如果没有缓存，读取整张图片的像素数据
+    if (!imageData) {
+      console.log(`📸 创建像素数据缓存: ${cacheKey} (${img.width}x${img.height})`);
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+      if (!tempCtx) {
+        console.error('❌ 无法创建canvas context');
+        return false;
+      }
+      
+      tempCtx.drawImage(img, 0, 0);
+      
+      try {
+        imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+        this.pixelDataCache.set(cacheKey, imageData);
+        console.log(`✅ 像素数据缓存成功`);
+      } catch (e) {
+        // 跨域图片可能无法读取像素数据
+        console.error('❌ 无法读取像素数据 (CORS?):', e);
+        console.error('  图片URL:', cacheKey);
+        console.error('  使用保守策略：默认阻挡');
+        return true; // 回退到矩形碰撞（阻挡）
+      }
+    }
+    
+    // 从缓存的ImageData中读取像素
+    const pixelIndex = (y * img.width + x) * 4;
+    const alpha = imageData.data[pixelIndex + 3]; // alpha通道
+    const opaque = alpha > 10; // alpha > 10 认为是不透明
+    
+    return opaque;
   }
 
   /**

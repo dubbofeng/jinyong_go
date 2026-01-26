@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
-import { mapTiles, maps, mapItems } from "@/src/db/schema";
+import { mapTiles, maps, mapItems, items } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(
@@ -34,9 +34,33 @@ export async function GET(
       .orderBy(mapTiles.y, mapTiles.x);
 
     // Get all items for this map (NPCs, buildings, portals, decorations)
-    const items = await db
-      .select()
+    // JOIN with items table to get item details
+    const itemsData = await db
+      .select({
+        id: mapItems.id,
+        x: mapItems.x,
+        y: mapItems.y,
+        dialogueId: mapItems.dialogueId,
+        questId: mapItems.questId,
+        sceneLinkMapId: mapItems.sceneLinkMapId,
+        sceneLinkX: mapItems.sceneLinkX,
+        sceneLinkY: mapItems.sceneLinkY,
+        enabled: mapItems.enabled,
+        collected: mapItems.collected,
+        // Item details from items table
+        itemId: items.itemId,
+        itemName: items.name,
+        itemPath: items.imagePath,
+        itemType: items.itemType,
+        blocking: items.blocking,
+        interactable: items.interactable,
+        size: items.size,
+        animated: items.animated,
+        animationPath: items.animationPath,
+        frameCount: items.frameCount,
+      })
       .from(mapItems)
+      .leftJoin(items, eq(mapItems.itemId, items.id))
       .where(eq(mapItems.mapId, map.id));
 
     // Convert tiles to 2D array for easier rendering
@@ -61,17 +85,27 @@ export async function GET(
       width: map.width,
       height: map.height,
       tiles: tilesArray,
-      items: items.map(item => ({
+      items: itemsData.map(item => ({
         id: item.id,
+        itemId: item.itemId,
         itemName: item.itemName,
         itemPath: item.itemPath,
         itemType: item.itemType,
         x: item.x,
         y: item.y,
-        blocking: item.itemType === 'building' || item.itemType === 'npc',
-        targetMapId: item.targetMapId,
-        targetX: item.targetX,
-        targetY: item.targetY,
+        blocking: item.blocking || false,
+        interactable: item.interactable || false,
+        size: item.size || 1,
+        dialogueId: item.dialogueId,
+        questId: item.questId,
+        // Portal/scene transition support (兼容旧的targetMapId命名)
+        targetMapId: item.sceneLinkMapId,
+        targetX: item.sceneLinkX,
+        targetY: item.sceneLinkY,
+        // Animation support
+        animated: item.animated || false,
+        animationPath: item.animationPath,
+        frameCount: item.frameCount,
       })),
     });
   } catch (error) {

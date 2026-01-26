@@ -78,6 +78,13 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         items: data.items || [],
       };
       
+      console.log('🗺️ 加载地图数据:', {
+        id: mapData.id,
+        name: mapData.name,
+        itemsCount: mapData.items.length,
+        firstItem: mapData.items[0],
+      });
+      
       setMapData(mapData);
       return mapData;
     } catch (err) {

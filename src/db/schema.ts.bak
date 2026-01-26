@@ -444,3 +444,48 @@ export type NewNpcRelationship = typeof npcRelationships.$inferInsert;
 export type GameSettings = typeof gameSettings.$inferSelect;
 export type NewGameSettings = typeof gameSettings.$inferInsert;
 
+  id: serial('id').primaryKey(),
+  
+  // 基本信息
+  name: varchar('name', { length: 100 }).notNull(), // 显示名称，如"松树"、"房屋"
+  type: varchar('type', { length: 20 }).notNull(), // 类型: 'decoration', 'plant', 'building'
+  category: varchar('category', { length: 50 }).notNull(), // 分类: 'indoor', 'outdoor', 'chinese_building', etc.
+  
+  // 图片信息
+  imagePath: varchar('image_path', { length: 500 }).notNull(), // 图片路径
+  imageWidth: integer('image_width'), // 图片宽度（像素）
+  imageHeight: integer('image_height'), // 图片高度（像素）
+  
+  // 游戏属性
+  size: integer('size').notNull().default(1), // 占用格子数 (1-4)
+  blocking: boolean('blocking').notNull().default(true), // 是否阻挡行走
+  
+  // 交互属性
+  interactable: boolean('interactable').notNull().default(false), // 是否可交互
+  pickable: boolean('pickable').notNull().default(false), // 是否可拣取
+  itemId: integer('item_id').references(() => items.id), // 拣取后获得的物品ID
+  
+  // 植物特殊属性
+  plantType: varchar('plant_type', { length: 20 }), // 植物类型: 'herb'(草药), 'tree'(树木), 'bamboo'(竹子), null
+  harvestable: boolean('harvestable').notNull().default(false), // 是否可采集
+  harvestItemId: integer('harvest_item_id').references(() => items.id), // 采集获得的物品ID
+  
+  // 建筑特殊属性
+  enterable: boolean('enterable').notNull().default(false), // 是否可进入
+  dialogueId: varchar('dialogue_id', { length: 100 }), // 进入时触发的对话ID
+  questId: varchar('quest_id', { length: 100 }), // 关联的任务ID
+  
+  // 动画属性
+  animated: boolean('animated').notNull().default(false), // 是否有动画
+  animationPath: varchar('animation_path', { length: 500 }), // 动画帧路径
+  frameCount: integer('frame_count'), // 动画帧数
+  
+  // 描述
+  description: text('description'), // 描述文本
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export type DecorationDefinition = typeof decorationDefinitions.$inferSelect;
+export type NewDecorationDefinition = typeof decorationDefinitions.$inferInsert;
