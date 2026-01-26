@@ -75,14 +75,11 @@ export default function GoBoardGame({
       const result = engine.placeStone(position, prevPlayer);
       
       if (result.success) {
-        console.log(`${prevPlayer} placed stone at (${position.row}, ${position.col})`);
-        
         // 在棋盘上显示落子
         board.placeStone(position, prevPlayer);
         
         // 处理提子
         if (result.capturedStones.length > 0) {
-          console.log(`Captured ${result.capturedStones.length} stones`);
           for (const captured of result.capturedStones) {
             board.removeStone(captured);
           }
@@ -117,7 +114,6 @@ export default function GoBoardGame({
         } else {
           setLastMessage('❌ 此位置不能落子');
         }
-        console.log('Invalid move:', result.error);
         return prevPlayer;
       }
     });
@@ -155,8 +151,6 @@ export default function GoBoardGame({
 
         const analysis = await katagoEngine.analyzePosition(size, stones, 'white');
         bestMove = analysis.bestMove;
-        
-        console.log('✅ KataGo分析完成:', bestMove);
       } else {
         // 使用简单规则AI
         if (!aiEngineRef.current?.isReady()) {
@@ -166,8 +160,6 @@ export default function GoBoardGame({
           return;
         }
 
-        console.log('🤖 使用简单规则引擎分析...');
-        
         // 根据难度设置延迟时间
         const thinkDelay = aiDifficulty === 'easy' ? 500 : aiDifficulty === 'medium' ? 1000 : 1500;
         await new Promise(resolve => setTimeout(resolve, thinkDelay));
@@ -271,7 +263,7 @@ export default function GoBoardGame({
       
       // 异步初始化AI引擎
       aiEngine.initialize().then(() => {
-        console.log(`🤖 AI引擎已初始化（难度: ${aiDifficulty}）`);
+        // AI引擎初始化成功
       }).catch(error => {
         console.error('❌ AI引擎初始化失败:', error);
       });
@@ -324,8 +316,6 @@ export default function GoBoardGame({
    */
   const handleGameEnd = useCallback(async (winner: 'black' | 'white' | 'draw', reason: 'score' | 'resign' | 'timeout') => {
     const engine = engineRef.current;
-    
-    console.log('handleGameEnd called:', { winner, reason, hasEngine: !!engine, hasSession: !!session, userId: session?.user?.id });
     
     if (!engine || !session?.user?.id) {
       console.error('Cannot end game: missing engine or session', { hasEngine: !!engine, hasSession: !!session, userId: session?.user?.id });
@@ -453,21 +443,14 @@ export default function GoBoardGame({
       questUpdates: questUpdates.length > 0 ? questUpdates : undefined,
     };
 
-    console.log('Setting game result:', result);
     setGameResult(result);
     setShowResultModal(true);
-    console.log('Modal should now be visible');
   }, [session, capturedCount, moveCount, npcId, aiDifficulty, size]);
 
   const handleResign = useCallback(() => {
-    console.log('handleResign called');
     if (confirm('确认认输吗？')) {
-      console.log('User confirmed resign');
       const winner = currentPlayer === 'black' ? 'white' : 'black';
-      console.log('Calling handleGameEnd with winner:', winner);
       handleGameEnd(winner, 'resign');
-    } else {
-      console.log('User cancelled resign');
     }
   }, [currentPlayer, handleGameEnd]);
 
@@ -478,12 +461,6 @@ export default function GoBoardGame({
       setAiResign(false);
     }
   }, [aiResign, handleGameEnd]);
-
-  // 调试：监听Modal状态变化
-  useEffect(() => {
-    console.log('showResultModal changed:', showResultModal);
-    console.log('gameResult:', gameResult);
-  }, [showResultModal, gameResult]);
 
   const handleReset = () => {
     if (boardRef.current && engineRef.current) {
@@ -898,16 +875,11 @@ export default function GoBoardGame({
           result={gameResult}
           playerColor="black"
           onClose={() => {
-            console.log('GameResultModal onClose called');
-            console.log('onGameModalClose exists:', !!onGameModalClose);
             setShowResultModal(false);
             setGameResult(null);
             // 关闭父级GoGameModal
             if (onGameModalClose) {
-              console.log('Calling onGameModalClose to close parent modal');
               onGameModalClose();
-            } else {
-              console.log('onGameModalClose is not available');
             }
           }}
           onRematch={() => {

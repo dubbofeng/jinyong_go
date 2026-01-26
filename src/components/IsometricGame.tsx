@@ -5,7 +5,9 @@ import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
 import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
 import DialogueBox from '@/src/components/DialogueBox';
 import GoGameModal from '@/src/components/GoGameModal';
+import TsumegoModal from '@/src/components/TsumegoModal';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
+import type { TsumegoProblem } from '@/src/types/tsumego';
 
 interface IsometricGameProps {
   mapId?: string;
@@ -43,6 +45,10 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [pendingPortal, setPendingPortal] = useState<any>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   
+  // 死活题系统
+  const [showTsumegoEncounter, setShowTsumegoEncounter] = useState(false);
+  const [currentTsumegoProblem, setCurrentTsumegoProblem] = useState<any>(null);
+  
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
 
@@ -55,11 +61,36 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     'taohua_scene': '桃花岛',
   };
 
-  // 调试：监控传送门状态
-  useEffect(() => {
-    console.log('🔍 showPortalConfirm changed:', showPortalConfirm);
-    console.log('🔍 pendingPortal changed:', pendingPortal);
-  }, [showPortalConfirm, pendingPortal]);
+  // ==================== 死活题系统 ====================
+  
+  /**
+   * 触发死活题挑战
+   */
+  const triggerTsumegoEncounter = async (mapId?: string) => {
+    try {
+      // 根据地图确定难度
+      const currentMapId = mapId || mapData?.id;
+      let difficulty = 'beginner';
+      if (currentMapId === 'shaolin_scene') {
+        difficulty = 'intermediate';
+      } else if (currentMapId === 'wudang_scene' || currentMapId === 'taohua_scene') {
+        difficulty = 'advanced';
+      }
+      
+      // 获取随机题目
+      const response = await fetch(`/api/tsumego/random?difficulty=${difficulty}`);
+      if (!response.ok) {
+        console.error('Failed to fetch tsumego problem');
+        return;
+      }
+      
+      const problem = await response.json();
+      setCurrentTsumegoProblem(problem);
+      setShowTsumegoEncounter(true);
+    } catch (error) {
+      console.error('Error triggering tsumego encounter:', error);
+    }
+  };
 
   // ==================== 地图加载 ====================
 
@@ -315,16 +346,20 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return;
       }
       
+      // 处理建筑点击 - 触发死活题挑战
+      if (item.itemType === 'building') {
+        console.log(`🏛️ Clicked building:`, item);
+        // 触发死活题挑战
+        await triggerTsumegoEncounter(mapData?.id);
+        return;
+      }
+      
       // 处理传送门点击
       if (item.itemType === 'portal') {
         console.log(`🌀 Clicked portal to ${item.targetMapId}`);
-        console.log('Portal item data:', item);
         if (item.targetMapId) {
-          // 显示确认对话框
-          console.log('Setting pendingPortal and showPortalConfirm...');
           setPendingPortal(item);
           setShowPortalConfirm(true);
-          console.log('State set, should show dialog');
         } else {
           console.error('❌ Portal has no targetMapId');
         }
@@ -829,6 +864,26 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           </div>
         </div>
       )}
+
+      {/* 死活题遭遇Modal */}
+      <TsumegoModal
+        isOpen={showTsumegoEncounter}
+        problem={currentTsumegoProblem}
+        onClose={() => {
+          setShowTsumegoEncounter(false);
+          setCurrentTsumegoProblem(null);
+        }}
+        onComplete={(success) => {
+          if (success) {
+            console.log('✅ Tsumego completed successfully!');
+            // TODO: 发放奖励
+          } else {
+            console.log('❌ Tsumego failed or escaped');
+          }
+          setShowTsumegoEncounter(false);
+          setCurrentTsumegoProblem(null);
+        }}
+      />
 
       {/* 围棋挑战确认对话框 */}
       {showGoChallenge && pendingGoOpponent && (

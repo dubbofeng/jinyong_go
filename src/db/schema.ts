@@ -448,3 +448,36 @@ export type NewNpcRelationship = typeof npcRelationships.$inferInsert;
 export type GameSettings = typeof gameSettings.$inferSelect;
 export type NewGameSettings = typeof gameSettings.$inferInsert;
 
+// 死活题库表
+export const tsumegoProblems = pgTable('tsumego_problems', {
+  id: serial('id').primaryKey(),
+  category: varchar('category', { length: 100 }).notNull(), // Beginner/Intermediate/Advanced/Tesuji
+  collection: varchar('collection', { length: 200 }).notNull(), // 题目集名称
+  fileName: varchar('file_name', { length: 200 }).notNull(), // 原始文件名
+  difficulty: integer('difficulty').notNull(), // 1-10难度等级
+  boardSize: integer('board_size').default(19).notNull(), // 棋盘大小
+  blackStones: json('black_stones').$type<string[]>().notNull(), // 黑子位置（SGF格式）
+  whiteStones: json('white_stones').$type<string[]>().notNull(), // 白子位置（SGF格式）
+  solution: json('solution').$type<Array<[string, string, string, string]>>().notNull(), // 解答序列
+  description: text('description'), // 题目描述
+  experienceReward: integer('experience_reward').notNull(), // 经验奖励
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// 玩家死活题记录表
+export const playerTsumegoRecords = pgTable('player_tsumego_records', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  problemId: integer('problem_id').notNull().references(() => tsumegoProblems.id),
+  solved: boolean('solved').default(false).notNull(), // 是否已解答
+  attempts: integer('attempts').default(0).notNull(), // 尝试次数
+  firstSolvedAt: timestamp('first_solved_at'), // 首次解答时间
+  lastAttemptedAt: timestamp('last_attempted_at').defaultNow().notNull(), // 最后尝试时间
+});
+
+export type TsumegoProblem = typeof tsumegoProblems.$inferSelect;
+export type NewTsumegoProblem = typeof tsumegoProblems.$inferInsert;
+
+export type PlayerTsumegoRecord = typeof playerTsumegoRecords.$inferSelect;
+export type NewPlayerTsumegoRecord = typeof playerTsumegoRecords.$inferInsert;
+

@@ -46,11 +46,9 @@ export default function GoGameModal({
   }, [isOpen]);
 
   const handleClose = () => {
-    console.log('GoGameModal handleClose called');
     setIsVisible(false);
     setShowEngineSelector(vsAI); // 重置引擎选择器
     setTimeout(() => {
-      console.log('GoGameModal calling onClose');
       onClose();
     }, 300); // 等待淡出动画完成
   };
