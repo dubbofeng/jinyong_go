@@ -9,6 +9,9 @@ import {
   type SuggestedMove
 } from '../lib/go-skills';
 import { KataGoWrapper } from '../lib/katago-wrapper';
+import { KataGoBrowserEngine } from '../lib/katago-browser-engine';
+import GameResultModal, { type GameResult } from './GameResultModal';
+import { useSession } from 'next-auth/react';
 
 interface GoBoardGameProps {
   size?: BoardSize;
@@ -16,6 +19,10 @@ interface GoBoardGameProps {
   height?: number;
   vsAI?: boolean; // 是否对战AI
   aiDifficulty?: 'easy' | 'medium' | 'hard'; // AI难度
+  aiEngine?: 'simple' | 'katago'; // AI引擎类型
+  katagoEngine?: KataGoBrowserEngine | null; // KataGo浏览器引擎实例
+  npcId?: string; // 对战的NPC ID（用于任务进度）
+  onGameModalClose?: () => void; // 关闭游戏 Modal 的回调
 }
 
 export default function GoBoardGame({ 
@@ -23,19 +30,29 @@ export default function GoBoardGame({
   width = 600, 
   height = 600,
   vsAI = true,
-  aiDifficulty = 'medium'
+  aiDifficulty = 'medium',
+  aiEngine = 'simple',
+  katagoEngine = null,
+  npcId,
+  onGameModalClose
 }: GoBoardGameProps) {
+  const { data: session } = useSession();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boardRef = useRef<GoBoard | null>(null);
   const engineRef = useRef<GoEngine | null>(null);
   const skillManagerRef = useRef<SkillManager | null>(null);
   const aiEngineRef = useRef<KataGoWrapper | null>(null);
+  const gameStartTime = useRef<number>(Date.now());
   
   const [currentPlayer, setCurrentPlayer] = useState<'black' | 'white'>('black');
   const [moveCount, setMoveCount] = useState(0);
   const [capturedCount, setCapturedCount] = useState({ black: 0, white: 0 });
   const [lastMessage, setLastMessage] = useState<string>('');
   const [isAIThinking, setIsAIThinking] = useState(false); // AI思考状态
+  const [consecutivePasses, setConsecutivePasses] = useState(0); // 连续Pass计数
+  const [gameResult, setGameResult] = useState<GameResult | null>(null);
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [aiResign, setAiResign] = useState(false); // AI认输标志
   
   // 技能系统状态
   const [evaluation, setEvaluation] = useState<TerritoryEvaluation | null>(null);
@@ -48,6 +65,9 @@ export default function GoBoardGame({
     const board = boardRef.current;
     const engine = engineRef.current;
     if (!board || !engine) return;
+
+    // 落子后重置连续Pass计数
+    setConsecutivePasses(0);
 
     // 使用函数式更新来避免闭包问题
     setCurrentPlayer((prevPlayer) => {
@@ -107,15 +127,7 @@ export default function GoBoardGame({
    * AI落子
    */
   const makeAIMove = useCallback(async () => {
-    if (!vsAI || !engineRef.current || !boardRef.current || !aiEngineRef.current) {
-      return;
-    }
-
-    // 检查AI引擎是否已初始化
-    if (!aiEngineRef.current.isReady()) {
-      console.warn('⚠️ AI引擎尚未初始化完成，跳过本回合');
-      setLastMessage('🤖 AI初始化中，跳过回合');
-      setCurrentPlayer('black');
+    if (!vsAI || !engineRef.current || !boardRef.current) {
       return;
     }
 
@@ -123,17 +135,49 @@ export default function GoBoardGame({
     setLastMessage('🤖 AI思考中...');
 
     try {
-      // 根据难度设置延迟时间
-      const thinkDelay = aiDifficulty === 'easy' ? 500 : aiDifficulty === 'medium' ? 1000 : 1500;
-      
-      // 模拟思考延迟
-      await new Promise(resolve => setTimeout(resolve, thinkDelay));
+      let bestMove = null;
 
-      // 获取AI建议的落点
-      const analysis = await aiEngineRef.current.analyzePosition(engineRef.current, 'white');
-      
-      if (analysis.bestMove) {
-        const position = analysis.bestMove;
+      // 根据AI引擎类型选择分析方法
+      if (aiEngine === 'katago' && katagoEngine?.isEngineReady()) {
+        // 使用KataGo浏览器版
+        console.log('🤖 使用KataGo引擎分析...');
+        
+        // 获取当前棋盘上的所有棋子
+        const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size; col++) {
+            const stone = engineRef.current.getStoneAt({ row, col });
+            if (stone) {
+              stones.push({ row, col, color: stone });
+            }
+          }
+        }
+
+        const analysis = await katagoEngine.analyzePosition(size, stones, 'white');
+        bestMove = analysis.bestMove;
+        
+        console.log('✅ KataGo分析完成:', bestMove);
+      } else {
+        // 使用简单规则AI
+        if (!aiEngineRef.current?.isReady()) {
+          console.warn('⚠️ 简单AI引擎尚未初始化完成，跳过本回合');
+          setLastMessage('🤖 AI初始化中，跳过回合');
+          setCurrentPlayer('black');
+          return;
+        }
+
+        console.log('🤖 使用简单规则引擎分析...');
+        
+        // 根据难度设置延迟时间
+        const thinkDelay = aiDifficulty === 'easy' ? 500 : aiDifficulty === 'medium' ? 1000 : 1500;
+        await new Promise(resolve => setTimeout(resolve, thinkDelay));
+
+        const analysis = await aiEngineRef.current.analyzePosition(engineRef.current, 'white');
+        bestMove = analysis.bestMove;
+      }
+
+      if (bestMove) {
+        const position = bestMove;
         
         // AI落子
         const result = engineRef.current.placeStone(position, 'white');
@@ -161,14 +205,21 @@ export default function GoBoardGame({
           setCurrentPlayer('black');
           boardRef.current.setNextStoneColor('black');
         } else {
+          // AI落子失败（如自杀着），认输
           console.error('AI落子失败:', result.error);
-          setLastMessage('🤖 AI落子失败，跳过');
-          setCurrentPlayer('black');
+          setLastMessage('🤖 AI落子失败（自杀着），认输');
+          setIsAIThinking(false);
+          // 触发AI认输
+          setAiResign(true);
+          return;
         }
       } else {
         // AI没有合法着点，认输
         setLastMessage('🤖 AI没有合法着点，认输');
-        setCurrentPlayer('black');
+        setIsAIThinking(false);
+        // 触发AI认输
+        setAiResign(true);
+        return;
       }
     } catch (error) {
       console.error('AI分析失败:', error);
@@ -177,7 +228,7 @@ export default function GoBoardGame({
     } finally {
       setIsAIThinking(false);
     }
-  }, [vsAI, aiDifficulty]);
+  }, [vsAI, aiDifficulty, aiEngine, katagoEngine, size]);
 
   // 监听玩家切换，触发AI落子
   useEffect(() => {
@@ -237,6 +288,23 @@ export default function GoBoardGame({
   }, [size, width, height, handleStonePlace, vsAI, aiDifficulty]);
 
   const handlePass = () => {
+    setConsecutivePasses(prev => prev + 1);
+    
+    // 连续两次Pass，游戏结束
+    if (consecutivePasses >= 1) {
+      // 双方都Pass，计算最终得分
+      const engine = engineRef.current;
+      if (engine) {
+        const territory = engine.countTerritory();
+        const blackScore = territory.blackTerritory + capturedCount.black;
+        const whiteScore = territory.whiteTerritory + capturedCount.white + 7.5; // 贴目
+        
+        const winner = blackScore > whiteScore ? 'black' : blackScore < whiteScore ? 'white' : 'draw';
+        handleGameEnd(winner, 'score');
+      }
+      return;
+    }
+    
     setCurrentPlayer((prevPlayer) => {
       console.log(`${prevPlayer} passes`);
       const nextPlayer = prevPlayer === 'black' ? 'white' : 'black';
@@ -245,14 +313,177 @@ export default function GoBoardGame({
         boardRef.current.setNextStoneColor(nextPlayer);
       }
       
+      setLastMessage(`${prevPlayer === 'black' ? '⚫' : '⚪'} 选择停一手（Pass）`);
+      
       return nextPlayer;
     });
   };
 
-  const handleResign = () => {
-    const winner = currentPlayer === 'black' ? 'white' : 'black';
-    alert(`${currentPlayer} resigns. ${winner} wins!`);
-  };
+  /**
+   * 游戏结束处理
+   */
+  const handleGameEnd = useCallback(async (winner: 'black' | 'white' | 'draw', reason: 'score' | 'resign' | 'timeout') => {
+    const engine = engineRef.current;
+    
+    console.log('handleGameEnd called:', { winner, reason, hasEngine: !!engine, hasSession: !!session, userId: session?.user?.id });
+    
+    if (!engine || !session?.user?.id) {
+      console.error('Cannot end game: missing engine or session', { hasEngine: !!engine, hasSession: !!session, userId: session?.user?.id });
+      return;
+    }
+
+    // 计算双方得分
+    const territory = engine.countTerritory();
+    const blackScore = territory.blackTerritory + capturedCount.black;
+    const whiteScore = territory.whiteTerritory + capturedCount.white + 7.5; // 贴目
+
+    // 计算游戏时长
+    const duration = Math.floor((Date.now() - gameStartTime.current) / 1000);
+
+    // 玩家颜色（假设玩家是黑方）
+    const playerColor: 'black' | 'white' = 'black';
+    const playerWon = winner === playerColor;
+    const isDraw = winner === 'draw';
+
+    // 计算经验值和体力变化
+    const experienceGained = playerWon ? 50 + Math.floor(moveCount / 10) * 5 : 10;
+    const staminaChange = playerWon ? 0 : -20; // 失败扣体力
+
+    // 保存对战记录
+    try {
+      // 获取完整的棋谱数据
+      const moves = engine.getMoveHistory().map(move => ({
+        x: move.position.col,
+        y: move.position.row,
+        color: move.color
+      }));
+
+      const recordResponse = await fetch('/api/chess-records', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: session.user.id,
+          opponentName: npcId || 'AI',
+          opponentType: npcId ? 'npc' : 'ai',
+          difficulty: aiDifficulty === 'easy' ? 1 : aiDifficulty === 'medium' ? 5 : 9,
+          boardSize: size,
+          winner,
+          blackScore: Math.round(blackScore),
+          whiteScore: Math.round(whiteScore),
+          moves,
+          duration,
+          playerColor,
+          skillsUsed: [],
+        }),
+      });
+
+      if (!recordResponse.ok) {
+        console.error('Failed to save chess record');
+      }
+    } catch (error) {
+      console.error('Error saving chess record:', error);
+    }
+
+    // 更新玩家属性（经验值和体力）
+    if (!isDraw) {
+      try {
+        const statsResponse = await fetch('/api/player/stats/update', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: session.user.id,
+            experienceDelta: experienceGained,
+            staminaDelta: staminaChange,
+          }),
+        });
+
+        if (!statsResponse.ok) {
+          console.error('Failed to update player stats');
+        } else {
+          // 触发全局更新事件
+          window.dispatchEvent(new Event('playerStatsUpdated'));
+        }
+      } catch (error) {
+        console.error('Error updating player stats:', error);
+      }
+    }
+
+    // 检查并更新任务进度
+    const questUpdates = [];
+    if (playerWon && npcId) {
+      try {
+        // TODO: 根据npcId确定任务ID
+        const questId = npcId === 'hong_qigong' ? 'quest_002_hong_qigong' : null;
+        
+        if (questId) {
+          const questResponse = await fetch(`/api/quests/progress`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: session.user.id,
+              questId,
+              objectiveId: 'obj_2', // 战胜NPC的目标
+              increment: 1,
+            }),
+          });
+
+          if (questResponse.ok) {
+            const questData = await questResponse.json();
+            questUpdates.push({
+              questId,
+              questTitle: '拜师洪七公',
+              progress: `战胜洪七公 (${questData.progress}/3)`,
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error updating quest progress:', error);
+      }
+    }
+
+    // 显示结果
+    const result: GameResult = {
+      winner,
+      reason,
+      blackScore: Math.round(blackScore),
+      whiteScore: Math.round(whiteScore),
+      moveCount,
+      experienceGained,
+      staminaChange,
+      questUpdates: questUpdates.length > 0 ? questUpdates : undefined,
+    };
+
+    console.log('Setting game result:', result);
+    setGameResult(result);
+    setShowResultModal(true);
+    console.log('Modal should now be visible');
+  }, [session, capturedCount, moveCount, npcId, aiDifficulty, size]);
+
+  const handleResign = useCallback(() => {
+    console.log('handleResign called');
+    if (confirm('确认认输吗？')) {
+      console.log('User confirmed resign');
+      const winner = currentPlayer === 'black' ? 'white' : 'black';
+      console.log('Calling handleGameEnd with winner:', winner);
+      handleGameEnd(winner, 'resign');
+    } else {
+      console.log('User cancelled resign');
+    }
+  }, [currentPlayer, handleGameEnd]);
+
+  // 监听AI认输
+  useEffect(() => {
+    if (aiResign) {
+      handleGameEnd('black', 'resign');
+      setAiResign(false);
+    }
+  }, [aiResign, handleGameEnd]);
+
+  // 调试：监听Modal状态变化
+  useEffect(() => {
+    console.log('showResultModal changed:', showResultModal);
+    console.log('gameResult:', gameResult);
+  }, [showResultModal, gameResult]);
 
   const handleReset = () => {
     if (boardRef.current && engineRef.current) {
@@ -261,9 +492,11 @@ export default function GoBoardGame({
       setCurrentPlayer('black');
       setMoveCount(0);
       setCapturedCount({ black: 0, white: 0 });
+      setConsecutivePasses(0);
       setLastMessage('');
       setEvaluation(null);
       setSuggestions([]);
+      gameStartTime.current = Date.now(); // 重置游戏开始时间
       
       // 重置技能
       if (skillManagerRef.current) {
@@ -657,6 +890,33 @@ export default function GoBoardGame({
           <li>✨ 禁止自杀手（自己没气）</li>
         </ul>
       </div>
+
+      {/* 游戏结果Modal */}
+      {showResultModal && gameResult && (
+        <GameResultModal
+          isOpen={showResultModal}
+          result={gameResult}
+          playerColor="black"
+          onClose={() => {
+            console.log('GameResultModal onClose called');
+            console.log('onGameModalClose exists:', !!onGameModalClose);
+            setShowResultModal(false);
+            setGameResult(null);
+            // 关闭父级GoGameModal
+            if (onGameModalClose) {
+              console.log('Calling onGameModalClose to close parent modal');
+              onGameModalClose();
+            } else {
+              console.log('onGameModalClose is not available');
+            }
+          }}
+          onRematch={() => {
+            setShowResultModal(false);
+            setGameResult(null);
+            handleReset();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -375,4 +375,55 @@ export class GoEngine {
 
     return { black: blackTerritory, white: whiteTerritory, empty: emptyPoints };
   }
+
+  /**
+   * 获取连续的空白区域
+   */
+  private getEmptyRegion(start: BoardPosition, visited: Set<string>): BoardPosition[] {
+    const region: BoardPosition[] = [];
+    const stack = [start];
+
+    while (stack.length > 0) {
+      const pos = stack.pop()!;
+      const key = `${pos.row},${pos.col}`;
+
+      if (visited.has(key)) continue;
+      if (this.board[pos.row][pos.col] !== null) continue;
+
+      visited.add(key);
+      region.push(pos);
+
+      // 添加相邻空白点到栈
+      const neighbors = this.getNeighbors(pos);
+      for (const neighbor of neighbors) {
+        const neighborKey = `${neighbor.row},${neighbor.col}`;
+        if (!visited.has(neighborKey) && this.board[neighbor.row][neighbor.col] === null) {
+          stack.push(neighbor);
+        }
+      }
+    }
+
+    return region;
+  }
+
+  /**
+   * 判断空白区域的归属（根据相邻棋子）
+   */
+  private determineRegionOwner(region: BoardPosition[]): 'black' | 'white' | 'neutral' {
+    let hasBlack = false;
+    let hasWhite = false;
+
+    for (const pos of region) {
+      const neighbors = this.getNeighbors(pos);
+      for (const neighbor of neighbors) {
+        const color = this.board[neighbor.row][neighbor.col];
+        if (color === 'black') hasBlack = true;
+        if (color === 'white') hasWhite = true;
+      }
+    }
+
+    if (hasBlack && !hasWhite) return 'black';
+    if (hasWhite && !hasBlack) return 'white';
+    return 'neutral'; // 双方都相邻或无相邻
+  }
 }

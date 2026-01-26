@@ -5,6 +5,7 @@ import IsometricGame from '../../../src/components/IsometricGame';
 import { getTranslations } from 'next-intl/server';
 import { PlayerStatsPanel } from '../../../src/components/PlayerStatsPanel';
 import { InventoryPanel } from '../../../src/components/InventoryPanel';
+import QuestTracker from '../../../src/components/QuestTracker';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -39,6 +40,7 @@ export default async function GamePage({ params }: { params: Promise<{ locale: s
         <div className="w-80 p-4 space-y-4 overflow-y-auto bg-slate-100 flex flex-col">
           <div className="flex-1 space-y-4">
             <PlayerStatsPanel />
+            <QuestTracker userId={session.user.id!} />
             <InventoryPanel />
           </div>
           

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import GoBoardGame from './GoBoardGame';
+import { AIEngineSelector, type AIEngineType } from './AIEngineSelector';
+import { useKataGoBrowser } from '@/hooks/useKataGoBrowser';
 
 interface GoGameModalProps {
   isOpen: boolean;
@@ -21,6 +23,9 @@ export default function GoGameModal({
   aiDifficulty = 'medium' // 默认中等难度
 }: GoGameModalProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [showEngineSelector, setShowEngineSelector] = useState(vsAI);
+  const [selectedEngine, setSelectedEngine] = useState<AIEngineType>('simple');
+  const { engine: katagoEngine, isReady: isKatagoReady } = useKataGoBrowser();
 
   useEffect(() => {
     if (isOpen) {
@@ -41,8 +46,18 @@ export default function GoGameModal({
   }, [isOpen]);
 
   const handleClose = () => {
+    console.log('GoGameModal handleClose called');
     setIsVisible(false);
-    setTimeout(onClose, 300); // 等待淡出动画完成
+    setShowEngineSelector(vsAI); // 重置引擎选择器
+    setTimeout(() => {
+      console.log('GoGameModal calling onClose');
+      onClose();
+    }, 300); // 等待淡出动画完成
+  };
+
+  const handleEngineSelect = (engine: AIEngineType) => {
+    setSelectedEngine(engine);
+    setShowEngineSelector(false);
   };
 
   if (!isOpen && !isVisible) return null;
@@ -70,7 +85,7 @@ export default function GoGameModal({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h2 className="text-3xl font-bold text-white">
-              与 {opponentName} 对弈
+              {showEngineSelector ? '选择AI引擎' : `与 ${opponentName} 对弈`}
             </h2>
             <span className="text-sm text-gray-400">
               {boardSize}路棋盘
@@ -98,29 +113,59 @@ export default function GoGameModal({
           </button>
         </div>
 
-        {/* 棋盘游戏 */}
-        <div className="flex justify-center">
-          <GoBoardGame 
-            size={boardSize} 
-            width={600} 
-            height={600}
-            vsAI={vsAI}
-            aiDifficulty={aiDifficulty}
+        {/* AI引擎选择器或棋盘游戏 */}
+        {showEngineSelector ? (
+          <AIEngineSelector 
+            onSelect={handleEngineSelect}
+            onKataGoReady={(ready) => {
+              if (!ready) {
+                setSelectedEngine('simple');
+              }
+            }}
           />
-        </div>
+        ) : (
+          <>
+            {/* 棋盘游戏 */}
+            <div className="flex justify-center">
+              <GoBoardGame 
+                size={boardSize} 
+                width={600} 
+                height={600}
+                vsAI={vsAI}
+                aiDifficulty={aiDifficulty}
+                aiEngine={selectedEngine}
+                katagoEngine={selectedEngine === 'katago' && isKatagoReady ? katagoEngine : undefined}
+                onGameModalClose={handleClose}
+              />
+            </div>
 
-        {/* 提示信息 */}
-        <div className="mt-6 text-center text-sm text-gray-400">
-          <p>按 ESC 键可随时关闭棋盘</p>
-          {vsAI && (
-            <p className="mt-1">
-              对战AI难度：
-              {aiDifficulty === 'easy' && '简单'}
-              {aiDifficulty === 'medium' && '中等'}
-              {aiDifficulty === 'hard' && '困难'}
-            </p>
-          )}
-        </div>
+            {/* 提示信息 */}
+            <div className="mt-6 text-center text-sm text-gray-400">
+              <p>按 ESC 键可随时关闭棋盘</p>
+              {vsAI && (
+                <>
+                  <p className="mt-1">
+                    AI引擎：
+                    {selectedEngine === 'simple' && '快速AI (规则引擎)'}
+                    {selectedEngine === 'katago' && 'KataGo (神经网络)'}
+                  </p>
+                  <p className="mt-1">
+                    对战难度：
+                    {aiDifficulty === 'easy' && '简单'}
+                    {aiDifficulty === 'medium' && '中等'}
+                    {aiDifficulty === 'hard' && '困难'}
+                  </p>
+                  <button
+                    onClick={() => setShowEngineSelector(true)}
+                    className="mt-2 text-blue-400 hover:text-blue-300 underline text-xs"
+                  >
+                    切换AI引擎
+                  </button>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

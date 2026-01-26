@@ -165,12 +165,12 @@ export class KataGoWrapper {
   }
 
   /**
-   * 简单评估落点价值
+   * 简单评估落点价值（强化版）
    */
   private evaluateMove(engine: GoEngine, position: BoardPosition, color: 'black' | 'white'): number {
     let score = 0;
 
-    // 1. 检查能否提子
+    // 1. 检查能否提子（最高优先级）
     const opponentColor = color === 'black' ? 'white' : 'black';
     const neighbors = engine.getNeighbors(position);
     
@@ -181,47 +181,162 @@ export class KataGoWrapper {
         const liberties = engine.countLiberties(group);
         
         if (liberties === 1) {
-          score += 100; // 可以提子
+          score += 150; // 可以提子（提高权重）
         } else if (liberties === 2) {
-          score += 50; // 围攻
+          score += 80; // 围攻（打入）
+        } else if (liberties === 3) {
+          score += 40; // 施加压力
         }
       }
     }
 
-    // 2. 检查自己的棋是否需要补气
+    // 2. 检查自己的棋是否需要补气（救援己方）
+    let maxDanger = 0;
     for (const neighbor of neighbors) {
       const stone = engine.getStoneAt(neighbor);
       if (stone === color) {
         const group = engine.getGroup(neighbor);
         const liberties = engine.countLiberties(group);
         
-        if (liberties <= 2) {
-          score += 60; // 补气要点
+        if (liberties === 1) {
+          maxDanger = Math.max(maxDanger, 200); // 危急！必须救
+        } else if (liberties === 2) {
+          maxDanger = Math.max(maxDanger, 100); // 补气要点
+        } else if (liberties === 3) {
+          maxDanger = Math.max(maxDanger, 50); // 加固
         }
       }
     }
+    score += maxDanger;
 
-    // 3. 角和边价值
+    // 3. 扩张价值（连接和影响力）
+    let friendlyCount = 0;
+    let emptyCount = 0;
+    for (const neighbor of neighbors) {
+      const stone = engine.getStoneAt(neighbor);
+      if (stone === color) {
+        friendlyCount++;
+      } else if (!stone) {
+        emptyCount++;
+      }
+    }
+    
+    // 连接友军
+    if (friendlyCount >= 2) {
+      score += 70; // 强连接
+    } else if (friendlyCount === 1) {
+      score += 40; // 延伸
+    }
+    
+    // 开放空间
+    score += emptyCount * 15;
+
+    // 4. 角和边价值（序盘重要）
     const boardSize = engine.getBoardSize();
     const isCorner = (position.row === 0 || position.row === boardSize - 1) &&
                      (position.col === 0 || position.col === boardSize - 1);
     const isEdge = position.row === 0 || position.row === boardSize - 1 ||
                    position.col === 0 || position.col === boardSize - 1;
     
-    if (isCorner) {
-      score += 30;
+    // 三三点（3,3）特别重要
+    const isThreeThree = (position.row === 2 || position.row === boardSize - 3) &&
+                         (position.col === 2 || position.col === boardSize - 3);
+    
+    // 星位（4,4）在9路棋盘上很重要
+    const starPoints = boardSize === 9 ? [2, 4, 6] : [3, 9, 15];
+    const isStarPoint = starPoints.includes(position.row) && starPoints.includes(position.col);
+    
+    if (isThreeThree) {
+      score += 60; // 三三点
+    } else if (isStarPoint) {
+      score += 50; // 星位
+    } else if (isCorner) {
+      score += 40; // 角
     } else if (isEdge) {
-      score += 20;
+      score += 25; // 边
     }
 
-    // 4. 中心影响力
-    const centerDist = Math.abs(position.row - boardSize / 2) + Math.abs(position.col - boardSize / 2);
-    score += (boardSize - centerDist) * 2;
+    // 5. 中心影响力（开局阶段）
+    const centerRow = Math.floor(boardSize / 2);
+    const centerCol = Math.floor(boardSize / 2);
+    const centerDist = Math.abs(position.row - centerRow) + Math.abs(position.col - centerCol);
+    
+    // 天元特别加分
+    if (position.row === centerRow && position.col === centerCol) {
+      score += 35; // 天元
+    } else {
+      score += Math.max(0, (boardSize - centerDist * 2) * 3);
+    }
 
-    // 5. 随机因子
-    score += Math.random() * 10;
+    // 6. 避免过于密集（留下空间）
+    const twoStep = this.getTwoStepNeighbors(position, boardSize);
+    let nearbyStones = 0;
+    for (const pos of twoStep) {
+      if (engine.getStoneAt(pos)) {
+        nearbyStones++;
+      }
+    }
+    if (nearbyStones > 6) {
+      score -= 30; // 过于拥挤
+    }
+
+    // 7. 棋型判断（简单模式识别）
+    const pattern = this.detectPattern(engine, position, color);
+    score += pattern;
+
+    // 8. 随机因子（减少重复）
+    score += Math.random() * 15;
 
     return score;
+  }
+
+  /**
+   * 获取两步邻居（用于判断拥挤度）
+   */
+  private getTwoStepNeighbors(pos: BoardPosition, boardSize: number): BoardPosition[] {
+    const result: BoardPosition[] = [];
+    for (let dr = -2; dr <= 2; dr++) {
+      for (let dc = -2; dc <= 2; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const row = pos.row + dr;
+        const col = pos.col + dc;
+        if (row >= 0 && row < boardSize && col >= 0 && col < boardSize) {
+          result.push({ row, col });
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * 检测简单棋型
+   */
+  private detectPattern(engine: GoEngine, position: BoardPosition, color: 'black' | 'white'): number {
+    let patternScore = 0;
+    
+    // 检测小飞（Knight's move）
+    const knightMoves = [
+      { row: position.row - 2, col: position.col - 1 },
+      { row: position.row - 2, col: position.col + 1 },
+      { row: position.row + 2, col: position.col - 1 },
+      { row: position.row + 2, col: position.col + 1 },
+      { row: position.row - 1, col: position.col - 2 },
+      { row: position.row - 1, col: position.col + 2 },
+      { row: position.row + 1, col: position.col - 2 },
+      { row: position.row + 1, col: position.col + 2 },
+    ];
+    
+    for (const km of knightMoves) {
+      if (km.row >= 0 && km.row < engine.getBoardSize() && 
+          km.col >= 0 && km.col < engine.getBoardSize()) {
+        if (engine.getStoneAt(km) === color) {
+          patternScore += 25; // 小飞连接
+          break;
+        }
+      }
+    }
+    
+    return patternScore;
   }
 
   /**

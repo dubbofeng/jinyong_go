@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { locales } from '../../src/i18n/request';
 import '../globals.css';
 import { GeistSans } from 'geist/font/sans';
+import { SessionProvider } from 'next-auth/react';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -29,9 +30,11 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body className={GeistSans.variable}>
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        <SessionProvider>
+          <NextIntlClientProvider messages={messages}>
+            {children}
+          </NextIntlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );
