@@ -9,39 +9,43 @@ import { eq, and } from 'drizzle-orm';
 async function addNPCsToMaps() {
   console.log('🎭 开始添加NPC到地图...');
 
-  // 定义NPC的位置和属性（world_map是64x64，确保NPC在中心区域）
+  // 定义NPC的位置和属性（添加到场景地图）
   const npcConfigs = [
     {
-      mapId: 'world_map', // 使用mapId而不是name
+      mapId: 'huashan_hall',
       itemName: '洪七公',
       itemPath: '/game/isometric/characters/npc_hong_qigong.png',
       itemType: 'npc',
-      x: 32, // 地图中心
-      y: 32,
+      x: 16, // 地图中心区域
+      y: 12,
+      blocking: true, // NPC不可行走
     },
     {
-      mapId: 'world_map',
+      mapId: 'shaolin_temple',
       itemName: '令狐冲',
       itemPath: '/game/isometric/characters/npc_linghu_chong.png',
       itemType: 'npc',
-      x: 28,
-      y: 28,
+      x: 16,
+      y: 12,
+      blocking: true,
     },
     {
-      mapId: 'world_map',
+      mapId: 'xiangyang_teahouse',
       itemName: '郭靖',
       itemPath: '/game/isometric/characters/npc_guo_jing.png',
       itemType: 'npc',
-      x: 36,
-      y: 36,
+      x: 16,
+      y: 12,
+      blocking: true,
     },
     {
-      mapId: 'world_map',
+      mapId: 'xiangyang_teahouse',
       itemName: '黄蓉',
       itemPath: '/game/isometric/characters/npc_huang_rong.png',
       itemType: 'npc',
-      x: 30,
-      y: 35,
+      x: 14,
+      y: 14,
+      blocking: true,
     }
   ];
 
@@ -74,7 +78,7 @@ async function addNPCsToMaps() {
         .limit(1);
 
       if (existingItems.length > 0) {
-        console.log(`ℹ️  NPC "${config.itemName}" 已存在于地图中`);
+        console.log(`ℹ️  NPC "${config.itemName}" 已存在于地图 "${config.mapId}" 中`);
         continue;
       }
 
@@ -86,6 +90,7 @@ async function addNPCsToMaps() {
         itemType: config.itemType,
         x: config.x,
         y: config.y,
+        blocking: config.blocking,
       });
 
       console.log(`✅ 添加NPC "${config.itemName}" 到地图 "${config.mapId}" @ (${config.x}, ${config.y})`);

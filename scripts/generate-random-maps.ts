@@ -6,6 +6,10 @@
 import { db } from '../app/db';
 import { maps, mapTiles, mapItems } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 // 简单的Perlin噪声实现（2D）
 class PerlinNoise {
@@ -313,10 +317,33 @@ async function main() {
   }
   
   console.log('\n🎉 所有地图生成完成！');
-  console.log('\n可访问以下链接编辑地图：');
-  console.log('  华山传功厅: http://localhost:9999/zh/admin/maps/huashan_hall/edit');
-  console.log('  少林寺禅房: http://localhost:9999/zh/admin/maps/shaolin_temple/edit');
-  console.log('  襄阳城茶馆: http://localhost:9999/zh/admin/maps/xiangyang_teahouse/edit');
+  
+  // 自动添加装饰物
+  console.log('\n🎨 开始添加装饰物...');
+  try {
+    const { stdout: decorStdout } = await execAsync('npx tsx scripts/add-decorations.ts');
+    console.log(decorStdout);
+  } catch (error: any) {
+    console.error('❌ 添加装饰物失败:', error.message);
+    throw error;
+  }
+  
+  // 自动添加NPC
+  console.log('\n🎭 开始添加NPC...');
+  try {
+    const { stdout: npcStdout } = await execAsync('npx tsx scripts/add-npcs-to-map.ts');
+    console.log(npcStdout);
+  } catch (error: any) {
+    console.error('❌ 添加NPC失败:', error.message);
+    throw error;
+  }
+  
+  console.log('\n✅ 地图、装饰物和NPC全部生成完成！');
+  console.log('\n可访问以下链接查看地图：');
+  console.log('  🎮 游戏页面: http://localhost:9999/zh/game');
+  console.log('  🛠️  华山传功厅: http://localhost:9999/zh/admin/maps/huashan_hall/edit');
+  console.log('  🛠️  少林寺禅房: http://localhost:9999/zh/admin/maps/shaolin_temple/edit');
+  console.log('  🛠️  襄阳城茶馆: http://localhost:9999/zh/admin/maps/xiangyang_teahouse/edit');
 }
 
 main()
