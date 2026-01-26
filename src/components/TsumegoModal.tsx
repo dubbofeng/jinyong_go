@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import TsumegoBoard from './TsumegoBoard';
+import CustomAlert from './CustomAlert';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 
 interface TsumegoModalProps {
@@ -20,6 +21,49 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
   const [showSolution, setShowSolution] = useState(false);
   const [playerMoves, setPlayerMoves] = useState<Array<{row: number; col: number; color: 'black' | 'white'}>>([]);
   const [startTime, setStartTime] = useState<number>(0);
+  const [alertState, setAlertState] = useState<{
+    isOpen: boolean;
+    type: 'info' | 'success' | 'warning' | 'error' | 'confirm';
+    message: string;
+    title?: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+  }>({ isOpen: false, type: 'info', message: '' });
+
+  // CustomAlert 辅助方法
+  const showAlert = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info', title?: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setAlertState({
+        isOpen: true,
+        type,
+        message,
+        title,
+        onConfirm: () => {
+          setAlertState(prev => ({ ...prev, isOpen: false }));
+          resolve();
+        },
+      });
+    });
+  };
+
+  const showConfirm = (message: string, title?: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setAlertState({
+        isOpen: true,
+        type: 'confirm',
+        message,
+        title,
+        onConfirm: () => {
+          setAlertState(prev => ({ ...prev, isOpen: false }));
+          resolve(true);
+        },
+        onCancel: () => {
+          setAlertState(prev => ({ ...prev, isOpen: false }));
+          resolve(false);
+        },
+      });
+    });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -42,15 +86,17 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
     }, 300);
   };
 
-  const handleEscape = () => {
-    if (confirm('逃跑将不会获得奖励，确定要放弃吗？')) {
+  const handleEscape = async () => {
+    const confirmed = await showConfirm('逃跑将不会获得奖励，确定要放弃吗？', '逃跑');
+    if (confirmed) {
       handleClose();
       onComplete(false);
     }
   };
 
-  const handleViewSolution = () => {
-    if (confirm('查看答案需要消耗10内力，确定要查看吗？')) {
+  const handleViewSolution = async () => {
+    const confirmed = await showConfirm('查看答案需要消耗１０内力，确定要查看吗？', '查看答案');
+    if (confirmed) {
       setShowSolution(true);
       // TODO: 扣除内力
     }
@@ -79,7 +125,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
       }),
     })
       .then(res => res.json())
-      .then(data => {
+      .then(async data => {
         if (data.success) {
           // 显示奖励信息
           const rewardText = [
@@ -93,17 +139,17 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
             rewardText.push(`🎁 获得物品：${data.rewards.items.join('、')}`);
           }
           
-          alert(rewardText.join('\n'));
+          await showAlert(rewardText.join('\n'), 'success', '挑战成功');
         } else {
-          alert('🎉 正确！你成功解决了这道死活题！');
+          await showAlert('🎉 正确！你成功解决了这道死活题！', 'success', '挑战成功');
         }
         
         handleClose();
         onComplete(true);
       })
-      .catch(error => {
+      .catch(async error => {
         console.error('Failed to claim reward:', error);
-        alert('🎉 正确！你成功解决了这道死活题！');
+        await showAlert('🎉 正确！你成功解决了这道死活题！', 'success', '挑战成功');
         handleClose();
         onComplete(true);
       });
@@ -128,33 +174,35 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
           }),
         }).catch(error => console.error('Failed to record failure:', error));
         
-        alert('❌ 挑战失败！已用完所有尝试次数。');
-        handleClose();
-        onComplete(false);
+        showAlert('❌ 挑战失败！已用完所有尝试次数。', 'error', '挑战失败').then(() => {
+          handleClose();
+          onComplete(false);
+        });
       } else {
-        alert(`❌ 答案错误！还剩${newAttempts}次机会。`);
+        showAlert(`❌ 答案错误！还剩${newAttempts}次机会。`, 'warning', '回答错误');
       }
       return newAttempts;
     });
   }, [problem, startTime, onComplete]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // TODO: 验证答案
     const isCorrect = false; // 暂时假设错误
     
     if (isCorrect) {
-      alert('✅ 答案正确！');
+      await showAlert('✅ 答案正确！', 'success', '挑战成功');
       handleClose();
       onComplete(true);
     } else {
       setAttemptsRemaining(prev => {
         const newAttempts = prev - 1;
         if (newAttempts <= 0) {
-          alert('❌ 挑战失败！已用完所有尝试次数。');
-          handleClose();
-          onComplete(false);
+          showAlert('❌ 挑战失败！已用完所有尝试次数。', 'error', '挑战失败').then(() => {
+            handleClose();
+            onComplete(false);
+          });
         } else {
-          alert(`❌ 答案错误！还剩${newAttempts}次机会。`);
+          showAlert(`❌ 答案错误！还剩${newAttempts}次机会。`, 'warning', '回答错误');
         }
         return newAttempts;
       });
@@ -173,7 +221,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
 
   const modalContent = (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
+      style={{ position: 'fixed', inset: 0, zIndex: 100 }}
       className={`flex items-center justify-center bg-black/70 transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
@@ -235,14 +283,6 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
 
             {/* 题目信息 */}
             <div className="mb-4 text-sm space-y-2 text-gray-300">
-              <div className="flex justify-between">
-                <span className="text-gray-400">分类：</span>
-                <span className="font-semibold text-white">{problem.category.split('.')[1]?.trim()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">题集：</span>
-                <span className="font-semibold text-white text-xs">{problem.collection.slice(0, 20)}...</span>
-              </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">经验奖励：</span>
                 <span className="font-semibold text-green-400">+{problem.experienceReward} XP</span>
@@ -315,7 +355,22 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
   // 使用 Portal 渲染到 body
   if (typeof document !== 'undefined') {
     const { createPortal } = require('react-dom');
-    return createPortal(modalContent, document.body);
+    return (
+      <>
+        {createPortal(modalContent, document.body)}
+        {alertState.isOpen && (
+          <CustomAlert
+            isOpen={alertState.isOpen}
+            type={alertState.type}
+            message={alertState.message}
+            title={alertState.title}
+            onConfirm={alertState.onConfirm}
+            onCancel={alertState.onCancel}
+            onClose={() => setAlertState(prev => ({ ...prev, isOpen: false }))}
+          />
+        )}
+      </>
+    );
   }
 
   return null;

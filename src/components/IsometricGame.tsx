@@ -6,6 +6,7 @@ import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
 import DialogueBox from '@/src/components/DialogueBox';
 import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
+import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 
@@ -49,6 +50,16 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [showTsumegoEncounter, setShowTsumegoEncounter] = useState(false);
   const [currentTsumegoProblem, setCurrentTsumegoProblem] = useState<any>(null);
   
+  // 自定义Alert/Confirm系统
+  const [alertState, setAlertState] = useState<{
+    isOpen: boolean;
+    type: AlertType;
+    title?: string;
+    message: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+  }>({ isOpen: false, type: 'info', message: '' });
+  
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
 
@@ -61,12 +72,54 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     'taohua_scene': '桃花岛',
   };
 
+  // ==================== 自定义Alert/Confirm系统 ====================
+  
+  /**
+   * 显示提示框
+   */
+  const showAlert = (message: string, type: AlertType = 'info', title?: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setAlertState({
+        isOpen: true,
+        type,
+        title,
+        message,
+        onConfirm: () => resolve(),
+      });
+    });
+  };
+
+  /**
+   * 显示确认框
+   */
+  const showConfirm = (message: string, title?: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setAlertState({
+        isOpen: true,
+        type: 'confirm',
+        title,
+        message,
+        onConfirm: () => resolve(true),
+        onCancel: () => resolve(false),
+      });
+    });
+  };
+
   // ==================== 死活题系统 ====================
   
   /**
    * 触发死活题挑战
    */
   const triggerTsumegoEncounter = async (mapId?: string) => {
+    // 先询问是否挑战
+    const shouldChallenge = await showConfirm(
+      '遭遇棋魔！是否接受死活题挑战？\n\n挑战成功可获得经验和奖励！',
+      '🐉 棋魔来袭'
+    );
+    if (!shouldChallenge) {
+      return;
+    }
+    
     try {
       // 根据地图确定难度
       const currentMapId = mapId || mapData?.id;
@@ -489,7 +542,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       const npcId = npcIdMap[item.itemName];
       if (!npcId) {
         console.warn(`未找到 NPC ${item.itemName} 的对话文件`);
-        alert(`${item.itemName}：还没有准备好对话内容...`);
+        await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
         return;
       }
       
@@ -514,7 +567,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       setIsDialogueVisible(true);
     } catch (error) {
       console.error('启动对话失败:', error);
-      alert(`无法与 ${item.itemName} 对话`);
+      await showAlert(`无法与 ${item.itemName} 对话`, 'error');
     }
   };
 
@@ -657,7 +710,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       
     } catch (error) {
       console.error('❌ 传送失败:', error);
-      alert('传送失败，请重试');
+      await showAlert('传送失败，请重试', 'error');
     } finally {
       setIsTransitioning(false);
       setPendingPortal(null);
@@ -937,6 +990,17 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           <div className="text-white text-2xl animate-pulse">传送中...</div>
         </div>
       )}
+
+      {/* 自定义Alert/Confirm对话框 */}
+      <CustomAlert
+        isOpen={alertState.isOpen}
+        type={alertState.type}
+        title={alertState.title}
+        message={alertState.message}
+        onConfirm={alertState.onConfirm}
+        onCancel={alertState.onCancel}
+        onClose={() => setAlertState({ ...alertState, isOpen: false })}
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import CustomAlert from './CustomAlert';
 
 interface ItemEffects {
   stamina?: number;
@@ -41,6 +42,30 @@ export function InventoryPanel() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [using, setUsing] = useState<number | null>(null);
+  const [alertState, setAlertState] = useState<{
+    isOpen: boolean;
+    type: 'info' | 'success' | 'warning' | 'error' | 'confirm';
+    message: string;
+    title?: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+  }>({ isOpen: false, type: 'info', message: '' });
+
+  // CustomAlert 辅助方法
+  const showAlert = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info', title?: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setAlertState({
+        isOpen: true,
+        type,
+        message,
+        title,
+        onConfirm: () => {
+          setAlertState(prev => ({ ...prev, isOpen: false }));
+          resolve();
+        },
+      });
+    });
+  };
 
   useEffect(() => {
     fetchInventory();
@@ -107,13 +132,13 @@ export function InventoryPanel() {
           .filter(Boolean)
           .join(', ');
 
-        alert(`${data.message}\n${effectText}`);
+        await showAlert(`${data.message}\n${effectText}`, 'success', '使用成功');
       } else {
-        alert(data.error || '使用失败');
+        await showAlert(data.error || '使用失败', 'error', '使用失败');
       }
     } catch (error) {
       console.error('使用物品失败:', error);
-      alert('使用失败');
+      await showAlert('使用失败', 'error', '使用失败');
     } finally {
       setUsing(null);
     }
@@ -201,6 +226,19 @@ export function InventoryPanel() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* CustomAlert */}
+      {alertState.isOpen && (
+        <CustomAlert
+          isOpen={alertState.isOpen}
+          type={alertState.type}
+          message={alertState.message}
+          title={alertState.title}
+          onConfirm={alertState.onConfirm}
+          onCancel={alertState.onCancel}
+          onClose={() => setAlertState(prev => ({ ...prev, isOpen: false }))}
+        />
       )}
     </div>
   );

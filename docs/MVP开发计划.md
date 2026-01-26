@@ -834,7 +834,7 @@ jinyong-go/
 - [x] 经验和体力更新（胜利+经验，失败-体力）
 - [x] 任务进度集成（战胜NPC更新任务）
 
-### 6.5 随机遭遇战系统（死活题小怪）📋
+### 6.5 随机遭遇战系统（死活题小怪）✅
 
 **目标**：在地图上随机遇到"小怪"（围棋死活题），击败后获得经验和掉落物品
 
@@ -844,47 +844,59 @@ jinyong-go/
 - 格式：JSON文件，SGF坐标格式
 - 许可证：MIT License（可自由使用）
 
-#### 6.5.1 死活题数据导入
-- [ ] **下载死活题库**
-  - [ ] Clone或下载tsumego仓库的problems目录
-  - [ ] 分析题目分类（初级/中级/高级）
-  - [ ] 选择适合MVP的题目集（建议：初级100题，中级50题）
+#### 6.5.1 死活题数据导入 ✅
+- [x] **下载死活题库**
+  - [x] Clone或下载tsumego仓库的problems目录
+  - [x] 分析题目分类（初级/中级/高级）
+  - [x] 选择适合MVP的题目集（建议：初级100题，中级50题）
   
-- [ ] **创建数据库表**
-  ```sql
-  CREATE TABLE tsumego_problems (
-    id SERIAL PRIMARY KEY,
-    category VARCHAR(50),        -- 分类（elementary/intermediate/advanced）
-    difficulty INTEGER,          -- 难度1-10
-    board_size INTEGER,          -- 棋盘大小（通常9或13）
-    black_stones TEXT[],         -- 黑子位置（SGF格式）
-    white_stones TEXT[],         -- 白子位置（SGF格式）
-    solution TEXT[],             -- 正解序列（SGF格式）
-    description TEXT,            -- 题目描述
-    hint TEXT,                   -- 提示信息
-    experience_reward INTEGER,   -- 经验奖励
-    created_at TIMESTAMP DEFAULT NOW()
-  );
-  
-  CREATE TABLE player_tsumego_records (
-    id SERIAL PRIMARY KEY,
-    user_id VARCHAR(255) REFERENCES users(id),
-    problem_id INTEGER REFERENCES tsumego_problems(id),
-    solved BOOLEAN DEFAULT FALSE,
-    attempts INTEGER DEFAULT 0,
-    first_solved_at TIMESTAMP,
-    last_attempted_at TIMESTAMP DEFAULT NOW()
-  );
-  ```
+- [x] **创建数据库表**
+  - [x] tsumego_problems表（题目数据）
+    - category（分类）、difficulty（难度1-10）、boardSize（棋盘大小）
+    - blackStones/whiteStones（黑白子位置，JSON格式）
+    - solution（正解序列，JSON格式）
+    - description（题目描述）、experienceReward（经验奖励）
+  - [x] player_tsumego_records表（玩家记录）
+    - userId、problemId、solved（是否解决）
+    - attempts（尝试次数）、firstSolvedAt、lastAttemptedAt
+  - [x] 数据库迁移执行（0006_tsumego_tables.sql）
 
-- [ ] **数据转换脚本**
-  - [ ] 创建 `scripts/import-tsumego.ts`
-  - [ ] 解析JSON格式（AB/AW字段 = 黑白子，SOL字段 = 解答）
-  - [ ] 转换SGF坐标（例如"ab" → {row: 0, col: 1}）
-  - [ ] 批量插入数据库
-  - [ ] 设置难度和奖励（根据题目复杂度）
+- [x] **数据转换脚本**
+  - [x] 创建 `scripts/import-tsumego.ts`
+  - [x] 解析JSON格式（AB/AW字段 = 黑白子，SOL字段 = 解答）
+  - [x] 转换SGF坐标（例如"ab" → {row: 0, col: 1}）
+  - [x] 批量插入数据库
+  - [x] 设置难度和奖励（根据题目复杂度）
 
-#### 6.5.2 地图遭遇机制
+#### 6.5.2 API接口开发 ✅
+- [x] **GET /api/tsumego/random**
+  - [x] 根据难度范围随机获取题目（beginner/intermediate/advanced）
+  - [x] 返回题目完整数据（黑白子位置、解答序列）
+- [x] **POST /api/tsumego/reward**
+  - [x] 处理解题奖励发放
+  - [x] 更新玩家经验和银两
+  - [x] 记录解题历史
+  - [x] 计算奖励（基于难度和成功状态）
+
+#### 6.5.3 UI组件开发 ✅
+- [x] **TsumegoModal组件**
+  - [x] 武侠风格Modal（深色背景，金色边框）
+  - [x] 顶部：难度显示 + 题目描述
+  - [x] 中部：死活题棋盘（紧凑型9路或13路）
+  - [x] 底部：控制按钮
+    - 提交答案（检查正解）
+    - 重新开始（清空棋盘）
+    - 关闭（退出挑战）
+  - [x] 实时验证和结果显示
+
+- [x] **TsumegoBoard组件**
+  - [x] 小型棋盘渲染（Canvas实现）
+  - [x] 显示初始黑白子
+  - [x] 允许玩家落子（轮流黑白）
+  - [x] 基础围棋规则（提子、禁入点）
+  - [x] 解答验证系统
+
+#### 6.5.4 地图遭遇机制（待实现）
 - [ ] **随机遭遇触发**
   - [ ] 玩家移动时概率触发（例如：每10步5%概率）
   - [ ] 根据地图区域设置不同难度（华山=初级，少林=中级，襄阳=高级）
@@ -895,64 +907,30 @@ jinyong-go/
   - [ ] 生成3-5种小怪精灵图（不同难度不同外观）
   - [ ] 遭遇对话（"汝可解此死活题？"）
 
-- [ ] **战斗界面**
-  - [ ] 创建TsumegoModal组件（全屏Modal）
-  - [ ] 显示题目描述和提示
-  - [ ] 渲染初始棋盘状态（黑白子）
-  - [ ] 允许玩家尝试落子
-  - [ ] 检查解答是否正确
+- [ ] **战斗界面集成**
+  - [ ] 集成TsumegoModal到IsometricGame
+  - [ ] 遭遇触发和题目加载
+  - [ ] 胜利/失败处理
 
-#### 6.5.3 解题验证系统
-- [ ] **解答检查逻辑**
-  - [ ] 创建 `src/lib/tsumego-validator.ts`
-  - [ ] 比对玩家落子序列与标准答案
-  - [ ] 支持多种正解（有些题目有多个正确答案）
-  - [ ] 允许3次尝试机会
-  - [ ] 显示"查看答案"按钮（消耗银两或内力）
+#### 6.5.5 奖励系统 ✅
+- [x] **经验和货币奖励**
+  - [x] 基础经验：根据难度计算（experienceReward字段）
+  - [x] 银两奖励：difficulty × 10
+  - [x] 更新playerStats表（经验和银两）
+  - [x] 自动升级检测
 
-- [ ] **胜负判定**
-  - [ ] 正确解答 → 胜利
-    - 获得经验值（20-100根据难度）
-    - 随机掉落物品（小还丹、银两、材料）
-    - 更新解题记录
-  - [ ] 失败3次 → 逃跑或认输
-    - 不扣体力（鼓励尝试）
-    - 记录失败次数
-    - 可稍后重试
+- [x] **物品掉落系统**
+  - [x] 低难度（1-3）：50%概率掉落初级丹药
+  - [x] 中等难度（4-6）：40%概率掉落中级丹药
+  - [x] 高难度（7-10）：30%概率掉落高级丹药 + 20%概率掉落武学秘籍残页
+  - [x] 掉落列表返回给前端
 
-#### 6.5.4 UI组件开发
-- [ ] **TsumegoModal组件**
-  - [ ] 武侠风格Modal（深色背景，金色边框）
-  - [ ] 顶部：小怪外观 + 名称 + 难度星级
-  - [ ] 中部：死活题棋盘（紧凑型9路或13路）
-  - [ ] 底部：控制按钮
-    - "提交答案"（检查正解）
-    - "查看答案"（消耗10内力）
-    - "逃跑"（放弃挑战）
-  - [ ] 右侧：提示信息和剩余次数
+- [x] **解题记录系统**
+  - [x] 记录到player_tsumego_records表
+  - [x] solved状态（成功/失败）
+  - [x] attempts尝试次数统计
 
-- [ ] **TsumegoBoard组件**
-  - [ ] 小型棋盘渲染（300x300px）
-  - [ ] 显示初始黑白子
-  - [ ] 允许玩家落子（轮流黑白）
-  - [ ] 禁用棋盘编辑（只能在空点落子）
-  - [ ] 高亮正确落点（查看答案时）
-
-#### 6.5.5 奖励系统
-- [ ] **经验计算**
-  - [ ] 基础经验：难度1-3=20exp，4-6=40exp，7-10=80exp
-  - [ ] 首次解答奖励：×1.5
-  - [ ] 连续解题奖励：每连续5题+20%
-
-- [ ] **掉落物品**
-  - [ ] 掉落概率表
-    - 100%：银两（10-50根据难度）
-    - 50%：小还丹
-    - 30%：小回气丹
-    - 10%：稀有材料（玄铁棋子等）
-  - [ ] 掉落动画（金币飞入背包）
-
-#### 6.5.6 统计和成就
+#### 6.5.6 统计和成就（待实现）
 - [ ] **解题统计面板**
   - [ ] 已解题目数量 / 总题目数
   - [ ] 各难度解题率
@@ -965,17 +943,16 @@ jinyong-go/
   - [ ] "百炼成钢"：挑战难度10的题目
 
 **预期产出**：
-- ✅ 10,000+道死活题导入数据库
-- ✅ 地图随机遭遇系统
-- ✅ 完整的解题验证和奖励流程
-- ✅ 武侠风格死活题界面
-- ✅ 增加游戏可玩性和经验获取途径
+- ✅ 死活题数据库表创建完成（tsumego_problems, player_tsumego_records）
+- ✅ 数据导入脚本完成（scripts/import-tsumego.ts）
+- ✅ API接口完成（随机题目获取 + 奖励发放）
+- ✅ UI组件完成（TsumegoModal + TsumegoBoard）
+- ✅ 基础奖励系统完成（经验、银两、物品掉落）
+- ⏳ 地图随机遭遇机制待实现
+- ⏳ 统计面板和成就系统待实现
 
-**时间预估**：3-4天
-- 第1天：数据导入和数据库设计
-- 第2天：遭遇机制和战斗界面
-- 第3天：解答验证和奖励系统
-- 第4天：UI优化和测试
+**已完成时间**：2天
+**剩余时间**：1-2天（遭遇机制和界面集成）
 
 ---
 

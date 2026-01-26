@@ -22,11 +22,12 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
       </div>
       
       {/* 右侧信息面板 */}
-      <div className={`relative transition-all duration-300 ${isPanelCollapsed ? 'w-12' : 'w-80'}`}>
+      <div className={`relative transition-all duration-300 ${isPanelCollapsed ? 'w-0' : 'w-80'}`}>
         {/* 收起/展开按钮 */}
         <button
           onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-          className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg px-2 py-4 shadow-lg transition-colors"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg px-2 py-4 shadow-lg transition-all duration-300"
+          style={{ marginLeft: '-30px' }}
           title={isPanelCollapsed ? '展开面板' : '收起面板'}
         >
           {isPanelCollapsed ? '◀' : '▶'}
