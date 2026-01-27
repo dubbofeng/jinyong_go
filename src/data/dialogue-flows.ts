@@ -129,8 +129,11 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         id: 'teach_skill_detail',
         nextNodeId: 'teach_complete',
         action: {
-          type: 'quest',
-          value: 'unlock_skill_kanglong'
+          type: 'skill',
+          value: {
+            skillId: 'kanglong_youhui',
+            questId: 'quest_002_hong_qigong'
+          }
         }
       },
       {
