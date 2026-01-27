@@ -870,8 +870,6 @@ export class IsometricEngine {
    * 检查坐标是否可行走（使用像素级碰撞检测）
    */
   isWalkable(x: number, y: number): boolean {
-    console.log(`\n🚶 isWalkable(${x}, ${y}) 开始检测...`);
-    
     const tile = this.getTileAt(x, y);
     if (!tile || !tile.walkable) {
       console.log(`❌ 瓦片不可行走: (${x},${y}) - tile=${tile?.tileType}, walkable=${tile?.walkable}`);
@@ -953,8 +951,6 @@ export class IsometricEngine {
         }
       }
     }
-    
-    console.log(`✅ 位置(${x},${y})可行走，无碰撞`);
     return true;
   }
 

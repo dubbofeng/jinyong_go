@@ -707,6 +707,31 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         // TODO: 实现技能解锁逻辑
         break;
       
+      case 'skill':
+        // 处理技能解锁
+        const { skillId, questId } = action.value;
+        console.log('✨ 解锁技能:', skillId, '任务:', questId);
+        
+        // 调用API解锁技能
+        fetch('/api/player/skills/unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ skillId, questId }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              console.log('✅ 技能解锁成功:', data.message);
+              showAlert(`✨ 学会了新技能：「${skillId === 'kanglong_youhui' ? '亢龙有悔' : skillId}」`, 'success');
+            } else {
+              console.warn('⚠️ 技能解锁失败:', data.error);
+            }
+          })
+          .catch(err => {
+            console.error('❌ 技能解锁API错误:', err);
+          });
+        break;
+      
       case 'reward':
         // 处理奖励
         console.log('🎁 Reward action:', action.value);
@@ -755,24 +780,11 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    * 关闭对话
    */
   const closeDialogue = () => {
-    // 保存当前NPC信息用于后续围棋对弈
-    const npcName = currentNpcAvatar?.includes('hong') ? '洪七公' : 
-                    currentNpcAvatar?.includes('guo') ? '郭靖' :
-                    currentNpcAvatar?.includes('linghu') ? '令狐冲' : null;
-    
     setIsDialogueVisible(false);
     setDialogueEngine(null);
     setCurrentDialogueNode(null);
     setDialogueOptions([]);
     setCurrentNpcAvatar(null);
-    
-    // 对话关闭后显示围棋挑战对话框
-    if (npcName) {
-      setTimeout(() => {
-        setPendingGoOpponent(npcName);
-        setShowGoChallenge(true);
-      }, 500); // 稍微延迟以确保对话框已关闭
-    }
   };
 
   // ==================== 围棋挑战系统函数 ====================
@@ -806,6 +818,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    */
   const handleGoGameComplete = (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => {
     console.log('🎯 Go game completed:', result);
+    console.log('🎯 Dialogue engine:', dialogueEngine);
+    console.log('🎯 Pending opponent:', pendingGoOpponent);
+    console.log('🎯 Go opponent name:', goOpponentName);
     
     // 记录对战结果
     setBattleResult(result.playerWon ? 'win' : 'lose');
@@ -826,7 +841,17 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         });
         
         console.log(`✅ Player defeated ${pendingGoOpponent}, updated dialogue state`);
+        
+        // 前进到胜利后的对话节点
+        const currentNode = dialogueEngine.getCurrentNode();
+        if (currentNode?.id === 'start_battle') {
+          // 如果当前在 start_battle 节点，手动前进到 teach_skill 节点
+          dialogueEngine.state.currentNodeId = 'teach_skill';
+        }
       }
+      
+      // 更新对话状态以显示新节点
+      updateDialogueState(dialogueEngine);
       
       // 清空待处理的对手并恢复对话
       setPendingGoOpponent(null);
@@ -1053,6 +1078,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         opponentName={goOpponentName}
         boardSize={9}
         onComplete={handleGoGameComplete}
+        npcId={goOpponentName === '洪七公' ? 'hong_qigong' : 
+               goOpponentName === '令狐冲' ? 'linghu_chong' :
+               goOpponentName === '郭靖' ? 'guo_jing' : undefined}
       />
 
       {/* 传送门确认对话框 */}

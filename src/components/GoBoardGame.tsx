@@ -416,6 +416,8 @@ export default function GoBoardGame({
     const questUpdates = [];
     if (playerWon && npcId) {
       try {
+        // TODO: 任务系统暂未实现，注释掉以避免 405 错误
+        /*
         // TODO: 根据npcId确定任务ID
         const questId = npcId === 'hong_qigong' ? 'quest_002_hong_qigong' : null;
         
@@ -440,6 +442,7 @@ export default function GoBoardGame({
             });
           }
         }
+        */
       } catch (error) {
         console.error('Error updating quest progress:', error);
       }
@@ -708,6 +711,16 @@ export default function GoBoardGame({
         >
           重新开始
         </button>
+        {/* 测试按钮：只在对战洪七公时显示 */}
+        {npcId === 'hong_qigong' && (
+          <button
+            onClick={() => handleGameEnd('black', 'score')}
+            disabled={isAIThinking}
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
+          >
+            🎯 测试胜利
+          </button>
+        )}
       </div>
 
       {/* 武侠技能快捷栏 */}
@@ -888,6 +901,7 @@ export default function GoBoardGame({
           isOpen={showResultModal}
           result={gameResult}
           playerColor="black"
+          inDialogue={!!onGameEnd}
           onClose={() => {
             setShowResultModal(false);
             setGameResult(null);
@@ -896,7 +910,7 @@ export default function GoBoardGame({
               onGameModalClose();
             }
           }}
-          onRematch={() => {
+          onRematch={onGameEnd ? undefined : () => {
             setShowResultModal(false);
             setGameResult(null);
             handleReset();

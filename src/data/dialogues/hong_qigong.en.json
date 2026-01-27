@@ -14,10 +14,24 @@
       "speaker": "Hong Qigong",
       "text": "Would you like to learn some Go skills from me?",
       "options": [
-        {"text": "Please teach me, Senior!"},
-        {"text": "Senior, I'd like to learn 'Mighty Dragon Repents'"},
-        {"text": "I'd like to know more about Go first"},
-        {"text": "I'm not ready yet"}
+        {
+          "text": "Please teach me, Senior!",
+          "condition": {"type": "quest", "value": "defeated_hong_qigong", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "Senior, I want to learn 'Mighty Dragon Repents'",
+          "condition": {"type": "quest", "value": "defeated_hong_qigong"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Senior, I'd like to challenge you again",
+          "condition": {"type": "quest", "value": "defeated_hong_qigong"},
+          "action": {"type": "battle", "value": "hong_qigong"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "I want to learn about Go first", "nextNodeId": "explain_go"},
+        {"text": "I'm not ready yet", "nextNodeId": "not_ready"}
       ]
     },
     {
@@ -46,8 +60,12 @@
       "speaker": "Hong Qigong",
       "text": "But here's my rule: if you want to learn, you must prove yourself first! Beat me in a game, and I'll teach you 'Mighty Dragon Repents'.",
       "options": [
-        {"text": "Alright! Please teach me, Senior!"},
-        {"text": "Let me prepare first"}
+        {
+          "text": "Alright! Please teach me, Senior!",
+          "action": {"type": "battle", "value": "hong_qigong"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
       ]
     },
     {
@@ -64,8 +82,7 @@
     {
       "id": "teach_skill_detail",
       "speaker": "Hong Qigong",
-      "text": "Everyone makes mistakes in Go. This move gives you a chance to take back one move. But remember the rules: only once per game!",
-      "nextNodeId": "teach_complete"
+      "text": "Everyone makes mistakes in Go. This move gives you a chance to take back one move. But remember the rules: only once per game!",      "action": {"type": "skill", "value": {"skillId": "kanglong_youhui", "questId": "quest_002_hong_qigong"}},      "nextNodeId": "teach_complete"
     },
     {
       "id": "teach_complete",

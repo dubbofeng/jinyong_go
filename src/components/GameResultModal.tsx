@@ -25,6 +25,7 @@ interface GameResultModalProps {
   playerColor: 'black' | 'white';
   onClose: () => void;
   onRematch?: () => void;
+  inDialogue?: boolean; // 是否在对话流程中
 }
 
 export default function GameResultModal({
@@ -33,6 +34,7 @@ export default function GameResultModal({
   playerColor,
   onClose,
   onRematch,
+  inDialogue = false,
 }: GameResultModalProps) {
   const t = useTranslations('game');
   const [mounted, setMounted] = useState(false);
@@ -171,26 +173,42 @@ export default function GameResultModal({
 
           {/* 按钮组 */}
           <div className="flex gap-3 pt-4">
-            {onRematch && (
+            {inDialogue ? (
+              // 对话流程中只显示"回到对话"按钮
               <button
-                onClick={onRematch}
-                className="flex-1 px-4 py-3 font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg"
-                style={{ backgroundColor: '#ea580c', color: 'white' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c2410c'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ea580c'}
+                onClick={onClose}
+                className="w-full px-4 py-3 font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+                style={{ backgroundColor: '#059669', color: 'white' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
               >
-                🔄 再来一局
+                💬 回到对话
               </button>
+            ) : (
+              // 普通对局显示正常按钮
+              <>
+                {onRematch && (
+                  <button
+                    onClick={onRematch}
+                    className="flex-1 px-4 py-3 font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+                    style={{ backgroundColor: '#ea580c', color: 'white' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c2410c'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ea580c'}
+                  >
+                    🔄 再来一局
+                  </button>
+                )}
+                <button
+                  onClick={onClose}
+                  className="flex-1 px-4 py-3 font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+                  style={{ backgroundColor: '#374151', color: 'white' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#374151'}
+                >
+                  {onRematch ? '返回地图' : '关闭'}
+                </button>
+              </>
             )}
-            <button
-              onClick={onClose}
-              className="flex-1 px-4 py-3 font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg"
-              style={{ backgroundColor: '#374151', color: 'white' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#374151'}
-            >
-              {onRematch ? '返回地图' : '关闭'}
-            </button>
           </div>
         </div>
       </div>
