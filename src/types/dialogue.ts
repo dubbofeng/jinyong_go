@@ -3,9 +3,14 @@
 export interface DialogueOption {
   text: string;
   nextNodeId: string;
+  action?: {
+    type: 'quest' | 'reward' | 'battle';
+    value: any;
+  };
   condition?: {
     type: 'level' | 'quest' | 'item';
     value: string | number;
+    inverse?: boolean;
   };
 }
 

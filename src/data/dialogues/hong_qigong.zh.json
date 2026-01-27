@@ -7,25 +7,17 @@
       "id": "greeting",
       "speaker": "洪七公",
       "text": "哟！小娃娃，老叫花我看你骨骼精奇，是个下棋的料子。",
-      "nextNodeId": "ask_learn"
+      "nextNodeId": "check_status"
     },
     {
-      "id": "ask_learn",
+      "id": "check_status",
       "speaker": "洪七公",
       "text": "想不想学点围棋的本事？",
       "options": [
-        {
-          "text": "请前辈指教！",
-          "nextNodeId": "teach_intro"
-        },
-        {
-          "text": "我想先了解一下围棋",
-          "nextNodeId": "explain_go"
-        },
-        {
-          "text": "我还没准备好",
-          "nextNodeId": "not_ready"
-        }
+        {"text": "请前辈指教！"},
+        {"text": "前辈，我想学习「亢龙有悔」"},
+        {"text": "我想先了解一下围棋"},
+        {"text": "我还没准备好"}
       ]
     },
     {
@@ -39,30 +31,40 @@
       "speaker": "洪七公",
       "text": "咱们先从九路小棋盘开始练，等你有了些火候，再上十三路、十九路大棋盘。",
       "options": [
-        {
-          "text": "明白了，请前辈教我！",
-          "nextNodeId": "teach_intro"
-        },
-        {
-          "text": "我再考虑考虑",
-          "nextNodeId": "not_ready"
-        }
+        {"text": "明白了，请前辈教我！"},
+        {"text": "我再考虑考虑"}
       ]
     },
     {
-      "id": "teach_intro",
+      "id": "challenge_intro",
       "speaker": "洪七公",
       "text": "好！有志气！老叫花我这一身本事，除了降龙十八掌，就数围棋最拿手了。",
-      "nextNodeId": "teach_skill"
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "洪七公",
+      "text": "不过啊，老叫花我的规矩：要学艺，先比试！你若能在棋盘上赢我一局，我就传你「亢龙有悔」这一招。",
+      "options": [
+        {"text": "好！请前辈指教！"},
+        {"text": "我先准备一下"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "洪七公",
+      "text": "好！老叫花我就看看你有几分本事！"
     },
     {
       "id": "teach_skill",
       "speaker": "洪七公",
-      "text": "我先传你「亢龙有悔」这一招。下棋时难免失误，这招能让你有反悔一次的机会。不过记住，江湖规矩，每局只能用一次！",
-      "action": {
-        "type": "quest",
-        "value": "unlock_skill_kanglong"
-      },
+      "text": "哈哈！不错不错！老叫花我果然没看错人。我这就传你「亢龙有悔」这一招。",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "洪七公",
+      "text": "下棋时难免失误，这招能让你有反悔一次的机会。不过记住，江湖规矩，每局只能用一次！",
       "nextNodeId": "teach_complete"
     },
     {
@@ -70,14 +72,8 @@
       "speaker": "洪七公",
       "text": "去吧，去少林寺找令狐冲那小子切磋切磋，他的独孤九剑很有些门道。",
       "options": [
-        {
-          "text": "多谢前辈！",
-          "nextNodeId": "farewell"
-        },
-        {
-          "text": "我还想再听听您的教诲",
-          "nextNodeId": "daily_chat"
-        }
+        {"text": "多谢前辈！"},
+        {"text": "我还想再听听您的教诲"}
       ]
     },
     {
@@ -85,10 +81,7 @@
       "speaker": "洪七公",
       "text": "下棋如行军打仗，要知进退，懂虚实。记住：金角银边草肚皮，开局别急着去中间乱打。",
       "options": [
-        {
-          "text": "受教了！",
-          "nextNodeId": "farewell"
-        }
+        {"text": "受教了！"}
       ]
     },
     {
@@ -96,10 +89,7 @@
       "speaker": "洪七公",
       "text": "无妨，无妨。老叫花我哪儿也不去，等你准备好了随时来找我。",
       "options": [
-        {
-          "text": "好的，前辈保重",
-          "nextNodeId": "farewell"
-        }
+        {"text": "好的，前辈保重"}
       ]
     },
     {

@@ -40,6 +40,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [goOpponentName, setGoOpponentName] = useState('对手');
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
+  const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
   
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
@@ -625,7 +626,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       
       // 加载对话树（使用中文）
       const dialogueTree = await loadDialogueTree(npcId, 'zh');
-      const engine = new DialogueEngine(dialogueTree);
+      
+      // 创建对话引擎，传入玩家状态
+      const playerState = {
+        completedQuests: battleResult === 'win' && pendingGoOpponent === item.itemName 
+          ? [`defeated_${npcId}`] 
+          : []
+      };
+      const engine = new DialogueEngine(dialogueTree, playerState);
       
       setDialogueEngine(engine);
       
@@ -658,11 +666,54 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     setCurrentDialogueNode(node);
     setDialogueOptions(options);
     
+    // 处理节点的 action
+    if (node?.action) {
+      handleDialogueAction(node.action);
+    }
+    
     // 如果对话结束，自动关闭
     if (engine.isCompleted()) {
       setTimeout(() => {
         closeDialogue();
       }, 1000);
+    }
+  };
+  
+  /**
+   * 处理对话中的 action
+   */
+  const handleDialogueAction = (action: { type: string; value: any }) => {
+    console.log('🎬 Handling dialogue action:', action);
+    
+    switch (action.type) {
+      case 'battle':
+        // 触发对战
+        const opponentId = action.value;
+        const npcName = opponentId === 'hong_qigong' ? '洪七公' :
+                        opponentId === 'linghu_chong' ? '令狐冲' :
+                        opponentId === 'guo_jing' ? '郭靖' : '对手';
+        
+        // 关闭对话，显示对战挑战
+        setTimeout(() => {
+          setPendingGoOpponent(npcName);
+          setShowGoChallenge(true);
+          setIsDialogueVisible(false);
+        }, 500);
+        break;
+      
+      case 'quest':
+        // 处理任务相关的 action（如解锁技能）
+        console.log('📜 Quest action:', action.value);
+        // TODO: 实现技能解锁逻辑
+        break;
+      
+      case 'reward':
+        // 处理奖励
+        console.log('🎁 Reward action:', action.value);
+        break;
+      
+      default:
+        console.warn('Unknown action type:', action.type);
     }
   };
 
@@ -671,6 +722,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    */
   const handleSelectOption = (optionIndex: number) => {
     if (!dialogueEngine) return;
+    
+    const options = dialogueEngine.getAvailableOptions();
+    const selectedOption = options[optionIndex];
+    
+    // 如果选项有 action，先处理 action
+    if (selectedOption?.action) {
+      handleDialogueAction(selectedOption.action);
+    }
     
     const success = dialogueEngine.selectOption(optionIndex);
     if (success) {
@@ -726,7 +785,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     if (pendingGoOpponent) {
       setGoOpponentName(pendingGoOpponent);
       setShowGoGame(true);
-      setPendingGoOpponent(null);
+      // 不清空 pendingGoOpponent，保留用于对战结束后的处理
     }
   };
 
@@ -736,6 +795,49 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const declineGoChallenge = () => {
     setShowGoChallenge(false);
     setPendingGoOpponent(null);
+    // 如果在对话中拒绝挑战，恢复对话
+    if (dialogueEngine) {
+      setIsDialogueVisible(true);
+    }
+  };
+  
+  /**
+   * 围棋对战结束处理
+   */
+  const handleGoGameComplete = (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => {
+    console.log('🎯 Go game completed:', result);
+    
+    // 记录对战结果
+    setBattleResult(result.playerWon ? 'win' : 'lose');
+    
+    // 关闭对战界面
+    setShowGoGame(false);
+    
+    // 如果玩家胜利且有对话引擎在运行，记录胜利状态并恢复对话
+    if (result.playerWon && dialogueEngine && pendingGoOpponent) {
+      // 更新对话引擎的玩家状态，标记已打败NPC
+      const npcId = pendingGoOpponent === '洪七公' ? 'defeated_hong_qigong' :
+                    pendingGoOpponent === '令狐冲' ? 'defeated_linghu_chong' :
+                    pendingGoOpponent === '郭靖' ? 'defeated_guo_jing' : null;
+      
+      if (npcId) {
+        dialogueEngine.updatePlayerState({
+          completedQuests: [npcId]
+        });
+        
+        console.log(`✅ Player defeated ${pendingGoOpponent}, updated dialogue state`);
+      }
+      
+      // 清空待处理的对手并恢复对话
+      setPendingGoOpponent(null);
+      setIsDialogueVisible(true);
+    } else {
+      // 如果失败，可以选择恢复对话或关闭
+      setPendingGoOpponent(null);
+      if (dialogueEngine) {
+        setIsDialogueVisible(true);
+      }
+    }
   };
 
   // ==================== 传送门系统函数 ====================
@@ -950,6 +1052,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         onClose={() => setShowGoGame(false)}
         opponentName={goOpponentName}
         boardSize={9}
+        onComplete={handleGoGameComplete}
       />
 
       {/* 传送门确认对话框 */}

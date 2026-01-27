@@ -12,6 +12,7 @@ interface GoGameModalProps {
   boardSize?: 9 | 13 | 19;
   vsAI?: boolean; // 是否对战AI
   aiDifficulty?: 'easy' | 'medium' | 'hard'; // AI难度
+  onComplete?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
 }
 
 export default function GoGameModal({ 
@@ -20,7 +21,8 @@ export default function GoGameModal({
   opponentName = '对手',
   boardSize = 9,
   vsAI = true, // 默认对战AI
-  aiDifficulty = 'medium' // 默认中等难度
+  aiDifficulty = 'medium', // 默认中等难度
+  onComplete
 }: GoGameModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [showEngineSelector, setShowEngineSelector] = useState(vsAI);
@@ -134,6 +136,7 @@ export default function GoGameModal({
                 aiEngine={selectedEngine}
                 katagoEngine={selectedEngine === 'katago' && isKatagoReady ? katagoEngine : undefined}
                 onGameModalClose={handleClose}
+                onGameEnd={onComplete}
               />
             </div>
 

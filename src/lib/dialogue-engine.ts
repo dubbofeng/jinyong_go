@@ -6,6 +6,7 @@ import type {
   DialogueOption,
   DialogueState,
 } from '../types/dialogue';
+import { getDialogueFlow } from '../data/dialogue-flows';
 
 // 预先导入所有对话文件
 import guoJingZh from '../data/dialogues/guo_jing.zh.json';
@@ -31,7 +32,7 @@ const dialogueMap: Record<string, Record<string, DialogueTree>> = {
   },
 };
 
-// 加载对话树（支持多语言）
+// 加载对话树（支持多语言，并合并流程配置）
 export async function loadDialogueTree(
   npcId: string,
   locale: string = 'zh'
@@ -41,9 +42,51 @@ export async function loadDialogueTree(
     throw new Error(`NPC ${npcId} 的对话文件不存在`);
   }
   
-  const dialogue = npcDialogues[locale] || npcDialogues['zh'];
+  // 加载对话内容（文本）
+  const dialogueContent = npcDialogues[locale] || npcDialogues['zh'];
   
-  return dialogue;
+  // 加载对话流程（逻辑）
+  const dialogueFlow = getDialogueFlow(npcId);
+  
+  // 合并内容和流程
+  const mergedNodes: DialogueNode[] = dialogueContent.nodes.map((contentNode) => {
+    const flowNode = dialogueFlow?.nodes.find((n) => n.id === contentNode.id);
+    
+    if (!flowNode) {
+      // 如果没有对应的流程配置，直接使用内容
+      return contentNode;
+    }
+    
+    // 合并节点：内容 + 流程
+    const mergedNode: DialogueNode = {
+      id: contentNode.id,
+      speaker: contentNode.speaker,
+      text: contentNode.text,
+      nextNodeId: flowNode.nextNodeId,
+      action: flowNode.action,
+    };
+    
+    // 合并选项（如果有）
+    if (contentNode.options && flowNode.options) {
+      mergedNode.options = contentNode.options.map((contentOption, index) => {
+        const flowOption = flowNode.options?.find((o) => o.optionId === index.toString());
+        
+        return {
+          text: contentOption.text,
+          nextNodeId: flowOption?.nextNodeId || '',
+          condition: flowOption?.condition,
+          action: flowOption?.action,
+        };
+      });
+    }
+    
+    return mergedNode;
+  });
+  
+  return {
+    ...dialogueContent,
+    nodes: mergedNodes,
+  };
 }
 
 export class DialogueEngine {
@@ -74,17 +117,25 @@ export class DialogueEngine {
     return currentNode.options.filter((option) => {
       if (!option.condition) return true;
 
-      const { type, value } = option.condition;
+      const { type, value, inverse } = option.condition;
+      let conditionMet = false;
+      
       switch (type) {
         case 'level':
-          return this.playerState.level >= value;
+          conditionMet = this.playerState.level >= value;
+          break;
         case 'quest':
-          return this.playerState.completedQuests?.includes(value);
+          conditionMet = this.playerState.completedQuests?.includes(value) || false;
+          break;
         case 'item':
-          return this.playerState.inventory?.includes(value);
+          conditionMet = this.playerState.inventory?.includes(value) || false;
+          break;
         default:
-          return true;
+          conditionMet = true;
       }
+      
+      // 如果有 inverse 标记，反转结果
+      return inverse ? !conditionMet : conditionMet;
     });
   }
 

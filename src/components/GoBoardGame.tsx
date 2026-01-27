@@ -23,6 +23,7 @@ interface GoBoardGameProps {
   katagoEngine?: KataGoBrowserEngine | null; // KataGo浏览器引擎实例
   npcId?: string; // 对战的NPC ID（用于任务进度）
   onGameModalClose?: () => void; // 关闭游戏 Modal 的回调
+  onGameEnd?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
 }
 
 export default function GoBoardGame({ 
@@ -34,7 +35,8 @@ export default function GoBoardGame({
   aiEngine = 'simple',
   katagoEngine = null,
   npcId,
-  onGameModalClose
+  onGameModalClose,
+  onGameEnd
 }: GoBoardGameProps) {
   const { data: session } = useSession();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -341,6 +343,11 @@ export default function GoBoardGame({
     const playerColor: 'black' | 'white' = 'black';
     const playerWon = winner === playerColor;
     const isDraw = winner === 'draw';
+
+    // 调用游戏结束回调
+    if (onGameEnd) {
+      onGameEnd({ winner, playerWon });
+    }
 
     // 计算经验值和体力变化
     const experienceGained = playerWon ? 50 + Math.floor(moveCount / 10) * 5 : 10;
