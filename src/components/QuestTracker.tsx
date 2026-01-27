@@ -35,7 +35,7 @@ interface QuestTrackerProps {
 }
 
 export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerProps) {
-  const t = useTranslations('game');
+  const t = useTranslations('quest');
   const [quests, setQuests] = useState<Quest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +88,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
       <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-lg font-bold text-gray-900">
-            📋 任务追踪
+            📋 {t('tracker')}
           </h3>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -98,7 +98,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
           </button>
         </div>
         {!isCollapsed && (
-          <div className="text-sm text-gray-600">加载中...</div>
+          <div className="text-sm text-gray-600">{t('loading')}</div>
         )}
       </div>
     );
@@ -109,7 +109,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
       <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-lg font-bold text-red-600">
-            ❌ 错误
+            ❌ {t('error')}
           </h3>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -130,7 +130,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
       <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-lg font-bold text-gray-900">
-            📋 任务追踪
+            📋 {t('tracker')}
           </h3>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -141,7 +141,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
         </div>
         {!isCollapsed && (
           <div className="text-sm text-gray-600">
-            暂无进行中的任务
+            {t('noQuests')}
           </div>
         )}
       </div>
@@ -152,7 +152,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
     <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold text-gray-900">
-          📋 任务追踪
+          📋 {t('tracker')}
         </h3>
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -186,7 +186,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
                 {quest.status === 'in_progress' && (
                   <div className="mt-2">
                     <div className="flex justify-between text-xs text-gray-600 mb-1">
-                      <span>进度</span>
+                      <span>{t('progress')}</span>
                       <span>{getProgressPercentage(quest)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -212,7 +212,7 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
 
                 {/* 目标列表 */}
                 <div className="space-y-2">
-                  <div className="text-xs font-semibold text-gray-800">任务目标：</div>
+                  <div className="text-xs font-semibold text-gray-800">{t('objectives')}</div>
                   {quest.objectives.map((obj) => (
                     <div key={obj.id} className="flex items-center gap-2 text-sm">
                       <span className={obj.completed ? 'text-green-600' : 'text-gray-600'}>
@@ -230,19 +230,19 @@ export default function QuestTracker({ userId, onQuestComplete }: QuestTrackerPr
 
                 {/* 奖励 */}
                 <div className="mt-3 p-2 bg-gray-50 rounded border border-gray-200">
-                  <div className="text-xs font-semibold text-gray-800 mb-1">任务奖励：</div>
+                  <div className="text-xs font-semibold text-gray-800 mb-1">{t('rewards')}</div>
                   <div className="text-sm text-gray-700 space-y-1">
                     {quest.rewards.experience > 0 && (
-                      <div>💫 经验值 +{quest.rewards.experience}</div>
+                      <div>💫 {t('experienceReward')}{quest.rewards.experience}</div>
                     )}
                     {quest.rewards.skills && quest.rewards.skills.length > 0 && (
-                      <div>⚔️ 技能：{quest.rewards.skills.join(', ')}</div>
+                      <div>⚔️ {t('skillReward')} {quest.rewards.skills.join(', ')}</div>
                     )}
                     {quest.rewards.items && quest.rewards.items.length > 0 && (
-                      <div>🎁 物品：{quest.rewards.items.join(', ')}</div>
+                      <div>🎁 {t('itemReward')} {quest.rewards.items.join(', ')}</div>
                     )}
                     {quest.rewards.gold && quest.rewards.gold > 0 && (
-                      <div>💰 金币 +{quest.rewards.gold}</div>
+                      <div>💰 {t('goldReward')}{quest.rewards.gold}</div>
                     )}
                   </div>
                 </div>

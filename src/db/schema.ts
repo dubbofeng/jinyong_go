@@ -275,6 +275,7 @@ export const items: any = pgTable('items', {
   name: varchar('name', { length: 100 }).notNull(),
   nameEn: varchar('name_en', { length: 100 }),
   description: text('description'),
+  descriptionEn: text('description_en'),
   
   // 分类 - 扩展支持所有类型
   itemType: varchar('item_type', { length: 50 }).notNull(), // 'consumable'消耗品, 'material'材料, 'equipment'装备, 'quest'任务, 'decoration'装饰物, 'plant'植物, 'building'建筑

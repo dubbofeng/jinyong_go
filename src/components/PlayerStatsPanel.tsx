@@ -6,6 +6,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { levelToRank, getExperienceForLevel, getRankColor, getRankBorderColor, getRankBgColor } from '@/src/lib/rank-system';
 
 interface PlayerStats {
@@ -21,6 +22,7 @@ interface PlayerStats {
 }
 
 export function PlayerStatsPanel() {
+  const t = useTranslations('player');
   const [stats, setStats] = useState<PlayerStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -81,7 +83,7 @@ export function PlayerStatsPanel() {
     return (
       <div className="bg-amber-50 rounded-lg p-4 shadow-md border-2 border-amber-200">
         <div className="text-center py-4 text-amber-700">
-          <div className="text-sm">加载失败，请刷新页面</div>
+          <div className="text-sm">{t('loadFailed')}</div>
         </div>
       </div>
     );
@@ -101,7 +103,7 @@ export function PlayerStatsPanel() {
     <div className="bg-amber-50 rounded-lg p-4 shadow-md border-2 border-amber-200">
       {/* 标题和段位 */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold text-amber-900">玩家属性</h3>
+        <h3 className="text-lg font-bold text-amber-900">{t('attributes')}</h3>
         <div className={`px-3 py-1 rounded-lg border-2 ${rankBorderColor} ${rankBgColor}`}>
           <span className={`text-sm font-bold ${rankColor}`}>
             {rankInfo.display}
@@ -112,17 +114,17 @@ export function PlayerStatsPanel() {
       {/* 经验值 */}
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-xs text-amber-700">经验</span>
+          <span className="text-xs text-amber-700">{t('experience')}</span>
           <span className="text-xs text-amber-600">
             {stats.experience}/{stats.experienceToNext}
             {stats.level < 27 && (
               <span className="ml-1 text-gray-500">
-                (下一段位: {levelToRank(stats.level + 1).display})
+                ({t('nextRank')}: {levelToRank(stats.level + 1).display})
               </span>
             )}
             {stats.level === 27 && (
               <span className="ml-1 text-yellow-600">
-                (已达最高段位)
+                ({t('maxRank')})
               </span>
             )}
           </span>
@@ -139,7 +141,7 @@ export function PlayerStatsPanel() {
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
           <span className="text-xs text-red-700 flex items-center gap-1">
-            <span className="text-sm">❤️</span> 体力
+            <span className="text-sm">❤️</span> {t('stamina')}
           </span>
           <span className="text-xs text-red-600">
             {stats.stamina}/{stats.maxStamina}
@@ -163,7 +165,7 @@ export function PlayerStatsPanel() {
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
           <span className="text-xs text-blue-700 flex items-center gap-1">
-            <span className="text-sm">⚡</span> 内力
+            <span className="text-sm">⚡</span> {t('qi')}
           </span>
           <span className="text-xs text-blue-600">
             {stats.qi}/{stats.maxQi}
@@ -187,11 +189,11 @@ export function PlayerStatsPanel() {
       <div className="flex gap-3 text-xs pt-2 border-t border-amber-200">
         <div className="flex items-center gap-1 text-amber-700">
           <span>💰</span>
-          <span>{stats.silver} 银两</span>
+          <span>{stats.silver} {t('silver')}</span>
         </div>
         <div className="flex items-center gap-1 text-yellow-700">
           <span>🪙</span>
-          <span>{stats.coins} 金币</span>
+          <span>{stats.coins} {t('coins')}</span>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface SaveButtonProps {
   onSave: () => Promise<boolean>;
@@ -13,6 +14,7 @@ interface SaveButtonProps {
 }
 
 export default function SaveButton({ onSave, className = '' }: SaveButtonProps) {
+  const t = useTranslations('save');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState<Date | null>(null);
   const [saveMessage, setSaveMessage] = useState<string>('');
@@ -38,9 +40,9 @@ export default function SaveButton({ onSave, className = '' }: SaveButtonProps) 
 
     if (success) {
       setLastSaveTime(new Date());
-      setSaveMessage('✅ 保存成功！');
+      setSaveMessage(t('success'));
     } else {
-      setSaveMessage('❌ 保存失败');
+      setSaveMessage(t('failed'));
     }
 
     setIsSaving(false);
@@ -52,7 +54,7 @@ export default function SaveButton({ onSave, className = '' }: SaveButtonProps) 
   };
 
   const formatTime = (date: Date | null) => {
-    if (!date) return '从未保存';
+    if (!date) return t('never');
     
     const now = Date.now();
     const diff = now - date.getTime();
@@ -60,9 +62,9 @@ export default function SaveButton({ onSave, className = '' }: SaveButtonProps) 
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
 
-    if (seconds < 60) return '刚刚';
-    if (minutes < 60) return `${minutes}分钟前`;
-    if (hours < 24) return `${hours}小时前`;
+    if (seconds < 60) return t('justNow');
+    if (minutes < 60) return `${minutes} ${t('minutesAgo')}`;
+    if (hours < 24) return `${hours} ${t('hoursAgo')}`;
     
     return date.toLocaleTimeString('zh-CN', {
       hour: '2-digit',
@@ -83,13 +85,13 @@ export default function SaveButton({ onSave, className = '' }: SaveButtonProps) 
         } text-white shadow-md`}
       >
         <span>{isSaving ? '⏳' : '💾'}</span>
-        <span>{isSaving ? '保存中...' : '手动保存'}</span>
+        <span>{isSaving ? t('saving') : t('manual')}</span>
       </button>
 
       {/* 保存状态消息 */}
       {saveMessage && (
         <div className={`text-sm text-center py-1 rounded ${
-          saveMessage.includes('成功')
+          saveMessage.includes(t('success').substring(0, 2))
             ? 'bg-green-50 text-green-700'
             : 'bg-red-50 text-red-700'
         }`}>
@@ -99,7 +101,7 @@ export default function SaveButton({ onSave, className = '' }: SaveButtonProps) 
 
       {/* 最后保存时间 */}
       <div className="text-xs text-gray-500 text-center">
-        上次保存: {formatTime(lastSaveTime)}
+        {t('lastSave')} {formatTime(lastSaveTime)}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 interface TsumegoStats {
   overview: {
@@ -27,6 +28,7 @@ interface TsumegoStats {
 
 export default function TsumegoStatsPanel() {
   const { data: session } = useSession();
+  const t = useTranslations('tsumego');
   const [stats, setStats] = useState<TsumegoStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,7 +70,7 @@ export default function TsumegoStatsPanel() {
   if (!stats) {
     return (
       <div className="bg-white rounded-lg shadow p-4 text-center text-gray-500">
-        📊 暂无统计数据
+        📊 {t('noData')}
       </div>
     );
   }
@@ -79,57 +81,57 @@ export default function TsumegoStatsPanel() {
     <div className="bg-white rounded-lg shadow p-4 space-y-4">
       {/* 标题 */}
       <h3 className="text-lg font-bold text-gray-800 border-b pb-2">
-        📊 死活题统计
+        📊 {t('stats')}
       </h3>
 
       {/* 总体统计 */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">已尝试:</span>
-          <span className="font-semibold text-gray-800">{overview.totalAttempted} 道</span>
+          <span className="text-sm text-gray-600">{t('attempted')}</span>
+          <span className="font-semibold text-gray-800">{overview.totalAttempted} {t('problems')}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">已解决:</span>
-          <span className="font-semibold text-green-600">{overview.totalSolved} 道</span>
+          <span className="text-sm text-gray-600">{t('solved')}</span>
+          <span className="font-semibold text-green-600">{overview.totalSolved} {t('problems')}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">解题率:</span>
+          <span className="text-sm text-gray-600">{t('solveRate')}</span>
           <span className="font-semibold text-blue-600">
             {overview.solveRate.toFixed(1)}%
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">平均尝试:</span>
-          <span className="font-semibold text-gray-800">{overview.avgAttempts} 次</span>
+          <span className="text-sm text-gray-600">{t('avgAttempts')}</span>
+          <span className="font-semibold text-gray-800">{overview.avgAttempts} {t('times')}</span>
         </div>
       </div>
 
       {/* 连胜记录 */}
       <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-3 space-y-2">
         <h4 className="text-sm font-bold text-orange-800 flex items-center gap-1">
-          🔥 连胜记录
+          🔥 {t('streak')}
         </h4>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">当前连胜:</span>
-          <span className="font-bold text-orange-600">{streaks.current} 场</span>
+          <span className="text-sm text-gray-600">{t('currentStreak')}</span>
+          <span className="font-bold text-orange-600">{streaks.current} {t('games')}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">最高连胜:</span>
-          <span className="font-bold text-red-600">{streaks.max} 场</span>
+          <span className="text-sm text-gray-600">{t('maxStreak')}</span>
+          <span className="font-bold text-red-600">{streaks.max} {t('games')}</span>
         </div>
       </div>
 
       {/* 一击必杀 */}
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 space-y-2">
         <h4 className="text-sm font-bold text-purple-800 flex items-center gap-1">
-          🎯 一击必杀
+          🎯 {t('oneShot')}
         </h4>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">一次成功:</span>
-          <span className="font-bold text-purple-600">{overview.firstTryCount} 道</span>
+          <span className="text-sm text-gray-600">{t('firstTryCount')}</span>
+          <span className="font-bold text-purple-600">{overview.firstTryCount} {t('problems')}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">一击率:</span>
+          <span className="text-sm text-gray-600">{t('firstTryRate')}</span>
           <span className="font-bold text-purple-600">
             {overview.firstTryRate.toFixed(1)}%
           </span>
@@ -139,12 +141,12 @@ export default function TsumegoStatsPanel() {
       {/* 难度分布 */}
       {difficultyStats.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-bold text-gray-700">难度分布</h4>
+          <h4 className="text-sm font-bold text-gray-700">{t('difficulty')}</h4>
           <div className="space-y-2">
             {difficultyStats.map((stat) => (
               <div key={stat.difficulty} className="space-y-1">
                 <div className="flex justify-between text-xs text-gray-600">
-                  <span>难度 {stat.difficulty}</span>
+                  <span>{t('difficultyLevel')} {stat.difficulty}</span>
                   <span>
                     {stat.solved}/{stat.attempted} ({stat.solveRate}%)
                   </span>

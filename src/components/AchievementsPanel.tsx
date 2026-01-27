@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface Achievement {
   id: number;
@@ -33,7 +33,9 @@ interface AchievementsByCategory {
 
 export default function AchievementsPanel() {
   const { data: session } = useSession();
-  const t = useTranslations();
+  const t = useTranslations('achievements');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
   const [achievements, setAchievements] = useState<AchievementsByCategory>({});
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('tsumego');
@@ -76,10 +78,10 @@ export default function AchievementsPanel() {
   }
 
   const categoryNames: Record<string, string> = {
-    tsumego: '死活题',
-    combat: '对战',
-    quest: '任务',
-    social: '社交',
+    tsumego: t('categories.tsumego'),
+    combat: t('categories.combat'),
+    quest: t('categories.quest'),
+    social: t('categories.social'),
   };
 
   const currentAchievements = achievements[selectedCategory] || [];
@@ -91,10 +93,10 @@ export default function AchievementsPanel() {
       {/* 标题 */}
       <div className="border-b pb-2">
         <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-          🎖️ 成就系统
+          🎖️ {t('title')}
         </h3>
         <p className="text-xs text-gray-500 mt-1">
-          已解锁: {Object.values(achievements).flat().filter((a) => a.unlocked).length} /{' '}
+          {t('unlocked')} {Object.values(achievements).flat().filter((a) => a.unlocked).length} /{' '}
           {Object.values(achievements).flat().length}
         </p>
       </div>
@@ -122,7 +124,7 @@ export default function AchievementsPanel() {
       <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-3">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-amber-900">
-            {categoryNames[selectedCategory]} 进度
+            {categoryNames[selectedCategory]} {t('progress')}
           </span>
           <span className="text-sm font-bold text-amber-700">
             {unlockedCount} / {totalCount}
@@ -142,7 +144,7 @@ export default function AchievementsPanel() {
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {currentAchievements.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
-            🎯 暂无成就
+            🎯 {t('noAchievements')}
           </div>
         ) : (
           currentAchievements.map((achievement) => (
@@ -160,7 +162,7 @@ export default function AchievementsPanel() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="font-bold text-gray-800">
-                      {achievement.name}
+                      {locale === 'en' ? achievement.nameEn : achievement.name}
                     </h4>
                     {achievement.unlocked && (
                       <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">
@@ -169,14 +171,14 @@ export default function AchievementsPanel() {
                     )}
                   </div>
                   <p className="text-xs text-gray-600 mt-1">
-                    {achievement.description}
+                    {locale === 'en' ? achievement.descriptionEn : achievement.description}
                   </p>
 
                   {/* 进度条 */}
                   {!achievement.unlocked && (
                     <div className="mt-2 space-y-1">
                       <div className="flex justify-between text-xs text-gray-500">
-                        <span>进度</span>
+                        <span>{t('progress')}</span>
                         <span>
                           {achievement.progress} / {achievement.requirement.value}
                         </span>
@@ -199,17 +201,17 @@ export default function AchievementsPanel() {
                   <div className="mt-2 flex gap-2 text-xs">
                     {achievement.reward.experience && (
                       <span className="text-purple-600">
-                        ✨ +{achievement.reward.experience} 经验
+                        ✨ +{achievement.reward.experience} {t('experienceReward')}
                       </span>
                     )}
                     {achievement.reward.silver && (
                       <span className="text-gray-600">
-                        💰 +{achievement.reward.silver} 银两
+                        💰 +{achievement.reward.silver} {t('silverReward')}
                       </span>
                     )}
                     {achievement.reward.coins && (
                       <span className="text-yellow-600">
-                        🪙 +{achievement.reward.coins} 金币
+                        🪙 +{achievement.reward.coins} {t('coinsReward')}
                       </span>
                     )}
                   </div>
@@ -217,7 +219,7 @@ export default function AchievementsPanel() {
                   {/* 解锁时间 */}
                   {achievement.unlocked && achievement.unlockedAt && (
                     <p className="text-xs text-gray-400 mt-1">
-                      解锁于: {new Date(achievement.unlockedAt).toLocaleDateString()}
+                      {tCommon('unlockedAt')} {new Date(achievement.unlockedAt).toLocaleDateString()}
                     </p>
                   )}
                 </div>

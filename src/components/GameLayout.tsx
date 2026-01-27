@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import IsometricGame from './IsometricGame';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { InventoryPanel } from './InventoryPanel';
@@ -18,6 +19,8 @@ interface GameLayoutProps {
 type PanelTab = 'overview' | 'stats' | 'achievements';
 
 export default function GameLayout({ mapId, userId }: GameLayoutProps) {
+  const t = useTranslations('panel');
+  const tCommon = useTranslations('common');
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>('overview');
   const [gameState, setGameState] = useState<any>(null); // 游戏状态（由IsometricGame更新）
@@ -55,7 +58,7 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
           onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg px-2 py-4 shadow-lg transition-all duration-300"
           style={{ marginLeft: '-30px' }}
-          title={isPanelCollapsed ? '展开面板' : '收起面板'}
+          title={isPanelCollapsed ? t('expand') : t('collapse')}
         >
           {isPanelCollapsed ? '◀' : '▶'}
         </button>
@@ -73,7 +76,7 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                📊 总览
+                📊 {t('overview')}
               </button>
               <button
                 onClick={() => setActiveTab('stats')}
@@ -83,7 +86,7 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                📈 统计
+                📈 {t('stats')}
               </button>
               <button
                 onClick={() => setActiveTab('achievements')}
@@ -93,7 +96,7 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                🎖️ 成就
+                🎖️ {t('achievements')}
               </button>
             </div>
 
@@ -120,7 +123,7 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
                 href="/api/auth/signout"
                 className="block w-full text-center px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition-colors"
               >
-                退出登录
+                {tCommon('logout')}
               </a>
             </div>
           </div>

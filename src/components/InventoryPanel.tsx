@@ -6,6 +6,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import CustomAlert from './CustomAlert';
 
 interface ItemEffects {
@@ -23,6 +24,7 @@ interface InventoryItem {
     name: string;
     nameEn: string;
     description: string;
+    descriptionEn: string;
     itemType: string;
     rarity: string;
     effects: ItemEffects;
@@ -39,6 +41,8 @@ const RARITY_COLORS = {
 };
 
 export function InventoryPanel() {
+  const t = useTranslations('inventory');
+  const locale = useLocale();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [using, setUsing] = useState<number | null>(null);
@@ -124,21 +128,21 @@ export function InventoryPanel() {
         // 显示效果提示
         const effectText = Object.entries(data.effects)
           .map(([key, value]) => {
-            if (key === 'stamina') return `体力 +${value}`;
-            if (key === 'qi') return `内力 +${value}`;
-            if (key === 'experience') return `经验 +${value}`;
+            if (key === 'stamina') return `${t('stamina')} +${value}`;
+            if (key === 'qi') return `${t('qi')} +${value}`;
+            if (key === 'experience') return `${t('experience')} +${value}`;
             return '';
           })
           .filter(Boolean)
           .join(', ');
 
-        await showAlert(`${data.message}\n${effectText}`, 'success', '使用成功');
+        await showAlert(`${data.message}\n${effectText}`, 'success', t('useSuccess'));
       } else {
-        await showAlert(data.error || '使用失败', 'error', '使用失败');
+        await showAlert(data.error || t('useFailed'), 'error', t('useFailed'));
       }
     } catch (error) {
       console.error('使用物品失败:', error);
-      await showAlert('使用失败', 'error', '使用失败');
+      await showAlert(t('useFailed'), 'error', t('useFailed'));
     } finally {
       setUsing(null);
     }
@@ -163,9 +167,9 @@ export function InventoryPanel() {
     <div className="bg-white rounded-lg p-4 shadow-md border-2 border-slate-200">
       {/* 标题 */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold text-slate-900">背包</h3>
+        <h3 className="text-lg font-bold text-slate-900">{t('title')}</h3>
         <div className="text-sm text-slate-600">
-          {inventory.length} 件物品
+          {inventory.length} {t('items')}
         </div>
       </div>
 
@@ -173,7 +177,7 @@ export function InventoryPanel() {
       {inventory.length === 0 ? (
         <div className="text-center py-8 text-slate-400">
           <div className="text-3xl mb-2">🎒</div>
-          <div className="text-sm">背包空空如也</div>
+          <div className="text-sm">{t('empty')}</div>
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
@@ -184,7 +188,7 @@ export function InventoryPanel() {
                 RARITY_COLORS[item.item.rarity as keyof typeof RARITY_COLORS] || RARITY_COLORS.common
               } ${using === item.id ? 'opacity-50' : ''}`}
               onClick={() => handleUseItem(item.id)}
-              title={`${item.item.description}\n点击使用`}
+              title={`${locale === 'en' ? item.item.descriptionEn || item.item.description : item.item.description}\n${t('clickToUse')}`}
             >
               {/* 数量 */}
               {item.quantity > 1 && (
@@ -208,7 +212,7 @@ export function InventoryPanel() {
 
               {/* 名称 */}
               <div className="text-xs text-center font-semibold truncate text-slate-800">
-                {item.item.name}
+                {locale === 'en' ? item.item.nameEn || item.item.name : item.item.name}
               </div>
 
               {/* 效果 */}

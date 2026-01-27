@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
 import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
 import DialogueBox from '@/src/components/DialogueBox';
@@ -16,6 +17,8 @@ interface IsometricGameProps {
 }
 
 export default function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
+  const locale = useLocale(); // 获取当前语言环境
+  const t = useTranslations('game'); // 获取游戏翻译
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<IsometricEngine | null>(null);
   const animationFrameRef = useRef<number>(0);
@@ -37,7 +40,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   
   // 围棋对弈状态
   const [showGoGame, setShowGoGame] = useState(false);
-  const [goOpponentName, setGoOpponentName] = useState('对手');
+  const [goOpponentName, setGoOpponentName] = useState(t('opponent'));
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
@@ -64,13 +67,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
 
-  // 地图ID到名称的映射
-  const mapNames: Record<string, string> = {
-    'world_map': '武林世界',
-    'huashan_scene': '华山',
-    'shaolin_scene': '少林寺',
-    'wudang_scene': '武当山',
-    'taohua_scene': '桃花岛',
+  // 地图ID到名称的映射（现在使用翻译）
+  const getMapName = (mapId: string): string => {
+    return t(`maps.${mapId}`) || mapId;
   };
 
   // ==================== 自定义Alert/Confirm系统 ====================
@@ -432,8 +431,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         console.log(`🏛️ Clicked building:`, item);
         // 显示挑战确认对话框
         const shouldChallenge = await showConfirm(
-          `你来到了${item.itemName || '棋馆'}门前。\n\n馆主："欢迎光临！敢不敢来挑战一下本馆的死活题？"`,
-          '🏛️ 棋馆挑战'
+          t('tsumego.hallChallenge', { name: item.itemName || t('tsumego.defaultHall') }),
+          t('tsumego.hallTitle')
         );
         
         if (shouldChallenge) {
@@ -624,8 +623,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return;
       }
       
-      // 加载对话树（使用中文）
-      const dialogueTree = await loadDialogueTree(npcId, 'zh');
+      // 加载对话树（根据当前语言环境）
+      const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
       
       // 创建对话引擎，传入玩家状态
       const playerState = {
@@ -1002,7 +1001,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     return (
       <div className="flex items-center justify-center h-full bg-gray-900 text-white">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">加载失败</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('loading')}</h2>
           <p className="text-gray-400">{error}</p>
         </div>
       </div>
@@ -1015,7 +1014,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
           <div className="text-white text-xl">
-            Loading map...
+            {t('loading')}
           </div>
         </div>
       )}
@@ -1034,7 +1033,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         onClick={() => setShowInfo(!showInfo)}
         className="absolute top-4 right-4 z-30 bg-black/70 hover:bg-black/90 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
       >
-        <span>{showInfo ? '隐藏信息' : '显示信息'}</span>
+        <span>{showInfo ? t('info.hideInfo') : t('info.showInfo')}</span>
         <span className="text-lg">{showInfo ? '✕' : 'ℹ️'}</span>
       </button>
 
@@ -1045,17 +1044,17 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           style={{ bottom: '1rem', left: '1rem' }}
         >
           <div className="font-bold mb-2 text-xs">{mapData.name}</div>
-          <div className="text-xs">尺寸: {mapData.width} × {mapData.height}</div>
-          <div className="text-xs">物品数: {mapData.items.length}</div>
+          <div className="text-xs">{t('info.mapSize')}: {mapData.width} × {mapData.height}</div>
+          <div className="text-xs">{t('info.itemCount')}: {mapData.items.length}</div>
           {playerPosition && (
             <div className="text-xs mt-1">
-              玩家位置: ({playerPosition.x}, {playerPosition.y})
+              {t('info.playerPosition')}: ({playerPosition.x}, {playerPosition.y})
               {engineRef.current?.isPlayerMoving() && ' 🚶'}
             </div>
           )}
           <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
-            🖱️ 点击地面移动玩家<br />
-            📷 摄像机自动跟随玩家
+            {t('info.clickToMove')}<br />
+            {t('info.cameraFollow')}
           </div>
         </div>
       )}
@@ -1099,10 +1098,10 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           >
             <div className="text-center mb-6">
               <div className="text-4xl mb-3">🌀</div>
-              <h3 className="text-xl font-bold text-white mb-3">传送门</h3>
+              <h3 className="text-xl font-bold text-white mb-3">{t('portal.title')}</h3>
               <p className="text-white">
-                是否要传送到 <span className="font-bold text-yellow-300">
-                  {pendingPortal.targetMapId ? mapNames[pendingPortal.targetMapId] || pendingPortal.targetMapId : '未知地点'}
+                {t('portal.question')} <span className="font-bold text-yellow-300">
+                  {pendingPortal.targetMapId ? getMapName(pendingPortal.targetMapId) : t('unknownLocation')}
                 </span>？
               </p>
             </div>
@@ -1112,13 +1111,13 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
                 onClick={confirmPortal}
                 className="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-3 px-6 rounded-lg font-bold transition-colors whitespace-nowrap"
               >
-                确认传送
+                {t('portal.confirmButton')}
               </button>
               <button
                 onClick={cancelPortal}
                 className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
               >
-                取消
+                {t('portal.cancel')}
               </button>
             </div>
           </div>
@@ -1161,9 +1160,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           >
             <div className="text-center mb-6">
               <div className="text-4xl mb-3">☯️</div>
-              <h3 className="text-xl font-bold text-white mb-3">围棋挑战</h3>
+              <h3 className="text-xl font-bold text-white mb-3">{t('goChallenge.title')}</h3>
               <p className="text-white text-lg">
-                要与 <span className="font-bold text-yellow-300">{pendingGoOpponent}</span> 切磋棋艺吗？
+                {t('goChallenge.question', { 
+                  name: pendingGoOpponent === '洪七公' ? t('npcs.hong_qigong') :
+                        pendingGoOpponent === '令狐冲' ? t('npcs.linghu_chong') :
+                        pendingGoOpponent === '郭靖' ? t('npcs.guo_jing') :
+                        pendingGoOpponent
+                })}
               </p>
             </div>
             
@@ -1172,13 +1176,13 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
                 onClick={acceptGoChallenge}
                 className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-3 px-6 rounded-lg font-bold transition-colors whitespace-nowrap"
               >
-                接受挑战
+                {t('goChallenge.accept')}
               </button>
               <button
                 onClick={declineGoChallenge}
                 className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
               >
-                下次再说
+                {t('goChallenge.decline')}
               </button>
             </div>
           </div>

@@ -1,5 +1,6 @@
 {
   "game": {
+    "opponent": "Opponent",
     "title": "Jin Yong's Go",
     "description": "Experience Go battles in Jin Yong's Wuxia world",
     "controls": {
@@ -21,7 +22,12 @@
     "maps": {
       "huashan": "Mount Hua Martial Hall",
       "shaolin": "Shaolin Temple Meditation Room",
-      "xiangyang": "Xiangyang City Teahouse"
+      "xiangyang": "Xiangyang City Teahouse",
+      "world_map": "Martial World",
+      "huashan_scene": "Mount Hua",
+      "shaolin_scene": "Shaolin Temple",
+      "wudang_scene": "Wudang Mountain",
+      "taohua_scene": "Peach Blossom Island"
     },
     "dialogue": {
       "continue": "Continue",
@@ -38,14 +44,40 @@
       "toShaolin": "To Shaolin Temple",
       "toHuashan": "Back to Mount Hua",
       "toXiangyang": "To Xiangyang City",
-      "backToShaolin": "Back to Shaolin Temple"
+      "backToShaolin": "Back to Shaolin Temple",
+      "title": "Portal",
+      "question": "Teleport to",
+      "confirmButton": "Confirm Teleport"
     },
     "instructions": {
       "ready": "Game ready! Explore three maps: Mount Hua, Shaolin Temple, and Xiangyang City. Talk to Hong Qigong, Linghu Chong, and Guo Jing",
       "portal": "Purple tiles are portals. Stand on them and press Space to teleport"
     },
+    "info": {
+      "mapSize": "Size",
+      "itemCount": "Items",
+      "playerPosition": "Player Position",
+      "clickToMove": "🖱️ Click ground to move player",
+      "cameraFollow": "📷 Camera follows player",
+      "showInfo": "Show Info",
+      "hideInfo": "Hide Info"
+    },
+    "goChallenge": {
+      "title": "Go Challenge",
+      "question": "Challenge {name} to a game of Go?",
+      "accept": "Accept",
+      "decline": "Maybe Later"
+    },
     "loading": "Loading...",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "unknownLocation": "Unknown Location",
+    "tsumego": {
+      "treeChallenge": "A masked figure jumps out from behind the tree!\n\n\"If you want to pass, accept my Tsumego challenge!\"",
+      "encounterTitle": "⛔️ Encounter",
+      "hallChallenge": "You arrive at {name}.\n\nMaster: \"Welcome! Dare to challenge our hall's Tsumego problems?\"",
+      "hallTitle": "🏛️ Hall Challenge",
+      "defaultHall": "Go Hall"
+    }
   },
   "auth": {
     "login": "Login",
@@ -76,7 +108,98 @@
     "skills": "Skills",
     "quests": "Quests",
     "settings": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "save": "Save",
+    "logout": "Logout",
+    "processing": "Processing...",
+    "unlockedAt": "Unlocked:"
+  },
+  "panel": {
+    "overview": "Overview",
+    "stats": "Statistics",
+    "achievements": "Achievements",
+    "collapse": "Collapse Panel",
+    "expand": "Expand Panel"
+  },
+  "player": {
+    "attributes": "Player Attributes",
+    "experience": "Experience",
+    "stamina": "Stamina",
+    "qi": "Qi",
+    "silver": "Silver",
+    "coins": "Coins",
+    "nextRank": "Next Rank",
+    "maxRank": "Max Rank Achieved",
+    "loadFailed": "Failed to load, please refresh"
+  },
+  "quest": {
+    "tracker": "Quest Tracker",
+    "loading": "Loading...",
+    "error": "Error",
+    "noQuests": "No active quests",
+    "progress": "Progress",
+    "objectives": "Objectives:",
+    "rewards": "Rewards:",
+    "experienceReward": "Experience +",
+    "skillReward": "Skills:",
+    "itemReward": "Items:",
+    "goldReward": "Gold +"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "items": "items",
+    "empty": "Your inventory is empty",
+    "clickToUse": "Click to use",
+    "stamina": "Stamina",
+    "qi": "Qi",
+    "experience": "Experience",
+    "useSuccess": "Used Successfully",
+    "useFailed": "Failed to Use"
+  },
+  "save": {
+    "manual": "Manual Save",
+    "saving": "Saving...",
+    "success": "✅ Saved!",
+    "failed": "❌ Save Failed",
+    "lastSave": "Last saved:",
+    "never": "Never saved",
+    "justNow": "Just now",
+    "minutesAgo": "minutes ago",
+    "hoursAgo": "hours ago"
+  },
+  "tsumego": {
+    "stats": "Tsumego Statistics",
+    "noData": "No statistics data",
+    "attempted": "Attempted:",
+    "solved": "Solved:",
+    "solveRate": "Success Rate:",
+    "avgAttempts": "Avg Attempts:",
+    "problems": "problems",
+    "times": "times",
+    "games": "games",
+    "streak": "Win Streak",
+    "currentStreak": "Current Streak:",
+    "maxStreak": "Best Streak:",
+    "oneShot": "First Try",
+    "firstTryCount": "First Try Success:",
+    "firstTryRate": "First Try Rate:",
+    "difficulty": "Difficulty Distribution",
+    "difficultyLevel": "Difficulty"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "unlocked": "Unlocked:",
+    "progress": "Progress",
+    "noAchievements": "No achievements yet",
+    "experienceReward": "Experience",
+    "silverReward": "Silver",
+    "coinsReward": "Coins",
+    "categories": {
+      "tsumego": "Tsumego",
+      "combat": "Combat",
+      "quest": "Quest",
+      "social": "Social"
+    }
   },
   "admin": {
     "title": "Admin Panel",

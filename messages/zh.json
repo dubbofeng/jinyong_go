@@ -1,5 +1,6 @@
 {
   "game": {
+    "opponent": "对手",
     "title": "金庸棋侠传",
     "description": "在金庸武侠世界中体验围棋对战",
     "controls": {
@@ -21,7 +22,12 @@
     "maps": {
       "huashan": "华山传功厅",
       "shaolin": "少林寺禅房",
-      "xiangyang": "襄阳城茶馆"
+      "xiangyang": "襄阳城茶馆",
+      "world_map": "武林世界",
+      "huashan_scene": "华山",
+      "shaolin_scene": "少林寺",
+      "wudang_scene": "武当山",
+      "taohua_scene": "桃花岛"
     },
     "dialogue": {
       "continue": "继续",
@@ -38,14 +44,40 @@
       "toShaolin": "前往少林寺",
       "toHuashan": "返回华山",
       "toXiangyang": "前往襄阳",
-      "backToShaolin": "返回少林寺"
+      "backToShaolin": "返回少林寺",
+      "title": "传送门",
+      "question": "是否要传送到",
+      "confirmButton": "确认传送"
     },
     "instructions": {
       "ready": "游戏已就绪！探索华山、少林、襄阳三个地图，与洪七公、令狐冲、郭靖对话",
       "portal": "紫色方块是传送门，站在上面按空格键可以传送"
     },
+    "info": {
+      "mapSize": "尺寸",
+      "itemCount": "物品数",
+      "playerPosition": "玩家位置",
+      "clickToMove": "🖱️ 点击地面移动玩家",
+      "cameraFollow": "📷 摄像机自动跟随玩家",
+      "showInfo": "显示信息",
+      "hideInfo": "隐藏信息"
+    },
+    "goChallenge": {
+      "title": "围棋挑战",
+      "question": "要与 {name} 切磋棋艺吗？",
+      "accept": "接受挑战",
+      "decline": "下次再说"
+    },
     "loading": "加载中...",
-    "error": "出错了"
+    "error": "出错了",
+    "unknownLocation": "未知地点",
+    "tsumego": {
+      "treeChallenge": "从树后跳出一个蒙面人，拦住了你的去路！\n\n“想要通过，就接受死活题挑战吧！”",
+      "encounterTitle": "⛔️ 遭遇挑战",
+      "hallChallenge": "你来到了{name}门前。\n\n馆主：“欢迎光临！敢不敢来挑战一下本馆的死活题？”",
+      "hallTitle": "🏛️ 棋馆挑战",
+      "defaultHall": "棋馆"
+    }
   },
   "auth": {
     "login": "登录",
@@ -78,9 +110,98 @@
     "skills": "技能",
     "quests": "任务",
     "settings": "设置",
-    "language": "语言"
+    "language": "语言",
+    "save": "保存",
+    "logout": "退出登录",
+    "processing": "处理中...",
+    "unlockedAt": "解锁于:"
   },
-  "admin": {
+  "panel": {
+    "overview": "总览",
+    "stats": "统计",
+    "achievements": "成就",
+    "collapse": "收起面板",
+    "expand": "展开面板"
+  },
+  "player": {
+    "attributes": "玩家属性",
+    "experience": "经验",
+    "stamina": "体力",
+    "qi": "内力",
+    "silver": "银两",
+    "coins": "金币",
+    "nextRank": "下一段位",
+    "maxRank": "已达最高段位",
+    "loadFailed": "加载失败，请刷新页面"
+  },  "quest": {
+    "tracker": "任务追踪",
+    "loading": "加载中...",
+    "error": "错误",
+    "noQuests": "暂无进行中的任务",
+    "progress": "进度",
+    "objectives": "任务目标:",
+    "rewards": "任务奖励:",
+    "experienceReward": "经验值 +",
+    "skillReward": "技能:",
+    "itemReward": "物品:",
+    "goldReward": "金币 +"
+  },
+  "inventory": {
+    "title": "背包",
+    "items": "件物品",
+    "empty": "背包空空如也",
+    "clickToUse": "点击使用",
+    "stamina": "体力",
+    "qi": "内力",
+    "experience": "经验",
+    "useSuccess": "使用成功",
+    "useFailed": "使用失败"
+  },
+  "save": {
+    "manual": "手动保存",
+    "saving": "保存中...",
+    "success": "✅ 保存成功!",
+    "failed": "❌ 保存失败",
+    "lastSave": "上次保存:",
+    "never": "从未保存",
+    "justNow": "刚刚",
+    "minutesAgo": "分钟前",
+    "hoursAgo": "小时前"
+  },
+  "tsumego": {
+    "stats": "死活题统计",
+    "noData": "暂无统计数据",
+    "attempted": "已尝试:",
+    "solved": "已解决:",
+    "solveRate": "解题率:",
+    "avgAttempts": "平均尝试:",
+    "problems": "道",
+    "times": "次",
+    "games": "场",
+    "streak": "连胜记录",
+    "currentStreak": "当前连胜:",
+    "maxStreak": "最高连胜:",
+    "oneShot": "一击必杀",
+    "firstTryCount": "一次成功:",
+    "firstTryRate": "一击率:",
+    "difficulty": "难度分布",
+    "difficultyLevel": "难度"
+  },
+  "achievements": {
+    "title": "成就系统",
+    "unlocked": "已解锁:",
+    "progress": "进度",
+    "noAchievements": "暂无成就",
+    "experienceReward": "经验",
+    "silverReward": "银两",
+    "coinsReward": "金币",
+    "categories": {
+      "tsumego": "死活题",
+      "combat": "对战",
+      "quest": "任务",
+      "social": "社交"
+    }
+  },  "admin": {
     "title": "管理后台",
     "subtitle": "游戏内容管理系统",
     "brand": "金庸棋侠传 - 管理后台",
