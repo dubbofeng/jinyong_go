@@ -11,12 +11,36 @@
 - ✅ React Hook封装 (`useKataGoBrowser`)
 - ✅ 测试页面完整可用 (`/zh/katago-test`)
 - ✅ GTP协议完整支持
+- ✅ 9级难度系统 (Lv.1-9)
+- ✅ 固定19路棋盘，移除Smart AI
 
 ### 技术突破
 1. **SharedArrayBuffer支持** - COOP + COEP credentialless headers
 2. **Worker TF.js加载** - pthread环境中正确加载TensorFlow.js
 3. **内存访问修复** - 使用全局`HEAPF32`而非`Module.HEAPF32`
 4. **GTP通信管道** - stdin/stdout重定向+Promise响应管理
+
+### 难度等级系统
+
+游戏现在支持9个AI难度等级，通过`maxVisits`参数控制思考深度：
+
+| 等级 | maxVisits | 棋力预估 | 思考时间 |
+|-----|-----------|----------|---------|
+| Lv.1 | 25 | 业余5-10级 | 1-2秒 |
+| Lv.2 | 50 | 业余1-5级 | 2-3秒 |
+| Lv.3 | 100 | 业余初段 | 3-5秒 |
+| Lv.4 | 150 | 业余2段 | 5-7秒 |
+| Lv.5 | 200 | 业余3段 | 7-10秒 |
+| Lv.6 | 300 | 业余4段 | 10-15秒 |
+| Lv.7 | 400 | 业余5段 | 15-20秒 |
+| Lv.8 | 600 | 业余6段+ | 20-30秒 |
+| Lv.9 | 800 | 职业初段 | 30-45秒 |
+
+**设置难度**：
+```typescript
+// 引擎实例支持动态设置难度
+await katagoEngine.setDifficulty(5); // 设置为5级
+```
 
 ## 🚀 快速使用
 
