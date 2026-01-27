@@ -10,6 +10,7 @@ import {
 } from '../lib/go-skills';
 import { KataGoWrapper } from '../lib/katago-wrapper';
 import { KataGoBrowserEngine } from '../lib/katago-browser-engine';
+import { SmartAI, createSmartAI } from '../lib/smart-ai';
 import GameResultModal, { type GameResult } from './GameResultModal';
 import { useSession } from 'next-auth/react';
 
@@ -44,6 +45,7 @@ export default function GoBoardGame({
   const engineRef = useRef<GoEngine | null>(null);
   const skillManagerRef = useRef<SkillManager | null>(null);
   const aiEngineRef = useRef<KataGoWrapper | null>(null);
+  const smartAiRef = useRef<SmartAI | null>(null);
   const gameStartTime = useRef<number>(Date.now());
   
   const [currentPlayer, setCurrentPlayer] = useState<'black' | 'white'>('black');
@@ -138,7 +140,12 @@ export default function GoBoardGame({
       // 根据AI引擎类型选择分析方法
       if (aiEngine === 'katago' && katagoEngine?.isEngineReady()) {
         // 使用KataGo浏览器版
-        console.log('🤖 使用KataGo引擎分析...');
+        console.log('🤖 使用KataGo引擎分析...', { 
+          aiEngine, 
+          hasKatagoEngine: !!katagoEngine, 
+          isReady: katagoEngine.isEngineReady() 
+        });
+        setLastMessage('🤖 KataGo AI 思考中...');
         
         // 获取当前棋盘上的所有棋子
         const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
@@ -154,20 +161,34 @@ export default function GoBoardGame({
         const analysis = await katagoEngine.analyzePosition(size, stones, 'white');
         bestMove = analysis.bestMove;
       } else {
-        // 使用简单规则AI
-        if (!aiEngineRef.current?.isReady()) {
-          console.warn('⚠️ 简单AI引擎尚未初始化完成，等待初始化');
-          setLastMessage('🤖 AI初始化中...');
-          // 不改变currentPlayer，保持在白方等待初始化完成
+        // 使用Smart AI（蒙特卡洛模拟）
+        console.log('🤖 使用Smart AI（蒙特卡洛）...', { 
+          aiEngine, 
+          difficulty: aiDifficulty,
+          boardSize: size
+        });
+        setLastMessage(`🤖 Smart AI (${aiDifficulty}) 思考中...`);
+        
+        if (!smartAiRef.current) {
+          console.error('⚠️ Smart AI未初始化');
+          setLastMessage('🤖 AI初始化失败');
           return;
         }
 
-        // 根据难度设置延迟时间
-        const thinkDelay = aiDifficulty === 'easy' ? 500 : aiDifficulty === 'medium' ? 1000 : 1500;
-        await new Promise(resolve => setTimeout(resolve, thinkDelay));
-
-        const analysis = await aiEngineRef.current.analyzePosition(engineRef.current, 'white');
+        const analysis = await smartAiRef.current.analyzePosition(engineRef.current, 'white');
         bestMove = analysis.bestMove;
+        
+        // 显示AI思考信息
+        console.log('🤖 Smart AI分析结果:', {
+          bestMove,
+          winrate: `${(analysis.winrate * 100).toFixed(1)}%`,
+          simulations: analysis.simulations,
+          thinkingTime: `${analysis.thinkingTime}ms`,
+          topCandidates: analysis.candidates.slice(0, 3).map(c => ({
+            pos: c.position,
+            winrate: `${(c.winrate * 100).toFixed(1)}%`
+          }))
+        });
       }
 
       if (bestMove) {
@@ -199,7 +220,8 @@ export default function GoBoardGame({
           
           setMoveCount(prev => prev + 1);
           boardRef.current.setNextStoneColor('black');
-          // 在finally块中统一设置isAIThinking=false后再切换玩家
+          // AI落子成功，切换到玩家回合
+          setCurrentPlayer('black');
         } else {
           // AI落子失败（如自杀着），认输
           console.error('AI落子失败:', result.error);
@@ -220,14 +242,9 @@ export default function GoBoardGame({
     } catch (error) {
       console.error('AI分析失败:', error);
       setLastMessage('🤖 AI出错，跳过回合');
-      // 不在catch中切换玩家，在finally统一处理
+      setCurrentPlayer('black'); // AI出错，切换回玩家
     } finally {
       setIsAIThinking(false);
-      // AI回合结束，切换到黑方（玩家）
-      // 除非AI认输或出现严重错误
-      if (!aiResign && engineRef.current) {
-        setCurrentPlayer('black');
-      }
     }
   }, [vsAI, aiDifficulty, aiEngine, katagoEngine, size]);
 
@@ -276,17 +293,25 @@ export default function GoBoardGame({
       }).catch(error => {
         console.error('❌ AI引擎初始化失败:', error);
       });
+      
+      // 初始化Smart AI（蒙特卡洛）
+      smartAiRef.current = createSmartAI(aiDifficulty);
     }
     
-    // 设置落子回调
-    board.setOnStonePlace(handleStonePlace);
+    // 设置落子回调（使用本地函数避免闭包问题）
+    const onStonePlace = (position: { row: number; col: number }) => {
+      handleStonePlace(position);
+    };
+    board.setOnStonePlace(onStonePlace);
     
     board.render();
 
     return () => {
-      // 清理
+      // 清理：移除事件监听器，防止内存泄漏和重复触发
+      board.destroy();
     };
-  }, [size, width, height, handleStonePlace, vsAI, aiDifficulty]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size, width, height, vsAI, aiDifficulty]);
 
   const handlePass = () => {
     setConsecutivePasses(prev => prev + 1);
@@ -502,16 +527,32 @@ export default function GoBoardGame({
 
   const handleUndo = () => {
     if (engineRef.current && boardRef.current) {
-      const success = engineRef.current.undo();
-      if (success) {
+      // 对战AI时，需要撤销2步（AI的一步 + 玩家的一步）
+      const stepsToUndo = vsAI ? 2 : 1;
+      let allSuccess = true;
+      
+      for (let i = 0; i < stepsToUndo; i++) {
+        const success = engineRef.current.undo();
+        if (!success) {
+          allSuccess = false;
+          break;
+        }
+      }
+      
+      if (allSuccess) {
         // 同步棋盘显示
         const boardState = engineRef.current.getBoard();
         boardRef.current.setBoardState(boardState);
         
-        // 切换回上一个玩家
-        setCurrentPlayer(prev => prev === 'black' ? 'white' : 'black');
-        setMoveCount(prev => Math.max(0, prev - 1));
-        setLastMessage('悔棋成功');
+        // 对战AI时，撤销2步后仍然是黑棋（玩家）的回合
+        // 人人对战时，切换到上一个玩家
+        if (!vsAI) {
+          setCurrentPlayer(prev => prev === 'black' ? 'white' : 'black');
+        }
+        // vsAI模式下currentPlayer保持为'black'
+        
+        setMoveCount(prev => Math.max(0, prev - stepsToUndo));
+        setLastMessage(vsAI ? '悔棋成功（已撤销你和AI的落子）' : '悔棋成功');
       } else {
         setLastMessage('无法悔棋');
       }
@@ -532,12 +573,33 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!engine) return;
     
-    const success = (skill as any).use(engine);
-    if (success && boardRef.current) {
+    // 对战AI时，需要撤销2步（AI的一步 + 玩家的一步）
+    const stepsToUndo = vsAI ? 2 : 1;
+    let allSuccess = true;
+    
+    for (let i = 0; i < stepsToUndo; i++) {
+      const success = engine.undo();
+      if (!success) {
+        allSuccess = false;
+        break;
+      }
+    }
+    
+    if (allSuccess && boardRef.current) {
+      // 消耗技能使用次数
+      (skill as any).use(engine);
+      
       const boardState = engine.getBoard();
       boardRef.current.setBoardState(boardState);
-      setCurrentPlayer(prev => prev === 'black' ? 'white' : 'black');
-      setMoveCount(prev => Math.max(0, prev - 1));
+      
+      // 对战AI时，撤销2步后仍然是黑棋（玩家）的回合
+      // 人人对战时，切换到上一个玩家
+      if (!vsAI) {
+        setCurrentPlayer(prev => prev === 'black' ? 'white' : 'black');
+      }
+      // vsAI模式下currentPlayer保持为'black'
+      
+      setMoveCount(prev => Math.max(0, prev - stepsToUndo));
       setLastMessage(`✨ 使用【亢龙有悔】悔棋成功！剩余${skill.currentUses}次`);
       setSkillsRefreshKey(k => k + 1);
     } else {

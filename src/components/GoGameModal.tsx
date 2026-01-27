@@ -27,9 +27,19 @@ export default function GoGameModal({
   npcId
 }: GoGameModalProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [showEngineSelector, setShowEngineSelector] = useState(vsAI);
+  // 只有19路棋盘才显示引擎选择器，9路和13路直接使用Smart AI
+  const [showEngineSelector, setShowEngineSelector] = useState(vsAI && boardSize === 19);
   const [selectedEngine, setSelectedEngine] = useState<AIEngineType>('simple');
-  const { engine: katagoEngine, isReady: isKatagoReady } = useKataGoBrowser();
+  const [effectiveBoardSize, setEffectiveBoardSize] = useState(boardSize);
+  const { 
+    engine: katagoEngine, 
+    isReady: isKatagoReady, 
+    isLoading: isKatagoLoading,
+    progress: katagoProgress,
+    logs: katagoLogs,
+    error: katagoError,
+    initialize: initializeKataGo 
+  } = useKataGoBrowser();
 
   useEffect(() => {
     if (isOpen) {
@@ -51,14 +61,36 @@ export default function GoGameModal({
 
   const handleClose = () => {
     setIsVisible(false);
-    setShowEngineSelector(vsAI); // 重置引擎选择器
+    // 只有19路棋盘才显示引擎选择器
+    setShowEngineSelector(vsAI && boardSize === 19);
     setTimeout(() => {
       onClose();
     }, 300); // 等待淡出动画完成
   };
 
-  const handleEngineSelect = (engine: AIEngineType) => {
+  const handleEngineSelect = async (engine: AIEngineType) => {
     setSelectedEngine(engine);
+    
+    // KataGo模型只支持19×19棋盘，自动切换
+    if (engine === 'katago') {
+      setEffectiveBoardSize(19);
+      
+      // 如果未初始化，先初始化
+      if (!isKatagoReady) {
+        try {
+          await initializeKataGo();
+        } catch (err) {
+          console.error('KataGo初始化失败:', err);
+          // 初始化失败，回退到简单AI和原棋盘大小
+          setSelectedEngine('simple');
+          setEffectiveBoardSize(boardSize);
+        }
+      }
+    } else {
+      // 使用简单AI时恢复原始棋盘大小
+      setEffectiveBoardSize(boardSize);
+    }
+    
     setShowEngineSelector(false);
   };
 
@@ -66,23 +98,24 @@ export default function GoGameModal({
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 overflow-y-auto transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
       {/* 背景遮罩 */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-75"
+        className="fixed inset-0 bg-black bg-opacity-75 -z-10"
         onClick={handleClose}
       />
       
-      {/* 棋盘容器 */}
-      <div 
-        className={`relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 transform transition-all duration-300 ${
-          isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
+      {/* 棋盘容器 - 使用min-h-screen确保可以滚动，py-8提供上下padding */}
+      <div className="min-h-screen flex items-start justify-center py-8">
+        <div 
+          className={`relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 transform transition-all duration-300 ${
+            isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* 标题栏 */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
@@ -90,7 +123,12 @@ export default function GoGameModal({
               {showEngineSelector ? '选择AI引擎' : `与 ${opponentName} 对弈`}
             </h2>
             <span className="text-sm text-gray-400">
-              {boardSize}路棋盘
+              {effectiveBoardSize}路棋盘
+              {selectedEngine === 'katago' && effectiveBoardSize !== boardSize && (
+                <span className="ml-2 text-yellow-400">
+                  (KataGo需要19×19棋盘)
+                </span>
+              )}
             </span>
           </div>
           
@@ -124,15 +162,23 @@ export default function GoGameModal({
                 setSelectedEngine('simple');
               }
             }}
+            externalKatagoState={{
+              isLoading: isKatagoLoading,
+              isReady: isKatagoReady,
+              progress: katagoProgress,
+              logs: katagoLogs,
+              error: katagoError,
+              initialize: initializeKataGo
+            }}
           />
         ) : (
           <>
             {/* 棋盘游戏 */}
             <div className="flex justify-center">
               <GoBoardGame 
-                size={boardSize} 
-                width={600} 
-                height={600}
+                size={effectiveBoardSize} 
+                width={480} 
+                height={480}
                 vsAI={vsAI}
                 aiDifficulty={aiDifficulty}
                 aiEngine={selectedEngine}
@@ -150,7 +196,7 @@ export default function GoGameModal({
                 <>
                   <p className="mt-1">
                     AI引擎：
-                    {selectedEngine === 'simple' && '快速AI (规则引擎)'}
+                    {selectedEngine === 'simple' && 'Smart AI (蒙特卡洛)'}
                     {selectedEngine === 'katago' && 'KataGo (神经网络)'}
                   </p>
                   <p className="mt-1">
@@ -159,17 +205,20 @@ export default function GoGameModal({
                     {aiDifficulty === 'medium' && '中等'}
                     {aiDifficulty === 'hard' && '困难'}
                   </p>
-                  <button
-                    onClick={() => setShowEngineSelector(true)}
-                    className="mt-2 text-blue-400 hover:text-blue-300 underline text-xs"
-                  >
-                    切换AI引擎
-                  </button>
+                  {boardSize === 19 && (
+                    <button
+                      onClick={() => setShowEngineSelector(true)}
+                      className="mt-2 text-blue-400 hover:text-blue-300 underline text-xs"
+                    >
+                      切换AI引擎
+                    </button>
+                  )}
                 </>
               )}
             </div>
           </>
         )}
+        </div>
       </div>
     </div>
   );

@@ -14,11 +14,28 @@ export type AIEngineType = 'simple' | 'katago';
 interface AIEngineSelectorProps {
   onSelect: (engine: AIEngineType) => void;
   onKataGoReady?: (isReady: boolean) => void;
+  // 可选：从外部传入KataGo状态（用于共享Hook实例）
+  externalKatagoState?: {
+    isLoading: boolean;
+    isReady: boolean;
+    progress: number;
+    logs: string[];
+    error: string | null;
+    initialize: () => Promise<void>;
+  };
 }
 
-export function AIEngineSelector({ onSelect, onKataGoReady }: AIEngineSelectorProps) {
+export function AIEngineSelector({ 
+  onSelect, 
+  onKataGoReady,
+  externalKatagoState 
+}: AIEngineSelectorProps) {
   const [selectedEngine, setSelectedEngine] = useState<AIEngineType>('simple');
-  const { isLoading, isReady, progress, logs, error, initialize } = useKataGoBrowser();
+  const internalKatago = useKataGoBrowser();
+  
+  // 使用外部状态或内部Hook
+  const katago = externalKatagoState || internalKatago;
+  const { isLoading, isReady, progress, logs, error, initialize } = katago;
 
   const handleSelect = async (engine: AIEngineType) => {
     setSelectedEngine(engine);
@@ -43,7 +60,7 @@ export function AIEngineSelector({ onSelect, onKataGoReady }: AIEngineSelectorPr
 
   return (
     <div className="space-y-4 p-4">
-      <h3 className="text-lg font-bold text-center">选择AI引擎</h3>
+      <h3 className="text-lg font-bold text-center text-white">选择AI引擎</h3>
       
       {/* 简单规则AI */}
       <button
@@ -51,15 +68,15 @@ export function AIEngineSelector({ onSelect, onKataGoReady }: AIEngineSelectorPr
         className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
           selectedEngine === 'simple' 
             ? 'border-blue-500 bg-blue-50 shadow-lg' 
-            : 'border-gray-300 hover:border-blue-300'
+            : 'border-gray-600 hover:border-blue-400 bg-gray-800'
         }`}
         disabled={isLoading}
       >
         <div className="flex items-center justify-between mb-2">
-          <div className="font-bold text-lg">⚡ 快速AI</div>
+          <div className={`font-bold text-lg ${selectedEngine === 'simple' ? 'text-gray-900' : 'text-white'}`}>⚡ 快速AI</div>
           <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">推荐</div>
         </div>
-        <div className="text-sm text-gray-600 space-y-1">
+        <div className={`text-sm space-y-1 ${selectedEngine === 'simple' ? 'text-gray-600' : 'text-gray-300'}`}>
           <div>• 立即可用，无需等待</div>
           <div>• 适合练习基础对弈</div>
           <div>• 强度：业余初段</div>
@@ -72,15 +89,15 @@ export function AIEngineSelector({ onSelect, onKataGoReady }: AIEngineSelectorPr
         className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
           selectedEngine === 'katago' 
             ? 'border-purple-500 bg-purple-50 shadow-lg' 
-            : 'border-gray-300 hover:border-purple-300'
+            : 'border-gray-600 hover:border-purple-400 bg-gray-800'
         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         disabled={isLoading}
       >
         <div className="flex items-center justify-between mb-2">
-          <div className="font-bold text-lg">🤖 KataGo AI</div>
+          <div className={`font-bold text-lg ${selectedEngine === 'katago' ? 'text-gray-900' : 'text-white'}`}>🤖 KataGo AI</div>
           <div className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">高级</div>
         </div>
-        <div className="text-sm text-gray-600 space-y-1">
+        <div className={`text-sm space-y-1 ${selectedEngine === 'katago' ? 'text-gray-600' : 'text-gray-300'}`}>
           <div>• 首次需加载模型 (~50MB)</div>
           <div>• 职业水平AI</div>
           <div>• 推荐在WiFi环境下使用</div>
@@ -111,7 +128,7 @@ export function AIEngineSelector({ onSelect, onKataGoReady }: AIEngineSelectorPr
         )}
 
         {isReady && !isLoading && (
-          <div className="mt-3 text-sm text-green-600 font-medium text-center">
+          <div className={`mt-3 text-sm font-medium text-center ${selectedEngine === 'katago' ? 'text-green-600' : 'text-green-400'}`}>
             ✅ 已就绪，可以开始对局
           </div>
         )}
@@ -120,18 +137,18 @@ export function AIEngineSelector({ onSelect, onKataGoReady }: AIEngineSelectorPr
       {/* 加载日志 */}
       {logs.length > 0 && (
         <div className="mt-4">
-          <div className="text-xs font-semibold text-gray-700 mb-2">加载日志：</div>
-          <div className="p-3 bg-gray-50 border border-gray-200 rounded text-xs max-h-32 overflow-y-auto space-y-1">
+          <div className="text-xs font-semibold text-gray-300 mb-2">加载日志：</div>
+          <div className="p-3 bg-gray-900 border border-gray-700 rounded text-xs max-h-32 overflow-y-auto space-y-1">
             {logs.slice(-10).map((log, i) => (
-              <div key={i} className="text-gray-700 font-mono">{log}</div>
+              <div key={i} className="text-green-400 font-mono">{log}</div>
             ))}
           </div>
         </div>
       )}
 
       {/* 使用提示 */}
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
-        <div className="font-semibold mb-1">💡 使用提示</div>
+      <div className="mt-4 p-3 bg-blue-900 border border-blue-700 rounded text-xs text-blue-200">
+        <div className="font-semibold mb-1 text-blue-100">💡 使用提示</div>
         <div>• 首次使用选择&quot;快速AI&quot;即可</div>
         <div>• KataGo需要先完成WASM文件配置</div>
         <div>• 详见 docs/KataGo浏览器集成指南.md</div>

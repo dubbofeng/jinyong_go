@@ -18,5 +18,14 @@ export default authMiddleware((req) => {
 
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - api (API routes)
+     * - _next (Next.js internals)
+     * - katago (KataGo WASM files)
+     * - Static files (png, jpg, etc.)
+     */
+    '/((?!api|_next|katago|.*\\.png$).*)',
+  ],
 };

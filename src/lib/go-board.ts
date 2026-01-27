@@ -34,6 +34,11 @@ export class GoBoard {
   private lastMove: BoardPosition | null = null;
   private highlightedPositions: Map<string, number> = new Map(); // position key -> label number
   
+  // 事件处理器引用（用于清理）
+  private mouseMoveHandler: (e: MouseEvent) => void;
+  private mouseLeaveHandler: () => void;
+  private clickHandler: (e: MouseEvent) => void;
+  
   constructor(canvas: HTMLCanvasElement, size: BoardSize = 9) {
     this.canvas = canvas;
     const ctx = canvas.getContext('2d');
@@ -363,9 +368,22 @@ export class GoBoard {
    * 绑定鼠标事件
    */
   private bindEvents(): void {
-    this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
-    this.canvas.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
-    this.canvas.addEventListener('click', this.handleClick.bind(this));
+    this.mouseMoveHandler = this.handleMouseMove.bind(this);
+    this.mouseLeaveHandler = this.handleMouseLeave.bind(this);
+    this.clickHandler = this.handleClick.bind(this);
+    
+    this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
+    this.canvas.addEventListener('mouseleave', this.mouseLeaveHandler);
+    this.canvas.addEventListener('click', this.clickHandler);
+  }
+  
+  /**
+   * 清理事件监听器
+   */
+  destroy(): void {
+    this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
+    this.canvas.removeEventListener('mouseleave', this.mouseLeaveHandler);
+    this.canvas.removeEventListener('click', this.clickHandler);
   }
   
   /**

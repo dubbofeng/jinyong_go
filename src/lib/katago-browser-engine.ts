@@ -2,10 +2,11 @@
  * KataGo浏览器版引擎封装
  * 基于y-ich/KataGo的WebAssembly实现
  * 
- * 注意：当前为接口定义，实际WASM集成需要：
- * 1. 编译或下载KataGo WASM文件
- * 2. 下载转换好的TensorFlow.js模型
- * 3. 实现Web Worker通信
+ * 参考: ~/dev/KataGo-browser/web/pre_pre.js
+ * 核心原理：
+ * 1. 使用FS.init()重定向stdin/stdout与Emscripten Module通信
+ * 2. 通过Module.preRun在初始化前配置KataGo参数
+ * 3. Input类缓冲GTP命令，Output类解析响应
  */
 
 import type { BoardPosition } from './go-board';
