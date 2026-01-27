@@ -481,3 +481,46 @@ export type NewTsumegoProblem = typeof tsumegoProblems.$inferInsert;
 export type PlayerTsumegoRecord = typeof playerTsumegoRecords.$inferSelect;
 export type NewPlayerTsumegoRecord = typeof playerTsumegoRecords.$inferInsert;
 
+// 成就定义表
+export const achievements = pgTable('achievements', {
+  id: serial('id').primaryKey(),
+  achievementId: varchar('achievement_id', { length: 100 }).notNull().unique(), // 成就唯一标识
+  name: varchar('name', { length: 200 }).notNull(), // 成就名称
+  nameEn: varchar('name_en', { length: 200 }).notNull(), // 英文名称
+  description: text('description').notNull(), // 成就描述
+  descriptionEn: text('description_en').notNull(), // 英文描述
+  category: varchar('category', { length: 50 }).notNull(), // 成就分类：tsumego/combat/quest/social
+  icon: varchar('icon', { length: 100 }).notNull(), // 图标emoji或路径
+  requirement: json('requirement').$type<{
+    type: 'solve_count' | 'solve_difficulty' | 'win_streak' | 'first_try' | 'defeat_npc';
+    value: number;
+    details?: Record<string, any>;
+  }>().notNull(), // 成就条件
+  reward: json('reward').$type<{
+    experience?: number;
+    coins?: number;
+    silver?: number;
+    items?: Array<{ itemId: number; quantity: number }>;
+  }>(), // 成就奖励
+  hidden: boolean('hidden').default(false).notNull(), // 是否为隐藏成就
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// 玩家成就进度表
+export const playerAchievements = pgTable('player_achievements', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  achievementId: varchar('achievement_id', { length: 100 }).notNull(), // 关联achievements.achievementId
+  unlocked: boolean('unlocked').default(false).notNull(), // 是否已解锁
+  progress: integer('progress').default(0).notNull(), // 当前进度
+  unlockedAt: timestamp('unlocked_at'), // 解锁时间
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export type Achievement = typeof achievements.$inferSelect;
+export type NewAchievement = typeof achievements.$inferInsert;
+
+export type PlayerAchievement = typeof playerAchievements.$inferSelect;
+export type NewPlayerAchievement = typeof playerAchievements.$inferInsert;
+

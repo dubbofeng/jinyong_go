@@ -91,11 +91,33 @@ export async function POST(request: Request) {
       attempts: attempts || 1,
     });
 
+    // 检查并解锁成就
+    let newAchievements = [];
+    try {
+      const achievementResponse = await fetch(
+        `${request.url.replace('/tsumego/reward', '/achievements')}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: session.user.id }),
+        }
+      );
+      
+      if (achievementResponse.ok) {
+        const data = await achievementResponse.json();
+        newAchievements = data.newAchievements || [];
+      }
+    } catch (error) {
+      console.error('检查成就失败:', error);
+      // 不影响主流程，继续返回奖励
+    }
+
     return NextResponse.json({
       success: true,
       rewards,
       newExperience: player.experience + rewards.experience,
       newSilver: player.silver + rewards.silver,
+      newAchievements,
     });
   } catch (error) {
     console.error('Error processing tsumego reward:', error);
