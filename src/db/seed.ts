@@ -76,12 +76,12 @@ const seedNPCs = [
     positionY: 18,
     dialogues: {
       greeting: '这位公子，蓉儿久仰大名。',
-      victory: '公子果然厉害！这神机妙算之法，可助你预测棋局变化。',
+      victory: '公子果然厉害！这机关算尽之法，可助你预测棋局变化。',
       defeat: '还需多加思考呢。',
     },
     npcType: 'teacher',
     difficulty: 3,
-    teachableSkills: ['shenjimiaosuang'],
+    teachableSkills: ['jiguansuanjin'],
   },
 ];
 
