@@ -28,6 +28,75 @@ export class GoEngine {
   }
 
   /**
+   * 检查落子是否合法（不修改棋盘状态）
+   */
+  placeStoneDryRun(position: BoardPosition, color: 'black' | 'white'): MoveResult {
+    const { row, col } = position;
+
+    // 1. 检查位置是否为空
+    if (this.board[row][col] !== null) {
+      return {
+        success: false,
+        capturedStones: [],
+        isKo: false,
+        error: 'Position already occupied',
+      };
+    }
+
+    // 2. 检查是否违反劫争规则
+    if (this.koPosition && this.koPosition.row === row && this.koPosition.col === col) {
+      return {
+        success: false,
+        capturedStones: [],
+        isKo: true,
+        error: 'Ko rule violation',
+      };
+    }
+
+    // 3. 临时放置棋子
+    this.board[row][col] = color;
+
+    // 4. 检查并统计可以提取的对手棋子
+    const opponentColor: 'black' | 'white' = color === 'black' ? 'white' : 'black';
+    const capturedStones: BoardPosition[] = [];
+    const neighbors = this.getNeighbors(position);
+
+    for (const neighbor of neighbors) {
+      if (this.board[neighbor.row][neighbor.col] === opponentColor) {
+        const group = this.getGroup(neighbor);
+        if (this.countLiberties(group) === 0) {
+          // 这个组没有气了，会被提取
+          capturedStones.push(...group);
+        }
+      }
+    }
+
+    // 5. 检查自己的气（自杀手）
+    const myGroup = this.getGroup(position);
+    const myLiberties = this.countLiberties(myGroup);
+
+    // 6. 恢复棋盘状态
+    this.board[row][col] = null;
+
+    // 7. 判断是否合法
+    if (myLiberties === 0 && capturedStones.length === 0) {
+      // 自杀手且没有提子，不合法
+      return {
+        success: false,
+        capturedStones: [],
+        isKo: false,
+        error: 'Suicide move',
+      };
+    }
+
+    return {
+      success: true,
+      capturedStones,
+      isKo: false,
+    };
+  }
+
+  /**
    * 尝试落子
    */
   placeStone(position: BoardPosition, color: 'black' | 'white'): MoveResult {

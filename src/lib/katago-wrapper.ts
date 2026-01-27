@@ -131,6 +131,13 @@ export class KataGoWrapper {
           continue;
         }
 
+        // 先检查这个位置是否合法（不违反自杀手规则）
+        const testResult = engine.placeStoneDryRun(position, color);
+        if (testResult.error) {
+          // 跳过违规位置
+          continue;
+        }
+
         // 简单评分
         const score = this.evaluateMove(engine, position, color);
         if (score > 0) {
@@ -140,6 +147,7 @@ export class KataGoWrapper {
     }
 
     if (candidates.length === 0) {
+      // 如果没有合法落点，返回null（AI将Pass）
       return {
         bestMove: null,
         winrate: 0.5,
