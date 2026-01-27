@@ -154,9 +154,9 @@ export default function GoBoardGame({
       } else {
         // 使用简单规则AI
         if (!aiEngineRef.current?.isReady()) {
-          console.warn('⚠️ 简单AI引擎尚未初始化完成，跳过本回合');
-          setLastMessage('🤖 AI初始化中，跳过回合');
-          setCurrentPlayer('black');
+          console.warn('⚠️ 简单AI引擎尚未初始化完成，等待初始化');
+          setLastMessage('🤖 AI初始化中...');
+          // 不改变currentPlayer，保持在白方等待初始化完成
           return;
         }
 
@@ -190,12 +190,14 @@ export default function GoBoardGame({
             
             setLastMessage(`🤖 AI提取了${result.capturedStones.length}子！`);
           } else {
-            setLastMessage(`🤖 AI落子于 (${position.row + 1}, ${String.fromCharCode(65 + position.col)})`);
+            // 棋盘行号从下往上标记，需要转换：size - row
+            const displayRow = size - position.row;
+            setLastMessage(`🤖 AI落子于 (${displayRow}, ${String.fromCharCode(65 + position.col)})`);
           }
           
           setMoveCount(prev => prev + 1);
-          setCurrentPlayer('black');
           boardRef.current.setNextStoneColor('black');
+          // 在finally块中统一设置isAIThinking=false后再切换玩家
         } else {
           // AI落子失败（如自杀着），认输
           console.error('AI落子失败:', result.error);
@@ -216,9 +218,14 @@ export default function GoBoardGame({
     } catch (error) {
       console.error('AI分析失败:', error);
       setLastMessage('🤖 AI出错，跳过回合');
-      setCurrentPlayer('black');
+      // 不在catch中切换玩家，在finally统一处理
     } finally {
       setIsAIThinking(false);
+      // AI回合结束，切换到黑方（玩家）
+      // 除非AI认输或出现严重错误
+      if (!aiResign && engineRef.current) {
+        setCurrentPlayer('black');
+      }
     }
   }, [vsAI, aiDifficulty, aiEngine, katagoEngine, size]);
 

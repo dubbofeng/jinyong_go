@@ -142,18 +142,27 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         }
       }
       
+      console.log('🎯 Triggering tsumego encounter with difficulty:', difficulty);
+      
       // 获取随机题目
       const response = await fetch(`/api/tsumego/random?difficulty=${difficulty}`);
       if (!response.ok) {
-        console.error('Failed to fetch tsumego problem');
+        console.error('❌ Failed to fetch tsumego problem, status:', response.status);
         return;
       }
       
       const problem = await response.json();
-      setCurrentTsumegoProblem(problem);
-      setShowTsumegoEncounter(true);
+      console.log('📚 Received tsumego problem:', problem);
+      
+      if (problem && problem.id) {
+        setCurrentTsumegoProblem(problem);
+        setShowTsumegoEncounter(true);
+        console.log('✅ Tsumego modal should now be visible');
+      } else {
+        console.error('❌ Invalid problem data:', problem);
+      }
     } catch (error) {
-      console.error('Error triggering tsumego encounter:', error);
+      console.error('❌ Error triggering tsumego encounter:', error);
     }
   };
 
@@ -918,9 +927,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       {/* 传送门确认对话框 */}
       {showPortalConfirm && pendingPortal && (
         <div 
-          className="inset-0 flex items-center justify-center p-4"
+          className="fixed inset-0 flex items-center justify-center p-4"
           style={{ 
-            position: 'fixed',
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             zIndex: 60,
           }}
@@ -981,9 +989,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       {/* 围棋挑战确认对话框 */}
       {showGoChallenge && pendingGoOpponent && (
         <div 
-          className="inset-0 flex items-center justify-center p-4"
+          className="fixed inset-0 flex items-center justify-center p-4"
           style={{ 
-            position: 'fixed',
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             zIndex: 60,
           }}

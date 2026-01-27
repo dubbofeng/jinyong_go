@@ -221,8 +221,8 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
 
   const modalContent = (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 100 }}
-      className={`flex items-center justify-center bg-black/70 transition-opacity duration-300 ${
+      style={{ zIndex: 100 }}
+      className={`fixed inset-0 flex items-center justify-center bg-black/70 transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       onClick={(e) => {

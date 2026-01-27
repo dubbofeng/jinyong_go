@@ -3,14 +3,16 @@
  */
 
 import { config } from 'dotenv';
+import { resolve } from 'path';
 
 // 必须先加载环境变量
-config({ path: '.env.local' });
-
-import { db } from '../src/db';
-import { tsumegoProblems, playerTsumegoRecords } from '../src/db/schema';
+config({ path: resolve(process.cwd(), '.env.local') });
 
 async function clearTables() {
+  // 动态导入db，确保环境变量已加载
+  const { db } = await import('../src/db/index');
+  const { tsumegoProblems, playerTsumegoRecords } = await import('../src/db/schema');
+  
   console.log('🗑️  Clearing tsumego tables...');
   
   try {

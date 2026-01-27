@@ -70,8 +70,10 @@ export default function GameResultModal({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+    <div 
+      className="fixed inset-0 flex items-start justify-center bg-black/70 backdrop-blur-sm overflow-y-auto pt-24 z-[9999]"
+    >
+      <div className="relative w-full max-w-md mx-4 mb-16 bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* 头部横幅 */}
         <div 
           className="p-6 text-center"

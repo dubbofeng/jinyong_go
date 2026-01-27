@@ -105,9 +105,8 @@ export default function CustomAlert({
 
   return (
     <div
-      className="inset-0 flex items-center justify-center p-4"
+      className="fixed inset-0 flex items-center justify-center p-4"
       style={{
-        position: 'fixed',
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
         zIndex: 9999,
       }}
