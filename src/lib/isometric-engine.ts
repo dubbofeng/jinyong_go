@@ -1112,7 +1112,7 @@ export class IsometricEngine {
       
       // 如果被树阻挡，返回树信息
       if (blockedTree) {
-        console.log('🌳 移动被树阻挡:', blockedTree.itemName);
+        console.log('🌳 移动被树阻挡:', (blockedTree as any).itemName);
         this.lastBlockingTree = undefined; // 清除记录
         return { success: false, blockedByTree: blockedTree };
       }

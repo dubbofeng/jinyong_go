@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import IsometricGame from './IsometricGame';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
 import { InventoryPanel } from './InventoryPanel';
 import QuestTracker from './QuestTracker';
 import TsumegoStatsPanel from './TsumegoStatsPanel';
 import AchievementsPanel from './AchievementsPanel';
+import SaveButton from './SaveButton';
+import { useAutoSave, GameProgressData } from '@/src/hooks/useAutoSave';
 
 interface GameLayoutProps {
   mapId: string;
@@ -18,6 +20,26 @@ type PanelTab = 'overview' | 'stats' | 'achievements';
 export default function GameLayout({ mapId, userId }: GameLayoutProps) {
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>('overview');
+  const [gameState, setGameState] = useState<any>(null); // 游戏状态（由IsometricGame更新）
+
+  // 获取当前游戏进度数据
+  const getProgressData = useCallback((): GameProgressData => {
+    return {
+      userId,
+      currentMap: gameState?.currentMap || mapId,
+      currentX: gameState?.playerX || 0,
+      currentY: gameState?.playerY || 0,
+      // 其他字段可以从不同组件收集
+    };
+  }, [userId, mapId, gameState]);
+
+  // 启用自动保存（每5分钟）
+  const { saveProgress } = useAutoSave(getProgressData, true, 5 * 60 * 1000);
+
+  // 手动保存
+  const handleManualSave = async (): Promise<boolean> => {
+    return await saveProgress();
+  };
 
   return (
     <div className="flex flex-1">
@@ -91,7 +113,9 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
             </div>
             
             {/* 退出登录按钮 */}
-            <div className="p-4 border-t border-gray-300 bg-white">
+            <div className="p-4 space-y-2 border-t border-gray-300 bg-white">
+              <SaveButton onSave={handleManualSave} />
+              
               <a
                 href="/api/auth/signout"
                 className="block w-full text-center px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition-colors"

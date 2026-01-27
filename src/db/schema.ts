@@ -269,7 +269,7 @@ export const playerSkills = pgTable('player_skills', {
 });
 
 // 物品定义表（统一管理：道具、装饰物、植物、建筑等）
-export const items = pgTable('items', {
+export const items: any = pgTable('items', {
   id: serial('id').primaryKey(),
   itemId: varchar('item_id', { length: 50 }).notNull().unique(),
   name: varchar('name', { length: 100 }).notNull(),

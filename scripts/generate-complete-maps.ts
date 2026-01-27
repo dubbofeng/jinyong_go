@@ -551,7 +551,7 @@ async function main() {
     const numPlants = 10 + Math.floor(Math.random() * 16); // 10-25
     for (let i = 0; i < numPlants && plantItems.length > 0; i++) {
       const item = plantItems[Math.floor(Math.random() * plantItems.length)];
-      let x, y;
+      let x: number = 0, y: number = 0;
       let attempts = 0;
       
       // 尝试找到不在禁区的位置
@@ -578,7 +578,7 @@ async function main() {
     const numDecorations = 5 + Math.floor(Math.random() * 6); // 5-10
     for (let i = 0; i < numDecorations && decorationItems.length > 0; i++) {
       const item = decorationItems[Math.floor(Math.random() * decorationItems.length)];
-      let x, y;
+      let x: number = 0, y: number = 0;
       let attempts = 0;
       
       // 尝试找到不在禁区的位置
@@ -608,7 +608,7 @@ async function main() {
         tileRecords.push({
           mapId: mapRecord.id,
           x, y,
-          tileType: terrain[y][x],
+          tileType: String(terrain[y][x]), // 转换为字符串
           walkable: terrain[y][x] !== TERRAIN.WATER,
         });
       }

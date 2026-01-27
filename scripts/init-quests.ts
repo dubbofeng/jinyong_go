@@ -1,156 +1,174 @@
 #!/usr/bin/env tsx
 /**
- * 初始化主线任务数据
+ * 初始化任务系统 - MVP版本
  * 
- * 创建6个核心主线任务：
- * 1. 初识棋道（教学任务）
- * 2. 拜师洪七公（解锁亢龙有悔）
- * 3. 挑战令狐冲（解锁独孤九剑）
- * 4. 与郭靖对弈（解锁腹语传音）
- * 5. 向黄蓉请教（解锁机关算尽）
- * 6. 第一章完成（解锁后续内容）
+ * 6个主线任务：
+ * 1. 初入江湖 - 教程任务，完成第一场对局
+ * 2. 拜师学艺 - 战胜洪七公，解锁第一个技能
+ * 3. 小试身手 - 完成5个死活题
+ * 4. 名震江湖 - 连胜3场对局
+ * 5. 武林大会 - 战胜令狐冲，解锁高级技能
+ * 6. 一代宗师 - 达到等级10，完成10个死活题
  */
 
-import 'dotenv/config';
-import { db } from '../src/db';
-import { quests } from '../src/db/schema';
-import { eq } from 'drizzle-orm';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+config({ path: resolve(process.cwd(), '.env.local') });
 
 async function main() {
-  console.log('🎯 初始化主线任务数据...\n');
+  const { db } = await import('../src/db');
+  const { quests } = await import('../src/db/schema');
+  
+  console.log('🎯 Initializing Quest System...\n');
 
-  const mainQuests = [
+  const questData = [
+    // 任务1：初入江湖
     {
-      questId: 'quest_001_tutorial',
-      title: '初识棋道',
-      description: '洪七公愿意指点你围棋的基础知识。完成一场对局，了解围棋的魅力。',
+      questId: 'main_quest_01',
+      title: '初入江湖',
+      description: '欢迎来到武林世界！在这里，围棋不仅是一门艺术，更是修炼武功的途径。先找到洪七公，与他对弈一局，体验棋道的魅力。',
       questType: 'main',
       chapter: 1,
-      requirements: {},
+      requirements: {
+        type: 'complete_games',
+        count: 1,
+        description: '完成1场围棋对局'
+      },
       rewards: {
         experience: 100,
-        gold: 50,
       },
       prerequisiteQuests: [],
     },
+    
+    // 任务2：拜师学艺
     {
-      questId: 'quest_002_hong_qigong',
-      title: '拜师洪七公',
-      description: '洪七公见你悟性不错，愿意传授你降龙十八掌的心法。但首先，你需要在对局中展现实力。',
+      questId: 'main_quest_02',
+      title: '拜师学艺',
+      description: '洪七公是丐帮帮主，降龙十八掌威震武林。他愿意指点你棋艺，但你需要在9路棋盘上击败他，证明你的潜力。',
       questType: 'main',
       chapter: 1,
       requirements: {
-        level: 2,
+        type: 'defeat_npc',
+        npcId: 'hongqigong',
+        boardSize: 9,
+        description: '在9路棋盘上战胜洪七公'
       },
       rewards: {
         experience: 300,
-        skills: ['kanglong_yougui'],
-        gold: 100,
+        skills: ['kanglongyouhui'],
       },
-      prerequisiteQuests: ['quest_001_tutorial'],
+      prerequisiteQuests: ['main_quest_01'],
     },
+    
+    // 任务3：小试身手
     {
-      questId: 'quest_003_linghu_chong',
-      title: '挑战令狐冲',
-      description: '听闻少林寺有一位剑客令狐冲，棋艺高超。前往少林寺，与他切磋棋艺。',
+      questId: 'main_quest_03',
+      title: '小试身手',
+      description: '死活题是围棋修炼的基本功，也是武林高手提升内力的方法。前往棋馆，完成5道死活题，锤炼你的计算能力。',
       questType: 'main',
       chapter: 1,
       requirements: {
-        level: 5,
+        type: 'solve_tsumego',
+        count: 5,
+        maxDifficulty: 3,
+        description: '完成5道死活题（难度≤3）'
+      },
+      rewards: {
+        experience: 200,
+      },
+      prerequisiteQuests: ['main_quest_02'],
+    },
+    
+    // 任务4：名震江湖
+    {
+      questId: 'main_quest_04',
+      title: '名震江湖',
+      description: '你已经掌握了基本功，是时候在江湖中闯出名堂了。连续获胜3场对局，让武林中人知道你的名字！',
+      questType: 'main',
+      chapter: 1,
+      requirements: {
+        type: 'win_streak',
+        count: 3,
+        description: '连胜3场对局'
       },
       rewards: {
         experience: 500,
-        skills: ['dugu_jiujian'],
-        gold: 200,
+        items: ['jade_pendant'],
       },
-      prerequisiteQuests: ['quest_002_hong_qigong'],
+      prerequisiteQuests: ['main_quest_03'],
     },
+    
+    // 任务5：武林大会
     {
-      questId: 'quest_004_guo_jing',
-      title: '与郭靖对弈',
-      description: '郭靖是襄阳城的守将，同时也是一位围棋高手。前往襄阳城茶馆，与他对弈。',
+      questId: 'main_quest_05',
+      title: '武林大会',
+      description: '少林寺举办武林大会，剑客令狐冲以独孤九剑闻名天下。在13路棋盘上挑战他，证明你已经成为真正的高手！',
       questType: 'main',
       chapter: 1,
       requirements: {
-        level: 8,
+        type: 'defeat_npc',
+        npcId: 'linghuchong',
+        boardSize: 13,
+        minLevel: 5,
+        description: '达到等级5，在13路棋盘上战胜令狐冲'
       },
       rewards: {
         experience: 800,
-        skills: ['fuyu_chuanyin'],
-        gold: 300,
+        skills: ['dugujiujian'],
       },
-      prerequisiteQuests: ['quest_003_linghu_chong'],
+      prerequisiteQuests: ['main_quest_04'],
     },
+    
+    // 任务6：一代宗师
     {
-      questId: 'quest_005_huang_rong',
-      title: '向黄蓉请教',
-      description: '黄蓉机关算尽，对围棋的变化有独到见解。向她学习变化图的技巧。',
+      questId: 'main_quest_06',
+      title: '一代宗师',
+      description: '通过刻苦修炼，你已经在武林中占有一席之地。达到等级10，并完成10道高难度死活题，成为受人尊敬的一代宗师！',
       questType: 'main',
       chapter: 1,
       requirements: {
-        level: 12,
+        type: 'milestone',
+        level: 10,
+        tsumegoCount: 10,
+        tsumegoMinDifficulty: 4,
+        description: '达到等级10，完成10道死活题（难度≥4）'
       },
       rewards: {
-        experience: 1200,
-        skills: ['jiguan_suanjin'],
-        gold: 500,
+        experience: 1500,
+        items: ['master_scroll', 'golden_badge'],
       },
-      prerequisiteQuests: ['quest_004_guo_jing'],
-    },
-    {
-      questId: 'quest_006_chapter_one_complete',
-      title: '第一章完结',
-      description: '你已经掌握了四大技能，在武林中小有名气。继续修炼，迎接更大的挑战！',
-      questType: 'main',
-      chapter: 1,
-      requirements: {
-        level: 15,
-      },
-      rewards: {
-        experience: 2000,
-        gold: 1000,
-        items: ['master_scroll', 'jade_pendant'],
-      },
-      prerequisiteQuests: ['quest_005_huang_rong'],
+      prerequisiteQuests: ['main_quest_05'],
     },
   ];
 
-  try {
-    // 删除旧任务（如果存在）
-    console.log('🗑️  清理旧任务数据...');
-    const questIds = mainQuests.map((q) => q.questId);
-    for (const questId of questIds) {
-      await db.delete(quests).where(eq(quests.questId, questId));
-    }
+  console.log('📝 Creating quests...\n');
 
-    // 插入新任务
-    console.log('📝 插入主线任务...\n');
-    for (const quest of mainQuests) {
+  for (const quest of questData) {
+    try {
       await db.insert(quests).values(quest);
-      console.log(`✅ ${quest.title} (${quest.questId})`);
-      console.log(`   章节: ${quest.chapter}`);
-      console.log(`   类型: ${quest.questType}`);
-      console.log(`   奖励: ${quest.rewards.experience} 经验`);
-      if (quest.rewards.skills) {
-        console.log(`   技能: ${quest.rewards.skills.join(', ')}`);
-      }
-      if (quest.prerequisiteQuests.length > 0) {
-        console.log(`   前置: ${quest.prerequisiteQuests.join(', ')}`);
-      }
-      console.log('');
+      console.log(`✓ Created: ${quest.title} (${quest.questId})`);
+    } catch (error) {
+      console.error(`✗ Failed to create ${quest.questId}:`, error);
     }
-
-    console.log('✨ 任务初始化完成！');
-    console.log(`\n📊 总共创建了 ${mainQuests.length} 个主线任务\n`);
-  } catch (error) {
-    console.error('❌ 任务初始化失败:', error);
-    process.exit(1);
   }
+
+  console.log('\n✅ Quest initialization complete!');
+  console.log(`📊 Total quests created: ${questData.length}`);
+  
+  // 显示任务链
+  console.log('\n🔗 Quest Chain:');
+  questData.forEach((quest, index) => {
+    const prereq = quest.prerequisiteQuests.length > 0 
+      ? ` (requires: ${quest.prerequisiteQuests.join(', ')})` 
+      : ' (starting quest)';
+    console.log(`   ${index + 1}. ${quest.title}${prereq}`);
+  });
+
+  process.exit(0);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch(error => {
+  console.error('❌ Fatal error:', error);
+  process.exit(1);
+});

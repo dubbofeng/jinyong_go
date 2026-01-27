@@ -523,8 +523,42 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    */
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
-      // 空格键触发附近NPC/传送门交互
-      if (e.key === ' ' && !isDialogueVisible && engineRef.current) {
+      // 对话框显示时的键盘处理
+      if (isDialogueVisible) {
+        // 空格键或Enter键继续对话
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          if (dialogueOptions.length === 0) {
+            // 没有选项时，继续对话
+            handleContinueDialogue();
+          } else if (dialogueOptions.length === 1) {
+            // 只有一个选项时，自动选择
+            handleSelectOption(0);
+          }
+          return;
+        }
+        
+        // 数字键1-9选择对话选项
+        const numKey = parseInt(e.key);
+        if (!isNaN(numKey) && numKey >= 1 && numKey <= dialogueOptions.length) {
+          e.preventDefault();
+          handleSelectOption(numKey - 1);
+          return;
+        }
+        
+        // ESC键关闭对话
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeDialogue();
+          return;
+        }
+        
+        // 对话框显示时，阻止其他按键（如WASD移动）
+        return;
+      }
+      
+      // 空格键触发附近NPC/传送门交互（仅在对话框未显示时）
+      if (e.key === ' ' && engineRef.current) {
         e.preventDefault(); // 防止页面滚动
         const nearbyItem = engineRef.current.getNearbyInteractableItem();
         
@@ -545,13 +579,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return;
       }
       
-      // ESC键关闭对话
-      if (e.key === 'Escape' && isDialogueVisible) {
-        closeDialogue();
-        return;
-      }
-      
-      // WASD移动
+      // WASD移动（仅在对话框未显示时）
       if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
         pressedKeysRef.current.add(e.key);
       }
@@ -570,7 +598,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isDialogueVisible]);
+  }, [isDialogueVisible, dialogueOptions]);
 
   // ==================== 对话系统函数 ====================
 
