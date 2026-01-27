@@ -9,9 +9,9 @@ interface GoGameModalProps {
   isOpen: boolean;
   onClose: () => void;
   opponentName?: string;
-  boardSize?: 9 | 13 | 19;
+  boardSize?: 9 | 13 | 19; // 保留参数兼容性，但实际固定使用19路
   vsAI?: boolean; // 是否对战AI
-  aiDifficulty?: 'easy' | 'medium' | 'hard'; // AI难度
+  aiDifficulty?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // AI难度（1-9级）
   onComplete?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
   npcId?: string; // NPC ID，用于特殊功能（如测试按钮）
 }
@@ -20,17 +20,17 @@ export default function GoGameModal({
   isOpen, 
   onClose, 
   opponentName = '对手',
-  boardSize = 9,
+  boardSize = 19, // 固定使用19路棋盘
   vsAI = true, // 默认对战AI
-  aiDifficulty = 'medium', // 默认中等难度
+  aiDifficulty = 5, // 默认5级难度（中等）
   onComplete,
   npcId
 }: GoGameModalProps) {
   const [isVisible, setIsVisible] = useState(false);
-  // 只有19路棋盘才显示引擎选择器，9路和13路直接使用Smart AI
-  const [showEngineSelector, setShowEngineSelector] = useState(vsAI && boardSize === 19);
-  const [selectedEngine, setSelectedEngine] = useState<AIEngineType>('simple');
-  const [effectiveBoardSize, setEffectiveBoardSize] = useState(boardSize);
+  // 固定使用KataGo，移除引擎选择
+  const [showEngineSelector, setShowEngineSelector] = useState(false);
+  const [selectedEngine, setSelectedEngine] = useState<AIEngineType>('katago');
+  const [effectiveBoardSize] = useState(19); // 固定19路
   const { 
     engine: katagoEngine, 
     isReady: isKatagoReady, 
@@ -44,8 +44,14 @@ export default function GoGameModal({
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
+      // 自动初始化KataGo
+      if (vsAI && !isKatagoReady && !isKatagoLoading) {
+        initializeKataGo().catch(err => {
+          console.error('KataGo自动初始化失败:', err);
+        });
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, vsAI, isKatagoReady, isKatagoLoading, initializeKataGo]);
 
   // ESC键关闭
   useEffect(() => {
@@ -61,37 +67,9 @@ export default function GoGameModal({
 
   const handleClose = () => {
     setIsVisible(false);
-    // 只有19路棋盘才显示引擎选择器
-    setShowEngineSelector(vsAI && boardSize === 19);
     setTimeout(() => {
       onClose();
     }, 300); // 等待淡出动画完成
-  };
-
-  const handleEngineSelect = async (engine: AIEngineType) => {
-    setSelectedEngine(engine);
-    
-    // KataGo模型只支持19×19棋盘，自动切换
-    if (engine === 'katago') {
-      setEffectiveBoardSize(19);
-      
-      // 如果未初始化，先初始化
-      if (!isKatagoReady) {
-        try {
-          await initializeKataGo();
-        } catch (err) {
-          console.error('KataGo初始化失败:', err);
-          // 初始化失败，回退到简单AI和原棋盘大小
-          setSelectedEngine('simple');
-          setEffectiveBoardSize(boardSize);
-        }
-      }
-    } else {
-      // 使用简单AI时恢复原始棋盘大小
-      setEffectiveBoardSize(boardSize);
-    }
-    
-    setShowEngineSelector(false);
   };
 
   if (!isOpen && !isVisible) return null;
@@ -120,15 +98,10 @@ export default function GoGameModal({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h2 className="text-3xl font-bold text-white">
-              {showEngineSelector ? '选择AI引擎' : `与 ${opponentName} 对弈`}
+              与 {opponentName} 对弈
             </h2>
             <span className="text-sm text-gray-400">
-              {effectiveBoardSize}路棋盘
-              {selectedEngine === 'katago' && effectiveBoardSize !== boardSize && (
-                <span className="ml-2 text-yellow-400">
-                  (KataGo需要19×19棋盘)
-                </span>
-              )}
+              19路棋盘 {vsAI && `• KataGo Lv.${aiDifficulty}`}
             </span>
           </div>
           
@@ -153,36 +126,50 @@ export default function GoGameModal({
           </button>
         </div>
 
-        {/* AI引擎选择器或棋盘游戏 */}
-        {showEngineSelector ? (
-          <AIEngineSelector 
-            onSelect={handleEngineSelect}
-            onKataGoReady={(ready) => {
-              if (!ready) {
-                setSelectedEngine('simple');
-              }
-            }}
-            externalKatagoState={{
-              isLoading: isKatagoLoading,
-              isReady: isKatagoReady,
-              progress: katagoProgress,
-              logs: katagoLogs,
-              error: katagoError,
-              initialize: initializeKataGo
-            }}
-          />
+        {/* KataGo加载状态或棋盘游戏 */}
+        {vsAI && isKatagoLoading ? (
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-amber-800 mb-4">🤖 加载KataGo引擎...</h2>
+            <div className="mb-4">
+              <div className="w-full bg-amber-200 rounded-full h-4">
+                <div 
+                  className="bg-amber-600 h-4 rounded-full transition-all duration-300"
+                  style={{ width: `${katagoProgress}%` }}
+                />
+              </div>
+              <p className="text-sm text-amber-700 mt-2">{katagoProgress}%</p>
+            </div>
+            {katagoError && (
+              <div className="text-red-600 text-sm mb-2">错误: {katagoError}</div>
+            )}
+            <div className="max-h-40 overflow-y-auto bg-white/50 rounded p-2 text-xs font-mono">
+              {katagoLogs.map((log, i) => (
+                <div key={i} className="text-amber-800">{log}</div>
+              ))}
+            </div>
+          </div>
+        ) : vsAI && !isKatagoReady ? (
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-amber-800 mb-4">⚠️ KataGo未就绪</h2>
+            <p className="text-amber-700 mb-4">需要初始化KataGo引擎才能开始游戏</p>
+            <button
+              onClick={() => initializeKataGo()}
+              className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+            >
+              初始化KataGo
+            </button>
+          </div>
         ) : (
           <>
             {/* 棋盘游戏 */}
             <div className="flex justify-center">
               <GoBoardGame 
-                size={effectiveBoardSize} 
+                size={19} 
                 width={480} 
                 height={480}
                 vsAI={vsAI}
                 aiDifficulty={aiDifficulty}
-                aiEngine={selectedEngine}
-                katagoEngine={selectedEngine === 'katago' && isKatagoReady ? katagoEngine : undefined}
+                katagoEngine={katagoEngine}
                 onGameModalClose={handleClose}
                 onGameEnd={onComplete}
                 npcId={npcId}
@@ -193,33 +180,15 @@ export default function GoGameModal({
             <div className="mt-6 text-center text-sm text-gray-400">
               <p>按 ESC 键可随时关闭棋盘</p>
               {vsAI && (
-                <>
-                  <p className="mt-1">
-                    AI引擎：
-                    {selectedEngine === 'simple' && 'Smart AI (蒙特卡洛)'}
-                    {selectedEngine === 'katago' && 'KataGo (神经网络)'}
-                  </p>
-                  <p className="mt-1">
-                    对战难度：
-                    {aiDifficulty === 'easy' && '简单'}
-                    {aiDifficulty === 'medium' && '中等'}
-                    {aiDifficulty === 'hard' && '困难'}
-                  </p>
-                  {boardSize === 19 && (
-                    <button
-                      onClick={() => setShowEngineSelector(true)}
-                      className="mt-2 text-blue-400 hover:text-blue-300 underline text-xs"
-                    >
-                      切换AI引擎
-                    </button>
-                  )}
-                </>
+                <p className="mt-1">
+                  KataGo引擎 • 难度等级 {aiDifficulty}
+                </p>
               )}
             </div>
           </>
         )}
-        </div>
       </div>
     </div>
+  </div>
   );
 }

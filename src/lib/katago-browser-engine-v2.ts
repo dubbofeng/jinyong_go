@@ -111,6 +111,7 @@ export class KataGoBrowserEngineV2 {
   private waitingForResponse: ((response: string) => void) | null = null;
   private scriptElement: HTMLScriptElement | null = null;
   private readyPromiseResolve: (() => void) | null = null;
+  private maxVisits: number = 100; // 默认访问次数（难度）
 
   constructor(config: KataGoBrowserConfig) {
     this.config = config;
@@ -367,6 +368,41 @@ export class KataGoBrowserEngineV2 {
       // 发送命令
       this.input!.sendCommand(command);
     });
+  }
+
+  /**
+   * 设置难度（通过maxVisits参数）
+   * @param difficulty 难度等级 1-9，数字越大越强
+   */
+  async setDifficulty(difficulty: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): Promise<void> {
+    // 根据难度设置maxVisits：等级1-9映射到25-800次访问
+    // Lv1: 25, Lv2: 50, Lv3: 75, Lv4: 100, Lv5: 125, Lv6: 150, Lv7: 175, Lv8: 200, Lv9: 300
+    const maxVisitsMap: Record<number, number> = {
+        1: 25,
+        2: 50,
+        3: 75,
+        4: 100,
+        5: 125,
+        6: 150,
+        7: 175,
+        8: 200,
+        9: 300
+    };
+    
+    this.maxVisits = maxVisitsMap[difficulty];
+    
+    if (this.isReady) {
+      try {
+        // 使用kata-set-param命令设置参数
+        await this.sendCommand(`kata-set-param maxVisits ${this.maxVisits}`);
+        this.config.onLog?.(`✅ 难度设置为 Lv.${difficulty} (maxVisits=${this.maxVisits})`);
+      } catch (error) {
+        console.error('设置难度失败:', error);
+        this.config.onLog?.(`⚠️ 难度设置失败: ${error}`);
+      }
+    } else {
+      this.config.onLog?.(`🕒 难度将在引擎就绪后设置为 Lv.${difficulty}`);
+    }
   }
 
   /**

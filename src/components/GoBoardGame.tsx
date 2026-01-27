@@ -8,9 +8,7 @@ import {
   type TerritoryEvaluation,
   type SuggestedMove
 } from '../lib/go-skills';
-import { KataGoWrapper } from '../lib/katago-wrapper';
-import { KataGoBrowserEngine } from '../lib/katago-browser-engine';
-import { SmartAI, createSmartAI } from '../lib/smart-ai';
+import { KataGoBrowserEngineV2 } from '../lib/katago-browser-engine-v2';
 import GameResultModal, { type GameResult } from './GameResultModal';
 import { useSession } from 'next-auth/react';
 
@@ -19,21 +17,19 @@ interface GoBoardGameProps {
   width?: number;
   height?: number;
   vsAI?: boolean; // 是否对战AI
-  aiDifficulty?: 'easy' | 'medium' | 'hard'; // AI难度
-  aiEngine?: 'simple' | 'katago'; // AI引擎类型
-  katagoEngine?: KataGoBrowserEngine | null; // KataGo浏览器引擎实例
+  aiDifficulty?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // AI难度（1-9级）
+  katagoEngine?: KataGoBrowserEngineV2 | null; // KataGo浏览器引擎实例（V2版本）
   npcId?: string; // 对战的NPC ID（用于任务进度）
   onGameModalClose?: () => void; // 关闭游戏 Modal 的回调
   onGameEnd?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
 }
 
 export default function GoBoardGame({ 
-  size = 9, 
-  width = 600, 
+  size = 19, // 固定使用19路棋盘
+  width = 600,
   height = 600,
-  vsAI = true,
-  aiDifficulty = 'medium',
-  aiEngine = 'simple',
+  vsAI = false,
+  aiDifficulty = 5, // 默认5级难度（中等）
   katagoEngine = null,
   npcId,
   onGameModalClose,
@@ -44,8 +40,6 @@ export default function GoBoardGame({
   const boardRef = useRef<GoBoard | null>(null);
   const engineRef = useRef<GoEngine | null>(null);
   const skillManagerRef = useRef<SkillManager | null>(null);
-  const aiEngineRef = useRef<KataGoWrapper | null>(null);
-  const smartAiRef = useRef<SmartAI | null>(null);
   const gameStartTime = useRef<number>(Date.now());
   
   const [currentPlayer, setCurrentPlayer] = useState<'black' | 'white'>('black');
@@ -137,15 +131,17 @@ export default function GoBoardGame({
     try {
       let bestMove = null;
 
-      // 根据AI引擎类型选择分析方法
-      if (aiEngine === 'katago' && katagoEngine?.isEngineReady()) {
-        // 使用KataGo浏览器版
+      // 使用KataGo引擎
+      if (katagoEngine?.isEngineReady()) {
         console.log('🤖 使用KataGo引擎分析...', { 
-          aiEngine, 
           hasKatagoEngine: !!katagoEngine, 
-          isReady: katagoEngine.isEngineReady() 
+          isReady: katagoEngine.isEngineReady(),
+          difficulty: aiDifficulty
         });
-        setLastMessage('🤖 KataGo AI 思考中...');
+        setLastMessage(`🤖 KataGo Lv.${aiDifficulty} 思考中...`);
+        
+        // 设置难度
+        await katagoEngine.setDifficulty(aiDifficulty);
         
         // 获取当前棋盘上的所有棋子
         const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
@@ -161,34 +157,9 @@ export default function GoBoardGame({
         const analysis = await katagoEngine.analyzePosition(size, stones, 'white');
         bestMove = analysis.bestMove;
       } else {
-        // 使用Smart AI（蒙特卡洛模拟）
-        console.log('🤖 使用Smart AI（蒙特卡洛）...', { 
-          aiEngine, 
-          difficulty: aiDifficulty,
-          boardSize: size
-        });
-        setLastMessage(`🤖 Smart AI (${aiDifficulty}) 思考中...`);
-        
-        if (!smartAiRef.current) {
-          console.error('⚠️ Smart AI未初始化');
-          setLastMessage('🤖 AI初始化失败');
-          return;
-        }
-
-        const analysis = await smartAiRef.current.analyzePosition(engineRef.current, 'white');
-        bestMove = analysis.bestMove;
-        
-        // 显示AI思考信息
-        console.log('🤖 Smart AI分析结果:', {
-          bestMove,
-          winrate: `${(analysis.winrate * 100).toFixed(1)}%`,
-          simulations: analysis.simulations,
-          thinkingTime: `${analysis.thinkingTime}ms`,
-          topCandidates: analysis.candidates.slice(0, 3).map(c => ({
-            pos: c.position,
-            winrate: `${(c.winrate * 100).toFixed(1)}%`
-          }))
-        });
+        console.error('⚠️ KataGo引擎未就绪');
+        setLastMessage('🤖 KataGo引擎未初始化');
+        return;
       }
 
       if (bestMove) {
@@ -246,7 +217,7 @@ export default function GoBoardGame({
     } finally {
       setIsAIThinking(false);
     }
-  }, [vsAI, aiDifficulty, aiEngine, katagoEngine, size]);
+  }, [vsAI, aiDifficulty, katagoEngine, size]);
 
   // 监听玩家切换，触发AI落子
   useEffect(() => {
@@ -276,27 +247,6 @@ export default function GoBoardGame({
     // 创建技能管理器实例
     const skillManager = new SkillManager();
     skillManagerRef.current = skillManager;
-    
-    // 如果是AI对战，初始化AI引擎
-    if (vsAI) {
-      const aiEngine = new KataGoWrapper({
-        modelPath: '/katago/model.bin.gz',
-        wasmPath: '/katago/katago.wasm',
-        maxVisits: aiDifficulty === 'easy' ? 50 : aiDifficulty === 'medium' ? 100 : 200,
-        timeLimit: aiDifficulty === 'easy' ? 1000 : aiDifficulty === 'medium' ? 3000 : 5000,
-      });
-      aiEngineRef.current = aiEngine;
-      
-      // 异步初始化AI引擎
-      aiEngine.initialize().then(() => {
-        // AI引擎初始化成功
-      }).catch(error => {
-        console.error('❌ AI引擎初始化失败:', error);
-      });
-      
-      // 初始化Smart AI（蒙特卡洛）
-      smartAiRef.current = createSmartAI(aiDifficulty);
-    }
     
     // 设置落子回调（使用本地函数避免闭包问题）
     const onStonePlace = (position: { row: number; col: number }) => {
