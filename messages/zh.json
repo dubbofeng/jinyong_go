@@ -27,7 +27,19 @@
       "huashan_scene": "华山",
       "shaolin_scene": "少林寺",
       "wudang_scene": "武当山",
-      "taohua_scene": "桃花岛"
+      "xiangyang_scene": "襄阳城",
+      "taohua_scene": "桃花岛",
+      "daoguan_scene": "道观静室",
+      "tianlong_scene": "天龙寺",
+      "wuliang_scene": "无量山",
+      "wanjie_scene": "万劫谷",
+      "meizhuang_scene": "梅庄",
+      "haining_scene": "海宁",
+      "kunlun_scene": "昆仑山",
+      "guangming_scene": "光明顶",
+      "zhongnan_scene": "终南山",
+      "gumu_scene": "古墓",
+      "leigu_scene": "擂鼓山"
     },
     "dialogue": {
       "continue": "继续",

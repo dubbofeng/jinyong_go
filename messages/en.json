@@ -27,7 +27,19 @@
       "huashan_scene": "Mount Hua",
       "shaolin_scene": "Shaolin Temple",
       "wudang_scene": "Wudang Mountain",
-      "taohua_scene": "Peach Blossom Island"
+      "xiangyang_scene": "Xiangyang City",
+      "taohua_scene": "Peach Blossom Island",
+      "daoguan_scene": "Taoist Temple",
+      "tianlong_scene": "Tianlong Temple",
+      "wuliang_scene": "Wuliang Mountain",
+      "wanjie_scene": "Valley of Ten Thousand Tribulations",
+      "meizhuang_scene": "Plum Manor",
+      "haining_scene": "Haining",
+      "kunlun_scene": "Kunlun Mountains",
+      "guangming_scene": "Bright Summit",
+      "zhongnan_scene": "Zhongnan Mountains",
+      "gumu_scene": "Ancient Tomb",
+      "leigu_scene": "Leigu Mountain"
     },
     "dialogue": {
       "continue": "Continue",

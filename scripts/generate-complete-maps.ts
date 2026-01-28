@@ -301,14 +301,28 @@ async function main() {
     console.log('   ✅ 传送门已存在');
   }
 
-  // 3. 地图配置
-  const mapConfigs = [
-    { id: 1, mapId: 'world_map', name: '武林世界', width: 64, height: 64, seed: 11111, isWorld: true, npcIds: [] },
-    { id: 2, mapId: 'huashan_scene', name: '华山', width: 32, height: 32, seed: 22222, isWorld: false, npcIds: ['npc_hong_qigong'] },
-    { id: 3, mapId: 'shaolin_scene', name: '少林寺', width: 32, height: 32, seed: 33333, isWorld: false, npcIds: ['npc_linghu_chong'] },
-    { id: 4, mapId: 'wudang_scene', name: '武当山', width: 32, height: 32, seed: 44444, isWorld: false, npcIds: ['npc_guo_jing'] },
-    { id: 5, mapId: 'taohua_scene', name: '桃花岛', width: 32, height: 32, seed: 55555, isWorld: false, npcIds: ['npc_huang_rong'] },
-  ];
+  // 3. 从数据库获取所有地图配置
+  console.log('\n3️⃣  获取地图配置...');
+  const allMaps = await db.select().from(maps).orderBy(maps.id);
+  
+  const mapConfigs = allMaps.map((m, index) => ({
+    id: m.id,
+    mapId: m.mapId,
+    name: m.name,
+    width: m.width,
+    height: m.height,
+    seed: 10000 + m.id * 1111, // 基于ID生成唯一seed
+    isWorld: m.mapType === 'world',
+    npcIds: m.mapType === 'world' ? [] : 
+      // 前几个地图已经有NPC，其他地图留空
+      m.mapId === 'huashan_scene' ? ['npc_hong_qigong'] :
+      m.mapId === 'shaolin_scene' ? ['npc_linghu_chong'] :
+      m.mapId === 'wudang_scene' ? ['npc_guo_jing'] :
+      m.mapId === 'taohua_scene' ? ['npc_huang_rong'] :
+      []
+  }));
+  
+  console.log(`   找到 ${mapConfigs.length} 个地图`);
 
   // 4. 生成每个地图
   for (const config of mapConfigs) {
@@ -326,6 +340,19 @@ async function main() {
     if (!mapRecord) {
       console.log('❌ 地图记录不存在');
       continue;
+    }
+
+    // 跳过世界地图（如果已有数据）
+    if (config.isWorld) {
+      const existingTiles = await db.select()
+        .from(mapTiles)
+        .where(eq(mapTiles.mapId, mapRecord.id))
+        .limit(1);
+      
+      if (existingTiles.length > 0) {
+        console.log('⚠️  世界地图已有数据，跳过生成（保留已配置的传送门位置）');
+        continue;
+      }
     }
 
     // 清除旧数据

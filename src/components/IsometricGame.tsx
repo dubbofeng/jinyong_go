@@ -1039,9 +1039,47 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         // 重新加载地图
         await engineRef.current.loadMap(newMapData);
         
-        // 设置玩家位置（如果传送门指定了目标位置）
-        const targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
-        const targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+        // 确定玩家出现位置
+        let targetX: number;
+        let targetY: number;
+        
+        // 如果传送到世界地图，需要找到当前地图在世界地图上的坐标
+        if (pendingPortal.targetMapId === 'world_map' && mapData?.id) {
+          console.log(`🗺️ Teleporting back to world map from ${mapData.id}`);
+          try {
+            // 查询当前地图在世界地图上的坐标
+            const response = await fetch(`/api/maps?mapId=${mapData.id}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.maps && data.maps.length > 0) {
+                const currentMap = data.maps[0];
+                if (currentMap.worldX != null && currentMap.worldY != null) {
+                  targetX = currentMap.worldX;
+                  targetY = currentMap.worldY;
+                  console.log(`📍 Using world map coordinates: (${targetX}, ${targetY})`);
+                } else {
+                  // 没有worldX/worldY，使用默认位置
+                  targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
+                  targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+                }
+              } else {
+                targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
+                targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+              }
+            } else {
+              targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
+              targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+            }
+          } catch (error) {
+            console.error('❌ Failed to fetch map coordinates:', error);
+            targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
+            targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+          }
+        } else {
+          // 传送到普通地图，使用传送门指定的位置或地图中心
+          targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
+          targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
+        }
         
         console.log(`🧍 Spawning player at (${targetX}, ${targetY})`);
         await engineRef.current.spawnPlayer(targetX, targetY);
