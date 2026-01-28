@@ -28,15 +28,17 @@ async function generateWithGemini(prompt: string, width: number, height: number,
   // 为游戏素材添加特定的优化提示词
   let enhancedPrompt = prompt;
   if (category === 'map' || category === 'building' || category === 'item') {
-    // 强调完整边界、独立素材、游戏资源特征
+    // 强调完整边界、独立素材、游戏资源特征、白色背景
     enhancedPrompt = `${prompt}
 
 IMPORTANT: This is a game asset that needs:
 - Complete object with clear, finished boundaries (no cut-off edges)
 - Isolated, standalone element suitable for placement in a game scene
+- PURE WHITE BACKGROUND (#FFFFFF) - essential for background removal
 - Clean separation from background
 - All parts of the object fully visible and complete
-- Professional game asset quality`;
+- Professional game asset quality
+- Simple white background, no gradients or shadows on background`;
   }
   
   const aspectRatio = width > height ? '16:9' : height > width ? '9:16' : '1:1';
@@ -243,8 +245,8 @@ export async function POST(request: NextRequest) {
         nameEn: map.mapId,
         prompt: prompt,
         negativePrompt: '',
-        width: 512,
-        height: 512,
+        width: 256,
+        height: 256,
         style: 'isometric scene'
       };
 
@@ -401,8 +403,8 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      // 如果是items（建筑、道具、装饰物），自动去除白色背景
-      if (isDbItem && template.category !== 'story') {
+      // 如果是游戏素材（地图、建筑、道具、装饰物），自动去除白色背景
+      if ((isDbItem && template.category !== 'story') || isMap) {
         try {
           console.log('[Removing Background]:', savePath);
           // 动态导入 removeBackground

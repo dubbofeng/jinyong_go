@@ -203,6 +203,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         items: data.items || [],
       };
       
+      // 对于传送门和建筑，查找关联地图的等距图
+      await enrichItemsWithMapImages(mapData.items);
+      
       console.log('🗺️ 加载地图数据:', {
         id: mapData.id,
         name: mapData.name,
@@ -219,6 +222,62 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       return null;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  /**
+   * 为items添加关联地图的等距图路径
+   */
+  const enrichItemsWithMapImages = async (items: any[]) => {
+    // 收集所有需要查询的 targetMapId
+    const targetMapIds = new Set<string>();
+    for (const item of items) {
+      if ((item.itemType === 'portal' || item.itemType === 'building') && item.targetMapId) {
+        targetMapIds.add(item.targetMapId);
+      }
+    }
+
+    if (targetMapIds.size === 0) return;
+
+    // 批量查询所有关联地图的信息
+    try {
+      const mapImageCache: Record<string, string | null> = {};
+      
+      await Promise.all(
+        Array.from(targetMapIds).map(async (targetMapId) => {
+          try {
+            const response = await fetch(`/api/maps/${targetMapId}`);
+            if (response.ok) {
+              const mapInfo = await response.json();
+              // 查询该地图在数据库中的 isometricImage
+              const mapsResponse = await fetch(`/api/maps?mapId=${targetMapId}`);
+              if (mapsResponse.ok) {
+                const mapsData = await mapsResponse.json();
+                if (mapsData.maps && mapsData.maps.length > 0) {
+                  const linkedMap = mapsData.maps[0];
+                  mapImageCache[targetMapId] = linkedMap.isometricImage || null;
+                }
+              }
+            }
+          } catch (err) {
+            console.warn(`无法加载地图 ${targetMapId} 的图片信息:`, err);
+            mapImageCache[targetMapId] = null;
+          }
+        })
+      );
+
+      // 将查询到的图片路径添加到items中
+      for (const item of items) {
+        if ((item.itemType === 'portal' || item.itemType === 'building') && item.targetMapId) {
+          const linkedImage = mapImageCache[item.targetMapId];
+          if (linkedImage) {
+            item.linkedMapImage = linkedImage;
+            console.log(`🖼️ 传送门/建筑 ${item.itemName} -> ${item.targetMapId}: ${linkedImage}`);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('批量查询地图图片失败:', err);
     }
   };
 

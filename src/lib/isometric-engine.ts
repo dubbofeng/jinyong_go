@@ -48,6 +48,8 @@ export interface MapItem {
   targetMapId?: string;
   targetX?: number;
   targetY?: number;
+  // 新增：用于存储关联地图的等距图路径
+  linkedMapImage?: string; // 通过 targetMapId 查找到的地图等距图
 }
 
 // Autotile 精灵图集配置
@@ -395,6 +397,16 @@ export class IsometricEngine {
    * 获取物品精灵图URL
    */
   private getSpriteUrl(item: MapItem): string {
+    // 对于传送门，如果有关联地图的等距图，优先使用
+    if (item.itemType === 'portal' && item.linkedMapImage) {
+      return item.linkedMapImage;
+    }
+    
+    // 对于建筑，如果有关联地图的等距图（场景切换建筑），优先使用
+    if (item.itemType === 'building' && item.targetMapId && item.linkedMapImage) {
+      return item.linkedMapImage;
+    }
+    
     // 使用数据库中的itemPath
     return item.itemPath;
   }
