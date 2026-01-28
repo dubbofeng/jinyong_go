@@ -3,9 +3,8 @@
 
 export { PlayerStatsPanel } from './PlayerStatsPanel';
 export { InventoryPanel } from './InventoryPanel';
-export { IsometricGame } from './IsometricGame';
-export { RPGGame } from './RPGGame';
-export { DialogueBox } from './DialogueBox';
-export { LanguageSwitcher } from './LanguageSwitcher';
+export { default as IsometricGame } from './IsometricGame';
+export { default as DialogueBox } from './DialogueBox';
+export { default as LanguageSwitcher } from './LanguageSwitcher';
 
 export {};
