@@ -1,7 +1,7 @@
 [
   {
     "category": "scene",
-    "id": "huashan_scene",
+    "id": "huashan_hall",
     "name": "华山传功厅",
     "nameEn": "Mount Hua Martial Hall",
     "prompt": "Ancient Chinese martial arts training hall on Mount Hua, traditional wooden architecture, high ceilings with red pillars and golden decorations, martial arts practice area in center, weapon racks on walls, morning light streaming through windows, atmospheric dust particles, cinematic composition, wuxia style, highly detailed, digital painting, 4K quality",
@@ -23,7 +23,7 @@
   },
   {
     "category": "scene",
-    "id": "xiangyang_scene",
+    "id": "xiangyang_city",
     "name": "襄阳城茶馆",
     "nameEn": "Xiangyang City Teahouse",
     "prompt": "Traditional Chinese teahouse interior in ancient Xiangyang city, wooden tables and chairs, tea sets, scrolls on walls, paper windows with bamboo frames, warm ambient lighting, cozy atmosphere, Song dynasty style, people-free environment, highly detailed, digital painting, 4K quality",
