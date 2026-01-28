@@ -23,16 +23,27 @@ interface DatabaseItem extends PromptTemplate {
   itemType: string;
 }
 
+interface DatabaseMap extends PromptTemplate {
+  imagePath?: string;
+  chapter?: number | null;
+  minLevel?: number;
+  worldX?: number | null;
+  worldY?: number | null;
+  description?: string;
+  promptEn?: string;
+}
+
 export default function AssetsPage() {
   const [jsonPrompts] = useState<PromptTemplate[]>(getAllPrompts());
   const [dbPrompts, setDbPrompts] = useState<DatabaseItem[]>([]);
+  const [mapPrompts, setMapPrompts] = useState<DatabaseMap[]>([]);
   const [generatedImages, setGeneratedImages] = useState<Map<string, GeneratedImage>>(new Map());
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedSource, setSelectedSource] = useState<'all' | 'json' | 'database'>('all');
+  const [selectedSource, setSelectedSource] = useState<'all' | 'json' | 'database' | 'maps'>('all');
   const [generatingIds, setGeneratingIds] = useState<Set<string>>(new Set());
   const [isCheckingFiles, setIsCheckingFiles] = useState(true);
 
-  const categories = ['all', 'scene', 'skill', 'ui', 'item', 'building'];
+  const categories = ['all', 'scene', 'skill', 'ui', 'item', 'building', 'map'];
 
   // 加载数据库items
   useEffect(() => {
@@ -52,8 +63,26 @@ export default function AssetsPage() {
     loadDatabaseItems();
   }, []);
 
-  // 合并JSON和数据库的prompts
-  const allPrompts = [...jsonPrompts, ...dbPrompts];
+  // 加载数据库地图
+  useEffect(() => {
+    const loadDatabaseMaps = async () => {
+      try {
+        const response = await fetch('/api/maps/prompts');
+        const data = await response.json();
+        
+        if (data.success) {
+          setMapPrompts(data.maps);
+        }
+      } catch (error) {
+        console.error('Failed to load database maps:', error);
+      }
+    };
+
+    loadDatabaseMaps();
+  }, []);
+
+  // 合并JSON、数据库items和地图的prompts
+  const allPrompts = [...jsonPrompts, ...dbPrompts, ...mapPrompts];
 
   // 检查已存在的图片文件
   useEffect(() => {
@@ -103,8 +132,9 @@ export default function AssetsPage() {
     const categoryMatch = selectedCategory === 'all' || p.category === selectedCategory;
     const sourceMatch = 
       selectedSource === 'all' ||
-      (selectedSource === 'json' && !dbPrompts.some(db => db.id === p.id)) ||
-      (selectedSource === 'database' && dbPrompts.some(db => db.id === p.id));
+      (selectedSource === 'json' && !dbPrompts.some(db => db.id === p.id) && !mapPrompts.some(m => m.id === p.id)) ||
+      (selectedSource === 'database' && dbPrompts.some(db => db.id === p.id)) ||
+      (selectedSource === 'maps' && mapPrompts.some(m => m.id === p.id));
     return categoryMatch && sourceMatch;
   });
 
@@ -113,14 +143,15 @@ export default function AssetsPage() {
 
     setGeneratingIds(prev => new Set(prev).add(promptId));
 
-    // 判断是否是数据库item
+    // 判断是否是数据库item或地图
     const isDbItem = dbPrompts.some(db => db.id === promptId);
+    const isMap = mapPrompts.some(m => m.id === promptId);
 
     try {
       const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptId, isDbItem })
+        body: JSON.stringify({ promptId, isDbItem, isMap })
       });
 
       const data = await response.json();
@@ -200,6 +231,16 @@ export default function AssetsPage() {
               >
                 数据库Items ({dbPrompts.length})
               </button>
+              <button
+                onClick={() => setSelectedSource('maps')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedSource === 'maps'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                地图 ({mapPrompts.length})
+              </button>
             </div>
           </div>
           
@@ -221,7 +262,8 @@ export default function AssetsPage() {
                    cat === 'skill' ? '技能' : 
                    cat === 'ui' ? 'UI' :
                    cat === 'item' ? '道具' :
-                   cat === 'building' ? '建筑' : cat}
+                   cat === 'building' ? '建筑' :
+                   cat === 'map' ? '地图' : cat}
                 </button>
               ))}
             </div>
@@ -332,6 +374,7 @@ export default function AssetsPage() {
                         prompt.category === 'skill' ? 'bg-purple-900 text-purple-200' :
                         prompt.category === 'item' ? 'bg-green-900 text-green-200' :
                         prompt.category === 'building' ? 'bg-orange-900 text-orange-200' :
+                        prompt.category === 'map' ? 'bg-cyan-900 text-cyan-200' :
                         'bg-gray-700 text-gray-300'
                       }`}>
                         {prompt.category}
@@ -339,6 +382,11 @@ export default function AssetsPage() {
                       {dbPrompts.some(db => db.id === prompt.id) && (
                         <span className="text-xs px-2 py-1 rounded bg-emerald-900 text-emerald-200">
                           DB
+                        </span>
+                      )}
+                      {mapPrompts.some(m => m.id === prompt.id) && (
+                        <span className="text-xs px-2 py-1 rounded bg-cyan-900 text-cyan-200">
+                          MAP
                         </span>
                       )}
                     </div>
@@ -351,6 +399,27 @@ export default function AssetsPage() {
                   <div className="text-xs text-gray-500 mb-3">
                     尺寸: {prompt.width} × {prompt.height}
                   </div>
+                  
+                  {/* 地图特有信息 */}
+                  {mapPrompts.some(m => m.id === prompt.id) && (() => {
+                    const mapData = mapPrompts.find(m => m.id === prompt.id) as DatabaseMap;
+                    return (
+                      <div className="text-xs text-gray-500 mb-3 space-y-1">
+                        {mapData.chapter !== null && mapData.chapter !== undefined && (
+                          <div>章节: 第{mapData.chapter === 0 ? '序' : mapData.chapter}章</div>
+                        )}
+                        {mapData.minLevel && (
+                          <div>等级要求: Lv.{mapData.minLevel}</div>
+                        )}
+                        {mapData.worldX !== null && mapData.worldY !== null && (
+                          <div>世界坐标: ({mapData.worldX}, {mapData.worldY})</div>
+                        )}
+                        {mapData.description && (
+                          <div className="line-clamp-2">{mapData.description}</div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   
                   {dbPrompts.some(db => db.id === prompt.id) && (
                     <div className="text-xs text-gray-500 mb-3">

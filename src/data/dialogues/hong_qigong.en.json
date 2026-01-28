@@ -89,8 +89,45 @@
       "speaker": "Hong Qigong",
       "text": "Now go find Linghu Chong at Shaolin Temple. His Dugu Nine Swords technique is quite something.",
       "options": [
-        {"text": "Thank you, Senior!"},
-        {"text": "I'd like to hear more of your teachings"}
+        {"text": "Thank you, Senior!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
+        {"text": "Senior, may I challenge you again?", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Hong Qigong",
+      "text": "Haha! Losing is no big deal. It's all about improving your skills. Want to try again?",
+      "options": [
+        {"text": "Yes! Please let me try again, Senior!", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"},
+        {"text": "Let me practice more first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "after_shaolin",
+      "speaker": "Hong Qigong",
+      "text": "So you learned the Dugu Nine Swords? Linghu Chong's swordsmanship is extraordinary. The martial arts world needs more people like you.",
+      "options": [
+        {"text": "Thank you for your guidance, Senior!", "nextNodeId": "farewell"},
+        {"text": "May I ask about the Eighteen Dragon-Subduing Palms?", "nextNodeId": "daily_chat"}
+      ]
+    },
+    {
+      "id": "encourage_continue",
+      "speaker": "Hong Qigong",
+      "text": "You've completed all the main quests! Xiangyang needs someone like you. But there's always more to learn in the martial arts world. Want to compete with me again?",
+      "options": [
+        {"text": "Yes! Please teach me, Senior!", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"},
+        {"text": "I need to consolidate what I've learned", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "rematch_challenge",
+      "speaker": "Hong Qigong",
+      "text": "Ready for another game? Playing more will improve your skills!",
+      "options": [
+        {"text": "Yes! Let's start!", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"},
+        {"text": "Next time", "nextNodeId": "farewell"}
       ]
     },
     {
@@ -98,7 +135,8 @@
       "speaker": "Hong Qigong",
       "text": "Playing Go is like commanding an army - you must know when to advance and retreat, understand what's real and what's feint. Remember: corners are gold, edges are silver, center is grass. Don't rush to the middle at the start.",
       "options": [
-        {"text": "I've learned so much!"}
+        {"text": "I've learned so much!", "nextNodeId": "farewell"},
+        {"text": "May I challenge you again?", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"}
       ]
     },
     {

@@ -23,7 +23,7 @@ export default function RPGGame() {
   const playerRef = useRef<Player | null>(null);
   const tilemapEnginesRef = useRef<Map<string, TilemapEngine>>(new Map());
   const tilesetManagerRef = useRef<TilesetManager | null>(null);
-  const currentMapIdRef = useRef<string>('huashan');
+  const currentMapIdRef = useRef<string>('huashan_scene');
   const npcsRef = useRef<NPC[]>([]);
   const isDialogueVisibleRef = useRef(false);
   const [isReady, setIsReady] = useState(false);

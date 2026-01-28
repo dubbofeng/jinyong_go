@@ -6,7 +6,7 @@ async function checkTileDistribution() {
   console.log('📊 检查华山传功厅的瓦片类型分布...\n');
   
   const map = await db.query.maps.findFirst({
-    where: eq(maps.mapId, 'huashan_hall'),
+    where: eq(maps.mapId, 'huashan_scene'),
   });
   
   if (!map) {

@@ -89,7 +89,7 @@
     {
       "x": 2,
       "y": 2,
-      "targetMapId": "huashan",
+      "targetMapId": "huashan_scene",
       "targetX": 12,
       "targetY": 15,
       "label": "portal.toHuashan"
@@ -97,7 +97,7 @@
     {
       "x": 22,
       "y": 15,
-      "targetMapId": "xiangyang",
+      "targetMapId": "xiangyang_scene",
       "targetX": 2,
       "targetY": 2,
       "label": "portal.toXiangyang"

@@ -8,9 +8,9 @@ async function setupSceneMaps() {
   // 获取地图ID
   const allMaps = await db.select().from(maps);
   const worldMap = allMaps.find(m => m.mapId === 'world_map');
-  const huashanHall = allMaps.find(m => m.mapId === 'huashan_hall');
-  const shaolinTemple = allMaps.find(m => m.mapId === 'shaolin_temple');
-  const xiangyangTeahouse = allMaps.find(m => m.mapId === 'xiangyang_teahouse');
+  const huashanHall = allMaps.find(m => m.mapId === 'huashan_scene');
+  const shaolinTemple = allMaps.find(m => m.mapId === 'shaolin_scene');
+  const xiangyangTeahouse = allMaps.find(m => m.mapId === 'xiangyang_scene');
 
   if (!worldMap || !huashanHall || !shaolinTemple || !xiangyangTeahouse) {
     console.error('❌ 找不到所需的地图');

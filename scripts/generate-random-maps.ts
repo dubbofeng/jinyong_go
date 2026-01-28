@@ -280,7 +280,7 @@ async function main() {
   
   const mapsToGenerate = [
     {
-      mapId: 'huashan_hall',
+      mapId: 'huashan_scene',
       name: '华山传功厅',
       width: 32,
       height: 32,
@@ -288,7 +288,7 @@ async function main() {
       seed: 12345,
     },
     {
-      mapId: 'shaolin_temple',
+      mapId: 'shaolin_scene',
       name: '少林寺禅房',
       width: 32,
       height: 32,
@@ -296,7 +296,7 @@ async function main() {
       seed: 23456,
     },
     {
-      mapId: 'xiangyang_teahouse',
+      mapId: 'xiangyang_scene',
       name: '襄阳城茶馆',
       width: 32,
       height: 32,
@@ -341,8 +341,8 @@ async function main() {
   console.log('\n✅ 地图、装饰物和NPC全部生成完成！');
   console.log('\n可访问以下链接查看地图：');
   console.log('  🎮 游戏页面: http://localhost:9999/zh/game');
-  console.log('  🛠️  华山传功厅: http://localhost:9999/zh/admin/maps/huashan_hall/edit');
-  console.log('  🛠️  少林寺禅房: http://localhost:9999/zh/admin/maps/shaolin_temple/edit');
+  console.log('  🛠️  华山传功厅: http://localhost:9999/zh/admin/maps/huashan_scene/edit');
+  console.log('  🛠️  少林寺禅房: http://localhost:9999/zh/admin/maps/shaolin_scene/edit');
   console.log('  🛠️  襄阳城茶馆: http://localhost:9999/zh/admin/maps/xiangyang_teahouse/edit');
 }
 

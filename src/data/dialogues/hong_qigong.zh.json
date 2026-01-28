@@ -91,8 +91,46 @@
       "speaker": "洪七公",
       "text": "去吧，去少林寺找令狐冲那小子切磋切磋，他的独孤九剑很有些门道。",
       "options": [
-        {"text": "多谢前辈！"},
-        {"text": "我还想再听听您的教诲"}
+        {"text": "多谢前辈！", "nextNodeId": "farewell"},
+        {"text": "我还想再挑战一次", "nextNodeId": "rematch_challenge"},
+        {"text": "我还想再听听您的教诲", "nextNodeId": "daily_chat"}
+      ]
+    },
+    {
+      "id": "rematch_challenge",
+      "speaker": "洪七公",
+      "text": "哈哈！有长进的感觉了？好，老叫花我陪你再来一局！",
+      "options": [
+        {
+          "text": "好！请前辈指教！",
+          "action": {"type": "battle", "value": "hong_qigong"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "我先休息一下", "nextNodeId": "daily_chat"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "洪七公",
+      "text": "哈哈，小娃娃还嫩了点！不过没关系，多练练就好了。围棋这玩意，就得多下、多想、多琢磨。",
+      "options": [
+        {"text": "我再练练，稍后再来", "nextNodeId": "farewell"},
+        {"text": "我再来挑战一次", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "after_shaolin",
+      "speaker": "洪七公",
+      "text": "嗯？你小子进步不小啊！看来在少林寺学到了不少东西。令狐冲那小子的独孤九剑可不好对付，你能赢他，说明有两下子了！",
+      "nextNodeId": "encourage_continue"
+    },
+    {
+      "id": "encourage_continue",
+      "speaker": "洪七公",
+      "text": "继续努力吧！武林之大，还有许多高手等着你去挑战。听说襄阳城有个郭靖，棋艺和武功都是一流，你可以去会会他。",
+      "options": [
+        {"text": "多谢前辈指点！", "nextNodeId": "farewell"},
+        {"text": "再来一局？", "nextNodeId": "rematch_challenge"}
       ]
     },
     {
@@ -100,7 +138,8 @@
       "speaker": "洪七公",
       "text": "下棋如行军打仗，要知进退，懂虚实。记住：金角银边草肚皮，开局别急着去中间乱打。",
       "options": [
-        {"text": "受教了！"}
+        {"text": "受教了！", "nextNodeId": "farewell"},
+        {"text": "再来一局？", "nextNodeId": "rematch_challenge"}
       ]
     },
     {

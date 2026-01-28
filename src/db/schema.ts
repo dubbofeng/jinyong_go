@@ -164,6 +164,23 @@ export const maps = pgTable('maps', {
   description: text('description'),
   width: integer('width').default(32).notNull(), // 地图宽度（瓦片数）
   height: integer('height').default(32).notNull(), // 地图高度（瓦片数）
+  
+  // 游戏进度相关
+  chapter: integer('chapter').default(0), // 章节编号：0=序章, 1=第一章, 2=第二章, 等等
+  minLevel: integer('min_level').default(1), // 进入该地图所需的最低等级
+  
+  // 世界地图坐标
+  worldX: integer('world_x'), // 在世界地图上的X坐标（用于传送门位置）
+  worldY: integer('world_y'), // 在世界地图上的Y坐标（用于传送门位置）
+  
+  // AI生成资源
+  isometricImage: varchar('isometric_image', { length: 500 }), // 等距图文件路径
+  imagePromptZh: text('image_prompt_zh'), // 用于AI生成图片的中文提示词
+  imagePromptEn: text('image_prompt_en'), // 用于AI生成图片的英文提示词
+  
+  // 扩展元数据
+  metadata: json('metadata').$type<any>().default({}), // 地图扩展元数据JSON
+  
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

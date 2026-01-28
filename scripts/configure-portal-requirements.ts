@@ -6,8 +6,9 @@
  * - 襄阳：需要击败令狐冲
  */
 
-import { db } from '@/src/db';
-import { mapItems, items, maps } from '@/src/db/schema';
+import 'dotenv/config';
+import { db } from '../app/db';
+import { mapItems, items, maps } from '../src/db/schema';
 import { eq, and, like } from 'drizzle-orm';
 
 async function configurePortalRequirements() {
@@ -29,9 +30,9 @@ async function configurePortalRequirements() {
 
   // 找到地图IDs
   const allMaps = await db.select().from(maps);
-  const huashanMap = allMaps.find(m => m.mapId === 'huashan_hall');
-  const shaolinMap = allMaps.find(m => m.mapId === 'shaolin_temple');
-  const xiangyangMap = allMaps.find(m => m.mapId === 'xiangyang_city');
+  const huashanMap = allMaps.find(m => m.mapId === 'huashan_scene');
+  const shaolinMap = allMaps.find(m => m.mapId === 'shaolin_scene');
+  const xiangyangMap = allMaps.find(m => m.mapId === 'xiangyang_scene');
 
   // 1. 华山传送门 - 无限制（默认已无requirements）
   console.log('\n🏔️ 华山传送门：无限制');
@@ -41,7 +42,7 @@ async function configurePortalRequirements() {
       .from(mapItems)
       .where(and(
         eq(mapItems.itemId, portalItemId),
-        eq(mapItems.sceneLinkMapId, 'huashan_hall')
+        eq(mapItems.sceneLinkMapId, 'huashan_scene')
       ));
     
     if (huashanPortals.length > 0) {
@@ -65,7 +66,7 @@ async function configurePortalRequirements() {
       .from(mapItems)
       .where(and(
         eq(mapItems.itemId, portalItemId),
-        eq(mapItems.sceneLinkMapId, 'shaolin_temple')
+        eq(mapItems.sceneLinkMapId, 'shaolin_scene')
       ));
     
     const shaolinRequirements = [
@@ -97,7 +98,7 @@ async function configurePortalRequirements() {
       .from(mapItems)
       .where(and(
         eq(mapItems.itemId, portalItemId),
-        eq(mapItems.sceneLinkMapId, 'xiangyang_city')
+        eq(mapItems.sceneLinkMapId, 'xiangyang_scene')
       ));
     
     const xiangyangRequirements = [

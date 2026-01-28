@@ -23,7 +23,7 @@ async function checkMaps() {
     
     // 测试API查询
     console.log('\n🔍 测试API查询逻辑...\n');
-    const testMapId = 'huashan_hall';
+    const testMapId = 'huashan_scene';
     const result = await db.select().from(maps).where(sql`${maps.mapId} = ${testMapId}`);
     console.log(`查询 mapId='${testMapId}' 结果:`, result.length > 0 ? '找到' : '未找到');
     if (result.length > 0) {

@@ -7,7 +7,32 @@
       "id": "greeting",
       "speaker": "令狐冲",
       "text": "这位朋友，看你面生，是第一次来少林寺吧？",
-      "nextNodeId": "introduce"
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "令狐冲",
+      "text": "有何事找在下？",
+      "options": [
+        {
+          "text": "久仰令狐大侠！请指教围棋之道",
+          "condition": {"type": "quest", "value": "unlock_skill_dugu", "inverse": true},
+          "nextNodeId": "teach_request"
+        },
+        {
+          "text": "想听令狐大侠讲讲剑法与棋道",
+          "condition": {"type": "quest", "value": "unlock_skill_dugu"},
+          "nextNodeId": "after_learn_chat"
+        },
+        {
+          "text": "独孤九剑和围棋有什么关系？",
+          "nextNodeId": "explain_connection"
+        },
+        {
+          "text": "只是路过，告辞",
+          "nextNodeId": "farewell_early"
+        }
+      ]
     },
     {
       "id": "introduce",
@@ -77,6 +102,47 @@
         {
           "text": "能否再讲讲独孤九剑？",
           "nextNodeId": "talk_sword"
+        }
+      ]
+    },
+    {
+      "id": "after_learn_chat",
+      "speaker": "令狐冲",
+      "text": "你已经学会了独孤九剑的精髓，现在应该去襄阳找郭大侠切磋。他的棋艺和武功都到了化境，定能让你有所领悟。",
+      "options": [
+        {
+          "text": "多谢指点！",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "还想听听剑法心得",
+          "nextNodeId": "talk_sword"
+        }
+      ]
+    },
+    {
+      "id": "after_xiangyang",
+      "speaker": "令狐冲",
+      "text": "你去过襄阳了？郭大侠的武学造诣如何？他可是当世一等一的高手啊。",
+      "options": [
+        {
+          "text": "郭大侠武艺高强，在下受益匪浅",
+          "nextNodeId": "praise_response"
+        },
+        {
+          "text": "想再听听令狐大侠的剑法心得",
+          "nextNodeId": "talk_sword"
+        }
+      ]
+    },
+    {
+      "id": "praise_response",
+      "speaker": "令狐冲",
+      "text": "哈哈，能得到郭大侠的指点，你也算是有缘人了。独孤九剑的精髓就是「无招胜有招」，希望你能继续参悟。",
+      "options": [
+        {
+          "text": "铭记在心！",
+          "nextNodeId": "farewell"
         }
       ]
     },

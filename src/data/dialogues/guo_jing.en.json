@@ -6,19 +6,51 @@
     {
       "id": "greeting",
       "speaker": "Guo Jing",
-      "text": "You must be the young hero everyone's been talking about. I am Guo Jing, defender of Xiangyang. I see you have a righteous spirit - would you like to learn something?",
+      "text": "My friend, hello. I am Guo Jing, currently studying military strategy and Go here.",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Guo Jing",
+      "text": "You look travel-worn. What brings you here?",
       "options": [
         {
-          "text": "Hero Guo! Please teach me!",
-          "nextNodeId": "willing_to_learn"
+          "text": "I've long admired Hero Guo!",
+          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
+          "nextNodeId": "respect_response"
         },
         {
-          "text": "What can you teach me?",
-          "nextNodeId": "explain_skills"
+          "text": "I'd like to learn Go from Hero Guo",
+          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
+          "nextNodeId": "learn_request"
         },
         {
-          "text": "Just looking around.",
-          "nextNodeId": "farewell"
+          "text": "Hero Guo, I'd like to hear more of your teachings",
+          "condition": {"type": "quest", "value": "unlock_skill_fuyu"},
+          "nextNodeId": "after_learn_chat"
+        },
+        {
+          "text": "Just passing by",
+          "nextNodeId": "just_visit"
+        }
+      ]
+    },
+    {
+      "id": "ask_purpose",
+      "speaker": "Guo Jing",
+      "text": "You look travel-worn. Have you come to Xiangyang to challenge masters in Go?",
+      "options": [
+        {
+          "text": "Exactly! I've long admired Hero Guo",
+          "nextNodeId": "respect_response"
+        },
+        {
+          "text": "I'd like to learn Go from Hero Guo",
+          "nextNodeId": "learn_request"
+        },
+        {
+          "text": "Just passing by",
+          "nextNodeId": "just_visit"
         }
       ]
     },
@@ -167,6 +199,172 @@
         "item": "strategy_manual"
       },
       "nextNodeId": null
+    },
+    {
+      "id": "respect_response",
+      "speaker": "Guo Jing",
+      "text": "You're too kind. Though I have some martial arts foundation, when it comes to Go, Rong'er is far superior.",
+      "nextNodeId": "talk_rong"
+    },
+    {
+      "id": "talk_rong",
+      "speaker": "Guo Jing",
+      "text": "Rong'er often says Go is like commanding troops - you must understand when reality and illusion interweave, balance offense and defense. These years defending Xiangyang, I've gained some insights on this.",
+      "options": [
+        {
+          "text": "Please share your wisdom",
+          "nextNodeId": "teach_wisdom"
+        },
+        {
+          "text": "I'd like to challenge Hero Guo's Go skills",
+          "nextNodeId": "challenge"
+        }
+      ]
+    },
+    {
+      "id": "learn_request",
+      "speaker": "Guo Jing",
+      "text": "I may be slow-witted, but thanks to my teachers and Rong'er, I've learned some skills. Since you sincerely seek knowledge, I'll teach you everything I know.",
+      "nextNodeId": "teach_wisdom"
+    },
+    {
+      "id": "teach_wisdom",
+      "speaker": "Guo Jing",
+      "text": "Defending a city is like defending in Go - you must know where to hold firm and where you can sacrifice. I have a technique called 'Ventriloquism Transmission' that can get you expert guidance at critical moments.",
+      "nextNodeId": "teach_skill"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Guo Jing",
+      "text": "This technique actually asks an AI expert to advise you, like having Rong'er guide me. Remember, true masters can't just rely on external help - you must trust your own judgment.",
+      "action": {
+        "type": "quest",
+        "value": "unlock_skill_fuyu"
+      },
+      "nextNodeId": "after_teach"
+    },
+    {
+      "id": "after_teach",
+      "speaker": "Guo Jing",
+      "text": "The path of Go is long and requires daily accumulation. You can exchange pointers with masters from various places - you'll surely benefit.",
+      "options": [
+        {
+          "text": "Thank you for your guidance, Hero Guo!",
+          "nextNodeId": "thank_you"
+        },
+        {
+          "text": "I'd like to play a game with Hero Guo",
+          "nextNodeId": "challenge"
+        }
+      ]
+    },
+    {
+      "id": "challenge",
+      "speaker": "Guo Jing",
+      "text": "Good! You have ambition! But I've been busy with official duties lately - I'll have time once Xiangyang's defenses are properly arranged.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Guo Jing",
+      "text": "You should practice more first. When your Go skills improve to a certain level, we'll play a game, how about that?",
+      "options": [
+        {
+          "text": "Alright, I'll work hard!",
+          "nextNodeId": "accept_challenge"
+        },
+        {
+          "text": "I'm ready now!",
+          "nextNodeId": "ready_challenge",
+          "condition": {
+            "type": "level",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "accept_challenge",
+      "speaker": "Guo Jing",
+      "text": "Yes, young people should have this drive! Go ahead, when you've made progress, come find me anytime.",
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "ready_challenge",
+      "speaker": "Guo Jing",
+      "text": "Oh? You carry yourself well - your Go skills must have a solid foundation. Good, let's play a game!",
+      "action": {
+        "type": "battle",
+        "value": "guo_jing_battle_1"
+      },
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "just_visit",
+      "speaker": "Guo Jing",
+      "text": "Xiangyang City is strategically important. In recent years, Mongol soldiers have invaded - the situation is tense. If you're just traveling, please be careful.",
+      "options": [
+        {
+          "text": "Thank you for the warning, farewell",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "Actually, I'd like to learn Go",
+          "nextNodeId": "learn_request"
+        }
+      ]
+    },
+    {
+      "id": "thank_you",
+      "speaker": "Guo Jing",
+      "text": "No need for courtesy. For country and people - that's the great chivalry. Learning Go is the same - it can't be just for personal victory, you must have higher pursuits.",
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "after_learn_chat",
+      "speaker": "Guo Jing",
+      "text": "You've learned 'Ventriloquism Transmission' - this is a technique Rong'er taught me. But remember, true masters must rely on their own judgment, can't always depend on others.",
+      "options": [
+        {
+          "text": "I've learned so much!",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "I'd like to hear Hero Guo's strategic insights",
+          "nextNodeId": "talk_strategy"
+        }
+      ]
+    },
+    {
+      "id": "talk_strategy",
+      "speaker": "Guo Jing",
+      "text": "Military strategy says: Know yourself and your enemy, and you'll never lose. Go is the same. You must be clear about your advantages and your opponent's weaknesses to formulate the best strategy.",
+      "options": [
+        {
+          "text": "Thank you for your guidance!",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "final_chapter",
+      "speaker": "Guo Jing",
+      "text": "You've completed all quests - your martial arts and Go skills have improved greatly. Xiangyang City needs young people like you! But remember, martial arts and Go have no end - you must continue working hard.",
+      "options": [
+        {
+          "text": "Thank you for your cultivation, Hero Guo!",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "I'd like to hear more of Hero Guo's experience",
+          "nextNodeId": "talk_strategy"
+        }
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "Guo Jing",
+      "text": "Take care! Xiangyang City always welcomes you. If you have time, let's discuss Go again!"
     }
   ]
 }

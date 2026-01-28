@@ -67,9 +67,9 @@ async function main() {
     console.log('\n可以访问游戏页面查看：');
     console.log('  🎮 http://localhost:9999/zh/game');
     console.log('\n或访问管理后台编辑地图：');
-    console.log('  🛠️  华山: http://localhost:9999/zh/admin/maps/huashan_hall/edit');
-    console.log('  🛠️  少林: http://localhost:9999/zh/admin/maps/shaolin_temple/edit');
-    console.log('  🛠️  襄阳: http://localhost:9999/zh/admin/maps/xiangyang_teahouse/edit');
+    console.log('  🛠️  华山: http://localhost:9999/zh/admin/maps/huashan_scene/edit');
+    console.log('  🛠️  少林: http://localhost:9999/zh/admin/maps/shaolin_scene/edit');
+    console.log('  🛠️  襄阳: http://localhost:9999/zh/admin/maps/xiangyang_scene/edit');
     console.log('');
     
   } catch (error) {

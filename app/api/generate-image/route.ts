@@ -4,7 +4,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import { getPromptById } from '@/src/lib/image-prompts';
 import { db } from '@/app/db';
-import { items } from '@/src/db/schema';
+import { items, maps } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
 import { removeBackground } from '@/src/lib/remove-background';
 
@@ -162,7 +162,7 @@ async function generateWithOpenAI(prompt: string, width: number, height: number)
 
 export async function POST(request: NextRequest) {
   try {
-    const { promptId, isDbItem } = await request.json();
+    const { promptId, isDbItem, isMap } = await request.json();
 
     if (!promptId) {
       return NextResponse.json(
@@ -174,8 +174,37 @@ export async function POST(request: NextRequest) {
     let template: any;
     let originalImagePath: string | null = null;
 
+    // 如果是地图，从数据库获取
+    if (isMap) {
+      const [map] = await db
+        .select()
+        .from(maps)
+        .where(eq(maps.mapId, promptId))
+        .limit(1);
+
+      if (!map || !map.imagePromptZh) {
+        return NextResponse.json(
+          { error: 'Map not found or missing prompt' },
+          { status: 404 }
+        );
+      }
+
+      template = {
+        id: map.mapId,
+        category: 'map',
+        name: map.name,
+        nameEn: map.mapId,
+        prompt: map.imagePromptZh,
+        negativePrompt: '',
+        width: 512,
+        height: 512,
+        style: 'isometric scene'
+      };
+
+      originalImagePath = map.isometricImage;
+    }
     // 如果是数据库item，从数据库获取
-    if (isDbItem) {
+    else if (isDbItem) {
       const [item] = await db
         .select()
         .from(items)
@@ -240,7 +269,15 @@ export async function POST(request: NextRequest) {
     let savePath = cachePath;
     let saveUrl = `/generated/${template.category}/${template.id}.png`;
     
-    if (isDbItem && originalImagePath) {
+    if (isMap && originalImagePath) {
+      // 地图使用原始路径
+      const publicPath = join(process.cwd(), 'public');
+      savePath = join(publicPath, originalImagePath);
+      saveUrl = originalImagePath;
+      
+      const saveDir = join(publicPath, originalImagePath.split('/').slice(0, -1).join('/'));
+      await mkdir(saveDir, { recursive: true });
+    } else if (isDbItem && originalImagePath) {
       const publicPath = join(process.cwd(), 'public');
       savePath = join(publicPath, originalImagePath);
       saveUrl = originalImagePath;
@@ -301,6 +338,21 @@ export async function POST(request: NextRequest) {
       await mkdir(join(savePath, '..'), { recursive: true });
       await writeFile(savePath, new Uint8Array(imageBuffer));
       console.log('[Saved]:', savePath);
+      
+      // 如果是地图，更新数据库的isometricImage字段
+      if (isMap) {
+        try {
+          await db.update(maps)
+            .set({ 
+              isometricImage: saveUrl,
+              updatedAt: new Date()
+            })
+            .where(eq(maps.mapId, promptId));
+          console.log('[DB Updated]: Map isometricImage =', saveUrl);
+        } catch (dbError) {
+          console.error('[DB Update Failed]:', dbError);
+        }
+      }
       
       // 如果是items（建筑、道具、装饰物），自动去除白色背景
       if (isDbItem && template.category !== 'scene') {

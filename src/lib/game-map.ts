@@ -142,7 +142,7 @@ export function createHuashanMap(): GameMap {
       {
         x: 12,
         y: height - 2,
-        targetMapId: 'shaolin',
+        targetMapId: 'shaolin_scene',
         targetX: 12,
         targetY: 1,
         label: '前往少林寺',
@@ -205,7 +205,7 @@ export function createShaolinMap(): GameMap {
       {
         x: 1,
         y: 1,
-        targetMapId: 'huashan',
+        targetMapId: 'huashan_scene',
         targetX: 12,
         targetY: height - 3,
         label: '返回华山',
@@ -213,7 +213,7 @@ export function createShaolinMap(): GameMap {
       {
         x: width - 2,
         y: height - 2,
-        targetMapId: 'xiangyang',
+        targetMapId: 'xiangyang_scene',
         targetX: 1,
         targetY: 1,
         label: '前往襄阳',
@@ -275,7 +275,7 @@ export function createXiangyangMap(): GameMap {
       {
         x: 1,
         y: height - 2,
-        targetMapId: 'shaolin',
+        targetMapId: 'shaolin_scene',
         targetX: width - 3,
         targetY: height - 2,
         label: '返回少林寺',

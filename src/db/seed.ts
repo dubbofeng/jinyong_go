@@ -7,7 +7,7 @@ const seedNPCs = [
     npcId: 'hongqigong',
     name: '洪七公',
     description: '丐帮帮主，武功高强，性格豪爽。精通降龙十八掌和打狗棒法。',
-    mapId: 'huashan',
+    mapId: 'huashan_scene',
     positionX: 10,
     positionY: 15,
     dialogues: {
@@ -23,7 +23,7 @@ const seedNPCs = [
     npcId: 'linghuchong',
     name: '令狐冲',
     description: '华山派大弟子，剑法超群。独孤九剑，破尽天下武功。',
-    mapId: 'shaolin',
+    mapId: 'shaolin_scene',
     positionX: 20,
     positionY: 10,
     dialogues: {
@@ -39,7 +39,7 @@ const seedNPCs = [
     npcId: 'guojing',
     name: '郭靖',
     description: '襄阳城守将，侠之大者。武功深厚，为人正直。',
-    mapId: 'xiangyang',
+    mapId: 'xiangyang_scene',
     positionX: 30,
     positionY: 20,
     dialogues: {
@@ -55,7 +55,7 @@ const seedNPCs = [
     npcId: 'xuzhu',
     name: '虚竹',
     description: '少林寺僧人，机缘巧合下习得逍遥派武功。',
-    mapId: 'shaolin',
+    mapId: 'shaolin_scene',
     positionX: 15,
     positionY: 25,
     dialogues: {
@@ -71,7 +71,7 @@ const seedNPCs = [
     npcId: 'huangrong',
     name: '黄蓉',
     description: '桃花岛主之女，聪慧过人，精通奇门遁甲。',
-    mapId: 'xiangyang',
+    mapId: 'xiangyang_scene',
     positionX: 25,
     positionY: 18,
     dialogues: {

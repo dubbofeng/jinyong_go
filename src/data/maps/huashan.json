@@ -89,7 +89,7 @@
     {
       "x": 12,
       "y": 16,
-      "targetMapId": "shaolin",
+      "targetMapId": "shaolin_scene",
       "targetX": 12,
       "targetY": 2,
       "label": "portal.toShaolin"

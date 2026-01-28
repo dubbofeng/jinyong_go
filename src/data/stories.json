@@ -8,7 +8,7 @@
         "sceneId": "prologue_scene_1",
         "title": "千变万劫",
         "titleEn": "Infinite Variations",
-        "backgroundImage": "huashan_hall",
+        "backgroundImage": "huashan_scene",
         "triggerCondition": "chapter_start",
         "dialogues": [
           {
@@ -54,7 +54,7 @@
         "sceneId": "chapter_1_scene_1",
         "title": "洪七公的考验",
         "titleEn": "Hong Qigong's Test",
-        "backgroundImage": "xiangyang_teahouse",
+        "backgroundImage": "xiangyang_scene",
         "triggerCondition": "enter_xiangyang",
         "dialogues": [
           {
@@ -87,7 +87,7 @@
         "sceneId": "chapter_1_scene_2",
         "title": "黄蓉的机关算尽",
         "titleEn": "Huang Rong's Strategy",
-        "backgroundImage": "xiangyang_teahouse",
+        "backgroundImage": "xiangyang_scene",
         "triggerCondition": "defeat_hong_qigong",
         "dialogues": [
           {
@@ -121,7 +121,7 @@
         "sceneId": "chapter_2_scene_1",
         "title": "欧阳锋的奇招",
         "titleEn": "Ouyang Feng's Strange Moves",
-        "backgroundImage": "huashan_hall",
+        "backgroundImage": "huashan_scene",
         "triggerCondition": "enter_mount_hua",
         "dialogues": [
           {

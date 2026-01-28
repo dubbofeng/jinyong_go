@@ -7,7 +7,33 @@
       "id": "greeting",
       "speaker": "郭靖",
       "text": "这位朋友，你好。在下郭靖，正在此处钻研兵法与棋道。",
-      "nextNodeId": "ask_purpose"
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "郭靖",
+      "text": "看你风尘仆仆，有何贵干？",
+      "options": [
+        {
+          "text": "正是！久仰郭大侠威名",
+          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
+          "nextNodeId": "respect_response"
+        },
+        {
+          "text": "想向郭大侠学习围棋",
+          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
+          "nextNodeId": "learn_request"
+        },
+        {
+          "text": "郭大侠，我想再听听您的教诲",
+          "condition": {"type": "quest", "value": "unlock_skill_fuyu"},
+          "nextNodeId": "after_learn_chat"
+        },
+        {
+          "text": "只是路过看看",
+          "nextNodeId": "just_visit"
+        }
+      ]
     },
     {
       "id": "ask_purpose",
@@ -147,6 +173,47 @@
       "speaker": "郭靖",
       "text": "不必客气。为国为民，侠之大者。学棋亦是如此，不可只为个人胜负，要有更高的追求。",
       "nextNodeId": "farewell"
+    },
+    {
+      "id": "after_learn_chat",
+      "speaker": "郭靖",
+      "text": "你已经学会了「腹语传音」，这是蓉儿教我的绝招。但记住，真正的高手要靠自己的判断，不能总依赖他人。",
+      "options": [
+        {
+          "text": "受教了！",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "想听听郭大侠的兵法心得",
+          "nextNodeId": "talk_strategy"
+        }
+      ]
+    },
+    {
+      "id": "talk_strategy",
+      "speaker": "郭靖",
+      "text": "兵法云：知己知彼，百战不殆。围棋亦是如此。你要清楚自己的优势在哪，对手的弱点在哪，才能制定出最佳策略。",
+      "options": [
+        {
+          "text": "多谢指点！",
+          "nextNodeId": "farewell"
+        }
+      ]
+    },
+    {
+      "id": "final_chapter",
+      "speaker": "郭靖",
+      "text": "你已经完成了所有任务，武艺和棋艺都有很大进步。襄阳城需要你这样的年轻人！但记住，武学棋道永无止境，还需继续努力。",
+      "options": [
+        {
+          "text": "多谢郭大侠栽培！",
+          "nextNodeId": "farewell"
+        },
+        {
+          "text": "还想听听郭大侠的经验",
+          "nextNodeId": "talk_strategy"
+        }
+      ]
     },
     {
       "id": "farewell",
