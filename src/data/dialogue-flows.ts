@@ -9,7 +9,7 @@ export interface DialogueNodeFlow {
   nextNodeId?: string;
   options?: DialogueOptionFlow[];
   action?: {
-    type: 'quest' | 'reward' | 'battle';
+    type: 'quest' | 'reward' | 'battle' | 'skill';
     value: any;
   };
 }
@@ -18,12 +18,12 @@ export interface DialogueOptionFlow {
   optionId: string; // 对应对话文件中options数组的索引或标识
   nextNodeId: string;
   action?: {
-    type: 'quest' | 'reward' | 'battle';
+    type: 'quest' | 'reward' | 'battle' | 'skill';
     value: any;
   };
   condition?: {
-    type: 'level' | 'quest' | 'item';
-    value: string | number;
+    type: 'level' | 'quest' | 'item' | 'playerWon' | 'playerLost' | 'repeatable';
+    value?: string | number;
     inverse?: boolean;
   };
 }
@@ -119,7 +119,26 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         action: {
           type: 'battle',
           value: 'hong_qigong'
-        }
+        },
+        nextNodeId: 'battle_result'
+      },
+      {
+        id: 'battle_result',
+        // 根据战斗结果动态选择分支
+        // 胜利 -> teach_skill
+        // 失败 -> try_again
+        options: [
+          {
+            optionId: '0', // 胜利分支（自动）
+            nextNodeId: 'teach_skill',
+            condition: { type: 'playerWon' }
+          },
+          {
+            optionId: '1', // 失败分支（自动）
+            nextNodeId: 'try_again',
+            condition: { type: 'playerLost' }
+          }
+        ]
       },
       {
         id: 'teach_skill',
@@ -144,7 +163,42 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
             nextNodeId: 'farewell'
           },
           {
-            optionId: '1', // 我还想再听听您的教诲 / I'd like to hear more
+            optionId: '1', // 我还想再挑战一次 / I'd like to challenge again
+            nextNodeId: 'rematch_challenge',
+            condition: { type: 'repeatable' }
+          },
+          {
+            optionId: '2', // 我还想再听听您的教诲 / I'd like to hear more
+            nextNodeId: 'daily_chat'
+          }
+        ]
+      },
+      {
+        id: 'try_again',
+        options: [
+          {
+            optionId: '0', // 我再练练，稍后再来 / Let me practice first
+            nextNodeId: 'farewell'
+          },
+          {
+            optionId: '1', // 我再来挑战一次 / Let me try again
+            nextNodeId: 'challenge_condition'
+          }
+        ]
+      },
+      {
+        id: 'rematch_challenge',
+        options: [
+          {
+            optionId: '0', // 好！请前辈指教 / Alright, let's go
+            nextNodeId: 'start_battle',
+            action: {
+              type: 'battle',
+              value: 'hong_qigong'
+            }
+          },
+          {
+            optionId: '1', // 我先休息一下 / Let me rest first
             nextNodeId: 'daily_chat'
           }
         ]
@@ -155,6 +209,11 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0', // 受教了 / I've learned so much
             nextNodeId: 'farewell'
+          },
+          {
+            optionId: '1', // 再来一局？ / Another round?
+            nextNodeId: 'rematch_challenge',
+            condition: { type: 'repeatable' }
           }
         ]
       },

@@ -40,7 +40,6 @@ async function setupNpcRequirements() {
       ],
       repeatable: true,
       repeatConditions: [Requirements.defeatedCount(1)],
-      cooldownSeconds: 1800, // 30分钟
       lockedHint: '需要10级并击败洪七公和令狐冲才能挑战郭靖',
     },
   };
@@ -168,11 +167,13 @@ async function setupNpcRequirements() {
       },
     },
     battle: {
-      unlockConditions: [Requirements.level(6)],
+      unlockConditions: [
+        // 第一次对话后即可对战（使用affection_level检查是否已见过）
+        { type: 'affection_level' as const, npcId: 'hongqigong', minAffection: 0, description: '需要先对话' }
+      ],
       repeatable: true,
       repeatConditions: [Requirements.defeatedCount(1)],
-      cooldownSeconds: 1800, // 30分钟
-      lockedHint: '需要6级才能挑战洪七公',
+      lockedHint: '需要先和洪七公对话才能挑战',
     },
   };
 
@@ -204,15 +205,12 @@ async function setupNpcRequirements() {
     },
     battle: {
       unlockConditions: [
-        Requirements.and(
-          Requirements.level(3),
-          { type: 'affection_level' as const, npcId: 'hongqigong', minAffection: 0, description: '见过洪七公' }
-        ),
+        // 必须完成洪七公的任务（击败洪七公）
+        Requirements.npcDefeated('hongqigong')
       ],
       repeatable: true,
       repeatConditions: [Requirements.defeatedCount(1)],
-      cooldownSeconds: 1200, // 20分钟
-      lockedHint: '需要3级并见过洪七公才能挑战令狐冲',
+      lockedHint: '需要先击败洪七公才能挑战令狐冲',
     },
   };
 

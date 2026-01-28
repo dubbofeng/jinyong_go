@@ -356,7 +356,7 @@ export default function GoBoardGame({
     const experienceGained = playerWon ? 50 + Math.floor(moveCount / 10) * 5 : 10;
     const staminaChange = playerWon ? 0 : -20; // 失败扣体力
 
-    // 保存对战记录
+    // 保存对战记录和NPC关系
     try {
       // 获取完整的棋谱数据
       const moves = engine.getMoveHistory().map(move => ({
@@ -372,7 +372,7 @@ export default function GoBoardGame({
           userId: session.user.id,
           opponentName: npcId || 'AI',
           opponentType: npcId ? 'npc' : 'ai',
-          difficulty: aiDifficulty === 'easy' ? 1 : aiDifficulty === 'medium' ? 5 : 9,
+          difficulty: aiDifficulty,
           boardSize: size,
           winner,
           blackScore: Math.round(blackScore),
@@ -386,6 +386,30 @@ export default function GoBoardGame({
 
       if (!recordResponse.ok) {
         console.error('Failed to save chess record');
+      }
+
+      // 如果是与NPC对战，更新NPC关系
+      if (npcId) {
+        try {
+          const battleResultResponse = await fetch(`/api/npcs/${npcId}/battle-result`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              playerWon,
+              experienceGained,
+              skillsUsed: [],
+            }),
+          });
+
+          if (!battleResultResponse.ok) {
+            console.error('Failed to save battle result with NPC');
+          } else {
+            const battleResultData = await battleResultResponse.json();
+            console.log('✅ Battle result saved:', battleResultData);
+          }
+        } catch (error) {
+          console.error('Error saving battle result:', error);
+        }
       }
     } catch (error) {
       console.error('Error saving chess record:', error);
@@ -416,7 +440,7 @@ export default function GoBoardGame({
     }
 
     // 检查并更新任务进度
-    const questUpdates = [];
+    const questUpdates: Array<{ questId: string; questTitle: string; progress: string }> = [];
     if (playerWon && npcId) {
       try {
         // TODO: 任务系统暂未实现，注释掉以避免 405 错误

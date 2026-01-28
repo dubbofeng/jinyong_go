@@ -244,6 +244,28 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     return grid;
   };
 
+  /**
+   * 生成条件提示文本
+   */
+  const getRequirementHint = (requirement: any): string => {
+    switch (requirement.type) {
+      case 'level':
+        return `等级达到 ${requirement.minLevel} 级`;
+      case 'chapter':
+        return `完成第 ${requirement.chapter} 章`;
+      case 'quest_completed':
+        return `完成任务：${requirement.questId}`;
+      case 'npc_defeated':
+        return `击败NPC：${requirement.npcId}`;
+      case 'skill_unlocked':
+        return `学会技能：${requirement.skillId}`;
+      case 'affection_level':
+        return `与 ${requirement.npcId} 好感度达到 ${requirement.minAffection}`;
+      default:
+        return requirement.description || '未知条件';
+    }
+  };
+
   // ==================== 引擎初始化 ====================
 
   useEffect(() => {
@@ -455,12 +477,45 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       // 处理传送门点击
       if (item.itemType === 'portal') {
         console.log(`🌀 Clicked portal to ${item.targetMapId}`);
-        if (item.targetMapId) {
+        
+        if (!item.targetMapId) {
+          console.error('❌ Portal has no targetMapId');
+          return;
+        }
+
+        // 检查传送门是否解锁
+        try {
+          const response = await fetch(`/api/portals/check?portalId=${item.id}&mapId=${mapData?.id}`);
+          const result = await response.json();
+          
+          if (result.success && result.data) {
+            if (result.data.unlocked) {
+              // 传送门已解锁，显示确认对话框
+              setPendingPortal(item);
+              setShowPortalConfirm(true);
+            } else {
+              // 传送门未解锁，显示条件提示
+              const requirements = result.data.requirements;
+              let hint = '该传送门尚未解锁\n\n解锁条件：\n';
+              
+              if (requirements && Array.isArray(requirements)) {
+                requirements.forEach((req: any, index: number) => {
+                  hint += `${index + 1}. ${getRequirementHint(req)}\n`;
+                });
+              } else {
+                hint += '未知条件';
+              }
+              
+              await showAlert(hint, 'warning', '🔒 传送门未解锁');
+            }
+          }
+        } catch (error) {
+          console.error('检查传送门状态失败:', error);
+          // 出错时允许传送（向后兼容）
           setPendingPortal(item);
           setShowPortalConfirm(true);
-        } else {
-          console.error('❌ Portal has no targetMapId');
         }
+        
         return;
       }
       
