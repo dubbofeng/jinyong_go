@@ -14,7 +14,8 @@ export type ImageCategory =
   | 'item'         // 物品图标（从数据库读取）
   | 'character'    // 角色立绘（从数据库读取）
   | 'building'     // 建筑物（从数据库读取）
-  | 'map';         // 地图等距图（从数据库读取）
+  | 'map'          // 地图等距图（从数据库读取）
+  | 'npc';         // NPC角色（从数据库读取）
 
 export interface PromptTemplate {
   category: ImageCategory;

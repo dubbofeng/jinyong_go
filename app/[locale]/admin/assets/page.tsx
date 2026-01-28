@@ -37,13 +37,14 @@ export default function AssetsPage() {
   const [jsonPrompts] = useState<PromptTemplate[]>(getAllPrompts());
   const [dbPrompts, setDbPrompts] = useState<DatabaseItem[]>([]);
   const [mapPrompts, setMapPrompts] = useState<DatabaseMap[]>([]);
+  const [npcPrompts, setNpcPrompts] = useState<DatabaseItem[]>([]);
   const [generatedImages, setGeneratedImages] = useState<Map<string, GeneratedImage>>(new Map());
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedSource, setSelectedSource] = useState<'all' | 'json' | 'database' | 'maps'>('all');
+  const [selectedSource, setSelectedSource] = useState<'all' | 'json' | 'database' | 'maps' | 'npcs'>('all');
   const [generatingIds, setGeneratingIds] = useState<Set<string>>(new Set());
   const [isCheckingFiles, setIsCheckingFiles] = useState(true);
 
-  const categories = ['all', 'story', 'skill', 'ui', 'item', 'building', 'map'];
+  const categories = ['all', 'story', 'skill', 'ui', 'item', 'building', 'map', 'npc'];
 
   // 加载数据库items
   useEffect(() => {
@@ -81,10 +82,28 @@ export default function AssetsPage() {
     loadDatabaseMaps();
   }, []);
 
+  // 加载NPC prompts
+  useEffect(() => {
+    const loadNpcPrompts = async () => {
+      try {
+        const response = await fetch('/api/npcs/prompts');
+        const data = await response.json();
+        
+        if (data.success) {
+          setNpcPrompts(data.items);
+        }
+      } catch (error) {
+        console.error('Failed to load NPC prompts:', error);
+      }
+    };
+
+    loadNpcPrompts();
+  }, []);
+
   // 合并JSON、数据库items和地图的prompts - 使用 useMemo 避免无限循环
   const allPrompts = useMemo(() => {
-    return [...jsonPrompts, ...dbPrompts, ...mapPrompts];
-  }, [jsonPrompts.length, dbPrompts.length, mapPrompts.length]);
+    return [...jsonPrompts, ...dbPrompts, ...mapPrompts, ...npcPrompts];
+  }, [jsonPrompts.length, dbPrompts.length, mapPrompts.length, npcPrompts.length]);
 
   // 检查已存在的图片文件
   useEffect(() => {
@@ -148,6 +167,9 @@ export default function AssetsPage() {
     } else if (selectedSource === 'maps') {
       // 只显示数据库地图
       sourceFiltered = mapPrompts;
+    } else if (selectedSource === 'npcs') {
+      // 只显示数据库NPCs
+      sourceFiltered = npcPrompts;
     }
     
     // 再按分类过滤
@@ -161,15 +183,16 @@ export default function AssetsPage() {
 
     setGeneratingIds(prev => new Set(prev).add(promptId));
 
-    // 判断是否是数据库item或地图
+    // 判断是否是数据库item、地图或NPC
     const isDbItem = dbPrompts.some(db => db.id === promptId);
     const isMap = mapPrompts.some(m => m.id === promptId);
+    const isNpc = npcPrompts.some(n => n.id === promptId);
 
     try {
       const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptId, isDbItem, isMap })
+        body: JSON.stringify({ promptId, isDbItem, isMap, isNpc })
       });
 
       const data = await response.json();
@@ -259,6 +282,16 @@ export default function AssetsPage() {
               >
                 地图 ({mapPrompts.length})
               </button>
+              <button
+                onClick={() => setSelectedSource('npcs')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedSource === 'npcs'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                NPC角色 ({npcPrompts.length})
+              </button>
             </div>
           </div>
           
@@ -281,7 +314,8 @@ export default function AssetsPage() {
                    cat === 'ui' ? 'UI' :
                    cat === 'item' ? '道具' :
                    cat === 'building' ? '建筑' :
-                   cat === 'map' ? '地图' : cat}
+                   cat === 'map' ? '地图' :
+                   cat === 'npc' ? 'NPC角色' : cat}
                 </button>
               ))}
             </div>
@@ -393,6 +427,7 @@ export default function AssetsPage() {
                         prompt.category === 'item' ? 'bg-green-900 text-green-200' :
                         prompt.category === 'building' ? 'bg-orange-900 text-orange-200' :
                         prompt.category === 'map' ? 'bg-cyan-900 text-cyan-200' :
+                        prompt.category === 'npc' ? 'bg-pink-900 text-pink-200' :
                         'bg-gray-700 text-gray-300'
                       }`}>
                         {prompt.category}
@@ -405,6 +440,11 @@ export default function AssetsPage() {
                       {mapPrompts.some(m => m.id === prompt.id) && (
                         <span className="text-xs px-2 py-1 rounded bg-cyan-900 text-cyan-200">
                           MAP
+                        </span>
+                      )}
+                      {npcPrompts.some(n => n.id === prompt.id) && (
+                        <span className="text-xs px-2 py-1 rounded bg-purple-900 text-purple-200">
+                          NPC
                         </span>
                       )}
                     </div>

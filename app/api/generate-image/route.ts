@@ -208,7 +208,7 @@ async function generateWithOpenAI(prompt: string, width: number, height: number)
 
 export async function POST(request: NextRequest) {
   try {
-    const { promptId, isDbItem, isMap } = await request.json();
+    const { promptId, isDbItem, isMap, isNpc } = await request.json();
 
     if (!promptId) {
       return NextResponse.json(
@@ -251,6 +251,35 @@ export async function POST(request: NextRequest) {
       };
 
       originalImagePath = map.isometricImage;
+    }
+    // 如果是NPC，从数据库获取
+    else if (isNpc) {
+      const [item] = await db
+        .select()
+        .from(items)
+        .where(eq(items.itemId, promptId))
+        .limit(1);
+
+      if (!item || !item.prompt) {
+        return NextResponse.json(
+          { error: 'NPC not found or missing prompt' },
+          { status: 404 }
+        );
+      }
+
+      template = {
+        id: item.itemId,
+        category: 'npc',
+        name: item.name,
+        nameEn: item.nameEn || item.name,
+        prompt: item.prompt,
+        negativePrompt: item.negativePrompt,
+        width: item.imageWidth || 512,
+        height: item.imageHeight || 512,
+        style: 'isometric game character'
+      };
+
+      originalImagePath = item.imagePath;
     }
     // 如果是数据库item，从数据库获取
     else if (isDbItem) {
@@ -324,6 +353,15 @@ export async function POST(request: NextRequest) {
       savePath = join(publicPath, originalImagePath);
       saveUrl = originalImagePath;
       
+      const saveDir = join(publicPath, originalImagePath.split('/').slice(0, -1).join('/'));
+      await mkdir(saveDir, { recursive: true });
+    } else if (isNpc && originalImagePath) {
+      // NPC使用原始路径 (public/game/isometric/characters/)
+      const publicPath = join(process.cwd(), 'public');
+      savePath = join(publicPath, originalImagePath);
+      saveUrl = originalImagePath;
+      
+      // 确保目录存在
       const saveDir = join(publicPath, originalImagePath.split('/').slice(0, -1).join('/'));
       await mkdir(saveDir, { recursive: true });
     } else if (isDbItem && originalImagePath) {

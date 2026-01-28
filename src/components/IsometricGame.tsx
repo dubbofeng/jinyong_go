@@ -29,7 +29,6 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [error, setError] = useState<string | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(initialMap || null);
   const [showInfo, setShowInfo] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<{ x: number; y: number } | null>(null);
   const [playerPosition, setPlayerPosition] = useState<{ x: number; y: number } | null>(null);
   
   // 对话系统状态
@@ -481,11 +480,6 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       const ctx = canvasRef.current?.getContext('2d');
       if (ctx) {
         engineRef.current.renderPlayer(ctx);
-        
-        // 渲染悬停高亮效果
-        if (hoveredItem) {
-          engineRef.current.renderHoverHighlight(ctx, hoveredItem.x, hoveredItem.y);
-        }
       }
     }
   };
@@ -617,32 +611,6 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   };
 
   /**
-   * 处理鼠标移动事件（悬停高亮）
-   */
-  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    const engine = engineRef.current;
-    if (!canvas || !engine) return;
-
-    // 获取Canvas相对坐标
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // 检查是否悬停在物品上（使用像素级检测）
-    const item = engine.getItemAtPixel(x, y);
-    
-    if (item) {
-      // 使用物品的实际坐标来渲染高亮
-      setHoveredItem({ x: item.x, y: item.y });
-      canvas.style.cursor = 'pointer';
-    } else {
-      setHoveredItem(null);
-      canvas.style.cursor = 'default';
-    }
-  };
-
-  /**
    * 处理键盘事件（WASD移动 + 空格交互 + ESC关闭对话）
    */
   useEffect(() => {
@@ -731,18 +699,25 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    */
   const startDialogue = async (item: any) => {
     try {
-      // 根据NPC ID加载对话树
-      // NPC ID格式：从itemName提取（如"洪七公" -> "hong_qigong"）
-      const npcIdMap: Record<string, string> = {
-        '洪七公': 'hong_qigong',
-        '郭靖': 'guo_jing',
-        '令狐冲': 'linghu_chong',
-        '黄蓉': 'huang_rong',
-      };
+      // 从item.itemId提取NPC ID（格式：npc_xxxx -> xxxx）
+      let npcId = '';
+      if (item.itemId && item.itemId.startsWith('npc_')) {
+        npcId = item.itemId.substring(4); // 移除 'npc_' 前缀
+      }
       
-      const npcId = npcIdMap[item.itemName];
+      // 如果无法从itemId提取，尝试使用旧的映射表（向后兼容）
       if (!npcId) {
-        console.warn(`未找到 NPC ${item.itemName} 的对话文件`);
+        const npcIdMap: Record<string, string> = {
+          '洪七公': 'hong_qigong',
+          '郭靖': 'guo_jing',
+          '令狐冲': 'linghu_chong',
+          '黄蓉': 'huang_rong',
+        };
+        npcId = npcIdMap[item.itemName] || '';
+      }
+      
+      if (!npcId) {
+        console.warn(`未找到 NPC ${item.itemName} 的ID`);
         await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
         return;
       }
@@ -760,13 +735,19 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       
       setDialogueEngine(engine);
       
-      // 根据NPC名称设置头像路径
-      const avatarMap: Record<string, string> = {
-        '洪七公': '/game/isometric/characters/npc_hong_qigong.png',
-        '令狐冲': '/game/isometric/characters/npc_linghu_chong.png',
-        '郭靖': '/game/isometric/characters/npc_guo_jing.png',
-      };
-      setCurrentNpcAvatar(avatarMap[item.itemName] || null);
+      // 尝试从数据库获取头像路径，否则使用默认路径
+      let avatarPath = item.imagePath || null;
+      
+      // 如果item没有单独的avatarPath，构建默认路径
+      // 精灵图路径格式: /game/isometric/characters/npc_xxx.png
+      // 头像路径格式: /game/avatars/xxx.png
+      if (avatarPath && avatarPath.includes('/isometric/characters/')) {
+        avatarPath = avatarPath.replace('/isometric/characters/npc_', '/avatars/');
+      } else if (!avatarPath) {
+        avatarPath = `/game/avatars/${npcId}.png`;
+      }
+      
+      setCurrentNpcAvatar(avatarPath);
       
       // 更新当前对话节点和选项
       updateDialogueState(engine);
@@ -1204,7 +1185,6 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
-        onMouseMove={handleCanvasMouseMove}
         className="absolute inset-0 w-full h-full"
         style={{ imageRendering: 'pixelated', zIndex: 0 }}
       />

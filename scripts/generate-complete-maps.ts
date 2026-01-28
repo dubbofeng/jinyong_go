@@ -6,7 +6,7 @@
 import * as dotenv from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { maps, mapTiles, mapItems, items } from '../src/db/schema';
+import { maps, mapTiles, mapItems, items, npcs } from '../src/db/schema';
 import { eq, inArray } from 'drizzle-orm';
 
 dotenv.config({ path: '.env.local' });
@@ -301,9 +301,26 @@ async function main() {
     console.log('   ✅ 传送门已存在');
   }
 
-  // 3. 从数据库获取所有地图配置
-  console.log('\n3️⃣  获取地图配置...');
+  // 3. 从数据库获取所有地图配置和NPC数据
+  console.log('\n3️⃣  获取地图配置和NPC数据...');
   const allMaps = await db.select().from(maps).orderBy(maps.id);
+  
+  // 获取所有NPC数据，按地图分组
+  const allNpcs = await db.select().from(npcs);
+  const npcsByMap = allNpcs.reduce((acc, npc) => {
+    if (!acc[npc.mapId]) {
+      acc[npc.mapId] = [];
+    }
+    // 获取对应的item ID (npc_xxxxx)
+    const itemId = `npc_${npc.npcId}`;
+    acc[npc.mapId].push({
+      itemId,
+      x: npc.positionX,
+      y: npc.positionY,
+      npcId: npc.npcId,
+    });
+    return acc;
+  }, {} as Record<string, Array<{ itemId: string; x: number; y: number; npcId: string }>>);
   
   const mapConfigs = allMaps.map((m, index) => ({
     id: m.id,
@@ -313,16 +330,18 @@ async function main() {
     height: m.height,
     seed: 10000 + m.id * 1111, // 基于ID生成唯一seed
     isWorld: m.mapType === 'world',
-    npcIds: m.mapType === 'world' ? [] : 
-      // 前几个地图已经有NPC，其他地图留空
-      m.mapId === 'huashan_scene' ? ['npc_hong_qigong'] :
-      m.mapId === 'shaolin_scene' ? ['npc_linghu_chong'] :
-      m.mapId === 'wudang_scene' ? ['npc_guo_jing'] :
-      m.mapId === 'taohua_scene' ? ['npc_huang_rong'] :
-      []
+    npcsData: npcsByMap[m.mapId] || [], // 从数据库获取该地图的NPC数据
   }));
   
   console.log(`   找到 ${mapConfigs.length} 个地图`);
+  console.log(`   找到 ${allNpcs.length} 个NPC`);
+  
+  // 显示各地图的NPC数量
+  for (const config of mapConfigs) {
+    if (config.npcsData.length > 0) {
+      console.log(`   📍 ${config.name}: ${config.npcsData.length} 个NPC`);
+    }
+  }
 
   // 4. 生成每个地图
   for (const config of mapConfigs) {
@@ -460,48 +479,25 @@ async function main() {
     // 记录需要避开的位置（NPC和传送门周围）
     const blockedPositions: {x: number, y: number}[] = [];
 
-    // 放置NPC (使用地图配置指定的NPC)
-    if (!config.isWorld && config.npcIds.length > 0) {
+    // 放置NPC (从数据库读取的NPC数据)
+    if (!config.isWorld && config.npcsData.length > 0) {
       console.log('👥 放置NPC...');
-      for (const npcId of config.npcIds) {
-        const item = npcItems.find(n => n.itemId === npcId);
+      for (const npcData of config.npcsData) {
+        const item = npcItems.find(n => n.itemId === npcData.itemId);
         if (!item) {
-          console.log(`   ⚠️  NPC ${npcId} 不存在`);
+          console.log(`   ⚠️  NPC item ${npcData.itemId} 不存在`);
           continue;
         }
         
-        // NPC离玩家初始位置（地图中心）更远，至少10格以上
-        const centerX = Math.floor(config.width / 2);
-        const centerY = Math.floor(config.height / 2);
-        const minDistance = 10; // 距离中心最小距离
-        const minBuildingDistance = 5; // 距离建筑最小距离
-        let x, y;
-        let attempts = 0;
+        // 使用数据库中存储的坐标
+        const x = npcData.x;
+        const y = npcData.y;
         
-        do {
-          x = margin + Math.floor(Math.random() * (config.width - margin * 2));
-          y = margin + Math.floor(Math.random() * (config.height - margin * 2));
-          
-          // 检查距离中心
-          const distanceToCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-          if (distanceToCenter < minDistance) {
-            attempts++;
-            continue;
-          }
-          
-          // 检查距离所有建筑
-          let tooCloseToBuilding = false;
-          for (const building of buildings) {
-            const distanceToBuilding = Math.sqrt((x - building.x) ** 2 + (y - building.y) ** 2);
-            if (distanceToBuilding < minBuildingDistance) {
-              tooCloseToBuilding = true;
-              break;
-            }
-          }
-          
-          if (!tooCloseToBuilding) break;
-          attempts++;
-        } while (attempts < 100);
+        // 验证坐标是否合法
+        if (x < 0 || x >= config.width || y < 0 || y >= config.height) {
+          console.log(`   ⚠️  NPC ${npcData.npcId} 坐标超出地图范围: (${x}, ${y})`);
+          continue;
+        }
         
         await db.insert(mapItems).values({
           mapId: mapRecord.id,
@@ -516,7 +512,7 @@ async function main() {
           }
         }
         
-        console.log(`   + ${item.name} @ (${x}, ${y}) [距中心: ${Math.floor(Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2))}格]`);
+        console.log(`   + ${item.name} @ (${x}, ${y}) [NPC: ${npcData.npcId}]`);
       }
     }
 
