@@ -6,7 +6,7 @@ import { getPromptById } from '@/src/lib/image-prompts';
 import { db } from '@/app/db';
 import { items, maps } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
-import { removeBackground } from '@/src/lib/remove-background';
+// 动态导入 removeBackground 避免 sharp 加载失败导致整个路由崩溃
 
 // 支持多种AI图片生成服务
 type AIProvider = 'gemini' | 'huggingface' | 'stability' | 'openai' | 'placeholder';
@@ -21,9 +21,23 @@ const getProvider = (): AIProvider => {
 };
 
 // Gemini 2.5 Flash Image API调用
-async function generateWithGemini(prompt: string, width: number, height: number): Promise<Buffer> {
+async function generateWithGemini(prompt: string, width: number, height: number, category: string): Promise<Buffer> {
   // 使用 Gemini 2.5 Flash Image 模型 (Nano Banana)
   // 文档: https://ai.google.dev/gemini-api/docs/image-generation
+  
+  // 为游戏素材添加特定的优化提示词
+  let enhancedPrompt = prompt;
+  if (category === 'map' || category === 'building' || category === 'item') {
+    // 强调完整边界、独立素材、游戏资源特征
+    enhancedPrompt = `${prompt}
+
+IMPORTANT: This is a game asset that needs:
+- Complete object with clear, finished boundaries (no cut-off edges)
+- Isolated, standalone element suitable for placement in a game scene
+- Clean separation from background
+- All parts of the object fully visible and complete
+- Professional game asset quality`;
+  }
   
   const aspectRatio = width > height ? '16:9' : height > width ? '9:16' : '1:1';
   
@@ -37,7 +51,7 @@ async function generateWithGemini(prompt: string, width: number, height: number)
     body: JSON.stringify({
       contents: [{
         parts: [{
-          text: prompt
+          text: enhancedPrompt
         }]
       }],
       generationConfig: {
@@ -45,7 +59,25 @@ async function generateWithGemini(prompt: string, width: number, height: number)
         imageConfig: {
           aspectRatio: aspectRatio
         }
-      }
+      },
+      safetySettings: [
+        {
+          category: 'HARM_CATEGORY_HATE_SPEECH',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_HARASSMENT',
+          threshold: 'BLOCK_NONE'
+        }
+      ]
     }),
   });
 
@@ -57,14 +89,26 @@ async function generateWithGemini(prompt: string, width: number, height: number)
 
   const data = await response.json();
   
-  // 解析返回的图片数据
-  // Gemini 返回格式: candidates[0].content.parts[0].inlineData.data (base64)
-  if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-    const parts = data.candidates[0].content.parts;
+  // 检查是否被安全过滤器拦截
+  if (data.candidates && data.candidates[0]) {
+    const candidate = data.candidates[0];
     
-    for (const part of parts) {
-      if (part.inlineData && part.inlineData.mimeType?.startsWith('image/')) {
-        return Buffer.from(part.inlineData.data, 'base64');
+    // 处理 NO_IMAGE 情况
+    if (candidate.finishReason === 'NO_IMAGE') {
+      console.error('[Gemini API] NO_IMAGE - Content may have been blocked by safety filters');
+      console.error('[Gemini API] Prompt:', enhancedPrompt);
+      console.error('[Gemini API] Safety Ratings:', JSON.stringify(candidate.safetyRatings, null, 2));
+      throw new Error('Gemini API 拒绝生成图片 (NO_IMAGE)。可能原因：1) 内容被安全过滤器拦截 2) 提示词格式问题。尝试使用英文提示词或简化描述。');
+    }
+    
+    // 正常图片生成
+    if (candidate.content) {
+      const parts = candidate.content.parts;
+      
+      for (const part of parts) {
+        if (part.inlineData && part.inlineData.mimeType?.startsWith('image/')) {
+          return Buffer.from(part.inlineData.data, 'base64');
+        }
       }
     }
   }
@@ -182,19 +226,22 @@ export async function POST(request: NextRequest) {
         .where(eq(maps.mapId, promptId))
         .limit(1);
 
-      if (!map || !map.imagePromptZh) {
+      if (!map || (!map.imagePromptEn && !map.imagePromptZh)) {
         return NextResponse.json(
           { error: 'Map not found or missing prompt' },
           { status: 404 }
         );
       }
 
+      // 优先使用英文提示词（Gemini 对英文支持更好）
+      const prompt = map.imagePromptEn || map.imagePromptZh || '';
+
       template = {
         id: map.mapId,
         category: 'map',
         name: map.name,
         nameEn: map.mapId,
-        prompt: map.imagePromptZh,
+        prompt: prompt,
         negativePrompt: '',
         width: 512,
         height: 512,
@@ -298,7 +345,7 @@ export async function POST(request: NextRequest) {
     let status: string = 'generated';
 
     if (provider === 'gemini') {
-      imageBuffer = await generateWithGemini(template.prompt, template.width, template.height);
+      imageBuffer = await generateWithGemini(template.prompt, template.width, template.height, template.category);
     } else if (provider === 'huggingface') {
       imageBuffer = await generateWithHuggingFace(template.prompt, template.width, template.height);
     } else if (provider === 'stability') {
@@ -355,9 +402,11 @@ export async function POST(request: NextRequest) {
       }
       
       // 如果是items（建筑、道具、装饰物），自动去除白色背景
-      if (isDbItem && template.category !== 'scene') {
+      if (isDbItem && template.category !== 'story') {
         try {
           console.log('[Removing Background]:', savePath);
+          // 动态导入 removeBackground
+          const { removeBackground } = await import('@/src/lib/remove-background');
           await removeBackground({
             inputPath: savePath,
             threshold: 240 // 亮度阈值，高于此值视为背景

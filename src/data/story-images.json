@@ -1,6 +1,6 @@
 [
   {
-    "category": "scene",
+    "category": "story",
     "id": "huashan_hall",
     "name": "华山传功厅",
     "nameEn": "Mount Hua Martial Hall",
@@ -11,7 +11,7 @@
     "style": "cinematic wuxia"
   },
   {
-    "category": "scene",
+    "category": "story",
     "id": "shaolin_meditation",
     "name": "少林寺禅房",
     "nameEn": "Shaolin Temple Meditation Room",
@@ -22,7 +22,7 @@
     "style": "peaceful zen"
   },
   {
-    "category": "scene",
+    "category": "story",
     "id": "xiangyang_city",
     "name": "襄阳城茶馆",
     "nameEn": "Xiangyang City Teahouse",
@@ -33,7 +33,7 @@
     "style": "warm traditional"
   },
   {
-    "category": "scene",
+    "category": "story",
     "id": "go_battle",
     "name": "围棋对弈场景",
     "nameEn": "Go Battle Scene",

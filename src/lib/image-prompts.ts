@@ -5,10 +5,10 @@
 
 import skillsData from '../data/skills.json';
 import uiElementsData from '../data/ui-elements.json';
-import storyScenesData from '../data/story-scenes.json';
+import storyImagesData from '../data/story-images.json';
 
 export type ImageCategory = 
-  | 'scene'        // 场景插图
+  | 'story'        // 故事插图
   | 'skill'        // 技能图标
   | 'ui'           // UI元素
   | 'item'         // 物品图标（从数据库读取）
@@ -29,9 +29,9 @@ export interface PromptTemplate {
 }
 
 /**
- * 场景插图提示词（从JSON读取）
+ * 故事插图提示词（从JSON读取）
  */
-export const SCENE_PROMPTS: PromptTemplate[] = storyScenesData as PromptTemplate[];
+export const STORY_PROMPTS: PromptTemplate[] = storyImagesData as PromptTemplate[];
 
 /**
  * 技能图标提示词（从JSON读取）
@@ -47,7 +47,7 @@ export const UI_PROMPTS: PromptTemplate[] = uiElementsData as PromptTemplate[];
  * 获取所有提示词模板
  */
 export function getAllPrompts(): PromptTemplate[] {
-  return [...SCENE_PROMPTS, ...SKILL_PROMPTS, ...UI_PROMPTS];
+  return [...STORY_PROMPTS, ...SKILL_PROMPTS, ...UI_PROMPTS];
 }
 
 /**

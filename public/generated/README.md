@@ -46,7 +46,7 @@
 
 ```tsx
 // 在React组件中引用
-<img src="/generated/scene/huashan_hall.png" alt="华山传功厅" />
+<img src="/generated/story/huashan_hall.png" alt="华山传功厅" />
 ```
 
 详细文档：`docs/AI图片生成快速启动.md`

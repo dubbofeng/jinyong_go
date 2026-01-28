@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getAllPrompts, PromptTemplate } from '@/src/lib/image-prompts';
 import Image from 'next/image';
 
@@ -43,7 +43,7 @@ export default function AssetsPage() {
   const [generatingIds, setGeneratingIds] = useState<Set<string>>(new Set());
   const [isCheckingFiles, setIsCheckingFiles] = useState(true);
 
-  const categories = ['all', 'scene', 'skill', 'ui', 'item', 'building', 'map'];
+  const categories = ['all', 'story', 'skill', 'ui', 'item', 'building', 'map'];
 
   // 加载数据库items
   useEffect(() => {
@@ -81,11 +81,18 @@ export default function AssetsPage() {
     loadDatabaseMaps();
   }, []);
 
-  // 合并JSON、数据库items和地图的prompts
-  const allPrompts = [...jsonPrompts, ...dbPrompts, ...mapPrompts];
+  // 合并JSON、数据库items和地图的prompts - 使用 useMemo 避免无限循环
+  const allPrompts = useMemo(() => {
+    return [...jsonPrompts, ...dbPrompts, ...mapPrompts];
+  }, [jsonPrompts.length, dbPrompts.length, mapPrompts.length]);
 
   // 检查已存在的图片文件
   useEffect(() => {
+    // 如果已经检查过或正在检查，不重复执行
+    if (!isCheckingFiles || allPrompts.length === 0) {
+      return;
+    }
+
     const checkExistingImages = async () => {
       const newGeneratedImages = new Map<string, GeneratedImage>();
 
@@ -113,6 +120,7 @@ export default function AssetsPage() {
               itemType: dbItem.itemType
             });
           }
+          // 图片不存在也不抛出错误，静默跳过
         } catch (error) {
           // 图片不存在，跳过
         }
@@ -122,10 +130,8 @@ export default function AssetsPage() {
       setIsCheckingFiles(false);
     };
 
-    if (allPrompts.length > 0) {
-      checkExistingImages();
-    }
-  }, [allPrompts]);
+    checkExistingImages();
+  }, [allPrompts.length, isCheckingFiles]);
 
   // 过滤prompts - 根据数据源先筛选，再按分类过滤
   const filteredPrompts = (() => {
@@ -270,7 +276,7 @@ export default function AssetsPage() {
                   }`}
                 >
                   {cat === 'all' ? '全部' : 
-                   cat === 'scene' ? '场景' : 
+                   cat === 'story' ? '故事' : 
                    cat === 'skill' ? '技能' : 
                    cat === 'ui' ? 'UI' :
                    cat === 'item' ? '道具' :
@@ -382,7 +388,7 @@ export default function AssetsPage() {
                     <h3 className="font-bold text-lg">{prompt.name}</h3>
                     <div className="flex gap-1">
                       <span className={`text-xs px-2 py-1 rounded ${
-                        prompt.category === 'scene' ? 'bg-blue-900 text-blue-200' :
+                        prompt.category === 'story' ? 'bg-blue-900 text-blue-200' :
                         prompt.category === 'skill' ? 'bg-purple-900 text-purple-200' :
                         prompt.category === 'item' ? 'bg-green-900 text-green-200' :
                         prompt.category === 'building' ? 'bg-orange-900 text-orange-200' :

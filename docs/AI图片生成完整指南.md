@@ -649,7 +649,7 @@ pnpm dev
 **解决**：
 ```bash
 # 1. 检查文件是否存在
-ls -lh public/generated/scene/
+ls -lh public/generated/story/
 
 # 2. 检查浏览器缓存
 # 硬刷新: Cmd+Shift+R (Mac) / Ctrl+F5 (Windows)

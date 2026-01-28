@@ -174,7 +174,7 @@ jinyong-go/
   - [x] AI图片生成集成指南 (`docs/AI图片生成集成指南.md`)
   - [x] .env.local.example 配置说明
   - [x] .gitignore 规则配置
-  - [x] 目录结构创建（`public/generated/scene|skill|ui/`）
+  - [x] 目录结构创建（`public/generated/story|skill|ui/`）
 
 **已完成资源模板**:
 - 场景插图（4个）：华山传功厅、少林寺禅房、襄阳城茶馆、围棋对弈场景
