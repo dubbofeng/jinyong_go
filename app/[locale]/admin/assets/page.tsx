@@ -127,16 +127,28 @@ export default function AssetsPage() {
     }
   }, [allPrompts]);
 
-  // 过滤prompts
-  const filteredPrompts = allPrompts.filter(p => {
-    const categoryMatch = selectedCategory === 'all' || p.category === selectedCategory;
-    const sourceMatch = 
-      selectedSource === 'all' ||
-      (selectedSource === 'json' && !dbPrompts.some(db => db.id === p.id) && !mapPrompts.some(m => m.id === p.id)) ||
-      (selectedSource === 'database' && dbPrompts.some(db => db.id === p.id)) ||
-      (selectedSource === 'maps' && mapPrompts.some(m => m.id === p.id));
-    return categoryMatch && sourceMatch;
-  });
+  // 过滤prompts - 根据数据源先筛选，再按分类过滤
+  const filteredPrompts = (() => {
+    let sourceFiltered: (PromptTemplate | DatabaseItem | DatabaseMap)[] = [];
+    
+    if (selectedSource === 'all') {
+      sourceFiltered = allPrompts;
+    } else if (selectedSource === 'json') {
+      // 只显示JSON配置的prompts（排除数据库items和地图）
+      sourceFiltered = jsonPrompts;
+    } else if (selectedSource === 'database') {
+      // 只显示数据库items
+      sourceFiltered = dbPrompts;
+    } else if (selectedSource === 'maps') {
+      // 只显示数据库地图
+      sourceFiltered = mapPrompts;
+    }
+    
+    // 再按分类过滤
+    return sourceFiltered.filter(p => 
+      selectedCategory === 'all' || p.category === selectedCategory
+    );
+  })();
 
   const handleGenerate = async (promptId: string) => {
     if (generatingIds.has(promptId)) return;
