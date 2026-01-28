@@ -385,6 +385,25 @@ export async function POST(request: NextRequest) {
     // 保存图片
     if (imageBuffer) {
       await mkdir(join(savePath, '..'), { recursive: true });
+      
+      // 对于地图，需要调整尺寸到 256x256（Gemini 生成的是 1024x1024）
+      if (isMap) {
+        try {
+          console.log('[Resizing Map]:', template.width, 'x', template.height);
+          const sharp = (await import('sharp')).default;
+          imageBuffer = await sharp(imageBuffer)
+            .resize(template.width, template.height, {
+              fit: 'contain',
+              background: { r: 255, g: 255, b: 255, alpha: 1 } // 白色背景
+            })
+            .toBuffer();
+          console.log('[Resized]:', savePath);
+        } catch (resizeError) {
+          console.error('[Resize Failed]:', resizeError);
+          // 调整失败不影响主流程，使用原图
+        }
+      }
+      
       await writeFile(savePath, new Uint8Array(imageBuffer));
       console.log('[Saved]:', savePath);
       
