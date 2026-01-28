@@ -23,6 +23,7 @@
     "generate:player-walk": "tsx scripts/generate-player-walk-animation.ts",
     "resize:sprites": "tsx scripts/resize-sprites.ts",
     "remove:background": "tsx scripts/remove-background.ts",
+    "test:remove-bg": "tsx scripts/test-remove-background.ts",
     "add:npcs": "dotenv -e .env.local -- tsx scripts/add-npcs-to-map.ts"
   },
   "dependencies": {

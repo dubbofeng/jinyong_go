@@ -1,0 +1,149 @@
+[
+  {
+    "chapterId": "prologue",
+    "chapterName": "序章：棋道入门",
+    "chapterNameEn": "Prologue: The Way of Go",
+    "scenes": [
+      {
+        "sceneId": "prologue_scene_1",
+        "title": "千变万劫",
+        "titleEn": "Infinite Variations",
+        "backgroundImage": "huashan_hall",
+        "triggerCondition": "chapter_start",
+        "dialogues": [
+          {
+            "speaker": "木桑道长",
+            "speakerId": "mu_sang",
+            "text": "小友，这局棋名为'千变万劫'，乃是我平生所遇最精妙的一局。当年在华山之巅，我与西域高僧对弈七日七夜……",
+            "emotion": "thoughtful"
+          },
+          {
+            "speaker": "你",
+            "speakerId": "player",
+            "text": "（看着棋盘）这黑白交错之间，似乎蕴含着无穷变化……",
+            "emotion": "curious"
+          },
+          {
+            "speaker": "木桑道长",
+            "speakerId": "mu_sang",
+            "text": "正是如此。围棋之道，与武学修为息息相关。棋力高者，内功深厚；棋艺精湛者，招式灵活多变。",
+            "emotion": "serious"
+          },
+          {
+            "speaker": "木桑道长",
+            "speakerId": "mu_sang",
+            "text": "来，让老道看看你的棋力几何。",
+            "emotion": "challenging"
+          }
+        ],
+        "rewards": {
+          "exp": 100,
+          "items": [],
+          "skills": []
+        },
+        "nextScene": "prologue_battle"
+      }
+    ]
+  },
+  {
+    "chapterId": "chapter_1",
+    "chapterName": "第一章：初入江湖",
+    "chapterNameEn": "Chapter 1: Enter the Jianghu",
+    "scenes": [
+      {
+        "sceneId": "chapter_1_scene_1",
+        "title": "洪七公的考验",
+        "titleEn": "Hong Qigong's Test",
+        "backgroundImage": "xiangyang_teahouse",
+        "triggerCondition": "enter_xiangyang",
+        "dialogues": [
+          {
+            "speaker": "洪七公",
+            "speakerId": "hong_qigong",
+            "text": "小兄弟，听说你会下棋？正好老叫花子闲得发慌，来陪我下一局如何？",
+            "emotion": "cheerful"
+          },
+          {
+            "speaker": "你",
+            "speakerId": "player",
+            "text": "晚辈不才，愿向前辈请教。",
+            "emotion": "respectful"
+          },
+          {
+            "speaker": "洪七公",
+            "speakerId": "hong_qigong",
+            "text": "哈哈！不错不错，有礼貌。不过下棋可不能太客气，要杀得痛快才行！",
+            "emotion": "excited"
+          }
+        ],
+        "rewards": {
+          "exp": 200,
+          "items": ["item_go_stone_white"],
+          "skills": ["skill_dagou_bangfa"]
+        },
+        "nextScene": "chapter_1_battle"
+      },
+      {
+        "sceneId": "chapter_1_scene_2",
+        "title": "黄蓉的机关算尽",
+        "titleEn": "Huang Rong's Strategy",
+        "backgroundImage": "xiangyang_teahouse",
+        "triggerCondition": "defeat_hong_qigong",
+        "dialogues": [
+          {
+            "speaker": "黄蓉",
+            "speakerId": "huang_rong",
+            "text": "你能赢我家七公，说明确实有些本事。不过，围棋不仅要看当下，更要算尽后续变化。",
+            "emotion": "confident"
+          },
+          {
+            "speaker": "黄蓉",
+            "speakerId": "huang_rong",
+            "text": "我教你一招'机关算尽'，可以在脑海中推演多个变化图。记住，算无遗策方为上策。",
+            "emotion": "teaching"
+          }
+        ],
+        "rewards": {
+          "exp": 150,
+          "items": [],
+          "skills": ["skill_jiguan_suanjin"]
+        },
+        "nextScene": null
+      }
+    ]
+  },
+  {
+    "chapterId": "chapter_2",
+    "chapterName": "第二章：华山论剑",
+    "chapterNameEn": "Chapter 2: Tournament at Mount Hua",
+    "scenes": [
+      {
+        "sceneId": "chapter_2_scene_1",
+        "title": "欧阳锋的奇招",
+        "titleEn": "Ouyang Feng's Strange Moves",
+        "backgroundImage": "huashan_hall",
+        "triggerCondition": "enter_mount_hua",
+        "dialogues": [
+          {
+            "speaker": "欧阳锋",
+            "speakerId": "ouyang_feng",
+            "text": "小子，敢来华山，就要做好失败的准备。我这一招'蛤蟆功'，可不是你能接得住的！",
+            "emotion": "threatening"
+          },
+          {
+            "speaker": "你",
+            "speakerId": "player",
+            "text": "（感觉到一股诡异的气势）这棋路……完全不按常理出牌……",
+            "emotion": "nervous"
+          }
+        ],
+        "rewards": {
+          "exp": 300,
+          "items": ["item_poison_antidote"],
+          "skills": []
+        },
+        "nextScene": "chapter_2_battle"
+      }
+    ]
+  }
+]

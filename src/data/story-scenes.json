@@ -1,0 +1,46 @@
+[
+  {
+    "category": "scene",
+    "id": "huashan_hall",
+    "name": "华山传功厅",
+    "nameEn": "Mount Hua Martial Hall",
+    "prompt": "Ancient Chinese martial arts training hall on Mount Hua, traditional wooden architecture, high ceilings with red pillars and golden decorations, martial arts practice area in center, weapon racks on walls, morning light streaming through windows, atmospheric dust particles, cinematic composition, wuxia style, highly detailed, digital painting, 4K quality",
+    "negativePrompt": "modern elements, people, blurry, low quality, distorted",
+    "width": 1920,
+    "height": 1080,
+    "style": "cinematic wuxia"
+  },
+  {
+    "category": "scene",
+    "id": "shaolin_meditation",
+    "name": "少林寺禅房",
+    "nameEn": "Shaolin Temple Meditation Room",
+    "prompt": "Serene Buddhist meditation room in Shaolin Temple, wooden floor with meditation cushions, incense smoke rising, Buddha statue in background, paper lanterns, warm golden lighting, peaceful atmosphere, traditional Chinese architecture, zen aesthetic, highly detailed, digital painting, 4K quality",
+    "negativePrompt": "modern elements, people, clutter, dark, scary",
+    "width": 1920,
+    "height": 1080,
+    "style": "peaceful zen"
+  },
+  {
+    "category": "scene",
+    "id": "xiangyang_teahouse",
+    "name": "襄阳城茶馆",
+    "nameEn": "Xiangyang City Teahouse",
+    "prompt": "Traditional Chinese teahouse interior in ancient Xiangyang city, wooden tables and chairs, tea sets, scrolls on walls, paper windows with bamboo frames, warm ambient lighting, cozy atmosphere, Song dynasty style, people-free environment, highly detailed, digital painting, 4K quality",
+    "negativePrompt": "modern furniture, people, crowded, messy, low quality",
+    "width": 1920,
+    "height": 1080,
+    "style": "warm traditional"
+  },
+  {
+    "category": "scene",
+    "id": "go_battle",
+    "name": "围棋对弈场景",
+    "nameEn": "Go Battle Scene",
+    "prompt": "Elegant Chinese Go game (Weiqi) playing environment, traditional wooden Go board with black and white stones, bamboo bowls for stones, minimal background with soft focus, warm lighting, peaceful atmosphere, zen aesthetic, clean composition, highly detailed, 4K quality",
+    "negativePrompt": "people, hands, cluttered, modern elements, low quality",
+    "width": 1920,
+    "height": 1080,
+    "style": "minimal zen"
+  }
+]

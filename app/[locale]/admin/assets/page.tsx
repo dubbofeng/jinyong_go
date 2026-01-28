@@ -14,24 +14,55 @@ interface GeneratedImage {
   prompt: string;
   generatedAt: string;
   status: 'generating' | 'generated' | 'cached' | 'placeholder' | 'error';
+  imagePath?: string; // 数据库items的原始路径
+  itemType?: string;  // 数据库items的类型
+}
+
+interface DatabaseItem extends PromptTemplate {
+  imagePath: string;
+  itemType: string;
 }
 
 export default function AssetsPage() {
-  const [prompts] = useState<PromptTemplate[]>(getAllPrompts());
+  const [jsonPrompts] = useState<PromptTemplate[]>(getAllPrompts());
+  const [dbPrompts, setDbPrompts] = useState<DatabaseItem[]>([]);
   const [generatedImages, setGeneratedImages] = useState<Map<string, GeneratedImage>>(new Map());
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedSource, setSelectedSource] = useState<'all' | 'json' | 'database'>('all');
   const [generatingIds, setGeneratingIds] = useState<Set<string>>(new Set());
   const [isCheckingFiles, setIsCheckingFiles] = useState(true);
 
-  const categories = ['all', 'scene', 'skill', 'ui'];
+  const categories = ['all', 'scene', 'skill', 'ui', 'item', 'building'];
+
+  // 加载数据库items
+  useEffect(() => {
+    const loadDatabaseItems = async () => {
+      try {
+        const response = await fetch('/api/items/prompts?types=consumable,material,building,decoration');
+        const data = await response.json();
+        
+        if (data.success) {
+          setDbPrompts(data.items);
+        }
+      } catch (error) {
+        console.error('Failed to load database items:', error);
+      }
+    };
+
+    loadDatabaseItems();
+  }, []);
+
+  // 合并JSON和数据库的prompts
+  const allPrompts = [...jsonPrompts, ...dbPrompts];
 
   // 检查已存在的图片文件
   useEffect(() => {
     const checkExistingImages = async () => {
       const newGeneratedImages = new Map<string, GeneratedImage>();
 
-      for (const prompt of prompts) {
-        const imagePath = `/generated/${prompt.category}/${prompt.id}.png`;
+      for (const prompt of allPrompts) {
+        const dbItem = prompt as DatabaseItem;
+        const imagePath = dbItem.imagePath || `/generated/${prompt.category}/${prompt.id}.png`;
         
         try {
           // 尝试加载图片
@@ -48,7 +79,9 @@ export default function AssetsPage() {
               height: prompt.height,
               prompt: prompt.prompt,
               generatedAt: new Date().toISOString(),
-              status: 'cached'
+              status: 'cached',
+              imagePath: dbItem.imagePath,
+              itemType: dbItem.itemType
             });
           }
         } catch (error) {
@@ -60,23 +93,34 @@ export default function AssetsPage() {
       setIsCheckingFiles(false);
     };
 
-    checkExistingImages();
-  }, [prompts]);
+    if (allPrompts.length > 0) {
+      checkExistingImages();
+    }
+  }, [allPrompts]);
 
-  const filteredPrompts = selectedCategory === 'all' 
-    ? prompts 
-    : prompts.filter(p => p.category === selectedCategory);
+  // 过滤prompts
+  const filteredPrompts = allPrompts.filter(p => {
+    const categoryMatch = selectedCategory === 'all' || p.category === selectedCategory;
+    const sourceMatch = 
+      selectedSource === 'all' ||
+      (selectedSource === 'json' && !dbPrompts.some(db => db.id === p.id)) ||
+      (selectedSource === 'database' && dbPrompts.some(db => db.id === p.id));
+    return categoryMatch && sourceMatch;
+  });
 
   const handleGenerate = async (promptId: string) => {
     if (generatingIds.has(promptId)) return;
 
     setGeneratingIds(prev => new Set(prev).add(promptId));
 
+    // 判断是否是数据库item
+    const isDbItem = dbPrompts.some(db => db.id === promptId);
+
     try {
       const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptId })
+        body: JSON.stringify({ promptId, isDbItem })
       });
 
       const data = await response.json();
@@ -122,30 +166,74 @@ export default function AssetsPage() {
         </div>
 
         {/* Controls */}
-        <div className="mb-8 flex gap-4 items-center">
-          <div className="flex gap-2">
-            {categories.map(cat => (
+        <div className="mb-8 space-y-4">
+          <div className="flex gap-4 items-center">
+            <div className="flex gap-2">
+              <span className="text-gray-400 text-sm mr-2">数据源：</span>
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => setSelectedSource('all')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-amber-600 text-white'
+                  selectedSource === 'all'
+                    ? 'bg-emerald-600 text-white'
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                {cat === 'all' ? '全部' : cat === 'scene' ? '场景' : cat === 'skill' ? '技能' : 'UI'}
+                全部
               </button>
-            ))}
+              <button
+                onClick={() => setSelectedSource('json')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedSource === 'json'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                JSON配置 ({jsonPrompts.length})
+              </button>
+              <button
+                onClick={() => setSelectedSource('database')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedSource === 'database'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                数据库Items ({dbPrompts.length})
+              </button>
+            </div>
           </div>
           
-          <button
-            onClick={handleGenerateAll}
-            disabled={generatingIds.size > 0}
-            className="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors ml-auto"
-          >
-            {generatingIds.size > 0 ? '生成中...' : '批量生成全部'}
-          </button>
+          <div className="flex gap-4 items-center">
+            <div className="flex gap-2">
+              <span className="text-gray-400 text-sm mr-2">分类：</span>
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    selectedCategory === cat
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {cat === 'all' ? '全部' : 
+                   cat === 'scene' ? '场景' : 
+                   cat === 'skill' ? '技能' : 
+                   cat === 'ui' ? 'UI' :
+                   cat === 'item' ? '道具' :
+                   cat === 'building' ? '建筑' : cat}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={handleGenerateAll}
+              disabled={generatingIds.size > 0}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors ml-auto"
+            >
+              {generatingIds.size > 0 ? '生成中...' : '批量生成全部'}
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -238,13 +326,22 @@ export default function AssetsPage() {
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold text-lg">{prompt.name}</h3>
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      prompt.category === 'scene' ? 'bg-blue-900 text-blue-200' :
-                      prompt.category === 'skill' ? 'bg-purple-900 text-purple-200' :
-                      'bg-gray-700 text-gray-300'
-                    }`}>
-                      {prompt.category}
-                    </span>
+                    <div className="flex gap-1">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        prompt.category === 'scene' ? 'bg-blue-900 text-blue-200' :
+                        prompt.category === 'skill' ? 'bg-purple-900 text-purple-200' :
+                        prompt.category === 'item' ? 'bg-green-900 text-green-200' :
+                        prompt.category === 'building' ? 'bg-orange-900 text-orange-200' :
+                        'bg-gray-700 text-gray-300'
+                      }`}>
+                        {prompt.category}
+                      </span>
+                      {dbPrompts.some(db => db.id === prompt.id) && (
+                        <span className="text-xs px-2 py-1 rounded bg-emerald-900 text-emerald-200">
+                          DB
+                        </span>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="text-sm text-gray-400 mb-3 line-clamp-2">
@@ -254,6 +351,12 @@ export default function AssetsPage() {
                   <div className="text-xs text-gray-500 mb-3">
                     尺寸: {prompt.width} × {prompt.height}
                   </div>
+                  
+                  {dbPrompts.some(db => db.id === prompt.id) && (
+                    <div className="text-xs text-gray-500 mb-3">
+                      原路径: {(prompt as DatabaseItem).imagePath}
+                    </div>
+                  )}
 
                   {generatedImage && (
                     <div className="text-xs text-gray-500 mb-3">
@@ -279,20 +382,7 @@ export default function AssetsPage() {
             );
           })}
         </div>
-
-        {/* Notice */}
-        <div className="mt-8 bg-yellow-900/30 border border-yellow-600 rounded-lg p-4">
-          <h3 className="font-bold text-yellow-400 mb-2">⚠️ 注意</h3>
-          <p className="text-sm text-gray-300">
-            当前版本使用模拟生成。要启用真实的AI图片生成，需要：
-          </p>
-          <ol className="list-decimal list-inside text-sm text-gray-300 mt-2 space-y-1">
-            <li>在Google Cloud Console启用Imagen API</li>
-            <li>获取API密钥并添加到 .env.local: <code className="bg-gray-800 px-2 py-1 rounded">GEMINI_API_KEY=your_key</code></li>
-            <li>更新 /app/api/generate-image/route.ts 中的API调用代码</li>
-            <li>配置图片存储（本地或云存储）</li>
-          </ol>
-        </div>
+        
       </div>
     </div>
   );

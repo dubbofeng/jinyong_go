@@ -10,6 +10,7 @@
       "@/pages/*": ["pages/*"],
       "@/app/*": ["app/*"],
       "@/lib/*": ["src/lib/*"],
+      "@/data/*": ["src/data/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/styles/*": ["styles/*"],
       "@/src/*": ["src/*"]

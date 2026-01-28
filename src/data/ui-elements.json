@@ -1,0 +1,24 @@
+[
+  {
+    "category": "ui",
+    "id": "quest_icon",
+    "name": "任务图标",
+    "nameEn": "Quest Icon",
+    "prompt": "Quest/mission icon for wuxia game, ancient Chinese scroll with seal, golden color scheme, white background, game UI style, 128x128 pixels",
+    "negativePrompt": "realistic, text, watermark, blurry",
+    "width": 128,
+    "height": 128,
+    "style": "game UI"
+  },
+  {
+    "category": "ui",
+    "id": "map_icon",
+    "name": "地图图标",
+    "nameEn": "Map Icon",
+    "prompt": "Map icon for ancient China game, rolled scroll or traditional map marker, warm brown colors, white background, game UI style, 128x128 pixels",
+    "negativePrompt": "modern, GPS, realistic photo, text, complex",
+    "width": 128,
+    "height": 128,
+    "style": "game UI"
+  }
+]

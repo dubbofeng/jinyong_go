@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, rename } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 import { getPromptById } from '@/src/lib/image-prompts';
+import { db } from '@/app/db';
+import { items } from '@/src/db/schema';
+import { eq } from 'drizzle-orm';
+import { removeBackground } from '@/src/lib/remove-background';
 
 // 支持多种AI图片生成服务
 type AIProvider = 'gemini' | 'huggingface' | 'stability' | 'openai' | 'placeholder';
@@ -158,7 +162,7 @@ async function generateWithOpenAI(prompt: string, width: number, height: number)
 
 export async function POST(request: NextRequest) {
   try {
-    const { promptId } = await request.json();
+    const { promptId, isDbItem } = await request.json();
 
     if (!promptId) {
       return NextResponse.json(
@@ -167,41 +171,90 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 获取提示词模板
-    const template = getPromptById(promptId);
-    if (!template) {
-      return NextResponse.json(
-        { error: 'Prompt template not found' },
-        { status: 404 }
-      );
+    let template: any;
+    let originalImagePath: string | null = null;
+
+    // 如果是数据库item，从数据库获取
+    if (isDbItem) {
+      const [item] = await db
+        .select()
+        .from(items)
+        .where(eq(items.itemId, promptId))
+        .limit(1);
+
+      if (!item || !item.prompt) {
+        return NextResponse.json(
+          { error: 'Database item not found or missing prompt' },
+          { status: 404 }
+        );
+      }
+
+      template = {
+        id: item.itemId,
+        category: item.itemType === 'building' || item.itemType === 'decoration' ? 'building' : 'item',
+        name: item.name,
+        nameEn: item.nameEn || item.name,
+        prompt: item.prompt,
+        negativePrompt: item.negativePrompt,
+        width: item.imageWidth || 512,
+        height: item.imageHeight || 512,
+        style: item.itemType === 'building' ? 'isometric game asset' : 'game icon'
+      };
+
+      originalImagePath = item.imagePath;
+    } else {
+      // 从JSON配置获取提示词模板
+      template = getPromptById(promptId);
+      if (!template) {
+        return NextResponse.json(
+          { error: 'Prompt template not found' },
+          { status: 404 }
+        );
+      }
     }
 
-    // 检查缓存
+    // 如果有原始图片路径，备份原图
+    if (originalImagePath && originalImagePath.startsWith('/')) {
+      const publicPath = join(process.cwd(), 'public');
+      const originalFullPath = join(publicPath, originalImagePath);
+      
+      if (existsSync(originalFullPath)) {
+        // 重命名原图：添加.backup.{timestamp}后缀
+        const timestamp = Date.now();
+        const backupPath = `${originalFullPath}.backup.${timestamp}`;
+        
+        try {
+          await rename(originalFullPath, backupPath);
+          console.log('[Backup Original]:', originalImagePath, '→', backupPath);
+        } catch (error) {
+          console.error('[Backup Failed]:', error);
+        }
+      }
+    }
+
+    // 检查生成缓存
     const cacheDir = join(process.cwd(), 'public', 'generated', template.category);
     const cachePath = join(cacheDir, `${template.id}.png`);
     
-    if (existsSync(cachePath)) {
-      console.log('[Cache Hit]:', template.name);
-      return NextResponse.json({
-        success: true,
-        image: {
-          id: template.id,
-          category: template.category,
-          name: template.name,
-          url: `/generated/${template.category}/${template.id}.png`,
-          prompt: template.prompt,
-          width: template.width,
-          height: template.height,
-          generatedAt: new Date().toISOString(),
-          status: 'cached'
-        }
-      });
+    // 如果是数据库item且有原始路径，使用原始路径作为保存目标
+    let savePath = cachePath;
+    let saveUrl = `/generated/${template.category}/${template.id}.png`;
+    
+    if (isDbItem && originalImagePath) {
+      const publicPath = join(process.cwd(), 'public');
+      savePath = join(publicPath, originalImagePath);
+      saveUrl = originalImagePath;
+      
+      // 确保目录存在
+      const saveDir = join(publicPath, originalImagePath.split('/').slice(0, -1).join('/'));
+      await mkdir(saveDir, { recursive: true });
     }
 
     const provider = getProvider();
     console.log('[AI Provider]:', provider);
     console.log('[Generating]:', template.name);
     console.log('[Prompt]:', template.prompt);
+    console.log('[Save Path]:', savePath);
 
     let imageBuffer: Buffer | null = null;
     let imageUrl: string | null = null;
@@ -243,14 +296,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 保存到缓存
+    // 保存图片
     if (imageBuffer) {
-      await mkdir(cacheDir, { recursive: true });
-      await writeFile(cachePath, new Uint8Array(imageBuffer));
-      console.log('[Saved]:', cachePath);
+      await mkdir(join(savePath, '..'), { recursive: true });
+      await writeFile(savePath, new Uint8Array(imageBuffer));
+      console.log('[Saved]:', savePath);
+      
+      // 如果是items（建筑、道具、装饰物），自动去除白色背景
+      if (isDbItem && template.category !== 'scene') {
+        try {
+          console.log('[Removing Background]:', savePath);
+          await removeBackground({
+            inputPath: savePath,
+            threshold: 240 // 亮度阈值，高于此值视为背景
+          });
+          console.log('[Background Removed]:', savePath);
+        } catch (bgError) {
+          console.error('[Background Removal Failed]:', bgError);
+          // 去背景失败不影响主流程，继续返回结果
+        }
+      }
     }
-
-    const savedUrl = `/generated/${template.category}/${template.id}.png`;
 
     return NextResponse.json({
       success: true,
@@ -258,7 +324,7 @@ export async function POST(request: NextRequest) {
         id: template.id,
         category: template.category,
         name: template.name,
-        url: savedUrl,
+        url: saveUrl,
         prompt: template.prompt,
         width: template.width,
         height: template.height,

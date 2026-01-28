@@ -302,6 +302,10 @@ export const items: any = pgTable('items', {
   imageWidth: integer('image_width'), // 图片宽度（像素）
   imageHeight: integer('image_height'), // 图片高度（像素）
   
+  // AI生成图片提示词
+  prompt: text('prompt'), // AI图片生成提示词（英文）
+  negativePrompt: text('negative_prompt'), // AI图片生成负面提示词（英文）
+  
   // 地图物品属性（装饰物、植物、建筑）
   size: integer('size').notNull().default(1), // 占用格子数 (1-4)
   blocking: boolean('blocking').notNull().default(false), // 是否阻挡行走
