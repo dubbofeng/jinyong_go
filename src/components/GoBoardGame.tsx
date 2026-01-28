@@ -56,6 +56,34 @@ export default function GoBoardGame({
   const [evaluation, setEvaluation] = useState<TerritoryEvaluation | null>(null);
   const [suggestions, setSuggestions] = useState<SuggestedMove[]>([]);
   const [skillsRefreshKey, setSkillsRefreshKey] = useState(0);
+  const [learnedSkills, setLearnedSkills] = useState<string[]>([]); // 已学习的技能列表
+
+  // 获取玩家已学习的技能
+  useEffect(() => {
+    const fetchLearnedSkills = async () => {
+      try {
+        const res = await fetch('/api/player/skills');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data)) {
+            // 只保留已解锁的技能ID
+            const unlockedSkillIds = data.data
+              .filter((skill: any) => skill.unlocked)
+              .map((skill: any) => skill.skillId);
+            setLearnedSkills(unlockedSkillIds);
+            console.log('✅ 已学习技能:', unlockedSkillIds);
+          }
+        }
+      } catch (error) {
+        console.error('获取技能失败:', error);
+      }
+    };
+    
+    if (session?.user) {
+      fetchLearnedSkills();
+    }
+  }, [session]);
+
   /**
    * 处理落子
    */
@@ -738,9 +766,14 @@ export default function GoBoardGame({
       {/* 武侠技能快捷栏 */}
       <div className="w-full max-w-4xl" key={skillsRefreshKey}>
         <h3 className="text-center font-bold text-lg text-amber-800 mb-3">⚔️ 武侠技能 ⚔️</h3>
-        <div className="grid grid-cols-4 gap-4">
+        <div className={`grid gap-4 ${
+          learnedSkills.length === 1 ? 'grid-cols-1' :
+          learnedSkills.length === 2 ? 'grid-cols-2' :
+          learnedSkills.length === 3 ? 'grid-cols-3' :
+          'grid-cols-4'
+        }`}>
           {/* 技能1：亢龙有悔 */}
-          {(() => {
+          {learnedSkills.includes('kanglong_youhui') && (() => {
             const skill = skillManagerRef.current?.getSkill('kanglongyouhui');
             const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current);
             return (
@@ -765,7 +798,7 @@ export default function GoBoardGame({
           })()}
 
           {/* 技能2：独孤九剑 */}
-          {(() => {
+          {learnedSkills.includes('dugu_jiujian') && (() => {
             const skill = skillManagerRef.current?.getSkill('dugujiujian');
             const canUse = skill && 'canUse' in skill && (skill as any).canUse();
             return (
@@ -790,7 +823,7 @@ export default function GoBoardGame({
           })()}
 
           {/* 技能3：腹语传音 */}
-          {(() => {
+          {learnedSkills.includes('fuyu_chuanyin') && (() => {
             const skill = skillManagerRef.current?.getSkill('fuyuchuanyin');
             const canUse = skill && 'canUse' in skill && (skill as any).canUse();
             return (
@@ -815,7 +848,7 @@ export default function GoBoardGame({
           })()}
 
           {/* 技能4：机关算尽 */}
-          {(() => {
+          {learnedSkills.includes('jiguan_suanjin') && (() => {
             const skill = skillManagerRef.current?.getSkill('jiguansuanjin');
             const canUse = skill && 'canUse' in skill && (skill as any).canUse();
             const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
@@ -892,20 +925,6 @@ export default function GoBoardGame({
           </div>
         </div>
       )}
-
-      {/* 操作说明 */}
-      <div className="bg-gray-100 p-4 rounded-lg max-w-md text-sm text-gray-700">
-        <h3 className="font-semibold mb-2">操作说明:</h3>
-        <ul className="list-disc list-inside space-y-1">
-          <li>点击交叉点落子</li>
-          <li>鼠标悬停显示落子预览</li>
-          <li>红色方框标记最后一手</li>
-          <li>黑方先行，双方轮流落子</li>
-          <li>✨ 自动提取无气的棋子</li>
-          <li>✨ 检测并禁止劫争</li>
-          <li>✨ 禁止自杀手（自己没气）</li>
-        </ul>
-      </div>
 
       {/* 游戏结果Modal */}
       {showResultModal && gameResult && (

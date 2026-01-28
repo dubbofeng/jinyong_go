@@ -12,6 +12,10 @@ export interface DialogueOption {
     value: string | number;
     inverse?: boolean;
   };
+  // 新增：条件检查结果
+  locked?: boolean;       // 是否锁定（不可选择）
+  unlocked?: boolean;     // 是否解锁（可见）
+  lockedReason?: string;  // 锁定原因提示
 }
 
 export interface DialogueNode {

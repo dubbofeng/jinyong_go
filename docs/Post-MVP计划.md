@@ -199,6 +199,88 @@ public/katago/
 
 ## 下一步行动计划
 
+### 9. 任务和对话系统优化
+
+#### 9.1 NPC对话条件系统 ✅ **已完成**
+
+> **详细使用指南见：[docs/NPC对话条件系统使用指南.md](NPC对话条件系统使用指南.md)**  
+> **⚠️ 重要：每次创建新NPC时必须参考此指南配置requirements条件**
+
+**完成日期**：2026年1月28日  
+**测试端点**：`GET /api/npcs/[npcId]/interactions`
+
+##### 系统概述
+实现基于玩家进度的对话和战斗解锁系统，支持15种条件类型和复杂的逻辑组合。
+
+##### 核心组件 ✅
+- ✅ **类型定义**: `src/types/requirements.ts` - 15种条件类型 + Requirements辅助函数
+- ✅ **数据库迁移**: `drizzle/0007_add_requirements_fields.sql` - 添加requirements字段
+- ✅ **条件检查器**: `src/lib/requirement-checker.ts` - 验证玩家是否满足条件
+- ✅ **API路由**: `app/api/npcs/[npcId]/interactions/route.ts` - 返回解锁状态
+- ✅ **UI组件**: `src/components/DialogueBox.tsx` - 显示锁定选项和提示
+
+##### 已配置NPC ✅
+- ✅ **洪七公**（序章）: 无限制，新手引导NPC
+- ✅ **令狐冲**（序章）: 需要先见过洪七公
+- ✅ **郭靖**（序章）: 需要击败洪七公和令狐冲，且10级以上
+- ✅ **黄蓉**（第一章）: 3个对话选项（第一章 + 8级学习机关算尽）
+- ✅ **段延庆**（第二章）: 2个对话选项 + 战斗（18级，不可重复）
+- ✅ **段誉**（第二章/第三章）: 2个对话选项（第三章 + 25级学习六脉神剑）
+
+##### 支持的条件类型
+| 条件类型 | 说明 | 示例 |
+|---------|------|------|
+| level | 等级要求 | `Requirements.level(10, 20)` |
+| chapter | 章节要求 | `Requirements.chapter(2)` |
+| quest_completed | 任务完成 | `Requirements.questCompleted('quest_id')` |
+| npc_defeated | NPC已击败 | `Requirements.npcDefeated('guojing')` |
+| skill_unlocked | 技能已解锁 | `Requirements.skillUnlocked('skill_id')` |
+| first_time | 首次交互 | `Requirements.firstTime()` |
+| affection_level | 好感度等级 | `Requirements.affectionLevel('friend')` |
+| and/or/not | 逻辑组合 | `Requirements.and(...)` |
+| ... | 共15种 | 详见使用指南 |
+
+##### 配置示例
+```typescript
+// 在scripts/test-npc-requirements.ts或数据库中配置
+const npcRequirements = {
+  dialogues: {
+    first_meet: {
+      unlockConditions: [Requirements.firstTime()],
+    },
+    learn_skill: {
+      unlockConditions: [
+        Requirements.and(
+          Requirements.level(10),
+          Requirements.chapter(2)
+        ),
+      ],
+      lockedHint: '需要10级且达到第二章',
+    },
+  },
+  battle: {
+    unlockConditions: [Requirements.level(15)],
+    repeatable: true,
+    cooldownSeconds: 3600,
+  },
+};
+```
+
+##### 使用流程
+1. **设计NPC** - 确定对话选项和战斗条件
+2. **配置requirements** - 参考使用指南配置JSON
+3. **测试API** - 使用 `/api/npcs/[npcId]/interactions` 验证
+4. **集成UI** - DialogueBox自动显示锁定状态
+
+##### 相关文件
+- `src/types/requirements.ts` - 条件类型定义
+- `src/lib/requirement-checker.ts` - 条件检查逻辑
+- `app/api/npcs/[npcId]/interactions/route.ts` - API路由
+- `scripts/test-npc-requirements.ts` - NPC配置脚本
+- `docs/NPC对话条件系统使用指南.md` - **完整使用指南**
+
+---
+
 ### 立即可做（1-2天）
 1. ✅ 完成KataGo基础集成测试
 2. ✅ 提取通用Hook `useKataGoBrowser`
@@ -276,10 +358,13 @@ public/katago/
 ### 9.1 NPC对话条件系统
 
 #### 首次对话限制
-- [ ] **首次对话限制**
-  - 洪七公：必须先到少林寺见过令狐冲（任务条件）
-  - 令狐冲：无限制（新手引导NPC）
+- ✅ **首次对话限制**
+  - 洪七公：无限制（新手引导NPC）
+  - 令狐冲：必须先见过洪七公
   - 郭靖：必须击败洪七公和令狐冲（等级10+）
+  - 第一次见NPC时触发特定对话
+  - 已见过的NPC显示不同对话选项
+  - 记录玩家与NPC的交互历史
 
 #### 对战解锁条件
 - [ ] **对战解锁条件**
@@ -295,21 +380,30 @@ public/katago/
   - 失败无惩罚
   - 重复对话改为"再来一局？"选项
 
-### 9.2 技能筛选系统
+### 9.2 技能筛选系统 ✅ **已完成**
 
-#### 技能显示逻辑
-- [ ] **技能显示逻辑**
+#### 技能显示逻辑 ✅
+- ✅ **技能显示逻辑**
   - 仅显示已学习的技能
   - 未学技能不显示（不是灰色，是完全不显示）
   - 技能栏动态生成（1-4个技能）
-  - 技能学习记录到游戏进度
+  - 从API `/api/player/skills` 获取已解锁技能列表
+  - 战斗界面根据 `learnedSkills` state 条件渲染
 
-#### 技能解锁提示
-- [ ] **技能解锁提示**
-  - 学习新技能时显示特殊动画
-  - "你学会了XXX技能！"Toast消息
-  - 技能描述弹窗（首次）
-  - 多语言支持
+#### 技能解锁提示 ✅
+- ✅ **技能解锁提示**
+  - 学习新技能时显示 `SkillUnlockToast` 组件
+  - 显示技能名称、图标、来源NPC、描述
+  - 带弹入动画效果（bounce-in）
+  - 自动5秒后消失
+  - 已学技能不再重复显示
+
+#### 技能学习API ✅
+- ✅ **POST /api/player/skills/learn**
+  - 接受 `skillId` 参数
+  - 在 `playerSkills` 表中创建或解锁记录
+  - 返回 `isNew` 标志区分首次学习
+  - 与对话系统中的 `skill` action 类型集成
 
 ### 9.3 传送门使用限制
 

@@ -103,6 +103,9 @@ export const npcs = pgTable('npcs', {
   // 教授的技能
   teachableSkills: json('teachable_skills').$type<string[]>().default([]).notNull(),
   
+  // 对话和战斗的解锁条件
+  requirements: json('requirements').$type<any>(),
+  
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -197,6 +200,9 @@ export const mapItems = pgTable('map_items', {
   // 状态（地图实例特定）
   enabled: boolean('enabled').notNull().default(true), // 是否启用（可用于任务控制）
   collected: boolean('collected').notNull().default(false), // 是否已被拣取/采集
+  
+  // 交互解锁条件
+  requirements: json('requirements').$type<any>(),
   
   // 附加数据
   metadata: json('metadata').$type<Record<string, any>>(),

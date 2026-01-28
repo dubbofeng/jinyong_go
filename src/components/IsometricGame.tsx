@@ -8,6 +8,7 @@ import DialogueBox from '@/src/components/DialogueBox';
 import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
+import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 
@@ -63,6 +64,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     onConfirm?: () => void;
     onCancel?: () => void;
   }>({ isOpen: false, type: 'info', message: '' });
+  
+  // 技能解锁Toast状态
+  const [skillUnlockToast, setSkillUnlockToast] = useState<{
+    visible: boolean;
+    skillName: string;
+    skillIcon: string;
+    character: string;
+    description: string;
+  } | null>(null);
   
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
@@ -707,27 +717,46 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         break;
       
       case 'skill':
-        // 处理技能解锁
-        const { skillId, questId } = action.value;
-        console.log('✨ 解锁技能:', skillId, '任务:', questId);
+        // 处理技能学习
+        const { skillId } = action.value;
+        console.log('✨ 学习技能:', skillId);
         
-        // 调用API解锁技能
-        fetch('/api/player/skills/unlock', {
+        // 调用API学习技能
+        fetch('/api/player/skills/learn', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ skillId, questId }),
+          body: JSON.stringify({ skillId }),
         })
           .then(res => res.json())
           .then(data => {
             if (data.success) {
-              console.log('✅ 技能解锁成功:', data.message);
-              showAlert(`✨ 学会了新技能：「${skillId === 'kanglong_youhui' ? '亢龙有悔' : skillId}」`, 'success');
+              console.log('✅ 技能学习成功:', data.message);
+              
+              // 只有首次学会时才显示动画
+              if (data.isNew) {
+                // 技能ID到图标的映射
+                const skillIcons: Record<string, string> = {
+                  kanglong_youhui: '🐉',
+                  dugu_jiujian: '⚔️',
+                  fuyu_chuanyin: '🗨️',
+                  jiguan_suanjin: '🧩',
+                };
+                
+                // 显示Toast
+                setSkillUnlockToast({
+                  visible: true,
+                  skillName: data.data.name,
+                  skillIcon: skillIcons[skillId] || '✨',
+                  character: data.data.character,
+                  description: data.data.description,
+                });
+              }
             } else {
-              console.warn('⚠️ 技能解锁失败:', data.error);
+              console.warn('⚠️ 技能学习失败:', data.error);
             }
           })
           .catch(err => {
-            console.error('❌ 技能解锁API错误:', err);
+            console.error('❌ 技能学习API错误:', err);
           });
         break;
       
@@ -1211,6 +1240,17 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         onCancel={alertState.onCancel}
         onClose={() => setAlertState({ ...alertState, isOpen: false })}
       />
+
+      {/* 技能解锁Toast */}
+      {skillUnlockToast && (
+        <SkillUnlockToast
+          skillName={skillUnlockToast.skillName}
+          skillIcon={skillUnlockToast.skillIcon}
+          character={skillUnlockToast.character}
+          description={skillUnlockToast.description}
+          onClose={() => setSkillUnlockToast(null)}
+        />
+      )}
     </div>
   );
 }

@@ -150,16 +150,36 @@ export default function DialogueBox({
             <div className="space-y-2">
               {hasOptions ? (
                 // 显示选项
-                options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => onSelectOption(index)}
-                    className="w-full bg-amber-700 hover:bg-amber-600 text-white py-2.5 px-4 rounded transition-colors text-left text-sm"
-                  >
-                    <span className="text-amber-300 mr-2">{index + 1}.</span>
-                    {option.text}
-                  </button>
-                ))
+                options.map((option, index) => {
+                  const isLocked = option.locked || (option.unlocked === false);
+                  const isDisabled = option.locked;
+                  
+                  return (
+                    <div key={index} className="relative">
+                      <button
+                        onClick={() => !isDisabled && onSelectOption(index)}
+                        disabled={isDisabled}
+                        className={`w-full py-2.5 px-4 rounded transition-colors text-left text-sm ${
+                          isDisabled
+                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                            : 'bg-amber-700 hover:bg-amber-600 text-white'
+                        }`}
+                        title={isDisabled ? option.lockedReason : undefined}
+                      >
+                        <span className={`mr-2 ${isDisabled ? 'text-gray-600' : 'text-amber-300'}`}>
+                          {isLocked && '🔒 '}
+                          {index + 1}.
+                        </span>
+                        {option.text}
+                      </button>
+                      {isDisabled && option.lockedReason && (
+                        <div className="mt-1 text-xs text-amber-300 px-4">
+                          💡 {option.lockedReason}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
                 // 继续按钮
                 <button
