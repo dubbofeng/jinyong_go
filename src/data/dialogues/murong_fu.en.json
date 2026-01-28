@@ -1,0 +1,145 @@
+{
+  "npcId": "murong_fu",
+  "npcName": "Murong Fu",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Murong Fu",
+      "text": "Hmph, another person who doesn't know their place. I am Murong Fu of the Gusu Murong family. What brings you here?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Murong Fu",
+      "text": "Years ago, I also challenged the Zhenlong Go puzzle. Though I couldn't solve it, I still gained something. Have you also come for that puzzle?",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Murong Fu",
+      "text": "The Murong family has a supreme technique called 'Returning Your Way Upon You.' When used in Go, it can counter an opponent's moves back at them.",
+      "options": [
+        {
+          "text": "Please teach me, Young Master Murong!",
+          "condition": {"type": "quest", "value": "defeated_murong_fu", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn 'Returning Your Way Upon You'",
+          "condition": {"type": "quest", "value": "defeated_murong_fu"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Young Master Murong, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_murong_fu"},
+          "action": {"type": "battle", "value": "murong_fu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "How is this technique used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Murong Fu",
+      "text": "The Gusu Murong family's 'Returning Your Way Upon You' can counter an opponent's moves back at them, making them suffer their own consequences.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Murong Fu",
+      "text": "When used in Go, it means seeing through your opponent's strategy, then counterattacking in the same way, making them fall into their own trap.",
+      "options": [
+        {"text": "Brilliant! Please teach me, Young Master Murong", "nextNodeId": "challenge_intro"},
+        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Murong Fu",
+      "text": "Very well. However, this supreme technique of mine isn't for just anyone. If you want to learn, you must first prove you're qualified.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Murong Fu",
+      "text": "Though I couldn't solve Zhenlong, my Go skill is not to be underestimated. If you can beat me, it proves you have the aptitude.",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Young Master Murong!",
+          "action": {"type": "battle", "value": "murong_fu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Murong Fu",
+      "text": "Hmph! Let you witness the power of Gusu Murong!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Murong Fu",
+      "text": "Not bad... your game does have some merit. Very well, I'll teach you 'Returning Your Way Upon You.'",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Murong Fu",
+      "text": "The key to this technique is: see through your opponent's strategy, then counterattack in the same way. Limited to once per game with a 45-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Murong Fu",
+      "text": "Remember, when using this technique, 'know yourself and your enemy, and you'll never be defeated.' Only by fully understanding your opponent can you counter their moves back at them.",
+      "action": {"type": "skill", "value": {"skillId": "yibi_zhidao", "questId": "quest_020_murong_fu"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Murong Fu",
+      "text": "Now that you've learned this technique, you'll have strategies for dealing with strong enemies in the future. But remember, restoring the nation is what's most important.",
+      "options": [
+        {"text": "Thank you, Young Master Murong!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "murong_fu"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Murong Fu",
+      "text": "Hmph, your level isn't enough. Go practice more and don't waste my time.",
+      "options": [
+        {"text": "I take my leave", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Murong Fu",
+      "text": "I have only one goal in this life - to restore Great Yan. For this goal, I can sacrifice everything.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Murong Fu",
+      "text": "The same goes for Go - have a clear goal, then give it your all. People without goals will never succeed.",
+      "options": [
+        {"text": "Young Master Murong has lofty ambitions!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Murong Fu",
+      "text": "Hmph, come back when you're ready. I don't have time to wait for you."
+    },
+    {
+      "id": "farewell",
+      "speaker": "Murong Fu",
+      "text": "Go now. I have important matters to attend to."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "npcId": "hei_baizi",
+  "npcName": "Hei Baizi",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Hei Baizi",
+      "text": "Hmm? Who are you to intrude into Plum Manor? But... seeing you carry the aura of Go mastery, you're an interesting person.",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Hei Baizi",
+      "text": "I am Hei Baizi, Second Master of Plum Manor. What I love most in life is studying Go books. The 'Blood-Vomiting Manual' is the world's greatest Go manual, which I've studied for years.",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Hei Baizi",
+      "text": "I see you're also a Go lover. Why not study this 'Blood-Vomiting Manual' with me? If you can solve its mysteries, I'll teach you a secret technique.",
+      "options": [
+        {
+          "text": "Please teach me, Senior!",
+          "condition": {"type": "quest", "value": "defeated_hei_baizi", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn 'Blood-Vomiting Break'",
+          "condition": {"type": "quest", "value": "defeated_hei_baizi"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Senior, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_hei_baizi"},
+          "action": {"type": "battle", "value": "hei_baizi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "What is Blood-Vomiting Break?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Hei Baizi",
+      "text": "Years ago, a master exhausted himself trying to solve a life-and-death Go problem, ultimately vomiting blood and dying. But the solution he left behind was earth-shattering.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Hei Baizi",
+      "text": "'Blood-Vomiting Break' was comprehended from that manual - it can find a glimmer of hope in desperate situations, turning death into life. However, it requires extremely high Go skill and understanding.",
+      "options": [
+        {"text": "Miraculous! Please teach me, Senior", "nextNodeId": "challenge_intro"},
+        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Hei Baizi",
+      "text": "Good! You have courage! But my Go skill is no empty reputation. If you want to learn this technique, you must play a game with me first.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Hei Baizi",
+      "text": "I've studied the 'Blood-Vomiting Manual' for years and know its dangers well. If you can beat me, it proves you have the understanding to comprehend this manual's essence.",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Senior!",
+          "action": {"type": "battle", "value": "hei_baizi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Hei Baizi",
+      "text": "Good! Let you witness the power of the 'Blood-Vomiting Manual'!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Hei Baizi",
+      "text": "Brilliant! Truly brilliant! Your game is divine - you already have the aptitude to solve the 'Blood-Vomiting Manual.' I'll teach you 'Blood-Vomiting Break.'",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Hei Baizi",
+      "text": "The key to this technique is: in desperate situations, find the way to break through, using one stone's power to reverse the situation. Limited to once per game with a 40-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Hei Baizi",
+      "text": "Remember, 'in death ground, fight and live.' When using this technique, have the determination to burn your boats to unleash its maximum power.",
+      "action": {"type": "skill", "value": {"skillId": "ouxue_poju", "questId": "quest_011_hei_baizi"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Hei Baizi",
+      "text": "Now that you've learned this technique, you can calmly handle difficult situations in the future. But remember, this technique harms the body and drains the spirit - don't abuse it.",
+      "options": [
+        {"text": "Thank you, Senior!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "hei_baizi"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Hei Baizi",
+      "text": "Your Go skill isn't enough yet. The essence of the 'Blood-Vomiting Manual' can't be comprehended overnight - practice more.",
+      "options": [
+        {"text": "This junior takes his leave", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Hei Baizi",
+      "text": "I've spent my entire life studying Go manuals - one could say I'm obsessed to the point of madness. But it's precisely this obsession that allowed me to comprehend the true meaning of Go.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Hei Baizi",
+      "text": "Playing Go is like comprehending the Way - it requires complete devotion. Though the 'Blood-Vomiting Manual' is dangerous, the wisdom within is priceless.",
+      "options": [
+        {"text": "Senior speaks truly!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Hei Baizi",
+      "text": "Very well, come back when you're fully prepared. I'll be at Plum Manor, waiting anytime."
+    },
+    {
+      "id": "farewell",
+      "speaker": "Hei Baizi",
+      "text": "Go now and study the Way of Go well. I look forward to you solving the ultimate mystery of the 'Blood-Vomiting Manual' in the future!"
+    }
+  ]
+}

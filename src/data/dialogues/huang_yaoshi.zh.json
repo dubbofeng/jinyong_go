@@ -1,0 +1,145 @@
+{
+  "npcId": "huang_yaoshi",
+  "npcName": "黄药师",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "黄药师",
+      "text": "呵呵，又有后生来桃花岛了。你是冲着老夫的名头来的，还是误打误撞？",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "黄药师",
+      "text": "老夫黄药师，人称东邪。精通奇门遁甲、琴棋书画。听说你在江湖上以棋会友，有点意思。",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "黄药师",
+      "text": "老夫的「奇门遁甲」之术融会贯通，用在围棋上更是变化无穷。不过，你得先证明自己有资格学。",
+      "options": [
+        {
+          "text": "请黄岛主指教！",
+          "condition": {"type": "quest", "value": "defeated_huang_yaoshi", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "我想学习「奇门遁甲」",
+          "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "黄岛主，我想再和你对弈一局",
+          "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
+          "action": {"type": "battle", "value": "huang_yaoshi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "奇门遁甲如何用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "黄药师",
+      "text": "奇门遁甲讲究「变化莫测，出奇制胜」。在棋盘上，能布下玄妙阵法，让对手如入迷阵。",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "黄药师",
+      "text": "这招能让你在关键时刻改变棋局格局，创造出意想不到的变化。不过，需要极高的悟性才能掌握。",
+      "options": [
+        {"text": "精妙！请黄岛主教我", "nextNodeId": "challenge_intro"},
+        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "黄药师",
+      "text": "好！有胆识！老夫生平最讨厌迂腐之人，你这股闯劲倒是合老夫胃口。",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "黄药师",
+      "text": "老夫当年华山论剑，与洪七公、欧阳锋对弈，各有千秋。你若能在棋盘上赢老夫，就算你有真本事。",
+      "options": [
+        {
+          "text": "请黄岛主赐教！",
+          "action": {"type": "battle", "value": "huang_yaoshi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "黄药师",
+      "text": "哈哈，那就来吧！让你见识见识东邪的厉害！"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "黄药师",
+      "text": "不错不错！后生可畏！你这棋下得天马行空，颇有老夫当年的风采。好，老夫就传你「奇门遁甲」。",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "黄药师",
+      "text": "这招的要领是：运用奇门遁甲之理，在棋盘上布下玄妙阵法，让对手陷入困局。每局可用一次，冷却35步。",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "黄药师",
+      "text": "记住，「兵无常势，水无常形」。用此招要灵活变通，不可拘泥于形式。老夫一生不羁，你也要学会打破常规。",
+      "action": {"type": "skill", "value": {"skillId": "qimen_dunjia", "questId": "quest_010_huang_yaoshi"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "黄药师",
+      "text": "对了，老夫那女儿蓉儿在襄阳。你去找她时，替老夫问个好。她的「机关算尽」也是老夫教的。",
+      "options": [
+        {"text": "多谢黄岛主！", "nextNodeId": "farewell"},
+        {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
+        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "huang_yaoshi"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "黄药师",
+      "text": "棋力还差点火候。不过也不错了，再多练练，别让老夫失望。",
+      "options": [
+        {"text": "晚辈告退", "nextNodeId": "farewell"},
+        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "黄药师",
+      "text": "老夫一生不羁，只求逍遥自在。这世间俗礼，对老夫来说都是枷锁。下棋也是一样，要破除成见。",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "黄药师",
+      "text": "不过，老夫虽是「东邪」，但从不做伤天害理之事。棋如人品，这一点你要记住。",
+      "options": [
+        {"text": "黄岛主高风亮节！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "黄药师",
+      "text": "也罢，准备好了再来。桃花岛就在这里，老夫随时恭候。"
+    },
+    {
+      "id": "farewell",
+      "speaker": "黄药师",
+      "text": "哈哈，后生好好努力！期待你日后能在棋道上有所成就！"
+    }
+  ]
+}

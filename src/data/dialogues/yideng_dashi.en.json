@@ -1,0 +1,145 @@
+{
+  "npcId": "yideng_dashi",
+  "npcName": "Master Yideng",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Master Yideng",
+      "text": "Amitabha. Benefactor, have you come from afar to comprehend the Way of Go?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Master Yideng",
+      "text": "This old monk's Dharma name is Yideng. I was once the King of Dali, but now I've entered the Buddhist path. Life is like Go - between black and white lies all karma.",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Master Yideng",
+      "text": "This old monk's 'Solar Finger' is renowned. The methods of internal force application within it are exquisitely marvelous when applied to Go.",
+      "options": [
+        {
+          "text": "Please teach me, Master!",
+          "condition": {"type": "quest", "value": "defeated_yideng_dashi", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn the 'Solar Finger'",
+          "condition": {"type": "quest", "value": "defeated_yideng_dashi"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Master, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_yideng_dashi"},
+          "action": {"type": "battle", "value": "yideng_dashi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "How is Solar Finger used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Master Yideng",
+      "text": "'Solar Finger' emphasizes using a single point's force to resolve tremendous pressure. In Go, one crucial stone surpasses a thousand useless ones.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Master Yideng",
+      "text": "This technique allows you to place a stone at a critical position, producing a 'pierce the heavens' effect, instantly reversing the situation. However, it requires extremely high Go skill to execute.",
+      "options": [
+        {"text": "Marvelous! Please teach me, Master", "nextNodeId": "challenge_intro"},
+        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Master Yideng",
+      "text": "Excellent, excellent. Though this old monk has become a monk, my Go cultivation remains as it was. If you want to learn this technique, you must first prove you have this understanding.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Master Yideng",
+      "text": "Years ago, this old monk played against Eastern Heretic and Western Venom, deeply understanding Go's subtleties. If you can beat this old monk, it shows you've comprehended the principle of 'Solar.'",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Master!",
+          "action": {"type": "battle", "value": "yideng_dashi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Master Yideng",
+      "text": "Please!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Master Yideng",
+      "text": "Benefactor, your Go skill is superb and your state of mind clear - you truly have understanding. In that case, this old monk will teach you the essence of 'Solar Finger.'",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Master Yideng",
+      "text": "The key to this technique is: at crucial moments, use the force of 'Solar' to point directly at the vital spot, one stone determining victory. Limited to once per game with a 30-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Master Yideng",
+      "text": "Remember, 'Solar returns, all things renew.' When using this technique, be single-minded and fully focused to unleash its maximum power.",
+      "action": {"type": "skill", "value": {"skillId": "yiyang_zhi", "questId": "quest_009_yideng_dashi"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Master Yideng",
+      "text": "Now that benefactor has learned this technique, when facing strong enemies in the future, you can respond calmly. But remember, 'too rigid is easily broken' - always leave room in all things.",
+      "options": [
+        {"text": "Thank you for your teaching, Master!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "yideng_dashi"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Master Yideng",
+      "text": "Don't be discouraged, benefactor. This old monk also endured many hardships when learning before achieving success. Take your time, no need to rush.",
+      "options": [
+        {"text": "This disciple understands", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Master Yideng",
+      "text": "This old monk was once a king, but later became a monk due to heartbreak. In the game of life, between gain and loss, what difference is there?",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Master Yideng",
+      "text": "Now this old monk has seen through it. Life is like Go - no regrets after placing stones. Whether winning or losing, as long as you have a clear conscience, it's a good game.",
+      "options": [
+        {"text": "Master speaks truly!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Master Yideng",
+      "text": "Excellent, excellent, the time is not yet right. When benefactor is ready, you can come to Tianlong Temple to find this old monk anytime."
+    },
+    {
+      "id": "farewell",
+      "speaker": "Master Yideng",
+      "text": "Amitabha. Benefactor, cultivate well and you'll surely succeed in the future."
+    }
+  ]
+}

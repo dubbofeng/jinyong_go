@@ -1,0 +1,209 @@
+{
+  "npcId": "musang_daoren",
+  "npcName": "木桑道长",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "木桑道长",
+      "text": "哎呀！老道这里很久没来过客人了。小友，你怎么来到这道观的？",
+      "nextNodeId": "player_explain"
+    },
+    {
+      "id": "player_explain",
+      "speaker": "木桑道长",
+      "text": "穿越？这……倒也稀奇。不过既来之则安之，老道我看你骨骼清奇，倒是个学棋的好苗子。",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "木桑道长",
+      "text": "这江湖中啊，围棋修为决定武功高低。你既然来了，老道就传你些棋道入门之法如何？",
+      "options": [
+        {
+          "text": "请道长教我！",
+          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
+          "nextNodeId": "teach_intro"
+        },
+        {
+          "text": "我已经会下围棋了",
+          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
+          "nextNodeId": "skip_tutorial"
+        },
+        {
+          "text": "道长，围棋和武功有什么关系？",
+          "nextNodeId": "explain_world"
+        },
+        {
+          "text": "我想再听听您的教诲",
+          "condition": {"type": "quest", "value": "learned_go_basics"},
+          "nextNodeId": "daily_wisdom"
+        }
+      ]
+    },
+    {
+      "id": "explain_world",
+      "speaker": "木桑道长",
+      "text": "这你就不懂了！在这个世界，围棋可不只是消遣，而是真正的武学根基。棋力越高，内功越深。",
+      "nextNodeId": "explain_world_2"
+    },
+    {
+      "id": "explain_world_2",
+      "speaker": "木桑道长",
+      "text": "江湖中的高手们，个个都是围棋大师。你想要闯荡江湖，必须先把棋艺练好才行！",
+      "options": [
+        {"text": "原来如此！请道长教我", "nextNodeId": "teach_intro"},
+        {"text": "我已经懂围棋了", "nextNodeId": "skip_tutorial"}
+      ]
+    },
+    {
+      "id": "teach_intro",
+      "speaker": "木桑道长",
+      "text": "好好好！下围棋最讲究悟性，常言道「二十岁不成国手，终身无望」。你既是有缘人，老道便教你这棋中妙法。",
+      "nextNodeId": "teach_basics"
+    },
+    {
+      "id": "teach_basics",
+      "speaker": "木桑道长",
+      "text": "围棋是易学难精之事，下法规矩，一点就会。来，老道一面下，一面给你解释。",
+      "nextNodeId": "lesson_1"
+    },
+    {
+      "id": "lesson_1",
+      "speaker": "木桑道长",
+      "text": "首先，围棋有黑白两色棋子，在纵横十九道的棋盘上对弈。黑棋先行，双方轮流落子。",
+      "nextNodeId": "lesson_2"
+    },
+    {
+      "id": "lesson_2",
+      "speaker": "木桑道长",
+      "text": "棋子落在棋盘的交叉点上，一旦落子就不能移动，只能提掉对方的棋子。这叫「落子无悔」，如同人生，每一步都要慎重！",
+      "nextNodeId": "lesson_3"
+    },
+    {
+      "id": "lesson_3",
+      "speaker": "木桑道长",
+      "text": "每颗棋子都有「气」，就是紧邻的空交叉点。当一块棋的气被全部堵住，这块棋就死了，要被提走。",
+      "nextNodeId": "practice_1"
+    },
+    {
+      "id": "practice_1",
+      "speaker": "木桑道长",
+      "text": "来，咱们下一局九路棋，老道让你先走。你慢慢体会气与提子的妙处。",
+      "options": [
+        {
+          "text": "好的，请道长指教！",
+          "action": {"type": "battle", "value": "musang_daoren_tutorial_1"},
+          "nextNodeId": "after_practice_1"
+        }
+      ]
+    },
+    {
+      "id": "after_practice_1",
+      "speaker": "木桑道长",
+      "text": "不错不错！老道我这些年来棋艺虽不算高，但对围棋的热爱从未衰减。你这一局下得还像个样子。",
+      "nextNodeId": "lesson_4"
+    },
+    {
+      "id": "lesson_4",
+      "speaker": "木桑道长",
+      "text": "接下来要讲的是「劫」。有时双方可以互相提子，形成循环，这就是劫争。规矩是不能立即提回，要先在别处落一子。",
+      "nextNodeId": "lesson_5"
+    },
+    {
+      "id": "lesson_5",
+      "speaker": "木桑道长",
+      "text": "劫争是围棋中最精妙的地方，往往决定一局棋的胜负。棋谚云：「劫材要争先」，说的就是这个道理。",
+      "nextNodeId": "practice_2"
+    },
+    {
+      "id": "practice_2",
+      "speaker": "木桑道长",
+      "text": "再来一局，老道我特意设个劫给你看看。",
+      "options": [
+        {
+          "text": "好！",
+          "action": {"type": "battle", "value": "musang_daoren_tutorial_2"},
+          "nextNodeId": "after_practice_2"
+        }
+      ]
+    },
+    {
+      "id": "after_practice_2",
+      "speaker": "木桑道长",
+      "text": "哈哈，看来你已经明白劫争的厉害了！老道我年轻时也是因为不懂劫材，输了不少棋。",
+      "nextNodeId": "lesson_6"
+    },
+    {
+      "id": "lesson_6",
+      "speaker": "木桑道长",
+      "text": "最后说说如何判断胜负。围棋以「目」计算，你围的地盘越大，目数就越多。最后数目，多的一方获胜。",
+      "nextNodeId": "lesson_7"
+    },
+    {
+      "id": "lesson_7",
+      "speaker": "木桑道长",
+      "text": "当双方都不想再下，就可以数目了。记住：活棋才能算目，死棋要被提走，不算目。",
+      "nextNodeId": "final_test"
+    },
+    {
+      "id": "final_test",
+      "speaker": "木桑道长",
+      "text": "好了，基本规则你都学会了。老道我再和你下一局十九路，看看你学得如何。",
+      "options": [
+        {
+          "text": "是！请道长指教！",
+          "action": {"type": "battle", "value": "musang_daoren_final_test"},
+          "nextNodeId": "after_final_test"
+        }
+      ]
+    },
+    {
+      "id": "after_final_test",
+      "speaker": "木桑道长",
+      "text": "好！好极了！你虽初学，但悟性甚高。这江湖中，围棋修为决定武功高低。你且下山闯荡，以棋会友，自能领悟真谛。",
+      "nextNodeId": "graduation",
+      "action": {"type": "quest", "value": "learned_go_basics"}
+    },
+    {
+      "id": "graduation",
+      "speaker": "木桑道长",
+      "text": "记住：下围棋最讲究悟性！江湖中有许多高手等着你，洪七公、令狐冲、郭靖、黄蓉……他们都是一等一的棋手。",
+      "nextNodeId": "graduation_2"
+    },
+    {
+      "id": "graduation_2",
+      "speaker": "木桑道长",
+      "text": "你去华山找洪七公，他的「亢龙有悔」很有些门道。好了，老道我要继续研究棋谱了，你去吧！",
+      "options": [
+        {"text": "多谢道长教诲！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "skip_tutorial",
+      "speaker": "木桑道长",
+      "text": "哦？你已经懂围棋了？那好，老道就不啰嗦了。你去华山找洪七公吧，他那里有真正的高手之道。",
+      "action": {"type": "quest", "value": "skipped_tutorial"},
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "daily_wisdom",
+      "speaker": "木桑道长",
+      "text": "老道我这些年来，虽然棋艺不算高明，但有一点心得：围棋如人生，每一子都关乎大局，切不可轻举妄动。",
+      "nextNodeId": "daily_wisdom_2"
+    },
+    {
+      "id": "daily_wisdom_2",
+      "speaker": "木桑道长",
+      "text": "还有啊，下棋要心平气和。赢了不要骄傲，输了也不要气馁。老道我就是太爱吹嘘自己的棋艺，所以总是输棋，哈哈哈！",
+      "options": [
+        {"text": "多谢道长指点！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "木桑道长",
+      "text": "去吧去吧！老道我要继续下棋了。你若有空，随时回来找我对弈几局！"
+    }
+  ]
+}

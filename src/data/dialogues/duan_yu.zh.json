@@ -1,0 +1,145 @@
+{
+  "npcId": "duan_yu",
+  "npcName": "段誉",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "段誉",
+      "text": "这位朋友，你好啊！在下段誉，大理段氏子弟。看你风尘仆仆，可是远道而来？",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "段誉",
+      "text": "在下虽不喜武学，但对琴棋书画却颇有兴趣。听说你在江湖上以棋会友，不知可愿与在下对弈一局？",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "段誉",
+      "text": "我段家的「六脉神剑」虽是武学绝技，但其中蕴含的指法精妙，用在围棋上也是极佳的。",
+      "options": [
+        {
+          "text": "请段公子指教！",
+          "condition": {"type": "quest", "value": "defeated_duan_yu", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "我想学习「六脉神剑」",
+          "condition": {"type": "quest", "value": "defeated_duan_yu"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "段公子，我想再和你对弈一局",
+          "condition": {"type": "quest", "value": "defeated_duan_yu"},
+          "action": {"type": "battle", "value": "duan_yu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "六脉神剑用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "段誉",
+      "text": "哈哈，朋友误会了。我说的「六脉神剑」，是指落子时的指法快如剑气，让对手防不胜防。",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "段誉",
+      "text": "这招的妙处在于，你可以在关键时刻快速连下数子，对手还来不及反应。就像剑气纵横，无形无影。",
+      "options": [
+        {"text": "神乎其技！请段公子教我", "nextNodeId": "challenge_intro"},
+        {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "段誉",
+      "text": "好！不过在下虽然不喜争斗，但棋道上可是认真的。你要想学这招，得先和我下一局。",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "段誉",
+      "text": "我家叔父一灯大师常说，「棋如人生，每一步都要深思熟虑」。你若能胜我，就证明你有这个悟性。",
+      "options": [
+        {
+          "text": "好！请段公子指教！",
+          "action": {"type": "battle", "value": "duan_yu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "段誉",
+      "text": "那在下就不客气了！请！"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "段誉",
+      "text": "好棋！朋友你这棋下得精彩，棋风洒脱而不失严谨。既然如此，我就传你「六脉神剑」指法。",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "段誉",
+      "text": "这招的要领是：在对局的关键时刻，以极快的速度连续落子，让对手措手不及。每局可用一次，冷却时间15步。",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "段誉",
+      "text": "记住，使用时要「行云流水，一气呵成」。我叔父说，真正的高手，出手便知有没有。",
+      "action": {"type": "skill", "value": {"skillId": "liumai_shenjian", "questId": "quest_006_duan_yu"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "段誉",
+      "text": "对了，若是有机会，不妨去大理天龙寺拜访一下叔父。他老人家的「一阳指」造诣更是深不可测。",
+      "options": [
+        {"text": "多谢段公子！", "nextNodeId": "farewell"},
+        {"text": "我还想听听你的见解", "nextNodeId": "daily_chat"},
+        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "duan_yu"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "段誉",
+      "text": "朋友莫要气馁。棋道漫漫，重在修心。你再多练习，必有所成。",
+      "options": [
+        {"text": "我会再来的", "nextNodeId": "farewell"},
+        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "段誉",
+      "text": "在下虽是大理世子，但最喜欢的还是游山玩水，结交朋友。这围棋啊，也是一种交友的方式。",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "段誉",
+      "text": "父王常说我不务正业，但在下觉得，人生在世，开心最重要。你说是吧，朋友？",
+      "options": [
+        {"text": "段公子言之有理！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "段誉",
+      "text": "无妨无妨，你准备好了再来。在下就在大理，随时恭候！"
+    },
+    {
+      "id": "farewell",
+      "speaker": "段誉",
+      "text": "有缘再会，朋友！愿你在棋道上越走越远！"
+    }
+  ]
+}

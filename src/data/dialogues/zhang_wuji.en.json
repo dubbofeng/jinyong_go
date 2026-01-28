@@ -1,0 +1,145 @@
+{
+  "npcId": "zhang_wuji",
+  "npcName": "Zhang Wuji",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Zhang Wuji",
+      "text": "Greetings, my friend. I am Zhang Wuji, Leader of the Ming Cult. You look unfamiliar - have you come from afar?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Zhang Wuji",
+      "text": "Though I've established myself through martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - would you care to play a game with me?",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Zhang Wuji",
+      "text": "I've cultivated 'Great Universe Shift' for many years. This technique can redirect an opponent's force, and when applied to Go, it has wonderful uses.",
+      "options": [
+        {
+          "text": "Please teach me, Leader Zhang!",
+          "condition": {"type": "quest", "value": "defeated_zhang_wuji", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn 'Great Universe Shift'",
+          "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Leader Zhang, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
+          "action": {"type": "battle", "value": "zhang_wuji"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "How is Great Universe Shift used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Zhang Wuji",
+      "text": "'Great Universe Shift' is the Ming Cult's supreme martial art - it can redirect an opponent's force, turning enemy into friend. In Go, it can reverse unfavorable situations.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Zhang Wuji",
+      "text": "This technique allows you to change the direction of the game at crucial moments, transforming your opponent's advantage into your own. However, it requires extremely high internal force and understanding.",
+      "options": [
+        {"text": "Miraculous! Please teach me, Leader Zhang", "nextNodeId": "challenge_intro"},
+        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Zhang Wuji",
+      "text": "Good! However, this technique is exquisitely marvelous - not just anyone can learn it. You must play a game with me first so I can assess your level.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Zhang Wuji",
+      "text": "Though I'm young, I've also witnessed quite a few masters. If you can beat me, it proves you're qualified to learn this technique.",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Leader Zhang!",
+          "action": {"type": "battle", "value": "zhang_wuji"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Zhang Wuji",
+      "text": "Good! Then let's begin!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Zhang Wuji",
+      "text": "Brilliant! Your game is flexible and varied, quite capturing the spirit of 'Great Universe Shift.' In that case, I'll teach you this technique.",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Zhang Wuji",
+      "text": "The key to this technique is: at crucial moments, use the power of 'Great Universe Shift' to reverse the situation, turning passive into active. Limited to once per game with a 50-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Zhang Wuji",
+      "text": "Remember, 'combine hard and soft, complement Yin and Yang.' When using this technique, go with the flow and don't force it. Great-uncle taught me that mental cultivation is more important than moves.",
+      "action": {"type": "skill", "value": {"skillId": "qiankun_danuoyi", "questId": "quest_014_zhang_wuji"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Zhang Wuji",
+      "text": "Now that you've learned this technique, you can calmly handle strong enemies in the future. But remember, no matter how high your martial arts, you must have a kind heart.",
+      "options": [
+        {"text": "Thank you, Leader Zhang!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "zhang_wuji"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Zhang Wuji",
+      "text": "It's alright. When I was learning martial arts, I also endured many hardships. Practice more and you'll surely succeed.",
+      "options": [
+        {"text": "I take my leave", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Zhang Wuji",
+      "text": "Though I'm the Leader of the Ming Cult, my greatest wish is world peace and people living in peace and contentment. Life's game is the same.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Zhang Wuji",
+      "text": "My godfather often said, 'The greatest heroes act for their country and people.' Though I may not achieve such greatness, I hope to do my part.",
+      "options": [
+        {"text": "Leader Zhang has a chivalrous heart!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Zhang Wuji",
+      "text": "No problem, come back when you're ready. I'll be at Brightness Peak, always welcome."
+    },
+    {
+      "id": "farewell",
+      "speaker": "Zhang Wuji",
+      "text": "Until we meet again! May you have smooth sailing in Jianghu!"
+    }
+  ]
+}

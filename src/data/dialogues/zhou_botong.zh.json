@@ -1,0 +1,145 @@
+{
+  "npcId": "zhou_botong",
+  "npcName": "周伯通",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "周伯通",
+      "text": "哈哈哈！又有人来找老顽童玩了！你是谁呀？来陪老顽童下棋的吗？",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "周伯通",
+      "text": "老顽童我最喜欢和人玩了！你会下围棋吗？我有个绝招，叫「左右互搏」，可好玩了！",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "周伯通",
+      "text": "「左右互搏」可厉害了，能让你一心二用，同时下两步棋！嘿嘿，想不想学？",
+      "options": [
+        {
+          "text": "请老前辈指教！",
+          "condition": {"type": "quest", "value": "defeated_zhou_botong", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "我想学习「左右互搏」",
+          "condition": {"type": "quest", "value": "defeated_zhou_botong"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "老前辈，我想再和你对弈一局",
+          "condition": {"type": "quest", "value": "defeated_zhou_botong"},
+          "action": {"type": "battle", "value": "zhou_botong"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "左右互搏是什么？", "nextNodeId": "explain_skill"},
+        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "周伯通",
+      "text": "哈哈！你不知道呀？「左右互搏」就是左手右手同时做不同的事情，厉害吧？",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "周伯通",
+      "text": "用在下棋上，就是能同时想两条路，下两步棋！对手还以为你只能下一步，结果你下了两步，嘿嘿！",
+      "options": [
+        {"text": "太厉害了！请老前辈教我", "nextNodeId": "challenge_intro"},
+        {"text": "我再想想", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "周伯通",
+      "text": "好好好！不过你得先陪老顽童玩一局，让我看看你有没有这个天赋。",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "周伯通",
+      "text": "老顽童我虽然贪玩，但下棋可不含糊！你要是能赢我，我就教你「左右互搏」！",
+      "options": [
+        {
+          "text": "好！请老前辈指教！",
+          "action": {"type": "battle", "value": "zhou_botong"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "周伯通",
+      "text": "哈哈哈！来来来，咱们玩个痛快！"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "周伯通",
+      "text": "哇！你好厉害啊！居然能赢老顽童！好好好，我就教你「左右互搏」！",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "周伯通",
+      "text": "这招的要领就是：一心二用，同时想两条路，下两步棋！每局能用一次，冷却30步。",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "周伯通",
+      "text": "记住哦，用这招的时候要「左手画圆，右手画方」，不能乱！老顽童我练了好久才学会呢！",
+      "action": {"type": "skill", "value": {"skillId": "zuoyou_hubo", "questId": "quest_015_zhou_botong"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "周伯通",
+      "text": "哈哈哈！你学会了！以后遇到厉害的对手，用这招肯定能赢！",
+      "options": [
+        {"text": "多谢老前辈！", "nextNodeId": "farewell"},
+        {"text": "我还想和您聊聊", "nextNodeId": "daily_chat"},
+        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "zhou_botong"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "周伯通",
+      "text": "哎呀，没关系啦！老顽童我练了这么多年，当然厉害啦！你再练练，下次再来！",
+      "options": [
+        {"text": "我会再来的", "nextNodeId": "farewell"},
+        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "周伯通",
+      "text": "老顽童我最喜欢玩了！下棋、抓蟋蟀、爬树，什么都好玩！",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "周伯通",
+      "text": "人生在世，开心最重要！那些整天板着脸的人，多没意思啊！你说是不是？",
+      "options": [
+        {"text": "老前辈说得对！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "周伯通",
+      "text": "哎呀，你要走啦？好吧，准备好了再来找老顽童玩！"
+    },
+    {
+      "id": "farewell",
+      "speaker": "周伯通",
+      "text": "哈哈哈！下次再来玩啊！老顽童我随时欢迎！"
+    }
+  ]
+}

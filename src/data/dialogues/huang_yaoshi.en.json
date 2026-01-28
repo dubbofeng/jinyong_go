@@ -1,0 +1,145 @@
+{
+  "npcId": "huang_yaoshi",
+  "npcName": "Huang Yaoshi",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Huang Yaoshi",
+      "text": "Hehe, another youngster has come to Peach Blossom Island. Did you come for this old man's reputation, or did you stumble here by accident?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Huang Yaoshi",
+      "text": "I am Huang Yaoshi, known as the Eastern Heretic. Proficient in the Eight Trigrams, music, Go, calligraphy, and painting. I've heard you meet friends through Go - interesting.",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Huang Yaoshi",
+      "text": "This old man's 'Eight Trigram Arts' are mastered thoroughly, and when applied to Go, the variations are endless. However, you must first prove you're qualified to learn.",
+      "options": [
+        {
+          "text": "Please teach me, Island Master Huang!",
+          "condition": {"type": "quest", "value": "defeated_huang_yaoshi", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn the 'Eight Trigram Arts'",
+          "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Island Master Huang, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
+          "action": {"type": "battle", "value": "huang_yaoshi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "How are the Eight Trigrams used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Huang Yaoshi",
+      "text": "The Eight Trigrams emphasize 'unpredictable changes, winning through surprise.' On the Go board, you can set up mysterious formations that trap opponents in a maze.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Huang Yaoshi",
+      "text": "This technique allows you to change the game's pattern at crucial moments, creating unexpected variations. However, it requires extremely high insight to master.",
+      "options": [
+        {"text": "Exquisite! Please teach me, Island Master Huang", "nextNodeId": "challenge_intro"},
+        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Huang Yaoshi",
+      "text": "Good! You have courage! This old man hates pedantic people most - your boldness suits my taste.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Huang Yaoshi",
+      "text": "Years ago at Mount Hua, this old man played against Hong Qigong and Ouyang Feng - each had their merits. If you can beat this old man on the Go board, I'll acknowledge your real skill.",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Island Master Huang!",
+          "action": {"type": "battle", "value": "huang_yaoshi"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Huang Yaoshi",
+      "text": "Haha, then come! Let you witness the power of the Eastern Heretic!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Huang Yaoshi",
+      "text": "Excellent, excellent! The younger generation is formidable! Your game is unbounded and imaginative, quite like this old man in his prime. Good, I'll teach you the 'Eight Trigram Arts.'",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Huang Yaoshi",
+      "text": "The key to this technique is: use the principles of the Eight Trigrams to set up mysterious formations on the Go board, trapping your opponent in difficulty. Can be used once per game with a 35-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Huang Yaoshi",
+      "text": "Remember, 'troops have no constant formation, water has no constant shape.' When using this technique, be flexible and don't be constrained by form. This old man has lived unconventionally - you must also learn to break conventions.",
+      "action": {"type": "skill", "value": {"skillId": "qimen_dunjia", "questId": "quest_010_huang_yaoshi"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Huang Yaoshi",
+      "text": "By the way, my daughter Rong'er is in Xiangyang. When you visit her, give her my regards. Her 'Mechanism Mastery' was also taught by this old man.",
+      "options": [
+        {"text": "Thank you, Island Master Huang!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "huang_yaoshi"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Huang Yaoshi",
+      "text": "Your Go skill still needs refinement. But not bad - practice more and don't disappoint this old man.",
+      "options": [
+        {"text": "This junior takes his leave", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Huang Yaoshi",
+      "text": "This old man has lived unconventionally, seeking only freedom and ease. Worldly conventions are all shackles to this old man. The same goes for Go - you must break through preconceptions.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Huang Yaoshi",
+      "text": "However, though this old man is the 'Eastern Heretic,' I never do unconscionable things. Go reflects character - remember this.",
+      "options": [
+        {"text": "Island Master Huang is noble and upright!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Huang Yaoshi",
+      "text": "Very well, come back when you're ready. Peach Blossom Island is here, and this old man will be waiting anytime."
+    },
+    {
+      "id": "farewell",
+      "speaker": "Huang Yaoshi",
+      "text": "Haha, youngster, work hard! Looking forward to your achievements on the path of Go in the future!"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "npcId": "duan_yu",
+  "npcName": "Duan Yu",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Duan Yu",
+      "text": "Hello, my friend! I'm Duan Yu of the Dali Duan family. You look travel-worn - have you come from afar?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Duan Yu",
+      "text": "Though I don't care much for martial arts, I'm quite interested in music, Go, calligraphy, and painting. I've heard you meet friends through Go. Would you like to play a game with me?",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Duan Yu",
+      "text": "My family's 'Six Meridian Divine Sword' is a martial arts masterpiece, but the exquisite finger techniques within can also be excellently applied to Go.",
+      "options": [
+        {
+          "text": "Please teach me, Young Master Duan!",
+          "condition": {"type": "quest", "value": "defeated_duan_yu", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn the 'Six Meridian Divine Sword'",
+          "condition": {"type": "quest", "value": "defeated_duan_yu"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Young Master Duan, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_duan_yu"},
+          "action": {"type": "battle", "value": "duan_yu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Six Meridian Divine Sword in Go?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Duan Yu",
+      "text": "Haha, you misunderstand, my friend. The 'Six Meridian Divine Sword' I speak of refers to finger techniques as fast as sword energy when placing stones, catching opponents off guard.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Duan Yu",
+      "text": "The beauty of this technique is that you can rapidly place multiple stones at crucial moments before your opponent can react. Like sword energy crisscrossing - formless and shadowless.",
+      "options": [
+        {"text": "Miraculous! Please teach me, Young Master Duan", "nextNodeId": "challenge_intro"},
+        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Duan Yu",
+      "text": "Very well! Though I dislike conflict, I'm serious about Go. If you want to learn this technique, you must play a game with me first.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Duan Yu",
+      "text": "My uncle, Master Yideng, often says, 'Go is like life - every move requires deep thought.' If you can beat me, it proves you have the understanding.",
+      "options": [
+        {
+          "text": "Alright! Please guide me, Young Master Duan!",
+          "action": {"type": "battle", "value": "duan_yu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Duan Yu",
+      "text": "Then I won't hold back! Please!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Duan Yu",
+      "text": "Excellent game! Your play is brilliant - free-spirited yet rigorous. In that case, I'll teach you the 'Six Meridian Divine Sword' finger technique.",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Duan Yu",
+      "text": "The key to this technique is: at crucial moments in the game, place stones in rapid succession at extreme speed, catching your opponent unprepared. Can be used once per game with a 15-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Duan Yu",
+      "text": "Remember, when using it, be 'flowing like clouds and water, in one breath.' My uncle says a true master reveals their skill with one move.",
+      "action": {"type": "skill", "value": {"skillId": "liumai_shenjian", "questId": "quest_006_duan_yu"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Duan Yu",
+      "text": "By the way, if you have the chance, visit my uncle at Dali's Tianlong Temple. His 'Solar Finger' mastery is truly unfathomable.",
+      "options": [
+        {"text": "Thank you, Young Master Duan!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "duan_yu"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Duan Yu",
+      "text": "Don't be discouraged, my friend. The path of Go is long - what matters is cultivating your mind. Practice more and you'll surely succeed.",
+      "options": [
+        {"text": "I'll return", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Duan Yu",
+      "text": "Though I'm the Crown Prince of Dali, what I love most is traveling and making friends. Go is also a way to make friends.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Duan Yu",
+      "text": "Father often says I'm not attending to proper duties, but I think the most important thing in life is happiness. Don't you agree, my friend?",
+      "options": [
+        {"text": "Young Master Duan speaks wisely!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Duan Yu",
+      "text": "No problem at all, come back when you're ready. I'll be in Dali, always welcoming you!"
+    },
+    {
+      "id": "farewell",
+      "speaker": "Duan Yu",
+      "text": "Until we meet again, my friend! May you go far on the path of Go!"
+    }
+  ]
+}

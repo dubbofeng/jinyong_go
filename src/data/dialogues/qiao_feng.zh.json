@@ -1,0 +1,145 @@
+{
+  "npcId": "qiao_feng",
+  "npcName": "乔峰",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "乔峰",
+      "text": "这位兄弟，你好！在下乔峰，丐帮帮主。看你一身正气，想必是江湖中的好汉？",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "乔峰",
+      "text": "在下虽以武功闻名，但对围棋也颇有研究。听说你在江湖上以棋会友，不如来比试一局？",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "乔峰",
+      "text": "在下有一套「降龙十八掌」，刚猛无比。这掌法的精髓用在围棋上，同样威力无穷。",
+      "options": [
+        {
+          "text": "请乔帮主指教！",
+          "condition": {"type": "quest", "value": "defeated_qiao_feng", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "我想学习「降龙十八掌」",
+          "condition": {"type": "quest", "value": "defeated_qiao_feng"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "乔帮主，我想再和你对弈一局",
+          "condition": {"type": "quest", "value": "defeated_qiao_feng"},
+          "action": {"type": "battle", "value": "qiao_feng"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "降龙十八掌如何用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "乔峰",
+      "text": "「降龙十八掌」是丐帮镇帮绝学，刚猛无比，每一掌都势如破竹。",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "乔峰",
+      "text": "用在棋局上，就是以刚猛的气势压倒对手，让他无法招架。不过需要极高的胆识和棋力。",
+      "options": [
+        {"text": "霸气十足！请乔帮主教我", "nextNodeId": "challenge_intro"},
+        {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "乔峰",
+      "text": "好！有胆色！不过这招精妙之处，需要真功夫才能领会。你要想学，得先与在下对弈一局。",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "乔峰",
+      "text": "在下行走江湖多年，从未遇到真正的对手。你若能胜在下，就说明你有这个资格。",
+      "options": [
+        {
+          "text": "请乔帮主赐教！",
+          "action": {"type": "battle", "value": "qiao_feng"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "乔峰",
+      "text": "好！来吧！让你见识见识丐帮的厉害！"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "乔峰",
+      "text": "好！好棋！你这棋下得刚猛有力，已有几分「降龙」之势。既然如此，在下就传你这招。",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "乔峰",
+      "text": "这招的要领是：以刚猛的气势压倒对手，连续进攻，不给对方喘息之机。每局限用一次，冷却40步。",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "乔峰",
+      "text": "记住，「刚中有柔，柔中带刚」。用此招时要气势如虹，但也要懂得收放自如。",
+      "action": {"type": "skill", "value": {"skillId": "xianglong_shiba_zhang", "questId": "quest_018_qiao_feng"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "乔峰",
+      "text": "你既然学了这招，他日必成大器。不过要记住，真正的高手，不仅要有实力，更要有侠义之心。",
+      "options": [
+        {"text": "多谢乔帮主！", "nextNodeId": "farewell"},
+        {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
+        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "qiao_feng"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "乔峰",
+      "text": "不必气馁。在下当年学武，也是历经磨难。你再多练习，必有所成。",
+      "options": [
+        {"text": "在下告退", "nextNodeId": "farewell"},
+        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "乔峰",
+      "text": "在下这一生行侠仗义，但也因身世之谜饱受煎熬。有时候想想，人生如棋，每一步都要深思熟虑。",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "乔峰",
+      "text": "不过无论如何，在下都会坚守心中的信念。大丈夫当顶天立地，无愧于心！",
+      "options": [
+        {"text": "乔帮主豪气干云！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "乔峰",
+      "text": "无妨，准备好了再来。在下就在此地，随时恭候！"
+    },
+    {
+      "id": "farewell",
+      "speaker": "乔峰",
+      "text": "有缘再会！愿你在江湖上侠名远扬！"
+    }
+  ]
+}

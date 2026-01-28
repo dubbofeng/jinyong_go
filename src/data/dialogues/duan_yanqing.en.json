@@ -1,0 +1,145 @@
+{
+  "npcId": "duan_yanqing",
+  "npcName": "Duan Yanqing",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Duan Yanqing",
+      "text": "Hmph... Another one who isn't afraid of death? You dare to challenge this old man to Go?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Duan Yanqing",
+      "text": "I am Duan Yanqing, known in Jianghu as the 'Number One Villain Under Heaven.' If you want to play Go with this old man, ask yourself if you have the skill.",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Duan Yanqing",
+      "text": "Though this old man's body is crippled, my 'Ventriloquism Transmission' technique is unmatched. When used on the Go board, it can unsettle opponents.",
+      "options": [
+        {
+          "text": "Please teach me, Senior!",
+          "condition": {"type": "quest", "value": "defeated_duan_yanqing", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn 'Ventriloquism Transmission'",
+          "condition": {"type": "quest", "value": "defeated_duan_yanqing"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Senior, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_duan_yanqing"},
+          "action": {"type": "battle", "value": "duan_yanqing"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "How is Ventriloquism used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "I... I should leave now", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Duan Yanqing",
+      "text": "Hmph, you youngster have some insight. Ventriloquism Transmission can silently disturb an opponent's mind during a game, making them lose composure.",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Duan Yanqing",
+      "text": "This old man's technique greatly reduces the opponent's thinking time, causing them to make mistakes. But if you want to learn it, you must beat this old man first.",
+      "options": [
+        {"text": "This junior is willing to learn!", "nextNodeId": "challenge_intro"},
+        {"text": "I... let me prepare more", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Duan Yanqing",
+      "text": "Good! You have guts! This old man has roamed Jianghu for decades and seen countless masters, but someone as fearless as you is rare.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Duan Yanqing",
+      "text": "Years ago, this old man played against Monk Huangmei for three days and nights with no victor. If you can beat this old man, it proves you're qualified to learn my technique.",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Senior!",
+          "action": {"type": "battle", "value": "duan_yanqing"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Duan Yanqing",
+      "text": "Hmph! Let you witness this old man's power!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Duan Yanqing",
+      "text": "Good... excellent game! I didn't expect a youngster like you to have such Go skill. Very well, this old man will teach you 'Ventriloquism Transmission.'",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Duan Yanqing",
+      "text": "The key to this technique is: during a game, use ventriloquism to disturb your opponent's mind, reducing their thinking time by 30%. Can be used once per game with a 25-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Duan Yanqing",
+      "text": "Remember, when using it, be 'silent and impossible to guard against.' Jianghu is treacherous - learn this technique and you'll have something to rely on when facing strong enemies.",
+      "action": {"type": "skill", "value": {"skillId": "fuyu_chuanyin", "questId": "quest_008_duan_yanqing"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Duan Yanqing",
+      "text": "Though this old man is a villain, I respect those with real skill. Now that you've learned this technique, be more careful when roaming Jianghu.",
+      "options": [
+        {"text": "Thank you, Senior!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your experiences", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "duan_yanqing"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Duan Yanqing",
+      "text": "Hmph, you're still far from ready. Go practice more and don't embarrass yourself before this old man.",
+      "options": [
+        {"text": "This junior takes his leave", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Duan Yanqing",
+      "text": "This old man was once a Dali prince, yet ended up like this. Jianghu is treacherous, people's hearts unfathomable - remember this.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Duan Yanqing",
+      "text": "However, Go is like life - there's always a chance to turn things around. Though this old man is a villain, I never cheat at Go. This is my last pride.",
+      "options": [
+        {"text": "Senior is noble and upright!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Duan Yanqing",
+      "text": "Hmph, if you don't have the guts, don't provoke this old man. Come back when you're ready!"
+    },
+    {
+      "id": "farewell",
+      "speaker": "Duan Yanqing",
+      "text": "Go now, this old man is tired. Until we meet again."
+    }
+  ]
+}

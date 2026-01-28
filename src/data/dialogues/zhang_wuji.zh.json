@@ -1,0 +1,145 @@
+{
+  "npcId": "zhang_wuji",
+  "npcName": "张无忌",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "张无忌",
+      "text": "这位朋友，你好。在下张无忌，明教教主。看你面生，可是远道而来？",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "张无忌",
+      "text": "在下虽以武学立身，但对围棋也颇有研究。听说你在江湖上以棋会友，不知可愿与在下对弈一局？",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "张无忌",
+      "text": "在下修炼「乾坤大挪移」多年，这招能转移对手力道，用在围棋上也是妙用无穷。",
+      "options": [
+        {
+          "text": "请张教主指教！",
+          "condition": {"type": "quest", "value": "defeated_zhang_wuji", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "我想学习「乾坤大挪移」",
+          "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "张教主，我想再和你对弈一局",
+          "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
+          "action": {"type": "battle", "value": "zhang_wuji"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "乾坤大挪移如何用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "张无忌",
+      "text": "「乾坤大挪移」是明教至高神功，能转移对手力道，化敌为友。在棋局中，能扭转不利局势。",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "张无忌",
+      "text": "这招能让你在关键时刻改变棋局走向，将对手的优势转化为自己的优势。不过需要极高的内力和悟性。",
+      "options": [
+        {"text": "神乎其技！请张教主教我", "nextNodeId": "challenge_intro"},
+        {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "张无忌",
+      "text": "好！不过这招精妙无比，不是随便什么人都能学的。你得先和在下对弈一局，让在下看看你的水平。",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "张无忌",
+      "text": "在下虽然年轻，但也见识过不少高手。你若能胜在下，就说明你有资格学这招。",
+      "options": [
+        {
+          "text": "请张教主赐教！",
+          "action": {"type": "battle", "value": "zhang_wuji"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "张无忌",
+      "text": "好！那就来吧！"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "张无忌",
+      "text": "精彩！你这棋下得灵活多变，颇有「乾坤大挪移」的神韵。既然如此，在下就传你这招。",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "张无忌",
+      "text": "这招的要领是：在关键时刻，运用「乾坤大挪移」之力，扭转局势，化被动为主动。每局限用一次，冷却50步。",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "张无忌",
+      "text": "记住，「刚柔并济，阴阳互补」。用此招时要顺势而为，不可强求。太公公教我时说，心法比招式更重要。",
+      "action": {"type": "skill", "value": {"skillId": "qiankun_danuoyi", "questId": "quest_014_zhang_wuji"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "张无忌",
+      "text": "你既然学了这招，以后遇到强敌也能从容应对。不过要记住，武功再高，也要有一颗善心。",
+      "options": [
+        {"text": "多谢张教主！", "nextNodeId": "farewell"},
+        {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
+        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "zhang_wuji"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "张无忌",
+      "text": "不要紧的。在下当年学武，也是历经磨难。你多练习，必有所成。",
+      "options": [
+        {"text": "在下告退", "nextNodeId": "farewell"},
+        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "张无忌",
+      "text": "在下虽是明教教主，但最大的心愿是天下太平，百姓安居乐业。这棋局人生，也是如此。",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "张无忌",
+      "text": "义父常说，「侠之大者，为国为民」。在下虽然做不到那么伟大，但也希望尽自己的一份力。",
+      "options": [
+        {"text": "张教主侠义心肠！", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "张无忌",
+      "text": "无妨，准备好了再来。在下就在光明顶，随时欢迎。"
+    },
+    {
+      "id": "farewell",
+      "speaker": "张无忌",
+      "text": "有缘再会！愿你在江湖上一路顺风！"
+    }
+  ]
+}

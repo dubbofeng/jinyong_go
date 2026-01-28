@@ -1,0 +1,209 @@
+{
+  "npcId": "musang_daoren",
+  "npcName": "Taoist Musang",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Taoist Musang",
+      "text": "Oh my! It's been a long time since we've had visitors here. Young friend, how did you come to this monastery?",
+      "nextNodeId": "player_explain"
+    },
+    {
+      "id": "player_explain",
+      "speaker": "Taoist Musang",
+      "text": "Transmigration? Well... that's quite unusual. But since you're here, make yourself at home. I can see you have excellent bone structure - perfect for learning Go!",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Taoist Musang",
+      "text": "In this world, Go mastery determines martial arts prowess. Since you're here, shall I teach you the fundamentals of Go?",
+      "options": [
+        {
+          "text": "Please teach me, Master!",
+          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
+          "nextNodeId": "teach_intro"
+        },
+        {
+          "text": "I already know how to play Go",
+          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
+          "nextNodeId": "skip_tutorial"
+        },
+        {
+          "text": "Master, what's the connection between Go and martial arts?",
+          "nextNodeId": "explain_world"
+        },
+        {
+          "text": "I'd like to hear more of your wisdom",
+          "condition": {"type": "quest", "value": "learned_go_basics"},
+          "nextNodeId": "daily_wisdom"
+        }
+      ]
+    },
+    {
+      "id": "explain_world",
+      "speaker": "Taoist Musang",
+      "text": "Ah, you don't understand yet! In this world, Go isn't just a pastime - it's the foundation of martial arts. The stronger your Go skills, the deeper your inner power.",
+      "nextNodeId": "explain_world_2"
+    },
+    {
+      "id": "explain_world_2",
+      "speaker": "Taoist Musang",
+      "text": "All the masters in the martial world are Go masters as well. If you want to venture into the martial world, you must first master Go!",
+      "options": [
+        {"text": "I see! Please teach me, Master", "nextNodeId": "teach_intro"},
+        {"text": "I already know Go", "nextNodeId": "skip_tutorial"}
+      ]
+    },
+    {
+      "id": "teach_intro",
+      "speaker": "Taoist Musang",
+      "text": "Excellent! Excellent! Go requires great intuition. There's a saying: 'If you haven't become a master by 20, you never will.' Since you're here by fate, I'll teach you the mysteries of Go.",
+      "nextNodeId": "teach_basics"
+    },
+    {
+      "id": "teach_basics",
+      "speaker": "Taoist Musang",
+      "text": "Go is easy to learn but hard to master. The rules are simple - you'll understand in no time. Come, I'll explain as we play.",
+      "nextNodeId": "lesson_1"
+    },
+    {
+      "id": "lesson_1",
+      "speaker": "Taoist Musang",
+      "text": "First, Go uses black and white stones on a board with 19 vertical and horizontal lines. Black moves first, and players alternate placing stones.",
+      "nextNodeId": "lesson_2"
+    },
+    {
+      "id": "lesson_2",
+      "speaker": "Taoist Musang",
+      "text": "Stones are placed on the intersections of the board. Once placed, they cannot be moved - only captured. This is 'no taking back moves' - like life itself, each step must be carefully considered!",
+      "nextNodeId": "lesson_3"
+    },
+    {
+      "id": "lesson_3",
+      "speaker": "Taoist Musang",
+      "text": "Each stone has 'liberties' - empty adjacent intersections. When a group of stones loses all its liberties, it's dead and must be captured.",
+      "nextNodeId": "practice_1"
+    },
+    {
+      "id": "practice_1",
+      "speaker": "Taoist Musang",
+      "text": "Come, let's play a 9x9 game. I'll let you go first. Slowly experience the mysteries of liberties and capturing.",
+      "options": [
+        {
+          "text": "Yes, please teach me!",
+          "action": {"type": "battle", "value": "musang_daoren_tutorial_1"},
+          "nextNodeId": "after_practice_1"
+        }
+      ]
+    },
+    {
+      "id": "after_practice_1",
+      "speaker": "Taoist Musang",
+      "text": "Excellent! Excellent! Though my Go skills aren't that high these years, my love for Go has never diminished. You played quite well for your first game.",
+      "nextNodeId": "lesson_4"
+    },
+    {
+      "id": "lesson_4",
+      "speaker": "Taoist Musang",
+      "text": "Next, I'll teach you about 'ko'. Sometimes both sides can capture each other, forming a cycle - this is ko fighting. The rule is you can't immediately recapture - you must play elsewhere first.",
+      "nextNodeId": "lesson_5"
+    },
+    {
+      "id": "lesson_5",
+      "speaker": "Taoist Musang",
+      "text": "Ko fighting is the most exquisite part of Go, often determining the outcome of a game. The proverb says: 'Seize ko threats first' - this is exactly what it means.",
+      "nextNodeId": "practice_2"
+    },
+    {
+      "id": "practice_2",
+      "speaker": "Taoist Musang",
+      "text": "Let's play another game. I'll deliberately create a ko situation to show you.",
+      "options": [
+        {
+          "text": "Alright!",
+          "action": {"type": "battle", "value": "musang_daoren_tutorial_2"},
+          "nextNodeId": "after_practice_2"
+        }
+      ]
+    },
+    {
+      "id": "after_practice_2",
+      "speaker": "Taoist Musang",
+      "text": "Haha, you've already understood the power of ko fighting! When I was young, I lost many games because I didn't understand ko threats.",
+      "nextNodeId": "lesson_6"
+    },
+    {
+      "id": "lesson_6",
+      "speaker": "Taoist Musang",
+      "text": "Finally, let's discuss how to determine victory. Go is scored by 'points' - the larger your territory, the more points you have. At the end, count the points, and whoever has more wins.",
+      "nextNodeId": "lesson_7"
+    },
+    {
+      "id": "lesson_7",
+      "speaker": "Taoist Musang",
+      "text": "When both sides don't want to play anymore, you can count territory. Remember: only living groups count as points - dead groups are captured and don't count.",
+      "nextNodeId": "final_test"
+    },
+    {
+      "id": "final_test",
+      "speaker": "Taoist Musang",
+      "text": "Alright, you've learned the basic rules. Let me play one more 19x19 game with you to see how well you've learned.",
+      "options": [
+        {
+          "text": "Yes! Please teach me!",
+          "action": {"type": "battle", "value": "musang_daoren_final_test"},
+          "nextNodeId": "after_final_test"
+        }
+      ]
+    },
+    {
+      "id": "after_final_test",
+      "speaker": "Taoist Musang",
+      "text": "Good! Excellent! Though you're a beginner, your intuition is outstanding. In this world, Go mastery determines martial prowess. Go out and explore, make friends through Go, and you'll understand the true essence.",
+      "nextNodeId": "graduation",
+      "action": {"type": "quest", "value": "learned_go_basics"}
+    },
+    {
+      "id": "graduation",
+      "speaker": "Taoist Musang",
+      "text": "Remember: Go requires great intuition! There are many masters in the martial world - Hong Qigong, Linghu Chong, Guo Jing, Huang Rong... they're all first-class Go players.",
+      "nextNodeId": "graduation_2"
+    },
+    {
+      "id": "graduation_2",
+      "speaker": "Taoist Musang",
+      "text": "Go to Mount Hua and find Hong Qigong. His 'Mighty Dragon Repents' has its mysteries. Well, I need to continue studying Go records. Off you go!",
+      "options": [
+        {"text": "Thank you for your teachings, Master!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "skip_tutorial",
+      "speaker": "Taoist Musang",
+      "text": "Oh? You already know Go? Good, then I won't be long-winded. Go to Mount Hua and find Hong Qigong - he has the way of true masters.",
+      "action": {"type": "quest", "value": "skipped_tutorial"},
+      "nextNodeId": "farewell"
+    },
+    {
+      "id": "daily_wisdom",
+      "speaker": "Taoist Musang",
+      "text": "Over the years, though my Go skills aren't brilliant, I've learned one thing: Go is like life - every move affects the overall situation, so don't act rashly.",
+      "nextNodeId": "daily_wisdom_2"
+    },
+    {
+      "id": "daily_wisdom_2",
+      "speaker": "Taoist Musang",
+      "text": "Also, keep a calm mind when playing. Don't be arrogant when winning, don't be discouraged when losing. I always brag about my Go skills, so I always lose, hahaha!",
+      "options": [
+        {"text": "Thank you for your guidance, Master!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "farewell",
+      "speaker": "Taoist Musang",
+      "text": "Go, go! I need to continue playing. If you have time, come back anytime for a few games!"
+    }
+  ]
+}

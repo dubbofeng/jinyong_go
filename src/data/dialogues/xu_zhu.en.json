@@ -1,0 +1,145 @@
+{
+  "npcId": "xu_zhu",
+  "npcName": "Xu Zhu",
+  "startNodeId": "greeting",
+  "nodes": [
+    {
+      "id": "greeting",
+      "speaker": "Xu Zhu",
+      "text": "Amitabha. Greetings, benefactor. This poor monk is Xu Zhu, a disciple of Shaolin Temple. Have you come here for the Zhenlong Go puzzle?",
+      "nextNodeId": "first_meet"
+    },
+    {
+      "id": "first_meet",
+      "speaker": "Xu Zhu",
+      "text": "Years ago, this poor monk accidentally solved the Zhenlong Go puzzle, and my fate changed completely. The mysteries contained in that puzzle are truly unfathomable.",
+      "nextNodeId": "check_status"
+    },
+    {
+      "id": "check_status",
+      "speaker": "Xu Zhu",
+      "text": "Though this poor monk is not talented, when solving the Zhenlong puzzle, I did comprehend some principles. If benefactor is interested, this poor monk can teach you.",
+      "options": [
+        {
+          "text": "Please teach me, Master!",
+          "condition": {"type": "quest", "value": "defeated_xu_zhu", "inverse": true},
+          "nextNodeId": "challenge_intro"
+        },
+        {
+          "text": "I want to learn 'Breaking Zhenlong'",
+          "condition": {"type": "quest", "value": "defeated_xu_zhu"},
+          "nextNodeId": "teach_skill"
+        },
+        {
+          "text": "Master, I'd like to play another game with you",
+          "condition": {"type": "quest", "value": "defeated_xu_zhu"},
+          "action": {"type": "battle", "value": "xu_zhu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "What is Breaking Zhenlong?", "nextNodeId": "explain_skill"},
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "explain_skill",
+      "speaker": "Xu Zhu",
+      "text": "The Zhenlong Go puzzle is the world's most extraordinary puzzle - countless masters tried to solve it and failed. This poor monk could solve it back then entirely through one character: 'Nothing.'",
+      "nextNodeId": "explain_skill_2"
+    },
+    {
+      "id": "explain_skill_2",
+      "speaker": "Xu Zhu",
+      "text": "'Breaking Zhenlong' means not being constrained by conventions, using no-move to defeat all moves, finding life in seemingly unsolvable situations.",
+      "options": [
+        {"text": "Profoundly mysterious! Please teach me, Master", "nextNodeId": "challenge_intro"},
+        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "challenge_intro",
+      "speaker": "Xu Zhu",
+      "text": "Amitabha. Since benefactor has this intention, this poor monk will play a game with you to see your understanding.",
+      "nextNodeId": "challenge_condition"
+    },
+    {
+      "id": "challenge_condition",
+      "speaker": "Xu Zhu",
+      "text": "Though this poor monk's Go skill is limited, after breaking Zhenlong, I gained some understanding of the Way of Go. If benefactor can beat this poor monk, it proves you have the aptitude.",
+      "options": [
+        {
+          "text": "Please bestow your teaching, Master!",
+          "action": {"type": "battle", "value": "xu_zhu"},
+          "nextNodeId": "start_battle"
+        },
+        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Xu Zhu",
+      "text": "Excellent, excellent. Please!"
+    },
+    {
+      "id": "teach_skill",
+      "speaker": "Xu Zhu",
+      "text": "Benefactor's Go skill is impressive, and more rare is not being constrained by conventions. In that case, this poor monk will teach you the essence of 'Breaking Zhenlong.'",
+      "nextNodeId": "teach_skill_detail"
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Xu Zhu",
+      "text": "The key to this technique is: in desperate situations, don't be constrained by conventions, use no-move to defeat all moves, finding seemingly impossible ways to break through. Limited to once per game with a 55-move cooldown.",
+      "nextNodeId": "teach_skill_practice"
+    },
+    {
+      "id": "teach_skill_practice",
+      "speaker": "Xu Zhu",
+      "text": "Remember, 'nothing is something, something is nothing.' When using this technique, let go of attachments and observe the game with an ethereal mind.",
+      "action": {"type": "skill", "value": {"skillId": "pojie_zhenlong", "questId": "quest_019_xu_zhu"}},
+      "nextNodeId": "teach_complete"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Xu Zhu",
+      "text": "Now that benefactor has learned this technique, you can calmly handle even the most difficult puzzles in the future. But remember, the Way of Go is like the Way of Buddha - it's all about understanding.",
+      "options": [
+        {"text": "Thank you, Master!", "nextNodeId": "farewell"},
+        {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
+        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "xu_zhu"}, "nextNodeId": "start_battle"}
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Xu Zhu",
+      "text": "Don't be discouraged, benefactor. This poor monk was also confused when breaking Zhenlong - everything follows fate.",
+      "options": [
+        {"text": "This disciple understands", "nextNodeId": "farewell"},
+        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Xu Zhu",
+      "text": "This poor monk was just an unremarkable little monk at Shaolin Temple. After breaking Zhenlong, my fate changed completely.",
+      "nextNodeId": "daily_chat_2"
+    },
+    {
+      "id": "daily_chat_2",
+      "speaker": "Xu Zhu",
+      "text": "However, no matter the changes, this poor monk remembers Master's teaching: 'Keep goodness in your heart, have foundation in your actions.' The same goes for Go.",
+      "options": [
+        {"text": "Master speaks truly!", "nextNodeId": "farewell"}
+      ]
+    },
+    {
+      "id": "not_ready",
+      "speaker": "Xu Zhu",
+      "text": "Excellent, excellent, the time is not yet right. When benefactor is ready, you can come anytime."
+    },
+    {
+      "id": "farewell",
+      "speaker": "Xu Zhu",
+      "text": "Amitabha. May benefactor persevere on the path of Go."
+    }
+  ]
+}
