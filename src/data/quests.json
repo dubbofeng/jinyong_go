@@ -501,12 +501,12 @@
     "npcId": "yang_guo",
     "chapter": 5,
     "name": {
-      "zh": "黯然销魂掌",
-      "en": "Melancholy Palm"
+      "zh": "杨过对弈",
+      "en": "Match with Yang Guo"
     },
     "description": {
-      "zh": "向杨过学习黯然销魂掌的棋理，掌握「黯然销魂掌」技能",
-      "en": "Learn the Go principles of Melancholy Palm from Yang Guo and master the skill"
+      "zh": "与杨过切磋棋艺，领悟情感与棋局的联系",
+      "en": "Play a Go match with Yang Guo and reflect on emotion and play"
     },
     "questType": "main",
     "objectives": [
@@ -522,8 +522,7 @@
     ],
     "rewards": {
       "experience": 1600,
-      "silver": 800,
-      "skill": "anran_xiaohun"
+      "silver": 800
     },
     "prerequisiteQuests": ["quest_016_xiao_longnv"]
   },

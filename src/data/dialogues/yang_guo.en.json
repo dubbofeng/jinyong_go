@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "Yang Guo",
-      "text": "I have a technique called 'Dismal Palms of Ecstasy.' Though it's a martial arts masterpiece, the emotional transformations within are exquisitely marvelous when applied to Go.",
+      "text": "My Go style is adaptable, valuing softness to overcome hardness and feeling to guide position. If you're interested, let's play.",
       "options": [
         {
           "text": "Please teach me, Hero Yang!",
@@ -26,39 +26,19 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "I want to learn 'Dismal Palms of Ecstasy'",
-          "condition": {"type": "quest", "value": "defeated_yang_guo"},
-          "nextNodeId": "teach_skill"
-        },
-        {
           "text": "Hero Yang, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_yang_guo"},
           "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
-        {"text": "How are Dismal Palms used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "I'd like to hear your thoughts on Go", "nextNodeId": "daily_chat"},
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
-      ]
-    },
-    {
-      "id": "explain_skill",
-      "speaker": "Yang Guo",
-      "text": "'Dismal Ecstasy' comes from times of deep emotion. I created this technique when separated from Long'er, with bitter sorrow in my heart.",
-      "nextNodeId": "explain_skill_2"
-    },
-    {
-      "id": "explain_skill_2",
-      "speaker": "Yang Guo",
-      "text": "When applied to Go, it means bursting with the strongest power in desperate situations, deciding everything with one move. However, it requires extremely deep emotional accumulation and Go skill.",
-      "options": [
-        {"text": "Soul-stirring! Please teach me, Hero Yang", "nextNodeId": "challenge_intro"},
-        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Yang Guo",
-      "text": "Very well. However, the subtlety of this technique requires extremely high understanding to grasp. If you want to learn, you must play a game with me first.",
+      "text": "Good. If you want to see my true style, we must play a game first.",
       "nextNodeId": "challenge_condition"
     },
     {
@@ -67,7 +47,7 @@
       "text": "I've roamed Jianghu for many years and exchanged moves with countless masters. If you can beat me, it proves you have the aptitude.",
       "options": [
         {
-          "text": "Please bestow your teaching, Hero Yang!",
+          "text": "Please begin, Hero Yang!",
           "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
@@ -77,41 +57,12 @@
     {
       "id": "start_battle",
       "speaker": "Yang Guo",
-      "text": "Please! Let you witness my Go skill!"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "Yang Guo",
-      "text": "Excellent game! Your play is filled with genuine emotion, already capturing some of the 'dismal' essence. In that case, I'll teach you this technique.",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "Yang Guo",
-      "text": "The key to this technique is: in desperate situations, pour all emotion and Go skill into one decisive move. Limited to once per game with a 60-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "Yang Guo",
-      "text": "Remember, 'dismal ecstasy comes only from parting.' When using this technique, have someone in your heart to care for - only then can you unleash its maximum power.",
-      "action": {"type": "skill", "value": {"skillId": "anran_xiaohun_zhang", "questId": "quest_017_yang_guo"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "Yang Guo",
-      "text": "Now that you've learned this technique, you'll surely achieve great things in the future. But remember, true masters are not about moves, but about mental state.",
-      "options": [
-        {"text": "Thank you, Hero Yang!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "yang_guo"}, "nextNodeId": "start_battle"}
-      ]
+      "text": "Good! Please make your move."
     },
     {
       "id": "try_again",
       "speaker": "Yang Guo",
-      "text": "Don't be discouraged. When I was learning martial arts, I also endured many hardships. Practice more and you'll surely succeed.",
+      "text": "No need to be disheartened. Go is like life - wins and losses are all practice. Keep learning, and you'll improve.",
       "options": [
         {"text": "I take my leave", "nextNodeId": "farewell"},
         {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
@@ -120,21 +71,21 @@
     {
       "id": "daily_chat",
       "speaker": "Yang Guo",
-      "text": "My life has been full of trials, but my greatest fortune was meeting Long'er. Sometimes I think, life is like Go - the most important thing isn't winning or losing.",
+      "text": "In Go, the hardest part is keeping your heart steady. Sometimes you attack, sometimes you yield - always follow the flow.",
       "nextNodeId": "daily_chat_2"
     },
     {
       "id": "daily_chat_2",
       "speaker": "Yang Guo",
-      "text": "But whether there are people who treat you sincerely in the process. The same goes for Go - opponents aren't enemies, but kindred spirits.",
+      "text": "If you can use softness to restrain hardness, you can find life even in adverse positions.",
       "options": [
-        {"text": "Hero Yang speaks truly!", "nextNodeId": "farewell"}
+        {"text": "Wise words, Hero Yang!", "nextNodeId": "farewell"}
       ]
     },
     {
       "id": "not_ready",
       "speaker": "Yang Guo",
-      "text": "No problem, come back when you're ready. I'll be here, waiting anytime."
+      "text": "No matter. Come back when you're ready. I'll be here."
     },
     {
       "id": "farewell",

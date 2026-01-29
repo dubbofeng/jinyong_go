@@ -66,6 +66,17 @@ const SKILL_DEFINITIONS = {
     baseUsesPerGame: 1,
     maxLevel: 5,
   },
+  qiankun_danuo: {
+    id: 'qiankun_danuo',
+    name: '乾坤大挪移',
+    nameEn: 'Heaven and Earth Shift',
+    character: '张无忌',
+    description: '交换上一手黑白棋子的位置（必须合法），相当于悔棋后双方各走一手',
+    baseQiCost: 40,
+    baseCooldown: 50,
+    baseUsesPerGame: 1,
+    maxLevel: 5,
+  },
   beiming_shengong: {
     id: 'beiming_shengong',
     name: '北冥神功',

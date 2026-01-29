@@ -97,16 +97,5 @@
     "width": 256,
     "height": 256,
     "style": "game icon"
-  },
-  {
-    "category": "skill",
-    "id": "anran_xiaohun",
-    "name": "黯然销魂掌",
-    "nameEn": "Soul-Severing Palm",
-    "prompt": "Skill icon for a dark palm strike with fading petals, circular frame, melancholic aura, purple and black tones, game icon design, 256x256 pixels, no text, no letters",
-    "negativePrompt": "realistic photo, blurry, text, watermark, letters, typography",
-    "width": 256,
-    "height": 256,
-    "style": "game icon"
   }
 ]

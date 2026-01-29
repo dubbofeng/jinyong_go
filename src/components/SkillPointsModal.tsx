@@ -26,6 +26,7 @@ const SKILL_ICONS: Record<string, string> = {
   fuyu_chuanyin: '🗨️',
   jiguan_suanjin: '🧩',
   qizi_anqi: '🎯',
+  qiankun_danuo: '☯️',
   beiming_shengong: '🌀',
 };
 

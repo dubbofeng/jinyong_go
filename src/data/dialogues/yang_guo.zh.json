@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "杨过",
-      "text": "在下有一套「黯然销魂掌」，虽是武学绝技，但其中的情感变化，用在围棋上也是精妙无比。",
+      "text": "在下棋风多变，讲究以情驭势、以柔克刚。若你有兴趣，不妨与我对弈。",
       "options": [
         {
           "text": "请杨大侠指教！",
@@ -26,39 +26,19 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "我想学习「黯然销魂掌」",
-          "condition": {"type": "quest", "value": "defeated_yang_guo"},
-          "nextNodeId": "teach_skill"
-        },
-        {
           "text": "杨大侠，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_yang_guo"},
           "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
-        {"text": "黯然销魂掌如何用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "我想听听你的棋道心得", "nextNodeId": "daily_chat"},
         {"text": "我还想准备一下", "nextNodeId": "not_ready"}
-      ]
-    },
-    {
-      "id": "explain_skill",
-      "speaker": "杨过",
-      "text": "「黯然销魂」源自情深意重之时。在下创此招时，正值与龙儿分别，心中悲苦。",
-      "nextNodeId": "explain_skill_2"
-    },
-    {
-      "id": "explain_skill_2",
-      "speaker": "杨过",
-      "text": "用在棋局上，就是在绝境中迸发出最强的力量，一招定乾坤。不过需要极深的情感积淀和棋力。",
-      "options": [
-        {"text": "动人心魄！请杨大侠教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "杨过",
-      "text": "好。不过这招精妙之处，需要极高的悟性才能领会。你要想学，得先与在下对弈一局。",
+      "text": "好！不过要想真正见识我的棋风，还需先与我对弈一局。",
       "nextNodeId": "challenge_condition"
     },
     {
@@ -71,47 +51,18 @@
           "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "start_battle",
       "speaker": "杨过",
-      "text": "请！让你见识见识在下的棋艺！"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "杨过",
-      "text": "好棋！你这棋下得情真意切，已有几分「黯然」之意。既然如此，在下就传你这招。",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "杨过",
-      "text": "这招的要领是：在绝境中倾注所有情感和棋力，一招定乾坤。每局限用一次，冷却60步。",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "杨过",
-      "text": "记住，「黯然销魂者，唯别而已」。用此招时要心中有所牵挂，方能发挥最大威力。",
-      "action": {"type": "skill", "value": {"skillId": "anran_xiaohun_zhang", "questId": "quest_017_yang_guo"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "杨过",
-      "text": "你既然学了这招，他日必成大器。不过要记住，真正的高手，不在招式，而在心境。",
-      "options": [
-        {"text": "多谢杨大侠！", "nextNodeId": "farewell"},
-        {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "yang_guo"}, "nextNodeId": "start_battle"}
-      ]
+      "text": "好！请出招吧！"
     },
     {
       "id": "try_again",
       "speaker": "杨过",
-      "text": "莫要气馁。在下当年学武，也是历经磨难。你再多练习，必有所成。",
+      "text": "不必气馁。棋如人生，胜败都是修行。多练多悟，自有所得。",
       "options": [
         {"text": "在下告退", "nextNodeId": "farewell"},
         {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
@@ -120,15 +71,15 @@
     {
       "id": "daily_chat",
       "speaker": "杨过",
-      "text": "在下这一生经历坎坷，但最幸运的是遇到了龙儿。有时候想想，人生如棋，最重要的不是输赢。",
+      "text": "棋局之中，最难的是守住本心。时而攻，时而退，皆需随势而动。",
       "nextNodeId": "daily_chat_2"
     },
     {
       "id": "daily_chat_2",
       "speaker": "杨过",
-      "text": "而是在这个过程中，有没有真心相待的人。下棋也是一样，对手不是敌人，而是知己。",
+      "text": "若能以柔制刚、以静制动，便可在逆势中觅得生机。",
       "options": [
-        {"text": "杨大侠所言极是！", "nextNodeId": "farewell"}
+        {"text": "杨大侠高见！", "nextNodeId": "farewell"}
       ]
     },
     {

@@ -41,6 +41,12 @@ const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; characte
     character: '陈家洛',
     description: '陈家洛的棋子暗器，可以打歪对手刚下的棋子',
   },
+  qiankun_danuo: {
+    name: '乾坤大挪移',
+    nameEn: 'Heaven and Earth Shift',
+    character: '张无忌',
+    description: '交换上一手黑白棋子的位置（必须合法），相当于悔棋后双方各走一手',
+  },
   beiming_shengong: {
     name: '北冥神功',
     nameEn: 'Beiming Divine Art',

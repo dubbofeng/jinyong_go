@@ -1050,7 +1050,7 @@ npm run dev
 
 **quest_015_zhou_botong** - 周伯通（左右互搏）
 **quest_016_xiao_longnv** - 小龙女
-**quest_017_yang_guo** - 杨过（黯然销魂掌）
+**quest_017_yang_guo** - 杨过（对弈）
 **quest_018_qiao_feng** - 乔峰（乔峰对弈）
 **quest_019_xu_zhu** - 虚竹（珍珑指点）
 **quest_020_murong_fu** - 慕容复（挑战）

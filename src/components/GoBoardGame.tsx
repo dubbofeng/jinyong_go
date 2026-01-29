@@ -1118,7 +1118,62 @@ export default function GoBoardGame({
   };
 
   /**
-   * 技能6：北冥神功（回复内力并清除冷却）
+   * 技能6：乾坤大挪移（交换落子）
+   */
+  const useQianKunDaNuo = async () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('qiankundanuo');
+
+    if (!skill || !('use' in skill)) return;
+
+    const engine = engineRef.current;
+    const board = boardRef.current;
+    if (!engine || !board) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【乾坤大挪移】使用次数已用完');
+      return;
+    }
+
+    if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
+      setLastMessage(`❌ 【乾坤大挪移】冷却中，还需${(skill as any).currentCooldown}手`);
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
+
+    const result = (skill as any).use(engine) as {
+      black: { from: BoardPosition; to: BoardPosition };
+      white: { from: BoardPosition; to: BoardPosition };
+    } | null;
+
+    if (!result) {
+      setLastMessage('❌ 无法使用【乾坤大挪移】');
+      return;
+    }
+
+    board.setBoardState(engine.getBoard());
+    setCapturedCount({
+      black: engine.getCapturedCount('black'),
+      white: engine.getCapturedCount('white'),
+    });
+    setMoveCount(engine.getMoveCount());
+
+    await applyQiDelta(-skill.qiCost);
+
+    const blackFrom = formatGoPosition(result.black.from.row, result.black.from.col);
+    const blackTo = formatGoPosition(result.black.to.row, result.black.to.col);
+    const whiteFrom = formatGoPosition(result.white.from.row, result.white.from.col);
+    const whiteTo = formatGoPosition(result.white.to.row, result.white.to.col);
+
+    setLastMessage(`🔄 使用【乾坤大挪移】黑子 ${blackFrom}→${blackTo}，白子 ${whiteFrom}→${whiteTo}`);
+    setSkillsRefreshKey(k => k + 1);
+  };
+
+  /**
+   * 技能7：北冥神功（回复内力并清除冷却）
    */
   const useBeiMingShenGong = async () => {
     const skillManager = skillManagerRef.current;
@@ -1395,7 +1450,37 @@ export default function GoBoardGame({
               );
             })()}
 
-            {/* 技能6：北冥神功 */}
+            {/* 技能6：乾坤大挪移 */}
+            {learnedSkills.includes('qiankun_danuo') && (() => {
+              const skill = skillManagerRef.current?.getSkill('qiankundanuo');
+              const level = skillLevels['qiankun_danuo'] || 1;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
+              const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
+              return (
+                <button
+                  onClick={useQianKunDaNuo}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-indigo-600 to-indigo-800 border-indigo-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="text-white text-center">
+                    <div className="text-2xl mb-1">☯️</div>
+                    <div className="font-bold text-sm">乾坤大挪移</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">
+                      {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+                    </div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
+                  </div>
+                </button>
+              );
+            })()}
+
+            {/* 技能7：北冥神功 */}
             {learnedSkills.includes('beiming_shengong') && (() => {
               const skill = skillManagerRef.current?.getSkill('beimingshengong');
               const level = skillLevels['beiming_shengong'] || 1;

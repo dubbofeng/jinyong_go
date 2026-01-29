@@ -1304,17 +1304,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           },
           {
             optionId: '1',
-            nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_yang_guo' }
-          },
-          {
-            optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_yang_guo' },
             action: { type: 'battle', value: 'yang_guo' }
           },
-          { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '2', nextNodeId: 'explain_skill' },
+          { optionId: '3', nextNodeId: 'not_ready' }
         ]
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
@@ -1338,22 +1333,6 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         ]
       },
       { id: 'start_battle', action: { type: 'battle', value: 'yang_guo' } },
-      { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
-      {
-        id: 'teach_skill_detail',
-        nextNodeId: 'teach_complete',
-        action: {
-          type: 'skill',
-          value: { skillId: 'anran_xiaohun', questId: 'quest_017_yang_guo' }
-        }
-      },
-      {
-        id: 'teach_complete',
-        options: [
-          { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'melancholy_chat' }
-        ]
-      },
       {
         id: 'try_again',
         options: [

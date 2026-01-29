@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "Zhang Wuji",
-      "text": "I've cultivated 'Great Universe Shift' for many years. This technique can redirect an opponent's force, and when applied to Go, it has wonderful uses.",
+      "text": "I've cultivated 'Great Universe Shift' for many years. In Go, it can swap the last Black stone and the last White stone, if both placements are legal.",
       "options": [
         {
           "text": "Please teach me, Leader Zhang!",
@@ -43,13 +43,13 @@
     {
       "id": "explain_skill",
       "speaker": "Zhang Wuji",
-      "text": "'Great Universe Shift' is the Ming Cult's supreme martial art - it can redirect an opponent's force, turning enemy into friend. In Go, it can reverse unfavorable situations.",
+      "text": "'Great Universe Shift' is the Ming Cult's supreme martial art. In Go, it lets you swap the last Black stone and the last White stone, like undoing one move each and replaying them.",
       "nextNodeId": "explain_skill_2"
     },
     {
       "id": "explain_skill_2",
       "speaker": "Zhang Wuji",
-      "text": "This technique allows you to change the direction of the game at crucial moments, transforming your opponent's advantage into your own. However, it requires extremely high internal force and understanding.",
+      "text": "This technique can flip a situation at a crucial moment. Both new placements must be legal, or the swap cannot be used. It demands exceptional internal force and understanding.",
       "options": [
         {"text": "Miraculous! Please teach me, Leader Zhang", "nextNodeId": "challenge_intro"},
         {"text": "Let me think about it", "nextNodeId": "not_ready"}
@@ -88,14 +88,14 @@
     {
       "id": "teach_skill_detail",
       "speaker": "Zhang Wuji",
-      "text": "The key to this technique is: at crucial moments, use the power of 'Great Universe Shift' to reverse the situation, turning passive into active. Limited to once per game with a 50-move cooldown.",
+      "text": "The key to this technique is: at a crucial moment, swap the last Black stone and the last White stone. It is like undoing one move each and replaying them, and both placements must be legal. Limited to once per game with a 50-move cooldown.",
       "nextNodeId": "teach_skill_practice"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Zhang Wuji",
       "text": "Remember, 'combine hard and soft, complement Yin and Yang.' When using this technique, go with the flow and don't force it. Great-uncle taught me that mental cultivation is more important than moves.",
-      "action": {"type": "skill", "value": {"skillId": "qiankun_danuoyi", "questId": "quest_014_zhang_wuji"}},
+        "action": {"type": "skill", "value": {"skillId": "qiankun_danuo", "questId": "quest_014_zhang_wuji"}},
       "nextNodeId": "teach_complete"
     },
     {

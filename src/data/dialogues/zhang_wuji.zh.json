@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "张无忌",
-      "text": "在下修炼「乾坤大挪移」多年，这招能转移对手力道，用在围棋上也是妙用无穷。",
+      "text": "在下修炼「乾坤大挪移」多年，这招能移势换位，用在围棋上也是妙用无穷。",
       "options": [
         {
           "text": "请张教主指教！",
@@ -43,7 +43,7 @@
     {
       "id": "explain_skill",
       "speaker": "张无忌",
-      "text": "「乾坤大挪移」是明教至高神功，能转移对手力道，化敌为友。在棋局中，能扭转不利局势。",
+      "text": "「乾坤大挪移」是明教至高神功，能移势换位。在棋局中，可交换上一手黑子与白子的位置，扭转不利局势。",
       "nextNodeId": "explain_skill_2"
     },
     {
@@ -88,14 +88,14 @@
     {
       "id": "teach_skill_detail",
       "speaker": "张无忌",
-      "text": "这招的要领是：在关键时刻，运用「乾坤大挪移」之力，扭转局势，化被动为主动。每局限用一次，冷却50步。",
+      "text": "这招的要领是：在关键时刻交换上一手黑白子的位置，但必须都是合法落点。操作相当于悔棋后由黑白各走一手。",
       "nextNodeId": "teach_skill_practice"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "张无忌",
       "text": "记住，「刚柔并济，阴阳互补」。用此招时要顺势而为，不可强求。太公公教我时说，心法比招式更重要。",
-      "action": {"type": "skill", "value": {"skillId": "qiankun_danuoyi", "questId": "quest_014_zhang_wuji"}},
+      "action": {"type": "skill", "value": {"skillId": "qiankun_danuo", "questId": "quest_014_zhang_wuji"}},
       "nextNodeId": "teach_complete"
     },
     {

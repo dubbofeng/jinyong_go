@@ -1,13 +1,14 @@
 /**
  * 围棋武侠技能系统
  * 
- * 六个基础技能：
+ * 七个基础技能：
  * 1. 亢龙有悔（郭靖）- 悔棋
  * 2. 独孤九剑（令狐冲）- 形势判断
  * 3. 腹语传音（虚竹）- AI建议
  * 4. 机关算尽（黄蓉）- 变化图
  * 5. 棋子暗器（陈家洛）- 打歪对手刚下的棋子
- * 6. 北冥神功（段誉）- 恢复内力并清除技能冷却
+ * 6. 乾坤大挪移（张无忌）- 交换上一手黑白棋子位置
+ * 7. 北冥神功（段誉）- 恢复内力并清除技能冷却
  */
 
 import type { GoEngine } from './go-engine';
@@ -755,7 +756,118 @@ export class QiZiAnQiSkill implements Skill {
   }
 }
 
-// ==================== 技能6：北冥神功（内力回复）====================
+// ==================== 技能6：乾坤大挪移（交换落子）====================
+
+/**
+ * 乾坤大挪移技能
+ * 效果：交换上一手黑子与白子的位置（必须合法）
+ */
+export class QianKunDaNuoSkill implements Skill {
+  id = 'qiankundanuo';
+  name = '乾坤大挪移';
+  nameEn = 'Heaven and Earth Shift';
+  character = '张无忌';
+  description = '交换上一手黑子与白子的位置（必须合法）';
+  qiCost = 40;
+  maxUses: number;
+  currentUses: number;
+  cooldown: number;
+  currentCooldown: number;
+
+  constructor(maxUses: number = 1, cooldown: number = 50) {
+    this.maxUses = maxUses;
+    this.currentUses = maxUses;
+    this.cooldown = cooldown;
+    this.currentCooldown = 0;
+  }
+
+  use(engine: GoEngine): {
+    black: { from: BoardPosition; to: BoardPosition };
+    white: { from: BoardPosition; to: BoardPosition };
+  } | null {
+    if (this.currentUses <= 0 || this.currentCooldown > 0) {
+      return null;
+    }
+
+    const history = engine.getMoveHistory();
+    if (history.length < 2) {
+      return null;
+    }
+
+    const lastMove = history[history.length - 1];
+    const prevMove = history[history.length - 2];
+    const lastColor = lastMove.color;
+    const prevColor = prevMove.color;
+    const isPlayableColor = (color: StoneColor): color is 'black' | 'white' => color === 'black' || color === 'white';
+
+    if (!isPlayableColor(lastColor) || !isPlayableColor(prevColor)) {
+      return null;
+    }
+
+    if (lastColor === prevColor) {
+      return null;
+    }
+
+    const blackMove = lastColor === 'black' ? lastMove : prevMove;
+    const whiteMove = lastColor === 'white' ? lastMove : prevMove;
+
+    const undoLast = engine.undo();
+    const undoPrev = engine.undo();
+    if (!undoLast || !undoPrev) {
+      if (undoLast) {
+        engine.placeStone(lastMove.position, lastColor);
+      }
+      return null;
+    }
+
+    const firstMove = prevMove;
+    const secondMove = lastMove;
+    const firstNewPosition = firstMove.color === 'black' ? whiteMove.position : blackMove.position;
+    const secondNewPosition = secondMove.color === 'black' ? whiteMove.position : blackMove.position;
+
+    const firstColor = firstMove.color === 'black' ? 'black' : 'white';
+    const secondColor = secondMove.color === 'black' ? 'black' : 'white';
+    const firstResult = engine.placeStone(firstNewPosition, firstColor);
+    if (!firstResult.success) {
+      engine.placeStone(prevMove.position, prevColor);
+      engine.placeStone(lastMove.position, lastColor);
+      return null;
+    }
+
+    const secondResult = engine.placeStone(secondNewPosition, secondColor);
+    if (!secondResult.success) {
+      engine.undo();
+      engine.placeStone(prevMove.position, prevColor);
+      engine.placeStone(lastMove.position, lastColor);
+      return null;
+    }
+
+    this.currentUses--;
+    this.currentCooldown = this.cooldown;
+
+    return {
+      black: { from: blackMove.position, to: whiteMove.position },
+      white: { from: whiteMove.position, to: blackMove.position },
+    };
+  }
+
+  updateCooldown(): void {
+    if (this.currentCooldown > 0) {
+      this.currentCooldown--;
+    }
+  }
+
+  reset() {
+    this.currentUses = this.maxUses;
+    this.currentCooldown = 0;
+  }
+
+  canUse(): boolean {
+    return this.currentUses > 0 && this.currentCooldown === 0;
+  }
+}
+
+// ==================== 技能7：北冥神功（内力回复）====================
 
 /**
  * 北冥神功技能
@@ -815,6 +927,7 @@ export class SkillManager {
     this.initializeSkill('fuyuchuanyin', 1);
     this.initializeSkill('jiguansuanjin', 1);
     this.initializeSkill('qizianqi', 1);
+    this.initializeSkill('qiankundanuo', 1);
     this.initializeSkill('beimingshengong', 1);
   }
   
@@ -841,6 +954,9 @@ export class SkillManager {
         break;
       case 'qizianqi':
         this.skills.set(skillId, new QiZiAnQiSkill(level, 20));
+        break;
+      case 'qiankundanuo':
+        this.skills.set(skillId, new QianKunDaNuoSkill(level, 50));
         break;
       case 'beimingshengong':
         this.skills.set(skillId, new BeiMingShenGongSkill(level));
