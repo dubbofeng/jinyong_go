@@ -27,7 +27,24 @@ async function generateWithGemini(prompt: string, width: number, height: number,
   
   // 为游戏素材添加特定的优化提示词
   let enhancedPrompt = prompt;
-  if (category === 'map' || category === 'building' || category === 'item') {
+  if (category === 'npc') {
+    // NPC角色特殊要求：等距视角、像素风格、纯白背景
+    enhancedPrompt = `${prompt}
+
+CRITICAL REQUIREMENTS for game character sprite:
+- Isometric 3/4 view angle (45 degrees perspective)
+- Single character standing pose, centered in frame
+- Clean pixel art style with clear outlines
+- Character facing front-right (southeast direction)
+- Vibrant colors, high contrast
+- **CRITICAL: The background MUST be solid pure white (#FFFFFF, RGB 255,255,255)**
+- **NO transparency, NO checkered pattern, NO gradients - just flat solid white background**
+- Traditional Chinese wuxia aesthetic
+- Clear silhouette for gameplay visibility
+- Character sprite should fit within 128x128 pixels at final resolution
+- 2.5D game character style
+- Professional game asset quality`;
+  } else if (category === 'map' || category === 'building' || category === 'item') {
     // 强调完整边界、独立素材、游戏资源特征、白色背景
     enhancedPrompt = `${prompt}
 
@@ -439,6 +456,64 @@ export async function POST(request: NextRequest) {
         } catch (resizeError) {
           console.error('[Resize Failed]:', resizeError);
           // 调整失败不影响主流程，使用原图
+        }
+      }
+      
+      // 对于NPC，需要调整尺寸到 128x128 并去除背景（Gemini 生成的是 1024x1024）
+      if (isNpc) {
+        try {
+          console.log('[Processing NPC]:', template.width, 'x', template.height);
+          const sharp = (await import('sharp')).default;
+          
+          // 1. 先调整大小到128x128
+          const resizedBuffer = await sharp(imageBuffer)
+            .resize(template.width, template.height, {
+              fit: 'contain',
+              background: { r: 255, g: 255, b: 255, alpha: 1 } // 白色背景
+            })
+            .png()
+            .toBuffer();
+          
+          // 2. 去除白色背景，转换为透明
+          const { data, info } = await sharp(resizedBuffer)
+            .ensureAlpha()
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+          
+          // 处理每个像素，将白色/浅色背景设为透明
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const a = data[i + 3];
+            
+            const brightness = (r + g + b) / 3;
+            
+            // 如果亮度很高（>230）或者alpha已经很低（<10），设为完全透明
+            if (brightness > 230 || a < 10) {
+              data[i + 3] = 0;
+            }
+            // 如果是中等亮度的浅色（220-230），且alpha不是很高，也设为透明
+            else if (brightness > 220 && a < 200) {
+              data[i + 3] = 0;
+            }
+          }
+          
+          // 保存处理后的图片
+          imageBuffer = await sharp(data, {
+            raw: {
+              width: info.width,
+              height: info.height,
+              channels: 4
+            }
+          })
+          .png()
+          .toBuffer();
+          
+          console.log('[NPC Processed]: Resized and background removed');
+        } catch (npcError) {
+          console.error('[NPC Processing Failed]:', npcError);
+          // 处理失败不影响主流程，使用原图
         }
       }
       

@@ -40,7 +40,7 @@ const npcData = [
     chapter: 0,
     spritePath: '/game/isometric/characters/npc_musang_daoren.png',
     avatarPath: '/game/avatars/musang_daoren.png',
-    aiPrompt: 'Isometric sprite of elderly Chinese Taoist master with white hair and beard, wearing traditional Taoist robes, kind smile, holding a dust whisk, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of elderly Chinese Taoist master with white hair and beard, wearing traditional Taoist robes, kind smile, holding a dust whisk, 2.5D game character, pixel art style',
   },
   
   // ===== 第一章：中原风云（1-15级）=====
@@ -59,7 +59,7 @@ const npcData = [
     chapter: 1,
     spritePath: '/game/isometric/characters/npc_hong_qigong.png',
     avatarPath: '/game/avatars/hong_qigong.png',
-    aiPrompt: 'Isometric sprite of elderly Chinese beggar master, wearing tattered robes but with dignified bearing, holding a bamboo staff, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of elderly Chinese beggar master, wearing tattered robes but with dignified bearing, holding a bamboo staff, 2.5D game character, pixel art style',
   },
   {
     npcId: 'linghu_chong',
@@ -76,7 +76,7 @@ const npcData = [
     chapter: 1,
     spritePath: '/game/isometric/characters/npc_linghu_chong.png',
     avatarPath: '/game/avatars/linghu_chong.png',
-    aiPrompt: 'Isometric sprite of young Chinese swordsman in green robes, carrying a sword, carefree expression, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese swordsman in green robes, carrying a sword, carefree expression, 2.5D game character, pixel art style',
   },
   {
     npcId: 'guo_jing',
@@ -93,7 +93,7 @@ const npcData = [
     chapter: 1,
     spritePath: '/game/isometric/characters/npc_guo_jing.png',
     avatarPath: '/game/avatars/guo_jing.png',
-    aiPrompt: 'Isometric sprite of Chinese warrior in orange armor, honest face, holding a bow, sturdy build, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of Chinese warrior in orange armor, honest face, holding a bow, sturdy build, 2.5D game character, pixel art style',
   },
   {
     npcId: 'huang_rong',
@@ -110,7 +110,7 @@ const npcData = [
     chapter: 1,
     spritePath: '/game/isometric/characters/npc_huang_rong.png',
     avatarPath: '/game/avatars/huang_rong.png',
-    aiPrompt: 'Isometric sprite of young Chinese woman in pink dress, intelligent expression, holding a bamboo stick, clever smile, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese woman in pink dress, intelligent expression, holding a bamboo stick, clever smile, 2.5D game character, pixel art style',
   },
   
   // ===== 第二章：大理佛缘（16-25级）=====
@@ -129,7 +129,7 @@ const npcData = [
     chapter: 2,
     spritePath: '/game/isometric/characters/npc_duan_yu.png',
     avatarPath: '/game/avatars/duan_yu.png',
-    aiPrompt: 'Isometric sprite of young Chinese scholar in elegant blue robes, gentle expression, holding a folding fan, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese scholar in elegant blue robes, gentle expression, holding a folding fan, 2.5D game character, pixel art style',
   },
   {
     npcId: 'huangmei_seng',
@@ -146,7 +146,7 @@ const npcData = [
     chapter: 2,
     spritePath: '/game/isometric/characters/npc_huangmei_seng.png',
     avatarPath: '/game/avatars/huangmei_seng.png',
-    aiPrompt: 'Isometric sprite of elderly Buddhist monk with distinctive yellow eyebrows and beard, wearing Buddhist robes, serious expression, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of elderly Buddhist monk with distinctive yellow eyebrows and beard, wearing Buddhist robes, serious expression, 2.5D game character, pixel art style',
   },
   {
     npcId: 'duan_yanqing',
@@ -163,7 +163,7 @@ const npcData = [
     chapter: 2,
     spritePath: '/game/isometric/characters/npc_duan_yanqing.png',
     avatarPath: '/game/avatars/duan_yanqing.png',
-    aiPrompt: 'Isometric sprite of sinister-looking Chinese man in dark robes, holding an iron staff, cold expression, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of tragic Chinese man in dark tattered robes, former crown prince of Dali Kingdom, severely disfigured face with scars, crippled legs (sitting or supported by iron crutches), holding iron staff, wearing a face mask or veil, bitter and cold expression, lonely and tragic aura, 2.5D game character, pixel art style',
   },
   {
     npcId: 'yideng_dashi',
@@ -180,7 +180,7 @@ const npcData = [
     chapter: 2,
     spritePath: '/game/isometric/characters/npc_yideng_dashi.png',
     avatarPath: '/game/avatars/yideng_dashi.png',
-    aiPrompt: 'Isometric sprite of elderly Buddhist master in simple robes, kind and wise expression, serene aura, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of elderly Buddhist master in simple robes, kind and wise expression, serene aura, 2.5D game character, pixel art style',
   },
   
   // ===== 第三章：江南棋会（26-35级）=====
@@ -199,7 +199,7 @@ const npcData = [
     chapter: 3,
     spritePath: '/game/isometric/characters/npc_huang_yaoshi.png',
     avatarPath: '/game/avatars/huang_yaoshi.png',
-    aiPrompt: 'Isometric sprite of middle-aged Chinese man in green flowing robes, playing a flute, proud expression, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of middle-aged Chinese man in green flowing robes, playing a flute, proud expression, 2.5D game character, pixel art style',
   },
   {
     npcId: 'hei_baizi',
@@ -216,7 +216,7 @@ const npcData = [
     chapter: 3,
     spritePath: '/game/isometric/characters/npc_hei_baizi.png',
     avatarPath: '/game/avatars/hei_baizi.png',
-    aiPrompt: 'Isometric sprite of Chinese man wearing half-black half-white robes, focused expression, surrounded by Go stones, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of Chinese man wearing half-black half-white robes, focused expression, surrounded by Go stones, 2.5D game character, pixel art style',
   },
   {
     npcId: 'chen_jialuo',
@@ -233,7 +233,7 @@ const npcData = [
     chapter: 3,
     spritePath: '/game/isometric/characters/npc_chen_jialuo.png',
     avatarPath: '/game/avatars/chen_jialuo.png',
-    aiPrompt: 'Isometric sprite of young Chinese scholar-warrior in blue scholarly robes, intelligent eyes, holding Go stones, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese scholar-warrior in blue scholarly robes, intelligent eyes, holding Go stones, 2.5D game character, pixel art style',
   },
   
   // ===== 第四章：西域争锋（36-45级）=====
@@ -252,7 +252,7 @@ const npcData = [
     chapter: 4,
     spritePath: '/game/isometric/characters/npc_he_zudao.png',
     avatarPath: '/game/avatars/he_zudao.png',
-    aiPrompt: 'Isometric sprite of Chinese swordsman in white robes, contemplative expression, carrying a sword, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of Chinese swordsman in white robes, contemplative expression, carrying a sword, 2.5D game character, pixel art style',
   },
   {
     npcId: 'zhang_wuji',
@@ -269,7 +269,7 @@ const npcData = [
     chapter: 4,
     spritePath: '/game/isometric/characters/npc_zhang_wuji.png',
     avatarPath: '/game/avatars/zhang_wuji.png',
-    aiPrompt: 'Isometric sprite of young Chinese man in white robes, gentle expression, kind eyes, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese man in white robes, gentle expression, kind eyes, 2.5D game character, pixel art style',
   },
   
   // ===== 第五章：华山论棋（46-50级）=====
@@ -288,7 +288,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_zhou_botong.png',
     avatarPath: '/game/avatars/zhou_botong.png',
-    aiPrompt: 'Isometric sprite of elderly Chinese Taoist with playful smile, wearing Taoist robes, mischievous expression, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of elderly Chinese Taoist with playful smile, wearing Taoist robes, mischievous expression, 2.5D game character, pixel art style',
   },
   {
     npcId: 'xiao_longnv',
@@ -305,7 +305,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_xiao_longnv.png',
     avatarPath: '/game/avatars/xiao_longnv.png',
-    aiPrompt: 'Isometric sprite of young Chinese woman in pure white dress, cold beauty, emotionless expression, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese woman in pure white dress, cold beauty, emotionless expression, 2.5D game character, pixel art style',
   },
   {
     npcId: 'yang_guo',
@@ -322,7 +322,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_yang_guo.png',
     avatarPath: '/game/avatars/yang_guo.png',
-    aiPrompt: 'Isometric sprite of young Chinese swordsman in black robes, melancholic expression, missing right arm, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Chinese swordsman in black robes, melancholic expression, missing right arm, 2.5D game character, pixel art style',
   },
   {
     npcId: 'qiao_feng',
@@ -339,7 +339,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_qiao_feng.png',
     avatarPath: '/game/avatars/qiao_feng.png',
-    aiPrompt: 'Isometric sprite of tall muscular Chinese warrior in brown warrior robes, heroic bearing, powerful aura, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of tall muscular Chinese warrior in brown warrior robes, heroic bearing, powerful aura, 2.5D game character, pixel art style',
   },
   {
     npcId: 'xu_zhu',
@@ -356,7 +356,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_xu_zhu.png',
     avatarPath: '/game/avatars/xu_zhu.png',
-    aiPrompt: 'Isometric sprite of young Buddhist monk in simple robes, honest face, pure eyes, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of young Buddhist monk in simple robes, honest face, pure eyes, 2.5D game character, pixel art style',
   },
   {
     npcId: 'murong_fu',
@@ -373,7 +373,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_murong_fu.png',
     avatarPath: '/game/avatars/murong_fu.png',
-    aiPrompt: 'Isometric sprite of noble Chinese young man in luxurious blue robes, proud expression, elegant bearing, 2.5D game character, pixel art style, transparent background',
+    aiPrompt: 'Isometric sprite of noble Chinese young man in luxurious blue robes, proud expression, elegant bearing, 2.5D game character, pixel art style',
   },
 ];
 

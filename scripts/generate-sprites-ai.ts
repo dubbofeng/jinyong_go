@@ -82,7 +82,8 @@ Technical requirements:
 - Character sprite should fit within 128x128 pixels
 - Character facing front-right (southeast direction)
 - Vibrant colors, high contrast
-- **IMPORTANT: SOLID PURE WHITE BACKGROUND (#FFFFFF) - No transparency, no checkered pattern, just pure white**
+- **CRITICAL: The background MUST be solid pure white (#FFFFFF, RGB 255,255,255)**
+- **NO transparency, NO checkered pattern, NO gradients - just flat solid white**
 - ${isPlayer ? 'Heroic and dynamic pose' : 'Characteristic pose showing personality'}
 - Traditional Chinese wuxia aesthetic
 - Clear silhouette for gameplay visibility
@@ -149,7 +150,7 @@ async function generateWithGemini(prompt: string, aspectRatio: '1:1' | '16:9' | 
 }
 
 /**
- * 保存图片到文件（自动调整到128x128）
+ * 保存图片到文件（自动调整到128x128并去除白色背景）
  */
 async function saveImage(buffer: Buffer, filename: string, outputDir: string): Promise<string> {
   // 确保输出目录存在
@@ -159,14 +160,54 @@ async function saveImage(buffer: Buffer, filename: string, outputDir: string): P
 
   const filepath = join(outputDir, filename);
   
-  // 使用sharp调整图片大小到128x128
-  await sharp(buffer)
+  // 先调整大小到128x128
+  const resizedBuffer = await sharp(buffer)
     .resize(TARGET_SIZE, TARGET_SIZE, {
       fit: 'contain',
-      background: { r: 0, g: 0, b: 0, alpha: 0 } // 透明背景
+      background: { r: 255, g: 255, b: 255, alpha: 1 } // 白色背景
     })
     .png()
-    .toFile(filepath);
+    .toBuffer();
+  
+  // 然后去除白色背景，转换为透明
+  const { data, info } = await sharp(resizedBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  
+  // 处理每个像素，将白色/浅色背景设为透明
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const a = data[i + 3];
+    
+    // 如果是白色或非常浅的颜色（背景），设为完全透明
+    // 降低阈值以捕获checkered pattern的浅灰色
+    const brightness = (r + g + b) / 3;
+    
+    // 如果亮度很高（>230）或者alpha已经很低（<10），设为完全透明
+    if (brightness > 230 || a < 10) {
+      data[i + 3] = 0; // 设置alpha为0（完全透明）
+    }
+    // 如果是中等亮度的浅色（220-230），且alpha不是很高，也设为透明
+    else if (brightness > 220 && a < 200) {
+      data[i + 3] = 0;
+    }
+  }
+  
+  // 保存处理后的图片
+  await sharp(data, {
+    raw: {
+      width: info.width,
+      height: info.height,
+      channels: 4
+    }
+  })
+  .png()
+  .toFile(filepath);
+  
+  console.log('   🎨 已自动去除白色背景');
   
   return filepath;
 }
@@ -215,6 +256,7 @@ async function main() {
     console.log('\n💡 提示:');
     console.log('   - 生成的图片保存在 public/game/isometric/characters/');
     console.log('   - 文件名带有 _ai 后缀以区分手工绘制版本');
+    console.log('   - 白色背景已自动移除，转换为透明背景');
     console.log('   - 如果效果不满意，可以修改提示词重新生成');
     console.log(`\n📁 输出目录: ${outputDir}`);
 
