@@ -8,7 +8,7 @@ export interface DialogueOption {
     value: any;
   };
   condition?: {
-    type: 'level' | 'quest' | 'item' | 'first_time';
+    type: 'level' | 'quest' | 'item' | 'first_time' | 'dialogue_flag';
     value?: string | number;
     npcId?: string;
     inverse?: boolean;

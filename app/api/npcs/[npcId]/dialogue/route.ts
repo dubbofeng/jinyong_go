@@ -13,6 +13,9 @@ export async function POST(
   { params }: { params: Promise<{ npcId: string }> }
 ) {
   try {
+    const body = await request.json().catch(() => ({}));
+    const { flags = [], flag, increment = true } = body || {};
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -57,6 +60,7 @@ export async function POST(
           affection: 0,
           affectionLevel: 'stranger',
           dialoguesCount: 0,
+          dialogueFlags: [],
           battlesWon: 0,
           battlesLost: 0,
           defeated: false,
@@ -67,13 +71,21 @@ export async function POST(
       relationship = newRelationship;
     }
 
+    const currentFlags = (relationship.dialogueFlags || []) as string[];
+    const incomingFlags = [
+      ...flags,
+      ...(flag ? [flag] : []),
+    ].filter(Boolean) as string[];
+    const nextFlags = Array.from(new Set([...currentFlags, ...incomingFlags]));
+
     const wasFirstTime = (relationship.dialoguesCount || 0) === 0;
-    const nextCount = (relationship.dialoguesCount || 0) + 1;
+    const nextCount = increment ? (relationship.dialoguesCount || 0) + 1 : (relationship.dialoguesCount || 0);
 
     await db
       .update(npcRelationships)
       .set({
         dialoguesCount: nextCount,
+        dialogueFlags: nextFlags,
         lastInteractionAt: new Date(),
         updatedAt: new Date(),
       })
@@ -89,6 +101,7 @@ export async function POST(
       data: {
         npcId,
         dialoguesCount: nextCount,
+        dialogueFlags: nextFlags,
         isFirstTime: wasFirstTime,
       },
     });

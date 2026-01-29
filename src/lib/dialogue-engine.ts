@@ -115,10 +115,9 @@ export class DialogueEngine {
     if (!currentNode || !currentNode.options) return [];
 
     return currentNode.options.filter((option) => {
-      if (!option.condition) return true;
-
-      const { type, value, inverse } = option.condition;
+      const { type, value, inverse } = option.condition || {};
       let conditionMet = false;
+      let baseMet = true;
       
       switch (type) {
         case 'level':
@@ -137,12 +136,45 @@ export class DialogueEngine {
           conditionMet = dialogueCount === 0;
           break;
         }
+        case 'dialogue_flag': {
+          const npcId = option.condition?.npcId || this.tree.npcId;
+          const flagsMap = this.playerState.npcDialogueFlags || {};
+          const flags = new Set(flagsMap[npcId] || []);
+          conditionMet = value ? flags.has(value) : false;
+          break;
+        }
         default:
           conditionMet = true;
       }
       
-      // 如果有 inverse 标记，反转结果
-      return inverse ? !conditionMet : conditionMet;
+      if (option.condition) {
+        // 如果有 inverse 标记，反转结果
+        baseMet = inverse ? !conditionMet : conditionMet;
+        if (!baseMet) return false;
+      }
+
+      // 自动隐藏已触发的一次性技能/任务选项
+      const npcId = option.condition?.npcId || this.tree.npcId;
+      const flagsMap = this.playerState.npcDialogueFlags || {};
+      const flags = new Set(flagsMap[npcId] || []);
+
+      const optionAction = option.action;
+      const nextNode = option.nextNodeId
+        ? this.tree.nodes.find((node) => node.id === option.nextNodeId)
+        : null;
+      const nextAction = nextNode?.action;
+
+      const action = optionAction || nextAction;
+      if (action?.type === 'skill') {
+        const skillId = action.value?.skillId;
+        if (skillId && flags.has(`skill:${skillId}`)) return false;
+      }
+      if (action?.type === 'quest') {
+        const questId = typeof action.value === 'string' ? action.value : action.value?.questId;
+        if (questId && flags.has(`quest:${questId}`)) return false;
+      }
+
+      return true;
     });
   }
 

@@ -60,6 +60,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const completedQuestsRef = useRef<string[]>([]);
   const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
   const npcDialogueCountsRef = useRef<Record<string, number>>({});
+  const [npcDialogueFlags, setNpcDialogueFlags] = useState<Record<string, string[]>>({});
+  const npcDialogueFlagsRef = useRef<Record<string, string[]>>({});
+  const currentNpcIdRef = useRef<string | null>(null);
   
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
@@ -93,7 +96,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const pressedKeysRef = useRef<Set<string>>(new Set());
 
   // E2E测试模式（通过URL参数启用）
-  const isE2EEnabled = useCallback(() => {
+  const isE2EEnabled = useCallback((): boolean => {
     if (typeof window === 'undefined') return false;
     return new URLSearchParams(window.location.search).has('e2e');
   }, []);
@@ -708,6 +711,33 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     setCurrentNpcAvatar(null);
   }, []);
 
+  const recordDialogueFlags = useCallback(async (flags: string[]): Promise<void> => {
+    if (!flags.length) return;
+    if (isE2EEnabled()) return;
+    const npcId = currentNpcIdRef.current;
+    if (!npcId) return;
+
+    try {
+      const response = await fetch(`/api/npcs/${npcId}/dialogue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flags, increment: false }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.success && Array.isArray(data?.data?.dialogueFlags)) {
+          setNpcDialogueFlags((prev) => {
+            const next = { ...prev, [npcId]: data.data.dialogueFlags };
+            npcDialogueFlagsRef.current = next;
+            return next;
+          });
+        }
+      }
+    } catch (error) {
+      console.warn('记录对话标记失败:', error);
+    }
+  }, [isE2EEnabled]);
+
   /**
    * 处理对话中的 action
    */
@@ -734,12 +764,21 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         // 处理任务相关的 action（如解锁技能）
         console.log('📜 Quest action:', action.value);
         // TODO: 实现技能解锁逻辑
+        if (typeof action.value === 'string') {
+          recordDialogueFlags([`quest:${action.value}`]);
+        }
         break;
       
       case 'skill':
         // 处理技能学习
         const { skillId } = action.value;
         console.log('✨ 学习技能:', skillId);
+
+        const questId = action.value?.questId as string | undefined;
+        const flagsToRecord = [skillId ? `skill:${skillId}` : null, questId ? `quest:${questId}` : null].filter(Boolean) as string[];
+        if (flagsToRecord.length) {
+          recordDialogueFlags(flagsToRecord);
+        }
         
         // 调用API学习技能
         fetch('/api/player/skills/learn', {
@@ -793,7 +832,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       default:
         console.warn('Unknown action type:', action.type);
     }
-  }, []);
+  }, [recordDialogueFlags]);
 
   /**
    * 更新对话状态
@@ -846,6 +885,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return;
       }
 
+      currentNpcIdRef.current = npcId;
+
       if (!isE2EEnabled()) {
         try {
           const response = await fetch(`/api/npcs/${npcId}/dialogue`, { method: 'POST' });
@@ -855,6 +896,13 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
               setNpcDialogueCounts((prev) => {
                 const next = { ...prev, [npcId]: data.data.dialoguesCount };
                 npcDialogueCountsRef.current = next;
+                return next;
+              });
+            }
+            if (data?.success && Array.isArray(data?.data?.dialogueFlags)) {
+              setNpcDialogueFlags((prev) => {
+                const next = { ...prev, [npcId]: data.data.dialogueFlags };
+                npcDialogueFlagsRef.current = next;
                 return next;
               });
             }
@@ -871,6 +919,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       const playerState = {
         completedQuests: completedQuestsRef.current,
         npcDialoguesCount: npcDialogueCountsRef.current,
+        npcDialogueFlags: npcDialogueFlagsRef.current,
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
       

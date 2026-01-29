@@ -389,6 +389,7 @@ export const npcRelationships = pgTable('npc_relationships', {
   
   // 交互统计
   dialoguesCount: integer('dialogues_count').notNull().default(0),
+  dialogueFlags: json('dialogue_flags').$type<string[]>().notNull().default([]),
   giftsGiven: integer('gifts_given').notNull().default(0),
   battlesWon: integer('battles_won').notNull().default(0),
   battlesLost: integer('battles_lost').notNull().default(0),
