@@ -75,6 +75,7 @@ export default function DialogueBox({
         zIndex: 9999,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
       }}
+      data-testid="dialogue-overlay"
       onClick={onClose}
     >
       <div 
@@ -83,6 +84,7 @@ export default function DialogueBox({
           width: '100%',
           maxWidth: '42rem',
         }}
+        data-testid="dialogue-box"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 对话框主体 */}
@@ -92,6 +94,7 @@ export default function DialogueBox({
             onClick={onClose}
             className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
             title="关闭对话 (ESC)"
+            data-testid="dialogue-close"
           >
             ✕
           </button>
@@ -133,6 +136,7 @@ export default function DialogueBox({
           <div
             className="bg-black bg-opacity-50 rounded p-4 mb-4 min-h-[80px] cursor-pointer"
             onClick={handleTextClick}
+            data-testid="dialogue-text"
           >
             <p className="text-white text-base leading-relaxed">
               {displayedText}
@@ -165,6 +169,7 @@ export default function DialogueBox({
                             : 'bg-amber-700 hover:bg-amber-600 text-white'
                         }`}
                         title={isDisabled ? option.lockedReason : undefined}
+                        data-testid={`dialogue-option-${index}`}
                       >
                         <span className={`mr-2 ${isDisabled ? 'text-gray-600' : 'text-amber-300'}`}>
                           {isLocked && '🔒 '}
@@ -185,6 +190,7 @@ export default function DialogueBox({
                 <button
                   onClick={onContinue}
                   className="w-full bg-amber-700 hover:bg-amber-600 text-white py-2.5 px-4 rounded transition-colors text-sm"
+                  data-testid="dialogue-continue"
                 >
                   {t('continue')} <span className="text-amber-300">({t('continueHint')})</span>
                 </button>

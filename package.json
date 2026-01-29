@@ -25,7 +25,10 @@
     "resize:sprites": "tsx scripts/resize-sprites.ts",
     "remove:background": "tsx scripts/remove-background.ts",
     "test:remove-bg": "tsx scripts/test-remove-background.ts",
-    "add:npcs": "dotenv -e .env.local -- tsx scripts/add-npcs-to-map.ts"
+    "add:npcs": "dotenv -e .env.local -- tsx scripts/add-npcs-to-map.ts",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:install": "playwright install --with-deps"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -47,6 +50,7 @@
   "devDependencies": {
     "@types/pathfinding": "^0.1.0",
     "autoprefixer": "^10.4.16",
+    "@playwright/test": "^1.50.0",
     "canvas": "^3.2.1",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",

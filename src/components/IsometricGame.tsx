@@ -12,6 +12,16 @@ import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 
+declare global {
+  interface Window {
+    __e2e?: {
+      movePlayerTo: (x: number, y: number) => { success: boolean; blockedByTree?: any } | undefined;
+      openDialogue: (npcIdOrName?: string) => Promise<boolean>;
+      getPlayerPosition: () => { x: number; y: number } | null;
+    };
+  }
+}
+
 interface IsometricGameProps {
   mapId?: string;
   initialMap?: MapData;
@@ -75,6 +85,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
+
+  // E2E测试模式（通过URL参数启用）
+  const isE2EEnabled = () => {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).has('e2e');
+  };
 
   // 地图ID到名称的映射（现在使用翻译）
   const getMapName = (mapId: string): string => {
@@ -281,6 +297,35 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   };
 
   /**
+   * 为E2E测试注入固定NPC（避免空地图无法触发对话）
+   */
+  const ensureE2EMapData = (map: MapData): MapData => {
+    if (!isE2EEnabled()) return map;
+    const hasNpc = map.items?.some((item) => item.itemType === 'npc');
+    if (hasNpc) return map;
+
+    const centerX = Math.floor(map.width / 2);
+    const centerY = Math.floor(map.height / 2);
+    const testNpc = {
+      id: 999999,
+      itemId: 'npc_hong_qigong',
+      itemName: '洪七公',
+      itemType: 'npc',
+      x: centerX,
+      y: centerY,
+      itemPath: '/game/isometric/characters/npc_hong_qigong.png',
+      imagePath: '/game/isometric/characters/npc_hong_qigong.png',
+      blocking: true,
+      size: 1,
+    };
+
+    return {
+      ...map,
+      items: [...(map.items || []), testNpc],
+    };
+  };
+
+  /**
    * 将数据库瓦片数组转换为二维网格
    */
   const convertTilesToGrid = (tiles: any[], width: number, height: number) => {
@@ -359,11 +404,13 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       
       // 如果有地图数据，加载到引擎
       if (data) {
-        await engine.loadMap(data);
+        const resolvedMap = ensureE2EMapData(data);
+        await engine.loadMap(resolvedMap);
+        setMapData(resolvedMap);
         setIsLoading(false);
       } else {
         // 创建默认测试地图
-        const defaultMap = createDefaultMap();
+        const defaultMap = ensureE2EMapData(createDefaultMap());
         await engine.loadMap(defaultMap);
         setMapData(defaultMap);
         setIsLoading(false);
@@ -775,6 +822,37 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       await showAlert(`无法与 ${item.itemName} 对话`, 'error');
     }
   };
+
+  /**
+   * E2E测试辅助方法（通过window.__e2e暴露）
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!isE2EEnabled() || !engineRef.current || !mapData) return;
+
+    window.__e2e = {
+      movePlayerTo: (x, y) => engineRef.current?.movePlayerTo(x, y),
+      openDialogue: async (npcIdOrName) => {
+        const target = mapData.items?.find((item: any) => {
+          if (npcIdOrName) {
+            return item.itemId === `npc_${npcIdOrName}` || item.itemName === npcIdOrName;
+          }
+          return item.itemType === 'npc';
+        });
+
+        if (!target) return false;
+        await startDialogue(target);
+        return true;
+      },
+      getPlayerPosition: () => engineRef.current?.getPlayerPosition() || null,
+    };
+
+    return () => {
+      if (window.__e2e) {
+        delete window.__e2e;
+      }
+    };
+  }, [mapData]);
 
   /**
    * 更新对话状态
@@ -1207,6 +1285,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         ref={canvasRef}
         onClick={handleCanvasClick}
         onMouseMove={handleCanvasMouseMove}
+        data-testid="isometric-canvas"
         className="absolute inset-0 w-full h-full"
         style={{ imageRendering: 'pixelated', zIndex: 0 }}
       />
