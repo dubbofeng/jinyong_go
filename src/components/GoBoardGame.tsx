@@ -112,6 +112,11 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!board || !engine) return;
 
+    if (vsAI && (isAIThinking || currentPlayer === 'white')) {
+      setLastMessage('🤖 AI思考中...');
+      return;
+    }
+
     // 落子后重置连续Pass计数
     setConsecutivePasses(0);
 
@@ -172,7 +177,7 @@ export default function GoBoardGame({
         return prevPlayer;
       }
     });
-  }, []);
+  }, [currentPlayer, isAIThinking, vsAI]);
 
   /**
    * AI落子
@@ -529,7 +534,7 @@ export default function GoBoardGame({
 
     setGameResult(result);
     setShowResultModal(true);
-  }, [session, capturedCount, moveCount, npcId, aiDifficulty, size]);
+  }, [session, capturedCount, moveCount, npcId, aiDifficulty, size, onGameEnd]);
 
   const handleResign = useCallback(() => {
     if (confirm('确认认输吗？')) {
@@ -776,8 +781,29 @@ export default function GoBoardGame({
           setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
           setSkillsRefreshKey(k => k + 1);
           
-          // 8秒后自动隐藏评估结果
-          setTimeout(() => setEvaluation(null), 10000);
+          // 在棋盘上显示地盘归属
+          const board = boardRef.current;
+          console.log('🔍 独孤九剑分析结果:', {
+            hasBoard: !!board,
+            hasOwnership: !!analysis.ownership,
+            ownershipSize: analysis.ownership?.length,
+            firstRow: analysis.ownership?.[0]?.slice(0, 5)
+          });
+          if (board && analysis.ownership) {
+            board.setOwnership(analysis.ownership);
+            console.log('✅ 已设置地盘归属数据');
+          } else {
+            console.warn('⚠️ 无法设置地盘归属:', { hasBoard: !!board, hasOwnership: !!analysis.ownership });
+          }
+          
+          // 10秒后自动隐藏评估结果和地盘标记
+          setTimeout(() => {
+            setEvaluation(null);
+            const board = boardRef.current;
+            if (board) {
+              board.clearOwnership();
+            }
+          }, 10000);
         } else {
           setLastMessage('❌ AI分析失败');
         }

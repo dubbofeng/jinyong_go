@@ -126,7 +126,6 @@ class ResourceLoader {
    * 预加载多个图片
    */
   async preloadImages(urls: string[]): Promise<void> {
-    console.log('🔄 Preloading images:', urls);
     const results = await Promise.allSettled(urls.map(url => this.loadImage(url)));
     
     // 检查失败的图片

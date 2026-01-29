@@ -376,6 +376,54 @@ export class KataGoBrowserEngineV2 {
     });
   }
 
+  private async sleep(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private async getOwnershipFromRawNN(boardSize: number): Promise<number[][] | undefined> {
+    try {
+      console.log('🔍 使用kata-raw-nn获取ownership...');
+
+      const startIndex = this.responseBuffer.length;
+
+      await this.sendCommand('kata-raw-nn 0', 10000);
+      await this.sleep(100);
+
+      const response = this.responseBuffer.slice(startIndex).join('\n');
+      console.log('📥 kata-raw-nn输出（前1000字符）:', response.substring(0, 1000));
+
+      const tokens = response.replace(/\n/g, ' ').split(/\s+/).filter(Boolean);
+      const ownershipIndex = tokens.indexOf('whiteOwnership');
+      if (ownershipIndex < 0) {
+        console.warn('⚠️ kata-raw-nn未找到whiteOwnership');
+        return undefined;
+      }
+
+      const count = boardSize * boardSize;
+      const ownershipValues = tokens.slice(ownershipIndex + 1, ownershipIndex + 1 + count);
+      if (ownershipValues.length !== count) {
+        console.warn('⚠️ whiteOwnership长度不匹配:', ownershipValues.length, '应该是', count);
+        return undefined;
+      }
+
+      const ownership = [] as number[][];
+      for (let row = 0; row < boardSize; row++) {
+        ownership[row] = [];
+        for (let col = 0; col < boardSize; col++) {
+          const value = parseFloat(ownershipValues[row * boardSize + col]);
+          // whiteOwnership: 1=白方, -1=黑方 -> 转换为黑方为正
+          ownership[row][col] = Number.isFinite(value) ? -value : 0;
+        }
+      }
+
+      console.log('✅ kata-raw-nn ownership转换完成:', ownership.length, 'x', ownership[0]?.length);
+      return ownership;
+    } catch (error) {
+      console.error('❌ kata-raw-nn解析失败:', error);
+      return undefined;
+    }
+  }
+
   /**
    * 设置难度（通过maxVisits参数）
    * @param difficulty 难度等级 1-9，数字越大越强
@@ -442,15 +490,40 @@ export class KataGoBrowserEngineV2 {
       }
 
       if (detailed) {
-        // 使用kata-analyze获取详细分析
+        // 使用 kata-analyze 获取详细分析
         const color = nextColor === 'black' ? 'B' : 'W';
-        // kata-analyze 参数: interval 100 maxVisits [visits]
-        const response = await this.sendCommand(
-          `kata-analyze ${color} interval 100 maxVisits ${this.maxVisits}`,
-          60000 // 60秒超时
+
+        console.log('🔍 使用kata-analyze命令获取详细分析...');
+
+        const startIndex = this.responseBuffer.length;
+
+        // kata-analyze 格式: kata-analyze [player] [interval] KEYVALUEPAIR...
+        await this.sendCommand(
+          `kata-analyze ${color} 20`,
+          10000 // 10秒超时
         );
-        
-        return this.parseDetailedAnalysis(response, boardSize);
+
+        // 等待一小段时间以收集分析输出
+        await this.sleep(400);
+
+        // 停止分析
+        await this.sendCommand('stop');
+
+        const analyzeResponse = this.responseBuffer.slice(startIndex).join('\n');
+        console.log('📥 kata-analyze输出（前1000字符）:', analyzeResponse.substring(0, 1000));
+
+        // 解析分析结果
+        const analysis = this.parseKataAnalysis(analyzeResponse, boardSize);
+
+        // 如果没有ownership，使用 kata-raw-nn 获取
+        if (!analysis.ownership) {
+          const ownership = await this.getOwnershipFromRawNN(boardSize);
+          if (ownership) {
+            analysis.ownership = ownership;
+          }
+        }
+
+        return analysis;
       } else {
         // 使用genmove获取最佳着法
         const color = nextColor === 'black' ? 'B' : 'W';
@@ -475,33 +548,156 @@ export class KataGoBrowserEngineV2 {
   }
 
   /**
-   * 解析kata-analyze的详细分析结果
+   * 解析kata-analyze的分析结果（包含ownership）
    */
-  private parseDetailedAnalysis(response: string, boardSize: number): BrowserAnalysis {
+  private parseKataAnalysis(response: string, boardSize: number): BrowserAnalysis {
     try {
-      // kata-analyze返回JSON格式的分析结果
-      // 示例: info move D4 visits 100 winrate 0.52 scoreMean 1.5 ...
+      console.log('📊 开始解析kata-analyze响应...');
       
+      // kata-analyze 返回多行 "info move" 格式的数据
+      // info move D4 visits 100 winrate 0.5234 scoreMean 1.2 ... ownership 0.9 -0.8 0.1 ...
       const lines = response.split('\n');
       let bestMove: BoardPosition | null = null;
       let winrate = 0.5;
       let visits = 0;
       let scoreLead = 0;
       let scoreStdev = 0;
+      let ownership: number[][] | undefined = undefined;
+      
+      console.log(`📝 响应包含 ${lines.length} 行`);
       
       for (const line of lines) {
         if (line.includes('info move')) {
-          // 解析 info move 行
-          const moveMatch = line.match(/move\s+([A-Z])(\d+)/);
+          console.log('🎯 找到info move行:', line.substring(0, 200));
+          
+          // 解析着法
+          const moveMatch = line.match(/move\s+([A-T])(\d+)/);
           if (moveMatch) {
-            const col = moveMatch[1].charCodeAt(0) - 65;
-            const row = parseInt(moveMatch[2]) - 1;
+            const colLetter = moveMatch[1];
+            const rowNum = moveMatch[2];
+            // 列：A=0, B=1, ... (跳过I)
+            let col = colLetter.charCodeAt(0) - 65;
+            if (colLetter > 'I') col--; // 跳过I
+            const row = parseInt(rowNum) - 1;
             bestMove = { row, col };
+            console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
           }
           
+          // 解析胜率
           const winrateMatch = line.match(/winrate\s+([\d.]+)/);
           if (winrateMatch) {
             winrate = parseFloat(winrateMatch[1]);
+            console.log('📈 胜率:', winrate);
+          }
+          
+          // 解析访问次数
+          const visitsMatch = line.match(/visits\s+(\d+)/);
+          if (visitsMatch) {
+            visits = parseInt(visitsMatch[1]);
+          }
+          
+          // 解析分数差
+          const scoreMeanMatch = line.match(/scoreMean\s+([-\d.]+)/);
+          if (scoreMeanMatch) {
+            scoreLead = parseFloat(scoreMeanMatch[1]);
+            console.log('🎲 分数差:', scoreLead);
+          }
+          
+          // 解析分数标准差
+          const scoreStdevMatch = line.match(/scoreStdev\s+([\d.]+)/);
+          if (scoreStdevMatch) {
+            scoreStdev = parseFloat(scoreStdevMatch[1]);
+          }
+          
+          // 只取第一个推荐（最佳着法）
+          break;
+        }
+      }
+
+      // 解析ownership数据（top-level字段）
+      const tokens = response.replace(/\n/g, ' ').split(/\s+/).filter(Boolean);
+      const ownershipIndex = tokens.indexOf('ownership');
+      if (ownershipIndex >= 0) {
+        console.log('🗺️ 找到ownership字段，尝试解析...');
+        const count = boardSize * boardSize;
+        const ownershipValues = tokens
+          .slice(ownershipIndex + 1, ownershipIndex + 1 + count)
+          .map((value) => parseFloat(value))
+          .filter((value) => !Number.isNaN(value));
+
+        console.log('📦 解析到', ownershipValues.length, '个ownership值');
+        console.log('📊 ownership样本（前10个）:', ownershipValues.slice(0, 10));
+
+        if (ownershipValues.length === count) {
+          ownership = [];
+          for (let row = 0; row < boardSize; row++) {
+            ownership[row] = [];
+            for (let col = 0; col < boardSize; col++) {
+              ownership[row][col] = ownershipValues[row * boardSize + col];
+            }
+          }
+          console.log('✅ ownership转换完成:', ownership.length, 'x', ownership[0]?.length);
+        } else {
+          console.warn('⚠️ ownership数据长度不匹配:', ownershipValues.length, '应该是', count);
+        }
+      } else {
+        console.warn('⚠️ 未找到ownership数据');
+      }
+      
+      const result = {
+        bestMove,
+        winrate,
+        visits,
+        thinkingTime: 0,
+        scoreLead,
+        scoreStdev,
+        ownership,
+      };
+      
+      console.log('✅ 解析完成:', {
+        hasMove: !!bestMove,
+        winrate,
+        scoreLead,
+        hasOwnership: !!ownership,
+        ownershipSize: ownership?.length
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('❌ 解析kata-analyze失败:', error);
+      return {
+        bestMove: null,
+        winrate: 0.5,
+        visits: 0,
+        thinkingTime: 0,
+      };
+    }
+  }
+
+  /**
+   * 解析lz-analyze的分析结果
+   */
+  private parseLzAnalysis(response: string, bestMove: BoardPosition | null, boardSize: number): BrowserAnalysis {
+    try {
+      console.log('📊 开始解析lz-analyze响应...');
+      
+      // lz-analyze 返回格式:
+      // info move D4 visits 100 winrate 5200 scoreMean 1.5 ...
+      const lines = response.split('\n');
+      let winrate = 0.5;
+      let visits = 0;
+      let scoreLead = 0;
+      let ownership: number[][] | undefined = undefined;
+      
+      for (const line of lines) {
+        if (line.includes('info move')) {
+          console.log('🎯 分析行:', line.substring(0, 200));
+          
+          // 解析胜率（Leela Zero格式是0-10000，5000=50%）
+          const winrateMatch = line.match(/winrate\s+(\d+)/);
+          if (winrateMatch) {
+            winrate = parseInt(winrateMatch[1]) / 10000;
+            console.log('📈 胜率:', winrate);
           }
           
           const visitsMatch = line.match(/visits\s+(\d+)/);
@@ -514,12 +710,7 @@ export class KataGoBrowserEngineV2 {
             scoreLead = parseFloat(scoreMeanMatch[1]);
           }
           
-          const scoreStdevMatch = line.match(/scoreStdev\s+([\d.]+)/);
-          if (scoreStdevMatch) {
-            scoreStdev = parseFloat(scoreStdevMatch[1]);
-          }
-          
-          break; // 只取第一个推荐
+          break;
         }
       }
       
@@ -529,10 +720,233 @@ export class KataGoBrowserEngineV2 {
         visits,
         thinkingTime: 0,
         scoreLead,
-        scoreStdev,
+        ownership, // 暂时没有ownership数据
       };
     } catch (error) {
-      console.error('解析分析结果失败:', error);
+      console.error('❌ 解析lz-analyze失败:', error);
+      return {
+        bestMove,
+        winrate: 0.5,
+        visits: 0,
+        thinkingTime: 0,
+      };
+    }
+  }
+
+  /**
+   * 解析kata-genmove_analyze的JSON响应（包含ownership）
+   */
+  private parseDetailedAnalysisJSON(response: string, boardSize: number): BrowserAnalysis {
+    try {
+      console.log('📊 开始解析kata-genmove_analyze JSON响应...');
+      
+      // kata-genmove_analyze 返回: 
+      // = move
+      // 然后是JSON数据
+      const lines = response.split('\n');
+      let moveStr = '';
+      let jsonStr = '';
+      
+      // 第一行是着法
+      if (lines[0]?.startsWith('=')) {
+        moveStr = lines[0].replace('=', '').trim();
+        console.log('📍 最佳着法:', moveStr);
+      }
+      
+      // 后续行是JSON
+      jsonStr = lines.slice(1).join('\n').trim();
+      
+      if (!jsonStr) {
+        console.warn('⚠️ 响应中没有找到JSON数据');
+        // 降级到简单解析
+        const move = this.parseMove(moveStr, boardSize);
+        return {
+          bestMove: move,
+          winrate: 0.5,
+          visits: 0,
+          thinkingTime: 0,
+        };
+      }
+      
+      console.log('📦 JSON数据长度:', jsonStr.length, '字符');
+      
+      // 解析JSON
+      const data = JSON.parse(jsonStr);
+      console.log('✅ JSON解析成功，包含字段:', Object.keys(data));
+      
+      // 解析着法
+      let bestMove: BoardPosition | null = null;
+      if (moveStr && moveStr !== 'pass' && moveStr !== 'resign') {
+        const col = moveStr.charCodeAt(0) - 65;
+        const row = parseInt(moveStr.substring(1)) - 1;
+        if (!isNaN(row) && !isNaN(col)) {
+          bestMove = { row, col };
+        }
+      }
+      
+      // 提取分析数据
+      const winrate = data.rootInfo?.winrate ?? 0.5;
+      const visits = data.rootInfo?.visits ?? 0;
+      const scoreLead = data.rootInfo?.scoreLead ?? 0;
+      const scoreStdev = data.rootInfo?.utility ?? 0;
+      
+      console.log('📈 分析数据:', { winrate, visits, scoreLead });
+      
+      // 提取ownership数据
+      let ownership: number[][] | undefined = undefined;
+      if (data.ownership && Array.isArray(data.ownership)) {
+        console.log('🗺️ 找到ownership数据，长度:', data.ownership.length);
+        
+        // ownership是一维数组，需要转换为二维
+        ownership = [];
+        for (let row = 0; row < boardSize; row++) {
+          ownership[row] = [];
+          for (let col = 0; col < boardSize; col++) {
+            const index = row * boardSize + col;
+            ownership[row][col] = data.ownership[index] ?? 0;
+          }
+        }
+        
+        console.log('✅ ownership转换完成:', ownership.length, 'x', ownership[0]?.length);
+        console.log('📊 ownership样本（前5个值）:', data.ownership.slice(0, 5));
+      } else {
+        console.warn('⚠️ 响应中没有ownership数据');
+      }
+      
+      const result = {
+        bestMove,
+        winrate,
+        visits,
+        thinkingTime: 0,
+        scoreLead,
+        scoreStdev,
+        ownership,
+      };
+      
+      console.log('✅ 解析完成:', {
+        hasMove: !!bestMove,
+        winrate,
+        scoreLead,
+        hasOwnership: !!ownership,
+        ownershipSize: ownership?.length
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('❌ 解析JSON失败:', error);
+      // 尝试降级解析
+      const move = this.parseMove(response, boardSize);
+      return {
+        bestMove: move,
+        winrate: 0.5,
+        visits: 0,
+        thinkingTime: 0,
+      };
+    }
+  }
+
+  /**
+   * 解析kata-analyze的详细分析结果
+   */
+  private parseDetailedAnalysis(response: string, boardSize: number): BrowserAnalysis {
+    try {
+      console.log('📊 开始解析kata-analyze响应...');
+      // kata-analyze返回JSON格式的分析结果
+      // 示例: info move D4 visits 100 winrate 0.52 scoreMean 1.5 ...
+      
+      const lines = response.split('\n');
+      let bestMove: BoardPosition | null = null;
+      let winrate = 0.5;
+      let visits = 0;
+      let scoreLead = 0;
+      let scoreStdev = 0;
+      let ownership: number[][] | undefined = undefined;
+      
+      console.log(`📝 响应包含 ${lines.length} 行`);
+      
+      for (const line of lines) {
+        if (line.includes('info move')) {
+          console.log('🎯 找到info move行:', line.substring(0, 200));
+          // 解析 info move 行
+          const moveMatch = line.match(/move\s+([A-Z])(\d+)/);
+          if (moveMatch) {
+            const col = moveMatch[1].charCodeAt(0) - 65;
+            const row = parseInt(moveMatch[2]) - 1;
+            bestMove = { row, col };
+            console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
+          }
+          
+          const winrateMatch = line.match(/winrate\s+([\d.]+)/);
+          if (winrateMatch) {
+            winrate = parseFloat(winrateMatch[1]);
+            console.log('📈 胜率:', winrate);
+          }
+          
+          const visitsMatch = line.match(/visits\s+(\d+)/);
+          if (visitsMatch) {
+            visits = parseInt(visitsMatch[1]);
+          }
+          
+          const scoreMeanMatch = line.match(/scoreMean\s+([-\d.]+)/);
+          if (scoreMeanMatch) {
+            scoreLead = parseFloat(scoreMeanMatch[1]);
+            console.log('🎲 分数差:', scoreLead);
+          }
+          
+          const scoreStdevMatch = line.match(/scoreStdev\s+([\d.]+)/);
+          if (scoreStdevMatch) {
+            scoreStdev = parseFloat(scoreStdevMatch[1]);
+          }
+          
+          // 解析ownership数据（如果存在）
+          const ownershipMatch = line.match(/ownership\s+(\[[\s\S]*?\])/);
+          if (ownershipMatch) {
+            console.log('🗺️ 找到ownership数据，尝试解析...');
+            try {
+              // ownership格式: [0.9, -0.8, 0.1, ...]
+              const ownershipArray = JSON.parse(ownershipMatch[1]) as number[];
+              console.log('📦 解析到', ownershipArray.length, '个ownership值');
+              // 转换为二维数组
+              ownership = [];
+              for (let row = 0; row < boardSize; row++) {
+                ownership[row] = [];
+                for (let col = 0; col < boardSize; col++) {
+                  ownership[row][col] = ownershipArray[row * boardSize + col] || 0;
+                }
+              }
+              console.log('✅ ownership转换完成:', ownership.length, 'x', ownership[0]?.length);
+            } catch (e) {
+              console.error('❌ 解析ownership失败:', e);
+            }
+          } else {
+            console.warn('⚠️ 未找到ownership数据');
+          }
+          
+          break; // 只取第一个推荐
+        }
+      }
+      
+      const result = {
+        bestMove,
+        winrate,
+        visits,
+        thinkingTime: 0,
+        scoreLead,
+        scoreStdev,
+        ownership,
+      };
+      
+      console.log('✅ 解析完成:', {
+        hasMove: !!bestMove,
+        winrate,
+        scoreLead,
+        hasOwnership: !!ownership,
+        ownershipSize: ownership?.length
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('❌ 解析分析结果失败:', error);
       // 返回默认值
       return {
         bestMove: null,

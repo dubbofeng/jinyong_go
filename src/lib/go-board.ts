@@ -33,11 +33,12 @@ export class GoBoard {
   private hoveredPosition: BoardPosition | null = null;
   private lastMove: BoardPosition | null = null;
   private highlightedPositions: Map<string, number> = new Map(); // position key -> label number
+  private ownershipData: number[][] | null = null; // 地盘归属数据（-1到1，-1=白，1=黑）
   
   // 事件处理器引用（用于清理）
-  private mouseMoveHandler: (e: MouseEvent) => void;
-  private mouseLeaveHandler: () => void;
-  private clickHandler: (e: MouseEvent) => void;
+  private mouseMoveHandler!: (e: MouseEvent) => void;
+  private mouseLeaveHandler!: () => void;
+  private clickHandler!: (e: MouseEvent) => void;
   
   constructor(canvas: HTMLCanvasElement, size: BoardSize = 9) {
     this.canvas = canvas;
@@ -84,6 +85,11 @@ export class GoBoard {
     
     // 绘制背景
     this.drawBackground();
+    
+    // 绘制地盘归属（如果有数据）
+    if (this.ownershipData) {
+      this.drawOwnership();
+    }
     
     // 绘制网格线
     this.drawGrid();
@@ -590,6 +596,71 @@ export class GoBoard {
   clearHighlights(): void {
     this.highlightedPositions.clear();
     this.render();
+  }
+
+  /**
+   * 设置地盘归属数据（用于形势判断）
+   * @param ownership 二维数组，每个值从-1到1（-1=白方，1=黑方，0=中立）
+   */
+  setOwnership(ownership: number[][] | null): void {
+    this.ownershipData = ownership;
+    this.render();
+  }
+
+  /**
+   * 清除地盘归属显示
+   */
+  clearOwnership(): void {
+    this.ownershipData = null;
+    this.render();
+  }
+
+  /**
+   * 绘制地盘归属（半透明颜色覆盖）
+   */
+  private drawOwnership(): void {
+    if (!this.ownershipData) return;
+
+    console.log('🎨 绘制地盘归属:', {
+      dataSize: this.ownershipData.length,
+      sampleValues: this.ownershipData[0]?.slice(0, 5)
+    });
+
+    let drawnCount = 0;
+    for (let row = 0; row < this.size; row++) {
+      for (let col = 0; col < this.size; col++) {
+        const ownership = this.ownershipData[row]?.[col];
+        if (ownership === undefined || Math.abs(ownership) < 0.1) {
+          continue; // 跳过不确定的点
+        }
+
+        drawnCount++;
+        const x = this.padding + col * this.gridSize;
+        const y = this.padding + row * this.gridSize;
+
+        // 根据归属值绘制颜色
+        const alpha = Math.min(0.65, 0.2 + Math.abs(ownership) * 0.6); // 提高可见度
+        
+        if (ownership > 0) {
+          // 黑方地盘 - 深灰色
+          this.ctx.fillStyle = `rgba(50, 50, 50, ${alpha})`;
+        } else {
+          // 白方地盘 - 浅色
+          this.ctx.fillStyle = `rgba(240, 240, 240, ${alpha})`;
+        }
+
+        // 绘制小方块覆盖
+        const blockSize = this.gridSize * 0.85;
+        this.ctx.fillRect(
+          x - blockSize / 2,
+          y - blockSize / 2,
+          blockSize,
+          blockSize
+        );
+      }
+    }
+    
+    console.log(`✅ 已绘制 ${drawnCount} 个地盘标记`);
   }
 
   /**
