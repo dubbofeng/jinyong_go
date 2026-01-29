@@ -45,7 +45,7 @@ async function main() {
     {
       questId: 'main_quest_02',
       title: '拜师学艺',
-      description: '洪七公是丐帮帮主，降龙十八掌威震武林。他愿意指点你棋艺，但你需要在9路棋盘上击败他，证明你的潜力。',
+      description: '洪七公是丐帮帮主，棋风刚猛。他愿意指点你棋艺，但你需要在9路棋盘上击败他，证明你的潜力。',
       questType: 'main',
       chapter: 1,
       requirements: {

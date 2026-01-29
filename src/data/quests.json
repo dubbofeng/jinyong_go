@@ -532,12 +532,12 @@
     "npcId": "qiao_feng",
     "chapter": 5,
     "name": {
-      "zh": "降龙十八掌",
-      "en": "18 Dragon Subduing Palms"
+      "zh": "乔峰对弈",
+      "en": "Match with Qiao Feng"
     },
     "description": {
-      "zh": "向乔峰学习降龙十八掌的棋理，掌握「降龙十八掌」技能",
-      "en": "Learn the Go principles of 18 Dragon Subduing Palms from Qiao Feng and master the skill"
+      "zh": "与乔峰切磋棋艺，领悟刚猛棋风",
+      "en": "Play a Go match with Qiao Feng and understand his bold style"
     },
     "questType": "main",
     "objectives": [
@@ -553,8 +553,7 @@
     ],
     "rewards": {
       "experience": 1800,
-      "silver": 900,
-      "skill": "xianglong_shiba"
+      "silver": 900
     },
     "prerequisiteQuests": ["quest_017_yang_guo"]
   },

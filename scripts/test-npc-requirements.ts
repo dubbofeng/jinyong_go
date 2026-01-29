@@ -163,7 +163,7 @@ async function setupNpcRequirements() {
         unlockConditions: [
           Requirements.level(8),
         ],
-        lockedHint: '需要8级才能学习降龙十八掌',
+        lockedHint: '需要8级才能继续修炼',
       },
     },
     battle: {

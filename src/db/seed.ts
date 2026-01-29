@@ -9,7 +9,7 @@ const seedNPCs = [
   {
     npcId: 'hongqigong',
     name: '洪七公',
-    description: '丐帮帮主，武功高强，性格豪爽。精通降龙十八掌和打狗棒法。',
+    description: '丐帮帮主，武功高强，性格豪爽，棋风刚猛。',
     mapId: 'huashan_scene',
     positionX: 10,
     positionY: 15,

@@ -52,7 +52,7 @@
     {
       "id": "challenge_intro",
       "speaker": "Hong Qigong",
-      "text": "Good! I like your spirit! Besides the Eighteen Dragon-Subduing Palms, Go is what I do best.",
+      "text": "Good! I like your spirit! Go is what I do best.",
       "nextNodeId": "challenge_condition"
     },
     {
@@ -109,7 +109,7 @@
       "text": "So you learned the Dugu Nine Swords? Linghu Chong's swordsmanship is extraordinary. The martial arts world needs more people like you.",
       "options": [
         {"text": "Thank you for your guidance, Senior!", "nextNodeId": "farewell"},
-        {"text": "May I ask about the Eighteen Dragon-Subduing Palms?", "nextNodeId": "daily_chat"}
+        {"text": "May I ask about your Go style?", "nextNodeId": "daily_chat"}
       ]
     },
     {

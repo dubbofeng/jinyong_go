@@ -16,7 +16,7 @@ const SKILL_DEFINITIONS = {
     name: '亢龙有悔',
     nameEn: 'Kanglong Youhui',
     character: '郭靖',
-    description: '郭靖的降龙十八掌第一式，可以悔棋一次',
+    description: '郭靖的刚猛掌法第一式，可以悔棋一次',
     baseQiCost: 10,
     baseCooldown: 0,
     baseUsesPerGame: 3,

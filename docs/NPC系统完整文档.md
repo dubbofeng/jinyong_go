@@ -275,8 +275,8 @@ npx tsx scripts/init-all-npcs.ts
 ```json
 {
   "type": "skill_unlocked",
-  "skillId": "jianglong_shiba_zhang",
-  "description": "已学习降龙十八掌"
+  "skillId": "beiming_shengong",
+  "description": "已学习北冥神功"
 }
 ```
 
@@ -609,7 +609,7 @@ transparent background
 #### 18. 乔峰 (qiao_feng)
 - **位置**: 擂鼓山
 - **角色**: 丐帮帮主
-- **技能**: 降龙十八掌（大提子）
+- **技能**: 乔峰对弈（刚猛棋风）
 - **特点**: 豪迈刚直
 
 #### 19. 虚竹 (xu_zhu)

@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "Qiao Feng",
-      "text": "I have a technique called 'Eighteen Dragon-Subduing Palms' - incomparably fierce. The essence of this palm technique, when applied to Go, has infinite power.",
+      "text": "My Go style is fierce and forceful, relying on momentum to overwhelm. If you have the courage, face me in a game.",
       "options": [
         {
           "text": "Please teach me, Chief Qiao!",
@@ -26,39 +26,18 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "I want to learn 'Eighteen Dragon-Subduing Palms'",
-          "condition": {"type": "quest", "value": "defeated_qiao_feng"},
-          "nextNodeId": "teach_skill"
-        },
-        {
           "text": "Chief Qiao, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_qiao_feng"},
           "action": {"type": "battle", "value": "qiao_feng"},
           "nextNodeId": "start_battle"
         },
-        {"text": "How are Eighteen Dragon-Subduing Palms used in Go?", "nextNodeId": "explain_skill"},
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
-      ]
-    },
-    {
-      "id": "explain_skill",
-      "speaker": "Qiao Feng",
-      "text": "'Eighteen Dragon-Subduing Palms' is the Beggar's Sect's supreme technique - incomparably fierce, each palm unstoppable like breaking bamboo.",
-      "nextNodeId": "explain_skill_2"
-    },
-    {
-      "id": "explain_skill_2",
-      "speaker": "Qiao Feng",
-      "text": "When applied to Go, it means overwhelming opponents with fierce momentum, leaving them unable to resist. However, it requires extremely high courage and Go skill.",
-      "options": [
-        {"text": "Full of domineering power! Please teach me, Chief Qiao", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Qiao Feng",
-      "text": "Good! You have courage! However, the subtlety of this technique requires real skill to grasp. If you want to learn, you must play a game with me first.",
+      "text": "Good! You have courage! If you want to see my style, you must play a game with me first.",
       "nextNodeId": "challenge_condition"
     },
     {
@@ -78,35 +57,6 @@
       "id": "start_battle",
       "speaker": "Qiao Feng",
       "text": "Good! Come! Let you witness the power of the Beggar's Sect!"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "Qiao Feng",
-      "text": "Good! Excellent game! Your play is fierce and powerful, already capturing some of the 'Dragon-Subduing' momentum. In that case, I'll teach you this technique.",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "Qiao Feng",
-      "text": "The key to this technique is: overwhelm opponents with fierce momentum, attack continuously, giving them no breathing room. Limited to once per game with a 40-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "Qiao Feng",
-      "text": "Remember, 'hardness contains softness, softness contains hardness.' When using this technique, be imposing like a rainbow, but also know how to release and restrain.",
-      "action": {"type": "skill", "value": {"skillId": "xianglong_shiba_zhang", "questId": "quest_018_qiao_feng"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "Qiao Feng",
-      "text": "Now that you've learned this technique, you'll surely achieve great things in the future. But remember, true masters not only need strength, but also a chivalrous heart.",
-      "options": [
-        {"text": "Thank you, Chief Qiao!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "qiao_feng"}, "nextNodeId": "start_battle"}
-      ]
     },
     {
       "id": "try_again",

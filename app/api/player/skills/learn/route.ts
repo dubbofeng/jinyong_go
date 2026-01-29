@@ -15,7 +15,7 @@ const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; characte
     name: '亢龙有悔',
     nameEn: 'Kanglong Youhui',
     character: '郭靖',
-    description: '郭靖的降龙十八掌第一式，可以悔棋一次',
+    description: '郭靖的刚猛掌法第一式，可以悔棋一次',
   },
   dugu_jiujian: {
     name: '独孤九剑',

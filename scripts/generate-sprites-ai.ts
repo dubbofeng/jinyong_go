@@ -35,7 +35,7 @@ const NPCS: CharacterConfig[] = [
     id: 'hong_qigong',
     name: '洪七公',
     nameEn: 'Hong Qigong',
-    description: '丐帮帮主，降龙十八掌传人',
+    description: '丐帮帮主，棋风刚猛',
     clothing: '破旧黄色长袍，手持打狗棒',
     features: '白发白须，和蔼笑容，年长外貌，仙风道骨'
   },
@@ -51,7 +51,7 @@ const NPCS: CharacterConfig[] = [
     id: 'guo_jing',
     name: '郭靖',
     nameEn: 'Guo Jing',
-    description: '蒙古大侠，降龙十八掌传人',
+    description: '蒙古大侠，侠义风范',
     clothing: '橙红色武士铠甲，威武装束',
     features: '黑发，憨厚表情，青年外貌，方正面容'
   },

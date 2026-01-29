@@ -1386,17 +1386,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           },
           {
             optionId: '1',
-            nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_qiao_feng' }
-          },
-          {
-            optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_qiao_feng' },
             action: { type: 'battle', value: 'qiao_feng' }
           },
-          { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '2', nextNodeId: 'explain_skill' },
+          { optionId: '3', nextNodeId: 'not_ready' }
         ]
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
@@ -1420,32 +1415,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         ]
       },
       { id: 'start_battle', action: { type: 'battle', value: 'qiao_feng' } },
-      { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
-      {
-        id: 'teach_skill_detail',
-        nextNodeId: 'teach_complete',
-        action: {
-          type: 'skill',
-          value: { skillId: 'xianglong_shiba', questId: 'quest_018_qiao_feng' }
-        }
-      },
-      {
-        id: 'teach_complete',
-        options: [
-          { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'heroic_wisdom' }
-        ]
-      },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'challenge_condition' }
         ]
-      },
-      {
-        id: 'heroic_wisdom',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
       },
       { id: 'not_ready' },
       { id: 'farewell' }
