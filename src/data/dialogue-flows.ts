@@ -22,8 +22,9 @@ export interface DialogueOptionFlow {
     value: any;
   };
   condition?: {
-    type: 'level' | 'quest' | 'item' | 'playerWon' | 'playerLost' | 'repeatable';
+    type: 'level' | 'quest' | 'item' | 'playerWon' | 'playerLost' | 'repeatable' | 'first_time';
     value?: string | number;
+    npcId?: string;
     inverse?: boolean;
   };
 }

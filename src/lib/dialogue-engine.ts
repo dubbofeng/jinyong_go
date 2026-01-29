@@ -130,6 +130,13 @@ export class DialogueEngine {
         case 'item':
           conditionMet = this.playerState.inventory?.includes(value) || false;
           break;
+        case 'first_time': {
+          const npcId = option.condition?.npcId || this.tree.npcId;
+          const counts = this.playerState.npcDialoguesCount || {};
+          const dialogueCount = counts[npcId] ?? 0;
+          conditionMet = dialogueCount === 0;
+          break;
+        }
         default:
           conditionMet = true;
       }
@@ -187,6 +194,11 @@ export class DialogueEngine {
   // 获取对话历史
   getHistory(): string[] {
     return this.state.history;
+  }
+
+  // 强制设置当前节点（用于对话流程纠正）
+  setCurrentNodeId(nodeId: string) {
+    this.state.currentNodeId = nodeId;
   }
 
   // 更新玩家状态

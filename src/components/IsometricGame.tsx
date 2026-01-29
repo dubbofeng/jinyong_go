@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
 import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
@@ -58,6 +58,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
   const completedQuestsRef = useRef<string[]>([]);
+  const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
+  const npcDialogueCountsRef = useRef<Record<string, number>>({});
   
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
@@ -91,10 +93,10 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const pressedKeysRef = useRef<Set<string>>(new Set());
 
   // E2E测试模式（通过URL参数启用）
-  const isE2EEnabled = () => {
+  const isE2EEnabled = useCallback(() => {
     if (typeof window === 'undefined') return false;
     return new URLSearchParams(window.location.search).has('e2e');
-  };
+  }, []);
 
   // 地图ID到名称的映射（现在使用翻译）
   const getMapName = (mapId: string): string => {
@@ -106,7 +108,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   /**
    * 显示提示框
    */
-  const showAlert = (message: string, type: AlertType = 'info', title?: string): Promise<void> => {
+  const showAlert = useCallback((message: string, type: AlertType = 'info', title?: string): Promise<void> => {
     return new Promise((resolve) => {
       setAlertState({
         isOpen: true,
@@ -116,12 +118,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         onConfirm: () => resolve(),
       });
     });
-  };
+  }, []);
 
   /**
    * 显示确认框
    */
-  const showConfirm = (message: string, title?: string): Promise<boolean> => {
+  const showConfirm = useCallback((message: string, title?: string): Promise<boolean> => {
     return new Promise((resolve) => {
       setAlertState({
         isOpen: true,
@@ -132,7 +134,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         onCancel: () => resolve(false),
       });
     });
-  };
+  }, []);
 
   // ==================== 死活题系统 ====================
   
@@ -316,7 +318,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       id: 999999,
       itemId: 'npc_hong_qigong',
       itemName: '洪七公',
-      itemType: 'npc',
+      itemType: 'npc' as const,
       x: npcX,
       y: npcY,
       itemPath: '/game/isometric/characters/npc_hong_qigong.png',
@@ -377,6 +379,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
   // ==================== 引擎初始化 ====================
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -450,6 +455,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
   // ==================== 游戏循环 ====================
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isLoading || !engineRef.current) return;
 
@@ -688,208 +695,23 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     }
   };
 
-  /**
-   * 处理键盘事件（WASD移动 + 空格交互 + ESC关闭对话）
-   */
-  useEffect(() => {
-    const handleKeyDown = async (e: KeyboardEvent) => {
-      // 对话框显示时的键盘处理
-      if (isDialogueVisible) {
-        // 空格键或Enter键继续对话
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.preventDefault();
-          if (dialogueOptions.length === 0) {
-            // 没有选项时，继续对话
-            handleContinueDialogue();
-          } else if (dialogueOptions.length === 1) {
-            // 只有一个选项时，自动选择
-            handleSelectOption(0);
-          }
-          return;
-        }
-        
-        // 数字键1-9选择对话选项
-        const numKey = parseInt(e.key);
-        if (!isNaN(numKey) && numKey >= 1 && numKey <= dialogueOptions.length) {
-          e.preventDefault();
-          handleSelectOption(numKey - 1);
-          return;
-        }
-        
-        // ESC键关闭对话
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          closeDialogue();
-          return;
-        }
-        
-        // 对话框显示时，阻止其他按键（如WASD移动）
-        return;
-      }
-      
-      // 空格键触发附近NPC/传送门交互（仅在对话框未显示时）
-      if (e.key === ' ' && engineRef.current) {
-        e.preventDefault(); // 防止页面滚动
-        const nearbyItem = engineRef.current.getNearbyInteractableItem();
-        
-        if (nearbyItem) {
-          if (nearbyItem.itemType === 'npc') {
-            // 触发NPC对话
-            console.log(`🗣️ [Space] Interacting with NPC: ${nearbyItem.itemName}`);
-            await startDialogue(nearbyItem);
-          } else if (nearbyItem.itemType === 'portal') {
-            // 触发传送门交互
-            console.log(`🌀 [Space] Activating portal to ${nearbyItem.targetMapId}`);
-            if (nearbyItem.targetMapId) {
-              setPendingPortal(nearbyItem);
-              setShowPortalConfirm(true);
-            }
-          }
-        }
-        return;
-      }
-      
-      // WASD移动（仅在对话框未显示时）
-      if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
-        pressedKeysRef.current.add(e.key);
-      }
-    };
-    
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
-        pressedKeysRef.current.delete(e.key);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [isDialogueVisible, dialogueOptions]);
-
   // ==================== 对话系统函数 ====================
 
   /**
-   * 开始与NPC对话
+   * 关闭对话
    */
-  const startDialogue = async (item: any) => {
-    try {
-      // 从item.itemId提取NPC ID（格式：npc_xxxx -> xxxx）
-      let npcId = '';
-      if (item.itemId && item.itemId.startsWith('npc_')) {
-        npcId = item.itemId.substring(4); // 移除 'npc_' 前缀
-      }
-      
-      // 如果无法从itemId提取，尝试使用旧的映射表（向后兼容）
-      if (!npcId) {
-        const npcIdMap: Record<string, string> = {
-          '洪七公': 'hong_qigong',
-          '郭靖': 'guo_jing',
-          '令狐冲': 'linghu_chong',
-          '黄蓉': 'huang_rong',
-        };
-        npcId = npcIdMap[item.itemName] || '';
-      }
-      
-      if (!npcId) {
-        console.warn(`未找到 NPC ${item.itemName} 的ID`);
-        await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
-        return;
-      }
-      
-      // 加载对话树（根据当前语言环境）
-      const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
-      
-      // 创建对话引擎，传入玩家状态
-      const playerState = {
-        completedQuests: completedQuestsRef.current,
-      };
-      const engine = new DialogueEngine(dialogueTree, playerState);
-      
-      setDialogueEngine(engine);
-      
-      // 使用NPC全身像的路径（头像会显示上1/3部分）
-      const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
-      
-      setCurrentNpcAvatar(avatarPath);
-      
-      // 更新当前对话节点和选项
-      updateDialogueState(engine);
-      
-      // 显示对话框
-      setIsDialogueVisible(true);
-    } catch (error) {
-      console.error('启动对话失败:', error);
-      await showAlert(`无法与 ${item.itemName} 对话`, 'error');
-    }
-  };
+  const closeDialogue = useCallback(() => {
+    setIsDialogueVisible(false);
+    setDialogueEngine(null);
+    setCurrentDialogueNode(null);
+    setDialogueOptions([]);
+    setCurrentNpcAvatar(null);
+  }, []);
 
-  /**
-   * E2E测试辅助方法（通过window.__e2e暴露）
-   */
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (!isE2EEnabled() || !engineRef.current || !mapData) return;
-
-    window.__e2e = {
-      movePlayerTo: (x, y) => engineRef.current?.movePlayerTo(x, y),
-      openDialogue: async (npcIdOrName) => {
-        const target = mapData.items?.find((item: any) => {
-          if (npcIdOrName) {
-            return item.itemId === `npc_${npcIdOrName}` || item.itemName === npcIdOrName;
-          }
-          return item.itemType === 'npc';
-        });
-
-        if (!target) return false;
-        await startDialogue(target);
-        return true;
-      },
-      getPlayerPosition: () => engineRef.current?.getPlayerPosition() || null,
-      getMapSize: () => ({ width: mapData.width, height: mapData.height }),
-      getTestNpcPosition: () => {
-        const npc = mapData.items?.find((item: any) => item.itemType === 'npc');
-        return npc ? { x: npc.x, y: npc.y } : null;
-      },
-    };
-
-    return () => {
-      if (window.__e2e) {
-        delete window.__e2e;
-      }
-    };
-  }, [mapData]);
-
-  /**
-   * 更新对话状态
-   */
-  const updateDialogueState = (engine: DialogueEngine) => {
-    const node = engine.getCurrentNode();
-    const options = engine.getAvailableOptions();
-    
-    setCurrentDialogueNode(node);
-    setDialogueOptions(options);
-    
-    // 处理节点的 action
-    if (node?.action) {
-      handleDialogueAction(node.action);
-    }
-    
-    // 如果对话结束，自动关闭
-    if (engine.isCompleted()) {
-      setTimeout(() => {
-        closeDialogue();
-      }, 1000);
-    }
-  };
-  
   /**
    * 处理对话中的 action
    */
-  const handleDialogueAction = (action: { type: string; value: any }) => {
+  const handleDialogueAction = useCallback((action: { type: string; value: any }) => {
     console.log('🎬 Handling dialogue action:', action);
     
     switch (action.type) {
@@ -971,12 +793,144 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       default:
         console.warn('Unknown action type:', action.type);
     }
-  };
+  }, []);
+
+  /**
+   * 更新对话状态
+   */
+  const updateDialogueState = useCallback((engine: DialogueEngine) => {
+    const node = engine.getCurrentNode();
+    const options = engine.getAvailableOptions();
+    
+    setCurrentDialogueNode(node);
+    setDialogueOptions(options);
+    
+    // 处理节点的 action
+    if (node?.action) {
+      handleDialogueAction(node.action);
+    }
+    
+    // 如果对话结束，自动关闭
+    if (engine.isCompleted()) {
+      setTimeout(() => {
+        closeDialogue();
+      }, 1000);
+    }
+  }, [closeDialogue, handleDialogueAction]);
+
+  /**
+   * 开始与NPC对话
+   */
+  const startDialogue = useCallback(async (item: any) => {
+    try {
+      // 从item.itemId提取NPC ID（格式：npc_xxxx -> xxxx）
+      let npcId = '';
+      if (item.itemId && item.itemId.startsWith('npc_')) {
+        npcId = item.itemId.substring(4); // 移除 'npc_' 前缀
+      }
+      
+      // 如果无法从itemId提取，尝试使用旧的映射表（向后兼容）
+      if (!npcId) {
+        const npcIdMap: Record<string, string> = {
+          '洪七公': 'hong_qigong',
+          '郭靖': 'guo_jing',
+          '令狐冲': 'linghu_chong',
+          '黄蓉': 'huang_rong',
+        };
+        npcId = npcIdMap[item.itemName] || '';
+      }
+      
+      if (!npcId) {
+        console.warn(`未找到 NPC ${item.itemName} 的ID`);
+        await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
+        return;
+      }
+
+      if (!isE2EEnabled()) {
+        try {
+          const response = await fetch(`/api/npcs/${npcId}/dialogue`, { method: 'POST' });
+          if (response.ok) {
+            const data = await response.json();
+            if (data?.success && typeof data?.data?.dialoguesCount === 'number') {
+              setNpcDialogueCounts((prev) => {
+                const next = { ...prev, [npcId]: data.data.dialoguesCount };
+                npcDialogueCountsRef.current = next;
+                return next;
+              });
+            }
+          }
+        } catch (error) {
+          console.warn('记录NPC对话次数失败:', error);
+        }
+      }
+      
+      // 加载对话树（根据当前语言环境）
+      const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
+      
+      // 创建对话引擎，传入玩家状态
+      const playerState = {
+        completedQuests: completedQuestsRef.current,
+        npcDialoguesCount: npcDialogueCountsRef.current,
+      };
+      const engine = new DialogueEngine(dialogueTree, playerState);
+      
+      setDialogueEngine(engine);
+      
+      // 使用NPC全身像的路径（头像会显示上1/3部分）
+      const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
+      
+      setCurrentNpcAvatar(avatarPath);
+      
+      // 更新当前对话节点和选项
+      updateDialogueState(engine);
+      
+      // 显示对话框
+      setIsDialogueVisible(true);
+    } catch (error) {
+      console.error('启动对话失败:', error);
+      await showAlert(`无法与 ${item.itemName} 对话`, 'error');
+    }
+  }, [isE2EEnabled, locale, showAlert, updateDialogueState]);
+
+  /**
+   * E2E测试辅助方法（通过window.__e2e暴露）
+   */
+  useEffect(() => {
+    if (!isE2EEnabled() || !engineRef.current || !mapData) return;
+
+    window.__e2e = {
+      movePlayerTo: (x, y) => engineRef.current?.movePlayerTo(x, y),
+      openDialogue: async (npcIdOrName) => {
+        const target = mapData.items?.find((item: any) => {
+          if (npcIdOrName) {
+            return item.itemId === `npc_${npcIdOrName}` || item.itemName === npcIdOrName;
+          }
+          return item.itemType === 'npc';
+        });
+
+        if (!target) return false;
+        await startDialogue(target);
+        return true;
+      },
+      getPlayerPosition: () => engineRef.current?.getPlayerPosition() || null,
+      getMapSize: () => ({ width: mapData.width, height: mapData.height }),
+      getTestNpcPosition: () => {
+        const npc = mapData.items?.find((item: any) => item.itemType === 'npc');
+        return npc ? { x: npc.x, y: npc.y } : null;
+      },
+    };
+
+    return () => {
+      if (window.__e2e) {
+        delete window.__e2e;
+      }
+    };
+  }, [isE2EEnabled, mapData, startDialogue]);
 
   /**
    * 选择对话选项
    */
-  const handleSelectOption = (optionIndex: number) => {
+  const handleSelectOption = useCallback((optionIndex: number) => {
     if (!dialogueEngine) return;
     
     const options = dialogueEngine.getAvailableOptions();
@@ -991,12 +945,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     if (success) {
       updateDialogueState(dialogueEngine);
     }
-  };
+  }, [dialogueEngine, handleDialogueAction, updateDialogueState]);
 
   /**
    * 继续对话（无选项时）
    */
-  const handleContinueDialogue = () => {
+  const handleContinueDialogue = useCallback(() => {
     if (!dialogueEngine) return;
     
     const success = dialogueEngine.continue();
@@ -1005,18 +959,89 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     } else {
       closeDialogue();
     }
-  };
+  }, [closeDialogue, dialogueEngine, updateDialogueState]);
 
   /**
-   * 关闭对话
+   * 处理键盘事件（WASD移动 + 空格交互 + ESC关闭对话）
    */
-  const closeDialogue = () => {
-    setIsDialogueVisible(false);
-    setDialogueEngine(null);
-    setCurrentDialogueNode(null);
-    setDialogueOptions([]);
-    setCurrentNpcAvatar(null);
-  };
+  useEffect(() => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      // 对话框显示时的键盘处理
+      if (isDialogueVisible) {
+        // 空格键或Enter键继续对话
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          if (dialogueOptions.length === 0) {
+            // 没有选项时，继续对话
+            handleContinueDialogue();
+          } else if (dialogueOptions.length === 1) {
+            // 只有一个选项时，自动选择
+            handleSelectOption(0);
+          }
+          return;
+        }
+        
+        // 数字键1-9选择对话选项
+        const numKey = parseInt(e.key);
+        if (!isNaN(numKey) && numKey >= 1 && numKey <= dialogueOptions.length) {
+          e.preventDefault();
+          handleSelectOption(numKey - 1);
+          return;
+        }
+        
+        // ESC键关闭对话
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeDialogue();
+          return;
+        }
+        
+        // 对话框显示时，阻止其他按键（如WASD移动）
+        return;
+      }
+      
+      // 空格键触发附近NPC/传送门交互（仅在对话框未显示时）
+      if (e.key === ' ' && engineRef.current) {
+        e.preventDefault(); // 防止页面滚动
+        const nearbyItem = engineRef.current.getNearbyInteractableItem();
+        
+        if (nearbyItem) {
+          if (nearbyItem.itemType === 'npc') {
+            // 触发NPC对话
+            console.log(`🗣️ [Space] Interacting with NPC: ${nearbyItem.itemName}`);
+            await startDialogue(nearbyItem);
+          } else if (nearbyItem.itemType === 'portal') {
+            // 触发传送门交互
+            console.log(`🌀 [Space] Activating portal to ${nearbyItem.targetMapId}`);
+            if (nearbyItem.targetMapId) {
+              setPendingPortal(nearbyItem);
+              setShowPortalConfirm(true);
+            }
+          }
+        }
+        return;
+      }
+      
+      // WASD移动（仅在对话框未显示时）
+      if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+        pressedKeysRef.current.add(e.key);
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
+        pressedKeysRef.current.delete(e.key);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [closeDialogue, dialogueOptions, handleContinueDialogue, handleSelectOption, isDialogueVisible, startDialogue]);
 
   // ==================== 围棋挑战系统函数 ====================
 
@@ -1082,7 +1107,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         const currentNode = dialogueEngine.getCurrentNode();
         if (currentNode?.id === 'start_battle') {
           // 如果当前在 start_battle 节点，手动前进到 teach_skill 节点
-          dialogueEngine.state.currentNodeId = 'teach_skill';
+          dialogueEngine.setCurrentNodeId('teach_skill');
         }
       }
       

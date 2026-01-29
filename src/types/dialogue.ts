@@ -8,8 +8,9 @@ export interface DialogueOption {
     value: any;
   };
   condition?: {
-    type: 'level' | 'quest' | 'item';
-    value: string | number;
+    type: 'level' | 'quest' | 'item' | 'first_time';
+    value?: string | number;
+    npcId?: string;
     inverse?: boolean;
   };
   // 新增：条件检查结果

@@ -4,12 +4,12 @@
     "npcId": "musang_daoren",
     "chapter": 0,
     "name": {
-      "zh": "北冥神功",
-      "en": "Beiming Divine Art"
+      "zh": "围棋入门",
+      "en": "Go Tutorial"
     },
     "description": {
-      "zh": "向段誉学习北冥神功的内力心法，掌握「北冥神功」技能",
-      "en": "Learn Beiming Divine Art from Duan Yu and master the skill"
+      "zh": "完成围棋教学，掌握基础规则",
+      "en": "Complete the Go tutorial and learn the basics"
     },
     "questType": "tutorial",
     "objectives": [
@@ -25,8 +25,7 @@
     "rewards": {
       "experience": 200,
       "silver": 100
-    },
-      "skill": "beiming_shengong"
+    }
   },
   "quest_002_hong_qigong": {
     "id": "quest_002_hong_qigong",

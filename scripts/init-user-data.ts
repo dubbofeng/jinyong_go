@@ -4,7 +4,7 @@
  */
 
 import { db } from '../src/db';
-import { users, playerStats, playerSkills, gameSettings, playerInventory } from '../src/db/schema';
+import { users, playerStats, gameSettings, playerInventory } from '../src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getExperienceForLevel } from '../src/lib/rank-system';
 
@@ -48,39 +48,7 @@ async function initExistingUsers() {
       console.log('  ⏭️  玩家属性已存在');
     }
 
-    // 2. 初始化4个基础技能（默认全部解锁用于测试）
-    const skillIds = [
-      'kanglong_youhui',
-      'dugu_jiujian',
-      'fuyu_chuanyin',
-      'jiguan_suanjin',
-    ];
-
-    for (const skillId of skillIds) {
-      const existingSkill = await db
-        .select()
-        .from(playerSkills)
-        .where(
-          and(
-            eq(playerSkills.userId, user.id),
-            eq(playerSkills.skillId, skillId)
-          )
-        )
-        .limit(1);
-
-      if (existingSkill.length === 0) {
-        await db.insert(playerSkills).values({
-          userId: user.id,
-          skillId,
-          unlocked: true, // 测试阶段全部解锁
-          level: 1,
-          experience: 0,
-          unlockedAt: new Date(),
-          timesUsed: 0,
-        });
-        console.log(`  ✅ 解锁技能: ${skillId}`);
-      }
-    }
+    // 2. 不再默认解锁技能（player_skills 仅在实际学会/解锁时写入）
 
     // 3. 初始化游戏设置
     const existingSettings = await db

@@ -79,4 +79,73 @@ test.describe('Isometric game E2E', () => {
     await page.getByTestId('dialogue-continue').click();
     await expect(page.getByRole('button', { name: '前辈，我想再跟您切磋一局' })).toBeVisible();
   });
+
+  test('hong qigong win grants skill and rewards', async ({ page }) => {
+    const uniqueId = Date.now();
+    const email = `e2e_${uniqueId}@example.com`;
+    const password = 'test1234';
+    const username = `e2e_${uniqueId}`;
+
+    await page.goto('/zh/register');
+    await page.fill('#username', username);
+    await page.fill('#email', email);
+    await page.fill('#password', password);
+    await page.getByRole('button', { name: '注册' }).click();
+    await page.waitForURL(/\/zh\/login/);
+
+    await page.fill('#email', email);
+    await page.fill('#password', password);
+    await page.getByRole('button', { name: '登录' }).click();
+    await page.waitForURL(/\/zh\/game/);
+
+    await page.request.post('/api/player/stats');
+    const initialStatsResponse = await page.request.get('/api/player/stats');
+    expect(initialStatsResponse.ok()).toBe(true);
+    const initialStats = await initialStatsResponse.json();
+
+    await page.goto('/zh/isometric-test?e2e=1');
+    await page.waitForFunction(() => Boolean(window.__e2e));
+
+    await page.evaluate(() => window.__e2e?.openDialogue('hong_qigong'));
+    await expect(page.getByTestId('dialogue-box')).toBeVisible();
+
+    await page.getByTestId('dialogue-text').click();
+    await expect(page.getByTestId('dialogue-continue')).toBeVisible();
+    await page.getByTestId('dialogue-continue').click();
+
+    await page.getByRole('button', { name: '请前辈指教！' }).click();
+
+    await page.getByTestId('dialogue-text').click();
+    await page.getByTestId('dialogue-continue').click();
+
+    await page.getByTestId('dialogue-text').click();
+    await page.getByRole('button', { name: '好！请前辈指教！' }).click();
+
+    await page.getByTestId('go-challenge-accept').click();
+    await page.getByTestId('go-test-win').click();
+
+    await expect(page.getByTestId('go-test-win')).toHaveCount(0);
+    await expect(page.getByTestId('dialogue-box')).toBeVisible();
+
+    await page.getByTestId('dialogue-text').click();
+    await page.getByTestId('dialogue-continue').click();
+
+    await expect.poll(async () => {
+      const skillsResponse = await page.request.get('/api/player/skills');
+      if (!skillsResponse.ok()) return false;
+      const skillsData = await skillsResponse.json();
+      const skills = skillsData?.data || [];
+      return skills.some((skill: { skillId: string }) => skill.skillId === 'kanglong_youhui');
+    }).toBe(true);
+
+    const updatedStatsResponse = await page.request.get('/api/player/stats');
+    expect(updatedStatsResponse.ok()).toBe(true);
+    const updatedStats = await updatedStatsResponse.json();
+
+    const expOrLevelIncreased =
+      updatedStats.data.level > initialStats.data.level ||
+      updatedStats.data.experience > initialStats.data.experience;
+    expect(expOrLevelIncreased).toBe(true);
+    expect(updatedStats.data.silver).toBeGreaterThan(initialStats.data.silver);
+  });
 });

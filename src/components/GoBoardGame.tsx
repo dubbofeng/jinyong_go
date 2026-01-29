@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { GoBoard, type BoardSize, type BoardPosition } from '../lib/go-board';
 import { GoEngine } from '../lib/go-engine';
+import { getQuestByNpc } from '../lib/quest-manager';
 import { 
   SkillManager,
   type TerritoryEvaluation,
@@ -655,7 +656,9 @@ export default function GoBoardGame({
     }
 
     // 计算经验值和体力变化
-    const experienceGained = playerWon ? 50 + Math.floor(moveCount / 10) * 5 : 10;
+    const baseExperienceGained = playerWon ? 50 + Math.floor(moveCount / 10) * 5 : 10;
+    const questRewards = playerWon && npcId ? getQuestByNpc(npcId)?.rewards : null;
+    const experienceGained = questRewards?.experience ?? baseExperienceGained;
     const staminaChange = playerWon ? 0 : -20; // 失败扣体力
 
     // 保存对战记录和NPC关系
@@ -717,17 +720,23 @@ export default function GoBoardGame({
       console.error('Error saving chess record:', error);
     }
 
-    // 更新玩家属性（经验值和体力）
+    // 更新玩家属性（经验值、体力、银两）
     if (!isDraw) {
       try {
+        const silverDelta = questRewards?.silver ?? 0;
+        const statsPayload: Record<string, number | string> = {
+          userId: session.user.id,
+          experienceDelta: experienceGained,
+          staminaDelta: staminaChange,
+        };
+        if (silverDelta) {
+          statsPayload.silverDelta = silverDelta;
+        }
+
         const statsResponse = await fetch('/api/player/stats/update', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: session.user.id,
-            experienceDelta: experienceGained,
-            staminaDelta: staminaChange,
-          }),
+          body: JSON.stringify(statsPayload),
         });
 
         if (!statsResponse.ok) {
