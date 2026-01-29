@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { GoBoard, type BoardSize } from '../lib/go-board';
+import { GoBoard, type BoardSize, type BoardPosition } from '../lib/go-board';
 import { GoEngine } from '../lib/go-engine';
 import { 
   SkillManager,
@@ -59,6 +59,8 @@ export default function GoBoardGame({
   const [skillsRefreshKey, setSkillsRefreshKey] = useState(0);
   const [learnedSkills, setLearnedSkills] = useState<string[]>([]); // 已学习的技能列表
   const [skillLevels, setSkillLevels] = useState<Record<string, number>>({}); // 技能等级映射
+  const [playerQi, setPlayerQi] = useState<number | null>(null);
+  const [playerMaxQi, setPlayerMaxQi] = useState<number | null>(null);
   
   // 机关算尽：试下棋盘状态
   const [showVariationBoard, setShowVariationBoard] = useState(false);
@@ -103,6 +105,76 @@ export default function GoBoardGame({
       fetchLearnedSkills();
     }
   }, [session]);
+
+  const fetchPlayerStats = useCallback(async () => {
+    try {
+      const response = await fetch('/api/player/stats');
+      if (response.status === 404) {
+        const initResponse = await fetch('/api/player/stats', { method: 'POST' });
+        const initData = await initResponse.json();
+        if (initData.success) {
+          setPlayerQi(initData.data.qi);
+          setPlayerMaxQi(initData.data.maxQi);
+        }
+        return;
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setPlayerQi(data.data.qi);
+          setPlayerMaxQi(data.data.maxQi);
+        }
+      }
+    } catch (error) {
+      console.error('获取玩家内力失败:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchPlayerStats();
+    }
+  }, [session, fetchPlayerStats]);
+
+  const applyQiDelta = useCallback(async (delta: number) => {
+    try {
+      const res = await fetch('/api/player/stats/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qiDelta: delta }),
+      });
+
+      if (!res.ok) {
+        return null;
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        setPlayerQi(data.data.qi);
+        setPlayerMaxQi(data.data.maxQi);
+        window.dispatchEvent(new Event('player-stats-update'));
+        return data.data;
+      }
+    } catch (error) {
+      console.error('更新内力失败:', error);
+    }
+
+    return null;
+  }, []);
+
+  const canAffordSkill = (skill: { qiCost?: number }) => {
+    if (playerQi === null) {
+      setLastMessage('⚠️ 内力数据未就绪');
+      return false;
+    }
+    const cost = skill.qiCost || 0;
+    if (cost > playerQi) {
+      setLastMessage(`❌ 内力不足，需要${cost}，当前${playerQi}`);
+      return false;
+    }
+    return true;
+  };
 
   /**
    * 处理落子
@@ -630,7 +702,7 @@ export default function GoBoardGame({
   /**
    * 技能1：亢龙有悔（悔棋）
    */
-  const useKangLongYouHui = () => {
+  const useKangLongYouHui = async () => {
     const skillManager = skillManagerRef.current;
     const skill = skillManager?.getSkill('kanglongyouhui');
     
@@ -642,6 +714,10 @@ export default function GoBoardGame({
     // 检查技能是否可用
     if (skill.currentUses <= 0) {
       setLastMessage('❌ 【亢龙有悔】使用次数已用完');
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
       return;
     }
     
@@ -672,6 +748,7 @@ export default function GoBoardGame({
       // vsAI模式下currentPlayer保持为'black'
       
       setMoveCount(prev => Math.max(0, prev - stepsToUndo));
+      await applyQiDelta(-skill.qiCost);
       setLastMessage(`✨ 使用【亢龙有悔】悔棋成功！剩余${skill.currentUses}次`);
       setSkillsRefreshKey(k => k + 1);
     } else {
@@ -690,6 +767,15 @@ export default function GoBoardGame({
     
     const engine = engineRef.current;
     if (!engine) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【独孤九剑】使用次数已用完');
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
     
     setLastMessage('🤔 AI分析中...');
     
@@ -776,6 +862,7 @@ export default function GoBoardGame({
           
           // 消耗技能使用次数
           skill.currentUses--;
+          await applyQiDelta(-skill.qiCost);
           
           setEvaluation(result);
           setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
@@ -828,6 +915,15 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     const board = boardRef.current;
     if (!engine || !board) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【腹语传音】使用次数已用完');
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
     
     setLastMessage('🤔 AI计算中...');
     
@@ -888,6 +984,7 @@ export default function GoBoardGame({
 
           // 消耗技能使用次数
           skill.currentUses--;
+          await applyQiDelta(-skill.qiCost);
           
           setSuggestions(suggestions);
           setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
@@ -922,7 +1019,7 @@ export default function GoBoardGame({
   /**
    * 技能4：机关算尽（变化图）
    */
-  const useJiGuanSuanJin = () => {
+  const useJiGuanSuanJin = async () => {
     const skillManager = skillManagerRef.current;
     const skill = skillManager?.getSkill('jiguansuanjin');
     
@@ -939,6 +1036,10 @@ export default function GoBoardGame({
     
     if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
       setLastMessage(`❌ 【机关算尽】冷却中，还需${(skill as any).currentCooldown}手`);
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
       return;
     }
     
@@ -958,11 +1059,94 @@ export default function GoBoardGame({
       
       setVariationStones(stones);
       setShowVariationBoard(true);
+      await applyQiDelta(-skill.qiCost);
       setLastMessage(`✨ 使用【机关算尽】创建试下棋盘！剩余${skill.currentUses}次`);
       setSkillsRefreshKey(k => k + 1);
     } else {
       setLastMessage('❌ 无法使用【机关算尽】');
     }
+  };
+
+  /**
+   * 技能5：棋子暗器（打歪对手刚下的棋子）
+   */
+  const useQiZiAnQi = async () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('qizianqi');
+
+    if (!skill || !('use' in skill)) return;
+
+    const engine = engineRef.current;
+    const board = boardRef.current;
+    if (!engine || !board) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【棋子暗器】使用次数已用完');
+      return;
+    }
+
+    if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
+      setLastMessage(`❌ 【棋子暗器】冷却中，还需${(skill as any).currentCooldown}手`);
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
+
+    const result = (skill as any).use(engine, currentPlayer) as { from: BoardPosition; to: BoardPosition; color: 'black' | 'white' } | null;
+    if (!result) {
+      setLastMessage('❌ 无法使用【棋子暗器】');
+      return;
+    }
+
+    board.removeStone(result.from);
+    const placed = board.placeStone(result.to, result.color);
+    if (!placed) {
+      board.placeStone(result.from, result.color);
+      setLastMessage('❌ 【棋子暗器】落点异常');
+      return;
+    }
+
+    await applyQiDelta(-skill.qiCost);
+
+    const colorLabel = result.color === 'black' ? '黑子' : '白子';
+    setLastMessage(
+      `🎯 【棋子暗器】${colorLabel}从 ${formatGoPosition(result.from.row, result.from.col)} 打歪到 ${formatGoPosition(result.to.row, result.to.col)}`
+    );
+    setSkillsRefreshKey(k => k + 1);
+  };
+
+  /**
+   * 技能6：北冥神功（回复内力并清除冷却）
+   */
+  const useBeiMingShenGong = async () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('beimingshengong');
+
+    if (!skill || !('use' in skill)) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【北冥神功】使用次数已用完');
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
+
+    const result = (skill as any).use();
+    if (!result) {
+      setLastMessage('❌ 无法使用【北冥神功】');
+      return;
+    }
+
+    await applyQiDelta(-skill.qiCost);
+    await applyQiDelta(result.qiRestore);
+    skillManager?.clearAllCooldowns();
+
+    setLastMessage(`🌀 使用【北冥神功】恢复内力${result.qiRestore}点，已清除技能冷却`);
+    setSkillsRefreshKey(k => k + 1);
   };
 
   return (
@@ -993,6 +1177,9 @@ export default function GoBoardGame({
             </div>
             <div className="text-sm text-gray-300">
               提子: 黑{capturedCount.black} 白{capturedCount.white}
+            </div>
+            <div className="text-sm text-gray-300">
+              内力: {playerQi ?? '--'}/{playerMaxQi ?? '--'}
             </div>
           </div>
           {lastMessage && (
@@ -1066,7 +1253,8 @@ export default function GoBoardGame({
             {learnedSkills.includes('kanglong_youhui') && (() => {
               const skill = skillManagerRef.current?.getSkill('kanglongyouhui');
               const level = skillLevels['kanglong_youhui'] || 1;
-              const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current);
+              const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current)
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
               return (
                 <button
                   onClick={useKangLongYouHui}
@@ -1083,6 +1271,7 @@ export default function GoBoardGame({
                     <div className="font-bold text-sm">亢龙有悔</div>
                     <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                     <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
                   </div>
                 </button>
               );
@@ -1092,7 +1281,8 @@ export default function GoBoardGame({
             {learnedSkills.includes('dugu_jiujian') && (() => {
               const skill = skillManagerRef.current?.getSkill('dugujiujian');
               const level = skillLevels['dugu_jiujian'] || 1;
-              const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
               return (
                 <button
                   onClick={useDuGuJiuJian}
@@ -1109,6 +1299,7 @@ export default function GoBoardGame({
                   <div className="font-bold text-sm">独孤九剑</div>
                   <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                   <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                  <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
                 </div>
               </button>
             );
@@ -1118,7 +1309,8 @@ export default function GoBoardGame({
           {learnedSkills.includes('fuyu_chuanyin') && (() => {
             const skill = skillManagerRef.current?.getSkill('fuyuchuanyin');
             const level = skillLevels['fuyu_chuanyin'] || 1;
-            const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+            const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+              && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
             return (
               <button
                 onClick={useFuYuChuanYin}
@@ -1135,6 +1327,7 @@ export default function GoBoardGame({
                   <div className="font-bold text-sm">腹语传音</div>
                   <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                   <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                  <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
                 </div>
               </button>
             );
@@ -1144,7 +1337,8 @@ export default function GoBoardGame({
             {learnedSkills.includes('jiguan_suanjin') && (() => {
               const skill = skillManagerRef.current?.getSkill('jiguansuanjin');
               const level = skillLevels['jiguan_suanjin'] || 1;
-              const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
               const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
               return (
                 <button
@@ -1164,6 +1358,66 @@ export default function GoBoardGame({
                     <div className="text-xs mt-1">
                       {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
                     </div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
+                  </div>
+                </button>
+              );
+            })()}
+
+            {/* 技能5：棋子暗器 */}
+            {learnedSkills.includes('qizi_anqi') && (() => {
+              const skill = skillManagerRef.current?.getSkill('qizianqi');
+              const level = skillLevels['qizi_anqi'] || 1;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
+              const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
+              return (
+                <button
+                  onClick={useQiZiAnQi}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-red-600 to-red-800 border-red-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                  title="快捷键: 5"
+                >
+                  <div className="text-white text-center">
+                    <div className="text-2xl mb-1">🎯</div>
+                    <div className="font-bold text-sm">棋子暗器</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">
+                      {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+                    </div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
+                  </div>
+                </button>
+              );
+            })()}
+
+            {/* 技能6：北冥神功 */}
+            {learnedSkills.includes('beiming_shengong') && (() => {
+              const skill = skillManagerRef.current?.getSkill('beimingshengong');
+              const level = skillLevels['beiming_shengong'] || 1;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
+              return (
+                <button
+                  onClick={useBeiMingShenGong}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-cyan-600 to-blue-800 border-cyan-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                  title="快捷键: 6"
+                >
+                  <div className="text-white text-center">
+                    <div className="text-2xl mb-1">🌀</div>
+                    <div className="font-bold text-sm">北冥神功</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
                   </div>
                 </button>
               );

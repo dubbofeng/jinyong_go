@@ -1030,14 +1030,14 @@ npm run dev
 
 ### 第二章（4个）
 
-**quest_006_duan_yu** - 段誉（六脉神剑）
+**quest_006_duan_yu** - 段誉（北冥神功）
 **quest_007_huangmei_seng** - 黄眉僧
 **quest_008_duan_yanqing** - 段延庆（腹语传音）
 **quest_009_yideng_dashi** - 一灯大师（一阳指）
 
 ### 第三章（3个）
 
-**quest_010_huang_yaoshi** - 黄药师（桃花阵法）
+**quest_010_huang_yaoshi** - 黄药师（棋阵机关）
 **quest_011_hei_baizi** - 黑白子
 **quest_012_chen_jialuo** - 陈家洛（棋子暗器）
 
@@ -1052,8 +1052,8 @@ npm run dev
 **quest_016_xiao_longnv** - 小龙女
 **quest_017_yang_guo** - 杨过（黯然销魂掌）
 **quest_018_qiao_feng** - 乔峰（降龙十八掌）
-**quest_019_xu_zhu** - 虚竹（破解珍珑）
-**quest_020_murong_fu** - 慕容复（斗转星移）
+**quest_019_xu_zhu** - 虚竹（珍珑指点）
+**quest_020_murong_fu** - 慕容复（挑战）
 
 ---
 

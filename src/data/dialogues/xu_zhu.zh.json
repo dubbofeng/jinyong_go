@@ -18,17 +18,12 @@
     {
       "id": "check_status",
       "speaker": "虚竹",
-      "text": "贫僧虽然不才，但破解珍珑棋局时，倒是悟出了一些道理。若施主有兴趣，贫僧可以传授。",
+      "text": "贫僧虽然不才，但破解珍珑棋局时，倒是悟出了一些道理。若施主有兴趣，可与贫僧对弈交流。",
       "options": [
         {
           "text": "请大师指教！",
           "condition": {"type": "quest", "value": "defeated_xu_zhu", "inverse": true},
           "nextNodeId": "challenge_intro"
-        },
-        {
-          "text": "我想学习「破解珍珑」",
-          "condition": {"type": "quest", "value": "defeated_xu_zhu"},
-          "nextNodeId": "teach_skill"
         },
         {
           "text": "大师，我想再和你对弈一局",
@@ -78,35 +73,6 @@
       "id": "start_battle",
       "speaker": "虚竹",
       "text": "善哉善哉，请！"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "虚竹",
-      "text": "施主棋力不俗，更难得的是不拘泥于常规。既然如此，贫僧就传你「破解珍珑」的精要。",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "虚竹",
-      "text": "这招的要领是：在绝境中不拘泥于常规，以无招胜有招，找到看似不可能的破局之法。每局限用一次，冷却55步。",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "虚竹",
-      "text": "记住，「无即是有，有即是无」。用此招时要放下执念，以空灵之心观察棋局。",
-      "action": {"type": "skill", "value": {"skillId": "pojie_zhenlong", "questId": "quest_019_xu_zhu"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "虚竹",
-      "text": "施主既然学会了此招，以后遇到再困难的棋局也能从容应对。不过要记住，棋道如佛道，贵在悟性。",
-      "options": [
-        {"text": "多谢大师！", "nextNodeId": "farewell"},
-        {"text": "我还想听听大师的开示", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "xu_zhu"}, "nextNodeId": "start_battle"}
-      ]
     },
     {
       "id": "try_again",

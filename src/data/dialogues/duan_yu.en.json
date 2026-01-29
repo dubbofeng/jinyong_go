@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "Duan Yu",
-      "text": "My family's 'Six Meridian Divine Sword' is a martial arts masterpiece, but the exquisite finger techniques within can also be excellently applied to Go.",
+      "text": "My family's 'Beiming Divine Art' is a martial arts masterpiece, and its inner-energy flow can also be excellently applied to Go.",
       "options": [
         {
           "text": "Please teach me, Young Master Duan!",
@@ -26,7 +26,7 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "I want to learn the 'Six Meridian Divine Sword'",
+           "text": "I want to learn the 'Beiming Divine Art'",
           "condition": {"type": "quest", "value": "defeated_duan_yu"},
           "nextNodeId": "teach_skill"
         },
@@ -36,20 +36,20 @@
           "action": {"type": "battle", "value": "duan_yu"},
           "nextNodeId": "start_battle"
         },
-        {"text": "Six Meridian Divine Sword in Go?", "nextNodeId": "explain_skill"},
+        {"text": "Beiming Divine Art in Go?", "nextNodeId": "explain_skill"},
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Duan Yu",
-      "text": "Haha, you misunderstand, my friend. The 'Six Meridian Divine Sword' I speak of refers to finger techniques as fast as sword energy when placing stones, catching opponents off guard.",
+      "text": "Haha, you misunderstand, my friend. The 'Beiming Divine Art' I speak of is the art of cycling inner energy, letting you recover qi and dispel cooldowns in the game.",
       "nextNodeId": "explain_skill_2"
     },
     {
       "id": "explain_skill_2",
       "speaker": "Duan Yu",
-      "text": "The beauty of this technique is that you can rapidly place multiple stones at crucial moments before your opponent can react. Like sword energy crisscrossing - formless and shadowless.",
+       "text": "The beauty of this technique is that you can restore inner energy at crucial moments and clear all skill cooldowns, letting the game flow again.",
       "options": [
         {"text": "Miraculous! Please teach me, Young Master Duan", "nextNodeId": "challenge_intro"},
         {"text": "Let me think about it", "nextNodeId": "not_ready"}
@@ -82,20 +82,20 @@
     {
       "id": "teach_skill",
       "speaker": "Duan Yu",
-      "text": "Excellent game! Your play is brilliant - free-spirited yet rigorous. In that case, I'll teach you the 'Six Meridian Divine Sword' finger technique.",
+      "text": "Excellent game! Your play is brilliant - free-spirited yet rigorous. In that case, I'll teach you the 'Beiming Divine Art'.",
       "nextNodeId": "teach_skill_detail"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Duan Yu",
-      "text": "The key to this technique is: at crucial moments in the game, place stones in rapid succession at extreme speed, catching your opponent unprepared. Can be used once per game with a 15-move cooldown.",
+      "text": "The key to this technique is: restore your inner energy and clear all skill cooldowns at crucial moments. Use it sparingly.",
       "nextNodeId": "teach_skill_practice"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Duan Yu",
       "text": "Remember, when using it, be 'flowing like clouds and water, in one breath.' My uncle says a true master reveals their skill with one move.",
-      "action": {"type": "skill", "value": {"skillId": "liumai_shenjian", "questId": "quest_006_duan_yu"}},
+       "action": {"type": "skill", "value": {"skillId": "beiming_shengong", "questId": "quest_006_duan_yu"}},
       "nextNodeId": "teach_complete"
     },
     {

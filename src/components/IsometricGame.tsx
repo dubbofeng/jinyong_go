@@ -851,6 +851,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
                   dugu_jiujian: '⚔️',
                   fuyu_chuanyin: '🗨️',
                   jiguan_suanjin: '🧩',
+                  qizi_anqi: '🎯',
+                  beiming_shengong: '🌀',
                 };
                 
                 // 显示Toast

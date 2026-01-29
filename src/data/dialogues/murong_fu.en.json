@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "Murong Fu",
-      "text": "The Murong family has a supreme technique called 'Returning Your Way Upon You.' When used in Go, it can counter an opponent's moves back at them.",
+      "text": "The Murong family has its own insights into Go. If you wish, we may play a game.",
       "options": [
         {
           "text": "Please teach me, Young Master Murong!",
@@ -26,30 +26,25 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "I want to learn 'Returning Your Way Upon You'",
-          "condition": {"type": "quest", "value": "defeated_murong_fu"},
-          "nextNodeId": "teach_skill"
-        },
-        {
           "text": "Young Master Murong, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_murong_fu"},
           "action": {"type": "battle", "value": "murong_fu"},
           "nextNodeId": "start_battle"
         },
-        {"text": "How is this technique used in Go?", "nextNodeId": "explain_skill"},
+        {"text": "How is your Go style?", "nextNodeId": "explain_skill"},
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Murong Fu",
-      "text": "The Gusu Murong family's 'Returning Your Way Upon You' can counter an opponent's moves back at them, making them suffer their own consequences.",
+      "text": "In Go, I emphasize reading intent and responding with the right countermeasure.",
       "nextNodeId": "explain_skill_2"
     },
     {
       "id": "explain_skill_2",
       "speaker": "Murong Fu",
-      "text": "When used in Go, it means seeing through your opponent's strategy, then counterattacking in the same way, making them fall into their own trap.",
+      "text": "When you see through a plan, you can shift and counter to seize the initiative.",
       "options": [
         {"text": "Brilliant! Please teach me, Young Master Murong", "nextNodeId": "challenge_intro"},
         {"text": "Let me think about it", "nextNodeId": "not_ready"}
@@ -78,35 +73,6 @@
       "id": "start_battle",
       "speaker": "Murong Fu",
       "text": "Hmph! Let you witness the power of Gusu Murong!"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "Murong Fu",
-      "text": "Not bad... your game does have some merit. Very well, I'll teach you 'Returning Your Way Upon You.'",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "Murong Fu",
-      "text": "The key to this technique is: see through your opponent's strategy, then counterattack in the same way. Limited to once per game with a 45-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "Murong Fu",
-      "text": "Remember, when using this technique, 'know yourself and your enemy, and you'll never be defeated.' Only by fully understanding your opponent can you counter their moves back at them.",
-      "action": {"type": "skill", "value": {"skillId": "yibi_zhidao", "questId": "quest_020_murong_fu"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "Murong Fu",
-      "text": "Now that you've learned this technique, you'll have strategies for dealing with strong enemies in the future. But remember, restoring the nation is what's most important.",
-      "options": [
-        {"text": "Thank you, Young Master Murong!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "murong_fu"}, "nextNodeId": "start_battle"}
-      ]
     },
     {
       "id": "try_again",

@@ -55,6 +55,28 @@ const SKILL_DEFINITIONS = {
     baseUsesPerGame: 2,
     maxLevel: 5,
   },
+  qizi_anqi: {
+    id: 'qizi_anqi',
+    name: '棋子暗器',
+    nameEn: 'Stone Weapon',
+    character: '陈家洛',
+    description: '陈家洛的棋子暗器，可以打歪对手刚下的棋子',
+    baseQiCost: 30,
+    baseCooldown: 20,
+    baseUsesPerGame: 1,
+    maxLevel: 5,
+  },
+  beiming_shengong: {
+    id: 'beiming_shengong',
+    name: '北冥神功',
+    nameEn: 'Beiming Divine Art',
+    character: '段誉',
+    description: '北冥神功，恢复内力并清除技能冷却',
+    baseQiCost: 35,
+    baseCooldown: 0,
+    baseUsesPerGame: 1,
+    maxLevel: 5,
+  },
 };
 
 export async function GET(request: NextRequest) {

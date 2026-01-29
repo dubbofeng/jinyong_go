@@ -542,9 +542,9 @@ cinematic lighting, highly detailed, 8k resolution
 {
   "category": "skill",
   "id": "liuliu_shenjian",
-  "name": "六脉神剑",
-  "nameEn": "Six Meridians Sword",
-  "prompt": "Skill icon for Six Meridians Sword technique, six energy beams radiating from hand, golden light effects, martial arts style, game icon, 256x256 pixels",
+  "name": "北冥神功",
+  "nameEn": "Beiming Divine Art",
+  "prompt": "Skill icon for Beiming Divine Art, swirling deep-blue inner energy vortex, calm martial artist silhouette, icy blue and indigo palette, wuxia style, game icon, 256x256 pixels",
   "negativePrompt": "realistic photo, blurry, text",
   "width": 256,
   "height": 256,

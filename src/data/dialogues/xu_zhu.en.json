@@ -18,17 +18,12 @@
     {
       "id": "check_status",
       "speaker": "Xu Zhu",
-      "text": "Though this poor monk is not talented, when solving the Zhenlong puzzle, I did comprehend some principles. If benefactor is interested, this poor monk can teach you.",
+      "text": "Though this poor monk is not talented, when solving the Zhenlong puzzle, I did comprehend some principles. If benefactor is interested, we may play and discuss.",
       "options": [
         {
           "text": "Please teach me, Master!",
           "condition": {"type": "quest", "value": "defeated_xu_zhu", "inverse": true},
           "nextNodeId": "challenge_intro"
-        },
-        {
-          "text": "I want to learn 'Breaking Zhenlong'",
-          "condition": {"type": "quest", "value": "defeated_xu_zhu"},
-          "nextNodeId": "teach_skill"
         },
         {
           "text": "Master, I'd like to play another game with you",
@@ -78,35 +73,6 @@
       "id": "start_battle",
       "speaker": "Xu Zhu",
       "text": "Excellent, excellent. Please!"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "Xu Zhu",
-      "text": "Benefactor's Go skill is impressive, and more rare is not being constrained by conventions. In that case, this poor monk will teach you the essence of 'Breaking Zhenlong.'",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "Xu Zhu",
-      "text": "The key to this technique is: in desperate situations, don't be constrained by conventions, use no-move to defeat all moves, finding seemingly impossible ways to break through. Limited to once per game with a 55-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "Xu Zhu",
-      "text": "Remember, 'nothing is something, something is nothing.' When using this technique, let go of attachments and observe the game with an ethereal mind.",
-      "action": {"type": "skill", "value": {"skillId": "pojie_zhenlong", "questId": "quest_019_xu_zhu"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "Xu Zhu",
-      "text": "Now that benefactor has learned this technique, you can calmly handle even the most difficult puzzles in the future. But remember, the Way of Go is like the Way of Buddha - it's all about understanding.",
-      "options": [
-        {"text": "Thank you, Master!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "xu_zhu"}, "nextNodeId": "start_battle"}
-      ]
     },
     {
       "id": "try_again",

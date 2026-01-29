@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "慕容复",
-      "text": "在下慕容家有一套「以彼之道，还施彼身」的绝学。这招用在围棋上，能将对手的招数反制回去。",
+      "text": "在下慕容家有独到的棋道见解。你若有心，可与在下对弈一局。",
       "options": [
         {
           "text": "请慕容公子指教！",
@@ -26,30 +26,25 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "我想学习「以彼之道，还施彼身」",
-          "condition": {"type": "quest", "value": "defeated_murong_fu"},
-          "nextNodeId": "teach_skill"
-        },
-        {
           "text": "慕容公子，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_murong_fu"},
           "action": {"type": "battle", "value": "murong_fu"},
           "nextNodeId": "start_battle"
         },
-        {"text": "这招如何用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "慕容公子棋风如何？", "nextNodeId": "explain_skill"},
         {"text": "我还想准备一下", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "慕容复",
-      "text": "姑苏慕容氏的「以彼之道，还施彼身」，能将对手的招数反制回去，让他自食其果。",
+      "text": "在下对弈重在洞察对手意图，因势制宜，以其人之道制其人。",
       "nextNodeId": "explain_skill_2"
     },
     {
       "id": "explain_skill_2",
       "speaker": "慕容复",
-      "text": "用在棋局上，就是能识破对手的棋路，然后用同样的方式反击，让他陷入自己设下的陷阱。",
+      "text": "棋局之中，若能看清对手的路数，再以变应变，便可占得先机。",
       "options": [
         {"text": "高明！请慕容公子教我", "nextNodeId": "challenge_intro"},
         {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
@@ -78,35 +73,6 @@
       "id": "start_battle",
       "speaker": "慕容复",
       "text": "哼！那就让你见识见识姑苏慕容的厉害！"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "慕容复",
-      "text": "不错...你这棋下得确实有水平。也罢，在下就传你「以彼之道，还施彼身」。",
-      "nextNodeId": "teach_skill_detail"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "慕容复",
-      "text": "这招的要领是：识破对手的棋路，然后用同样的方式反击。每局限用一次，冷却45步。",
-      "nextNodeId": "teach_skill_practice"
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "慕容复",
-      "text": "记住，用此招时要「知己知彼，百战不殆」。只有完全了解对手，才能将他的招数反制回去。",
-      "action": {"type": "skill", "value": {"skillId": "yibi_zhidao", "questId": "quest_020_murong_fu"}},
-      "nextNodeId": "teach_complete"
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "慕容复",
-      "text": "你既然学了这招，以后遇到强敌也有应对之策。不过要记住，复国大业才是最重要的。",
-      "options": [
-        {"text": "多谢慕容公子！", "nextNodeId": "farewell"},
-        {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "murong_fu"}, "nextNodeId": "start_battle"}
-      ]
     },
     {
       "id": "try_again",

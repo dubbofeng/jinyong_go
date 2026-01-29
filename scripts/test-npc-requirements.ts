@@ -123,7 +123,7 @@ async function setupNpcRequirements() {
     .where(eq(npcs.npcId, 'duanyanqing'));
   console.log('✅ 段延庆 - requirements已配置');
 
-  // 4. 段誉 - 第三章，教授六脉神剑
+  // 4. 段誉 - 第三章，教授北冥神功
   const duanyuRequirements = {
     dialogues: {
       first_meet: {
@@ -134,12 +134,12 @@ async function setupNpcRequirements() {
           ),
         ],
       },
-      learn_liumai: {
+      learn_beiming: {
         unlockConditions: [
           Requirements.and(
             Requirements.chapter(3),
             Requirements.level(25),
-            Requirements.not(Requirements.skillUnlocked('liumai_shen_jian'))
+              Requirements.not(Requirements.skillUnlocked('beiming_shengong'))
           ),
         ],
         lockedHint: '需要达到第三章并且25级',

@@ -18,7 +18,7 @@
     {
       "id": "check_status",
       "speaker": "段誉",
-      "text": "我段家的「六脉神剑」虽是武学绝技，但其中蕴含的指法精妙，用在围棋上也是极佳的。",
+      "text": "我段家的「北冥神功」虽是武学绝技，但其中蕴含的内力吞吐之理，用在围棋上也是极佳的。",
       "options": [
         {
           "text": "请段公子指教！",
@@ -26,7 +26,7 @@
           "nextNodeId": "challenge_intro"
         },
         {
-          "text": "我想学习「六脉神剑」",
+          "text": "我想学习「北冥神功」",
           "condition": {"type": "quest", "value": "defeated_duan_yu"},
           "nextNodeId": "teach_skill"
         },
@@ -36,20 +36,20 @@
           "action": {"type": "battle", "value": "duan_yu"},
           "nextNodeId": "start_battle"
         },
-        {"text": "六脉神剑用在围棋上？", "nextNodeId": "explain_skill"},
+        {"text": "北冥神功用在围棋上？", "nextNodeId": "explain_skill"},
         {"text": "我还想准备一下", "nextNodeId": "not_ready"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "段誉",
-      "text": "哈哈，朋友误会了。我说的「六脉神剑」，是指落子时的指法快如剑气，让对手防不胜防。",
+      "text": "哈哈，朋友误会了。我说的「北冥神功」，是指内力如海、吞吐自如，使你在棋局中调息回元，化解招式冷却。",
       "nextNodeId": "explain_skill_2"
     },
     {
       "id": "explain_skill_2",
       "speaker": "段誉",
-      "text": "这招的妙处在于，你可以在关键时刻快速连下数子，对手还来不及反应。就像剑气纵横，无形无影。",
+      "text": "这招的妙处在于，你可以在关键时刻回转内力，化解招式冷却，让棋势重新起势。",
       "options": [
         {"text": "神乎其技！请段公子教我", "nextNodeId": "challenge_intro"},
         {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
@@ -82,20 +82,20 @@
     {
       "id": "teach_skill",
       "speaker": "段誉",
-      "text": "好棋！朋友你这棋下得精彩，棋风洒脱而不失严谨。既然如此，我就传你「六脉神剑」指法。",
+      "text": "好棋！朋友你这棋下得精彩，棋风洒脱而不失严谨。既然如此，我就传你「北冥神功」心法。",
       "nextNodeId": "teach_skill_detail"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "段誉",
-      "text": "这招的要领是：在对局的关键时刻，以极快的速度连续落子，让对手措手不及。每局可用一次，冷却时间15步。",
+      "text": "这招的要领是：在对局的关键时刻回转内力，恢复真气并清除招式冷却。",
       "nextNodeId": "teach_skill_practice"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "段誉",
       "text": "记住，使用时要「行云流水，一气呵成」。我叔父说，真正的高手，出手便知有没有。",
-      "action": {"type": "skill", "value": {"skillId": "liumai_shenjian", "questId": "quest_006_duan_yu"}},
+      "action": {"type": "skill", "value": {"skillId": "beiming_shengong", "questId": "quest_006_duan_yu"}},
       "nextNodeId": "teach_complete"
     },
     {

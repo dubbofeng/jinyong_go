@@ -4,12 +4,12 @@
     "npcId": "musang_daoren",
     "chapter": 0,
     "name": {
-      "zh": "初识棋道",
-      "en": "Introduction to Go"
+      "zh": "北冥神功",
+      "en": "Beiming Divine Art"
     },
     "description": {
-      "zh": "向木桑道人学习围棋基础规则",
-      "en": "Learn the basic rules of Go from Musang Daoren"
+      "zh": "向段誉学习北冥神功的内力心法，掌握「北冥神功」技能",
+      "en": "Learn Beiming Divine Art from Duan Yu and master the skill"
     },
     "questType": "tutorial",
     "objectives": [
@@ -26,7 +26,7 @@
       "experience": 200,
       "silver": 100
     },
-    "prerequisiteQuests": []
+      "skill": "beiming_shengong"
   },
   "quest_002_hong_qigong": {
     "id": "quest_002_hong_qigong",
@@ -165,12 +165,12 @@
     "npcId": "duan_yu",
     "chapter": 2,
     "name": {
-      "zh": "六脉神剑",
-      "en": "Six Meridian Divine Sword"
+      "zh": "北冥神功",
+      "en": "Beiming Divine Art"
     },
     "description": {
-      "zh": "向段誉学习六脉神剑的棋理，掌握「六脉神剑」技能",
-      "en": "Learn the Go principles of Six Meridian Divine Sword from Duan Yu and master the skill"
+      "zh": "向段誉学习北冥神功的棋理，掌握「北冥神功」技能",
+      "en": "Learn the Go principles of Beiming Divine Art from Duan Yu and master the skill"
     },
     "questType": "main",
     "objectives": [
@@ -187,7 +187,7 @@
     "rewards": {
       "experience": 600,
       "silver": 300,
-      "skill": "liumai_shenjian"
+      "skill": "beiming_shengong"
     },
     "prerequisiteQuests": ["quest_005_huang_rong"]
   },
@@ -288,12 +288,12 @@
     "npcId": "huang_yaoshi",
     "chapter": 3,
     "name": {
-      "zh": "桃花阵法",
-      "en": "Peach Blossom Formation"
+      "zh": "桃花岛棋阵",
+      "en": "Peach Island Go Formation"
     },
     "description": {
-      "zh": "向黄药师学习桃花阵法的奥秘，掌握「桃花阵法」技能",
-      "en": "Learn the mysteries of Peach Blossom Formation from Huang Yaoshi and master the skill"
+      "zh": "向黄药师学习棋阵奥秘，破解他的棋盘机关",
+      "en": "Learn the secrets of Go formations from Huang Yaoshi and break his board mechanisms"
     },
     "questType": "main",
     "objectives": [
@@ -309,8 +309,7 @@
     ],
     "rewards": {
       "experience": 900,
-      "silver": 450,
-      "skill": "taohua_zhenfa"
+      "silver": 450
     },
     "prerequisiteQuests": ["quest_009_yideng_dashi"]
   },
@@ -564,12 +563,12 @@
     "npcId": "xu_zhu",
     "chapter": 5,
     "name": {
-      "zh": "破解珍珑",
-      "en": "Solving Zhenlong"
+      "zh": "珍珑指点",
+      "en": "Zhenlong Guidance"
     },
     "description": {
-      "zh": "指点虚竹破解珍珑棋局，掌握「破解珍珑」技能",
-      "en": "Guide Xu Zhu to solve the Zhenlong Go puzzle and master the skill"
+      "zh": "指点虚竹破解珍珑棋局，领悟破局心法",
+      "en": "Guide Xu Zhu to solve the Zhenlong Go puzzle and grasp the key insight"
     },
     "questType": "main",
     "objectives": [
@@ -585,8 +584,7 @@
     ],
     "rewards": {
       "experience": 2000,
-      "silver": 1000,
-      "skill": "pojie_zhenlong"
+      "silver": 1000
     },
     "prerequisiteQuests": ["quest_018_qiao_feng"]
   },
@@ -595,12 +593,12 @@
     "npcId": "murong_fu",
     "chapter": 5,
     "name": {
-      "zh": "以彼之道还施彼身",
-      "en": "Returning Your Way Upon You"
+      "zh": "慕容复挑战",
+      "en": "Murong Fu Challenge"
     },
     "description": {
-      "zh": "向慕容复学习以彼之道还施彼身的技巧，掌握「以彼之道」技能",
-      "en": "Learn the technique of returning opponent's moves from Murong Fu and master the skill"
+      "zh": "与慕容复对弈，领会其棋道精髓",
+      "en": "Face Murong Fu and gain insight into his Go mastery"
     },
     "questType": "main",
     "objectives": [
@@ -616,8 +614,7 @@
     ],
     "rewards": {
       "experience": 2200,
-      "silver": 1100,
-      "skill": "yibi_zhidao"
+      "silver": 1100
     },
     "prerequisiteQuests": ["quest_019_xu_zhu"]
   }

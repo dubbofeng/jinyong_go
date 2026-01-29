@@ -326,6 +326,16 @@ export class GoEngine {
   }
 
   /**
+   * 获取最后一步
+   */
+  getLastMove(): { position: BoardPosition; color: StoneColor; capturedStones: BoardPosition[] } | null {
+    if (this.moveHistory.length === 0) {
+      return null;
+    }
+    return this.moveHistory[this.moveHistory.length - 1];
+  }
+
+  /**
    * 清空棋盘
    */
   clear(): void {
@@ -365,6 +375,34 @@ export class GoEngine {
    */
   getStoneAt(position: BoardPosition): StoneColor {
     return this.board[position.row][position.col];
+  }
+
+  /**
+   * 强制移动棋子（无视合法性），用于技能效果
+   */
+  relocateStone(from: BoardPosition, to: BoardPosition): boolean {
+    const fromStone = this.getStoneAt(from);
+    if (!fromStone) {
+      return false;
+    }
+
+    if (this.getStoneAt(to)) {
+      return false;
+    }
+
+    this.board[from.row][from.col] = null;
+    this.board[to.row][to.col] = fromStone;
+
+    // 清除劫争状态
+    this.koPosition = null;
+
+    // 更新最后一步的位置（如果一致）
+    const lastMove = this.getLastMove();
+    if (lastMove && lastMove.position.row === from.row && lastMove.position.col === from.col) {
+      lastMove.position = { ...to };
+    }
+
+    return true;
   }
 
   /**

@@ -577,7 +577,7 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'liumai_shenjian', questId: 'quest_006_duan_yu' }
+          value: { skillId: 'beiming_shengong', questId: 'quest_006_duan_yu' }
         }
       },
       {
@@ -863,11 +863,7 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
         id: 'teach_skill_detail',
-        nextNodeId: 'teach_complete',
-        action: {
-          type: 'skill',
-          value: { skillId: 'taohua_zhenfa', questId: 'quest_010_huang_yaoshi' }
-        }
+        nextNodeId: 'teach_complete'
       },
       {
         id: 'teach_complete',
@@ -1472,17 +1468,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           },
           {
             optionId: '1',
-            nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_xu_zhu' }
-          },
-          {
-            optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_xu_zhu' },
             action: { type: 'battle', value: 'xu_zhu' }
           },
-          { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '2', nextNodeId: 'explain_skill' },
+          { optionId: '3', nextNodeId: 'not_ready' }
         ]
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
@@ -1506,32 +1497,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         ]
       },
       { id: 'start_battle', action: { type: 'battle', value: 'xu_zhu' } },
-      { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
-      {
-        id: 'teach_skill_detail',
-        nextNodeId: 'teach_complete',
-        action: {
-          type: 'skill',
-          value: { skillId: 'pojie_zhenlong', questId: 'quest_019_xu_zhu' }
-        }
-      },
-      {
-        id: 'teach_complete',
-        options: [
-          { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'zen_wisdom' }
-        ]
-      },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'challenge_condition' }
         ]
-      },
-      {
-        id: 'zen_wisdom',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
       },
       { id: 'not_ready' },
       { id: 'farewell' }
@@ -1554,17 +1525,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           },
           {
             optionId: '1',
-            nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_murong_fu' }
-          },
-          {
-            optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_murong_fu' },
             action: { type: 'battle', value: 'murong_fu' }
           },
-          { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '2', nextNodeId: 'explain_skill' },
+          { optionId: '3', nextNodeId: 'not_ready' }
         ]
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
@@ -1588,32 +1554,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         ]
       },
       { id: 'start_battle', action: { type: 'battle', value: 'murong_fu' } },
-      { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
-      {
-        id: 'teach_skill_detail',
-        nextNodeId: 'teach_complete',
-        action: {
-          type: 'skill',
-          value: { skillId: 'yibi_zhidao', questId: 'quest_020_murong_fu' }
-        }
-      },
-      {
-        id: 'teach_complete',
-        options: [
-          { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'proud_talk' }
-        ]
-      },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'challenge_condition' }
         ]
-      },
-      {
-        id: 'proud_talk',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
       },
       { id: 'not_ready' },
       { id: 'farewell' }

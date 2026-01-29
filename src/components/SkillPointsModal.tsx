@@ -25,6 +25,8 @@ const SKILL_ICONS: Record<string, string> = {
   dugu_jiujian: '⚔️',
   fuyu_chuanyin: '🗨️',
   jiguan_suanjin: '🧩',
+  qizi_anqi: '🎯',
+  beiming_shengong: '🌀',
 };
 
 export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: SkillPointsModalProps) {

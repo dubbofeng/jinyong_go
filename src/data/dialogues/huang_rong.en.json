@@ -101,7 +101,7 @@
     {
       "id": "teach_complete",
       "speaker": "Huang Rong",
-      "text": "By the way, since you've learned Brother Jing's and Seventh Master's techniques, why not go to Dali to find Duan Yu? His 'Six Meridian Divine Sword' can also be applied to Go!",
+      "text": "By the way, since you've learned Brother Jing's and Seventh Master's techniques, why not go to Dali to find Duan Yu? His 'Beiming Divine Art' can also be applied to Go!",
       "options": [
         {"text": "Thank you, Miss Huang!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},

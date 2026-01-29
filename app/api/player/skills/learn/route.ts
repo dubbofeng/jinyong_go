@@ -35,6 +35,18 @@ const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; characte
     character: '黄蓉',
     description: '黄蓉的机关算尽，可以创建变化图分支',
   },
+  qizi_anqi: {
+    name: '棋子暗器',
+    nameEn: 'Stone Weapon',
+    character: '陈家洛',
+    description: '陈家洛的棋子暗器，可以打歪对手刚下的棋子',
+  },
+  beiming_shengong: {
+    name: '北冥神功',
+    nameEn: 'Beiming Divine Art',
+    character: '段誉',
+    description: '北冥神功，恢复内力并清除技能冷却',
+  },
 };
 
 /**

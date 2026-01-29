@@ -101,7 +101,7 @@
     {
       "id": "teach_complete",
       "speaker": "黄蓉",
-      "text": "对了，你既然都学会了靖哥哥和七公的招式，不如去大理找找段誉。他的「六脉神剑」也能用在围棋上呢！",
+      "text": "对了，你既然都学会了靖哥哥和七公的招式，不如去大理找找段誉。他的「北冥神功」也能用在围棋上呢！",
       "options": [
         {"text": "多谢黄女侠！", "nextNodeId": "farewell"},
         {"text": "我还想听听你的见解", "nextNodeId": "daily_chat"},

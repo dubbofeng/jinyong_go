@@ -230,17 +230,13 @@
     {
       "id": "teach_wisdom",
       "speaker": "Guo Jing",
-      "text": "Defending a city is like defending in Go - you must know where to hold firm and where you can sacrifice. I have a technique called 'Ventriloquism Transmission' that can get you expert guidance at critical moments.",
+      "text": "Defending a city is like defending in Go - you must know where to hold firm and where to concede. True skill lies in judgment, not shortcuts.",
       "nextNodeId": "teach_skill"
     },
     {
       "id": "teach_skill",
       "speaker": "Guo Jing",
-      "text": "This technique actually asks an AI expert to advise you, like having Rong'er guide me. Remember, true masters can't just rely on external help - you must trust your own judgment.",
-      "action": {
-        "type": "quest",
-        "value": "unlock_skill_fuyu"
-      },
+      "text": "As for 'Ventriloquism Transmission', that's Duan Yanqing's art. I don't teach it here. Seek him if you wish to learn.",
       "nextNodeId": "after_teach"
     },
     {

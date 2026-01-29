@@ -1,11 +1,13 @@
 /**
  * 围棋武侠技能系统
  * 
- * 四个基础技能：
+ * 六个基础技能：
  * 1. 亢龙有悔（郭靖）- 悔棋
  * 2. 独孤九剑（令狐冲）- 形势判断
  * 3. 腹语传音（虚竹）- AI建议
  * 4. 机关算尽（黄蓉）- 变化图
+ * 5. 棋子暗器（陈家洛）- 打歪对手刚下的棋子
+ * 6. 北冥神功（段誉）- 恢复内力并清除技能冷却
  */
 
 import type { GoEngine } from './go-engine';
@@ -22,6 +24,7 @@ export interface Skill {
   nameEn: string;
   character: string; // 关联的武侠人物
   description: string;
+  qiCost: number; // 内力消耗
   maxUses: number; // 最大使用次数
   currentUses: number; // 当前剩余次数
   cooldown?: number; // 冷却步数（可选）
@@ -72,6 +75,7 @@ export class KangLongYouHuiSkill implements Skill {
   nameEn = 'Regretful Dragon';
   character = '郭靖';
   description = '悔棋，撤回上一步落子';
+  qiCost = 10;
   maxUses: number;
   currentUses: number;
   
@@ -123,6 +127,7 @@ export class DuGuJiuJianSkill implements Skill {
   nameEn = 'Nine Swords';
   character = '令狐冲';
   description = '形势判断，显示当前黑白优势';
+  qiCost = 15;
   maxUses: number;
   currentUses: number;
   
@@ -294,6 +299,7 @@ export class FuYuChuanYinSkill implements Skill {
   nameEn = 'Telepathy';
   character = '虚竹';
   description = 'AI建议，显示3个最佳落点';
+  qiCost = 20;
   maxUses: number;
   currentUses: number;
   
@@ -525,6 +531,7 @@ export class JiGuanSuanJinSkill implements Skill {
   nameEn = 'Master Strategist';
   character = '黄蓉';
   description = '变化图，试下多个可能的下法';
+  qiCost = 25;
   maxUses: number;
   currentUses: number;
   cooldown: number;
@@ -661,11 +668,138 @@ export class JiGuanSuanJinSkill implements Skill {
   }
 }
 
+// ==================== 技能5：棋子暗器（打歪棋子）====================
+
+/**
+ * 棋子暗器技能
+ * 效果：将对手刚下的棋子打歪到随机空位（无视合法性）
+ */
+export class QiZiAnQiSkill implements Skill {
+  id = 'qizianqi';
+  name = '棋子暗器';
+  nameEn = 'Stone Weapon';
+  character = '陈家洛';
+  description = '打歪对手刚下的棋子，随机移动到空位';
+  qiCost = 30;
+  maxUses: number;
+  currentUses: number;
+  cooldown: number;
+  currentCooldown: number;
+
+  constructor(maxUses: number = 1, cooldown: number = 20) {
+    this.maxUses = maxUses;
+    this.currentUses = maxUses;
+    this.cooldown = cooldown;
+    this.currentCooldown = 0;
+  }
+
+  use(engine: GoEngine, currentPlayer: StoneColor): { from: BoardPosition; to: BoardPosition; color: StoneColor } | null {
+    if (this.currentUses <= 0 || this.currentCooldown > 0) {
+      return null;
+    }
+
+    const lastMove = engine.getLastMove();
+    if (!lastMove) {
+      return null;
+    }
+
+    const opponentColor: StoneColor = currentPlayer === 'black' ? 'white' : 'black';
+    if (lastMove.color !== opponentColor) {
+      return null;
+    }
+
+    const boardSize = engine.getBoardSize();
+    const emptyPositions: BoardPosition[] = [];
+
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const position = { row, col };
+        if (!engine.getStoneAt(position)) {
+          emptyPositions.push(position);
+        }
+      }
+    }
+
+    if (emptyPositions.length === 0) {
+      return null;
+    }
+
+    const randomIndex = Math.floor(Math.random() * emptyPositions.length);
+    const to = emptyPositions[randomIndex];
+    const from = lastMove.position;
+
+    const moved = engine.relocateStone(from, to);
+    if (!moved) {
+      return null;
+    }
+
+    this.currentUses--;
+    this.currentCooldown = this.cooldown;
+
+    return { from, to, color: lastMove.color };
+  }
+
+  updateCooldown(): void {
+    if (this.currentCooldown > 0) {
+      this.currentCooldown--;
+    }
+  }
+
+  reset() {
+    this.currentUses = this.maxUses;
+    this.currentCooldown = 0;
+  }
+
+  canUse(): boolean {
+    return this.currentUses > 0 && this.currentCooldown === 0;
+  }
+}
+
+// ==================== 技能6：北冥神功（内力回复）====================
+
+/**
+ * 北冥神功技能
+ * 效果：恢复内力，并清除所有技能冷却
+ */
+export class BeiMingShenGongSkill implements Skill {
+  id = 'beimingshengong';
+  name = '北冥神功';
+  nameEn = 'Beiming Divine Art';
+  character = '段誉';
+  description = '恢复内力，并清除所有技能冷却';
+  qiCost = 35;
+  qiRestore = 50;
+  maxUses: number;
+  currentUses: number;
+
+  constructor(maxUses: number = 1) {
+    this.maxUses = maxUses;
+    this.currentUses = maxUses;
+  }
+
+  use(): { qiRestore: number } | null {
+    if (this.currentUses <= 0) {
+      return null;
+    }
+
+    this.currentUses--;
+    return { qiRestore: this.qiRestore };
+  }
+
+  reset() {
+    this.currentUses = this.maxUses;
+  }
+
+  canUse(): boolean {
+    return this.currentUses > 0;
+  }
+}
+
 // ==================== 技能管理器 ====================
 
 /**
  * 技能管理器
- * 统一管理四个技能
+ * 统一管理六个技能
  */
 export class SkillManager {
   private skills: Map<string, Skill>;
@@ -675,11 +809,13 @@ export class SkillManager {
     this.skills = new Map();
     this.skillLevels = new Map();
     
-    // 初始化四个技能（默认1级）
+    // 初始化六个技能（默认1级）
     this.initializeSkill('kanglongyouhui', 1);
     this.initializeSkill('dugujiujian', 1);
     this.initializeSkill('fuyuchuanyin', 1);
     this.initializeSkill('jiguansuanjin', 1);
+    this.initializeSkill('qizianqi', 1);
+    this.initializeSkill('beimingshengong', 1);
   }
   
   /**
@@ -702,6 +838,12 @@ export class SkillManager {
         break;
       case 'jiguansuanjin':
         this.skills.set(skillId, new JiGuanSuanJinSkill(level, 10));
+        break;
+      case 'qizianqi':
+        this.skills.set(skillId, new QiZiAnQiSkill(level, 20));
+        break;
+      case 'beimingshengong':
+        this.skills.set(skillId, new BeiMingShenGongSkill(level));
         break;
     }
   }
@@ -753,9 +895,21 @@ export class SkillManager {
    * 更新冷却（每走一步后调用）
    */
   updateCooldowns(): void {
-    const jiGuanSkill = this.skills.get('jiguansuanjin') as JiGuanSuanJinSkill;
-    if (jiGuanSkill) {
-      jiGuanSkill.updateCooldown();
-    }
+    this.skills.forEach((skill) => {
+      if ('updateCooldown' in skill && typeof (skill as any).updateCooldown === 'function') {
+        (skill as any).updateCooldown();
+      }
+    });
+  }
+
+  /**
+   * 清除所有技能冷却
+   */
+  clearAllCooldowns(): void {
+    this.skills.forEach((skill) => {
+      if ('currentCooldown' in skill) {
+        (skill as any).currentCooldown = 0;
+      }
+    });
   }
 }
