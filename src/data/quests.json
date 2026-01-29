@@ -1,0 +1,624 @@
+{
+  "quest_001_musang_daoren": {
+    "id": "quest_001_musang_daoren",
+    "npcId": "musang_daoren",
+    "chapter": 0,
+    "name": {
+      "zh": "初识棋道",
+      "en": "Introduction to Go"
+    },
+    "description": {
+      "zh": "向木桑道人学习围棋基础规则",
+      "en": "Learn the basic rules of Go from Musang Daoren"
+    },
+    "questType": "tutorial",
+    "objectives": [
+      {
+        "id": "complete_tutorial",
+        "type": "complete_tutorial",
+        "description": {
+          "zh": "完成围棋教学",
+          "en": "Complete Go tutorial"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 200,
+      "silver": 100
+    },
+    "prerequisiteQuests": []
+  },
+  "quest_002_hong_qigong": {
+    "id": "quest_002_hong_qigong",
+    "npcId": "hong_qigong",
+    "chapter": 1,
+    "name": {
+      "zh": "亢龙有悔",
+      "en": "Mighty Dragon Repents"
+    },
+    "description": {
+      "zh": "向洪七公学习围棋中的悔棋之道，掌握「亢龙有悔」技能",
+      "en": "Learn the art of undoing moves from Hong Qigong and master the 'Mighty Dragon Repents' skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_hong_qigong",
+        "type": "defeat_npc",
+        "target": "hong_qigong",
+        "description": {
+          "zh": "在对弈中击败洪七公",
+          "en": "Defeat Hong Qigong in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 300,
+      "silver": 150,
+      "skill": "kanglong_youhui"
+    },
+    "prerequisiteQuests": []
+  },
+  "quest_003_linghu_chong": {
+    "id": "quest_003_linghu_chong",
+    "npcId": "linghu_chong",
+    "chapter": 1,
+    "name": {
+      "zh": "独孤九剑",
+      "en": "Dugu Nine Swords"
+    },
+    "description": {
+      "zh": "向令狐冲学习剑法与棋道的融合，掌握「独孤九剑」技能",
+      "en": "Learn the fusion of swordsmanship and Go from Linghu Chong and master the 'Dugu Nine Swords' skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "meet_linghu_chong",
+        "type": "meet_npc",
+        "target": "linghu_chong",
+        "description": {
+          "zh": "与令狐冲见面",
+          "en": "Meet Linghu Chong"
+        }
+      },
+      {
+        "id": "defeat_linghu_chong",
+        "type": "defeat_npc",
+        "target": "linghu_chong",
+        "description": {
+          "zh": "在对弈中击败令狐冲",
+          "en": "Defeat Linghu Chong in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 400,
+      "silver": 200,
+      "skill": "dugu_jiujian"
+    },
+    "prerequisiteQuests": ["quest_002_hong_qigong"]
+  },
+  "quest_004_guo_jing": {
+    "id": "quest_004_guo_jing",
+    "npcId": "guo_jing",
+    "chapter": 1,
+    "name": {
+      "zh": "侠之大者",
+      "en": "Spirit of a True Hero"
+    },
+    "description": {
+      "zh": "向郭靖学习「侠之大者，为国为民」的精神",
+      "en": "Learn the spirit of 'A true hero serves country and people' from Guo Jing"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_guo_jing",
+        "type": "defeat_npc",
+        "target": "guo_jing",
+        "description": {
+          "zh": "在对弈中击败郭靖",
+          "en": "Defeat Guo Jing in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 500,
+      "silver": 250
+    },
+    "prerequisiteQuests": ["quest_002_hong_qigong", "quest_003_linghu_chong"]
+  },
+  "quest_005_huang_rong": {
+    "id": "quest_005_huang_rong",
+    "npcId": "huang_rong",
+    "chapter": 1,
+    "name": {
+      "zh": "机关算尽",
+      "en": "Mechanical Mastery"
+    },
+    "description": {
+      "zh": "向黄蓉学习机关之术与变化推演，掌握「机关算尽」技能",
+      "en": "Learn the art of mechanisms and variation analysis from Huang Rong and master the 'Mechanical Mastery' skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_huang_rong",
+        "type": "defeat_npc",
+        "target": "huang_rong",
+        "description": {
+          "zh": "在对弈中击败黄蓉",
+          "en": "Defeat Huang Rong in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 500,
+      "silver": 250,
+      "skill": "jiguan_suanjin"
+    },
+    "prerequisiteQuests": ["quest_004_guo_jing"]
+  },
+  "quest_006_duan_yu": {
+    "id": "quest_006_duan_yu",
+    "npcId": "duan_yu",
+    "chapter": 2,
+    "name": {
+      "zh": "六脉神剑",
+      "en": "Six Meridian Divine Sword"
+    },
+    "description": {
+      "zh": "向段誉学习六脉神剑的棋理，掌握「六脉神剑」技能",
+      "en": "Learn the Go principles of Six Meridian Divine Sword from Duan Yu and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_duan_yu",
+        "type": "defeat_npc",
+        "target": "duan_yu",
+        "description": {
+          "zh": "在对弈中击败段誉",
+          "en": "Defeat Duan Yu in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 600,
+      "silver": 300,
+      "skill": "liumai_shenjian"
+    },
+    "prerequisiteQuests": ["quest_005_huang_rong"]
+  },
+  "quest_007_huangmei_seng": {
+    "id": "quest_007_huangmei_seng",
+    "npcId": "huangmei_seng",
+    "chapter": 2,
+    "name": {
+      "zh": "断趾争先",
+      "en": "Sacrifice for the First Move"
+    },
+    "description": {
+      "zh": "聆听黄眉僧的生死对局故事",
+      "en": "Listen to Huangmei Seng's story of life-and-death Go match"
+    },
+    "questType": "side",
+    "objectives": [
+      {
+        "id": "hear_story",
+        "type": "dialogue",
+        "target": "huangmei_seng",
+        "description": {
+          "zh": "听完黄眉僧的故事",
+          "en": "Hear Huangmei Seng's complete story"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 300,
+      "silver": 150
+    },
+    "prerequisiteQuests": ["quest_006_duan_yu"]
+  },
+  "quest_008_duan_yanqing": {
+    "id": "quest_008_duan_yanqing",
+    "npcId": "duan_yanqing",
+    "chapter": 2,
+    "name": {
+      "zh": "腹语传音",
+      "en": "Ventriloquism"
+    },
+    "description": {
+      "zh": "向段延庆学习腹语传音之术，掌握「腹语传音」技能",
+      "en": "Learn the art of ventriloquism from Duan Yanqing and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_duan_yanqing",
+        "type": "defeat_npc",
+        "target": "duan_yanqing",
+        "description": {
+          "zh": "在对弈中击败段延庆",
+          "en": "Defeat Duan Yanqing in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 700,
+      "silver": 350,
+      "skill": "fuyu_chuanyin"
+    },
+    "prerequisiteQuests": ["quest_007_huangmei_seng"]
+  },
+  "quest_009_yideng_dashi": {
+    "id": "quest_009_yideng_dashi",
+    "npcId": "yideng_dashi",
+    "chapter": 2,
+    "name": {
+      "zh": "一阳指",
+      "en": "One Yang Finger"
+    },
+    "description": {
+      "zh": "向一灯大师学习棋禅合一的境界，掌握「一阳指」技能",
+      "en": "Learn the realm of Go and Zen from Yideng Dashi and master the 'One Yang Finger' skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_yideng_dashi",
+        "type": "defeat_npc",
+        "target": "yideng_dashi",
+        "description": {
+          "zh": "在对弈中击败一灯大师",
+          "en": "Defeat Yideng Dashi in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 800,
+      "silver": 400,
+      "skill": "yiyang_zhi"
+    },
+    "prerequisiteQuests": ["quest_008_duan_yanqing"]
+  },
+  "quest_010_huang_yaoshi": {
+    "id": "quest_010_huang_yaoshi",
+    "npcId": "huang_yaoshi",
+    "chapter": 3,
+    "name": {
+      "zh": "桃花阵法",
+      "en": "Peach Blossom Formation"
+    },
+    "description": {
+      "zh": "向黄药师学习桃花阵法的奥秘，掌握「桃花阵法」技能",
+      "en": "Learn the mysteries of Peach Blossom Formation from Huang Yaoshi and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_huang_yaoshi",
+        "type": "defeat_npc",
+        "target": "huang_yaoshi",
+        "description": {
+          "zh": "在对弈中击败黄药师",
+          "en": "Defeat Huang Yaoshi in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 900,
+      "silver": 450,
+      "skill": "taohua_zhenfa"
+    },
+    "prerequisiteQuests": ["quest_009_yideng_dashi"]
+  },
+  "quest_011_hei_baizi": {
+    "id": "quest_011_hei_baizi",
+    "npcId": "hei_baizi",
+    "chapter": 3,
+    "name": {
+      "zh": "呕血谱",
+      "en": "Vomiting Blood Manual"
+    },
+    "description": {
+      "zh": "与黑白子探讨《呕血谱》古谱奥义",
+      "en": "Discuss the ancient Go manual 'Vomiting Blood' with Hei Baizi"
+    },
+    "questType": "side",
+    "objectives": [
+      {
+        "id": "study_ouxuepu",
+        "type": "dialogue",
+        "target": "hei_baizi",
+        "description": {
+          "zh": "完成《呕血谱》的学习",
+          "en": "Complete the study of 'Vomiting Blood Manual'"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 500,
+      "silver": 250
+    },
+    "prerequisiteQuests": ["quest_010_huang_yaoshi"]
+  },
+  "quest_012_chen_jialuo": {
+    "id": "quest_012_chen_jialuo",
+    "npcId": "chen_jialuo",
+    "chapter": 3,
+    "name": {
+      "zh": "棋子暗器",
+      "en": "Stone Weapon"
+    },
+    "description": {
+      "zh": "向陈家洛学习以棋子为暗器的技巧，掌握「棋子暗器」技能",
+      "en": "Learn to use Go stones as weapons from Chen Jialuo and master the 'Stone Weapon' skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_chen_jialuo",
+        "type": "defeat_npc",
+        "target": "chen_jialuo",
+        "description": {
+          "zh": "在对弈中击败陈家洛",
+          "en": "Defeat Chen Jialuo in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 1000,
+      "silver": 500,
+      "skill": "qizi_anqi"
+    },
+    "prerequisiteQuests": ["quest_011_hei_baizi"]
+  },
+  "quest_013_he_zudao": {
+    "id": "quest_013_he_zudao",
+    "npcId": "he_zudao",
+    "chapter": 4,
+    "name": {
+      "zh": "何不径弃中原",
+      "en": "Abandon Central, Take Flanks"
+    },
+    "description": {
+      "zh": "观摩何足道自我对弈，领悟郭襄点拨的棋理",
+      "en": "Observe He Zudao's self-play and understand Guo Xiang's strategic advice"
+    },
+    "questType": "side",
+    "objectives": [
+      {
+        "id": "witness_enlightenment",
+        "type": "dialogue",
+        "target": "he_zudao",
+        "description": {
+          "zh": "见证何足道的领悟",
+          "en": "Witness He Zudao's enlightenment"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 600,
+      "silver": 300
+    },
+    "prerequisiteQuests": ["quest_012_chen_jialuo"]
+  },
+  "quest_014_zhang_wuji": {
+    "id": "quest_014_zhang_wuji",
+    "npcId": "zhang_wuji",
+    "chapter": 4,
+    "name": {
+      "zh": "乾坤大挪移",
+      "en": "Heaven and Earth Great Shift"
+    },
+    "description": {
+      "zh": "向张无忌学习乾坤大挪移的棋理，掌握「乾坤大挪移」技能",
+      "en": "Learn the Go principles of Heaven and Earth Great Shift from Zhang Wuji and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_zhang_wuji",
+        "type": "defeat_npc",
+        "target": "zhang_wuji",
+        "description": {
+          "zh": "在对弈中击败张无忌",
+          "en": "Defeat Zhang Wuji in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 1200,
+      "silver": 600,
+      "skill": "qiankun_danuo"
+    },
+    "prerequisiteQuests": ["quest_013_he_zudao"]
+  },
+  "quest_015_zhou_botong": {
+    "id": "quest_015_zhou_botong",
+    "npcId": "zhou_botong",
+    "chapter": 5,
+    "name": {
+      "zh": "左右互搏",
+      "en": "Ambidextrous Combat"
+    },
+    "description": {
+      "zh": "向周伯通学习左右互搏之术，掌握「左右互搏」技能",
+      "en": "Learn the art of ambidextrous combat from Zhou Botong and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_zhou_botong",
+        "type": "defeat_npc",
+        "target": "zhou_botong",
+        "description": {
+          "zh": "在对弈中击败周伯通",
+          "en": "Defeat Zhou Botong in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 1400,
+      "silver": 700,
+      "skill": "zuoyou_hubo"
+    },
+    "prerequisiteQuests": ["quest_014_zhang_wuji"]
+  },
+  "quest_016_xiao_longnv": {
+    "id": "quest_016_xiao_longnv",
+    "npcId": "xiao_longnv",
+    "chapter": 5,
+    "name": {
+      "zh": "古墓机关",
+      "en": "Ancient Tomb Mechanisms"
+    },
+    "description": {
+      "zh": "破解小龙女守护的古墓棋局机关",
+      "en": "Solve the Go puzzle mechanisms guarded by Xiao Longnv in the Ancient Tomb"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "solve_puzzle",
+        "type": "defeat_npc",
+        "target": "xiao_longnv",
+        "description": {
+          "zh": "破解古墓棋局",
+          "en": "Solve the Ancient Tomb Go puzzle"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 1500,
+      "silver": 750
+    },
+    "prerequisiteQuests": ["quest_015_zhou_botong"]
+  },
+  "quest_017_yang_guo": {
+    "id": "quest_017_yang_guo",
+    "npcId": "yang_guo",
+    "chapter": 5,
+    "name": {
+      "zh": "黯然销魂掌",
+      "en": "Melancholy Palm"
+    },
+    "description": {
+      "zh": "向杨过学习黯然销魂掌的棋理，掌握「黯然销魂掌」技能",
+      "en": "Learn the Go principles of Melancholy Palm from Yang Guo and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_yang_guo",
+        "type": "defeat_npc",
+        "target": "yang_guo",
+        "description": {
+          "zh": "在对弈中击败杨过",
+          "en": "Defeat Yang Guo in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 1600,
+      "silver": 800,
+      "skill": "anran_xiaohun"
+    },
+    "prerequisiteQuests": ["quest_016_xiao_longnv"]
+  },
+  "quest_018_qiao_feng": {
+    "id": "quest_018_qiao_feng",
+    "npcId": "qiao_feng",
+    "chapter": 5,
+    "name": {
+      "zh": "降龙十八掌",
+      "en": "18 Dragon Subduing Palms"
+    },
+    "description": {
+      "zh": "向乔峰学习降龙十八掌的棋理，掌握「降龙十八掌」技能",
+      "en": "Learn the Go principles of 18 Dragon Subduing Palms from Qiao Feng and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_qiao_feng",
+        "type": "defeat_npc",
+        "target": "qiao_feng",
+        "description": {
+          "zh": "在对弈中击败乔峰",
+          "en": "Defeat Qiao Feng in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 1800,
+      "silver": 900,
+      "skill": "xianglong_shiba"
+    },
+    "prerequisiteQuests": ["quest_017_yang_guo"]
+  },
+  "quest_019_xu_zhu": {
+    "id": "quest_019_xu_zhu",
+    "npcId": "xu_zhu",
+    "chapter": 5,
+    "name": {
+      "zh": "破解珍珑",
+      "en": "Solving Zhenlong"
+    },
+    "description": {
+      "zh": "指点虚竹破解珍珑棋局，掌握「破解珍珑」技能",
+      "en": "Guide Xu Zhu to solve the Zhenlong Go puzzle and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "guide_xu_zhu",
+        "type": "defeat_npc",
+        "target": "xu_zhu",
+        "description": {
+          "zh": "帮助虚竹破解珍珑棋局",
+          "en": "Help Xu Zhu solve the Zhenlong puzzle"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 2000,
+      "silver": 1000,
+      "skill": "pojie_zhenlong"
+    },
+    "prerequisiteQuests": ["quest_018_qiao_feng"]
+  },
+  "quest_020_murong_fu": {
+    "id": "quest_020_murong_fu",
+    "npcId": "murong_fu",
+    "chapter": 5,
+    "name": {
+      "zh": "以彼之道还施彼身",
+      "en": "Returning Your Way Upon You"
+    },
+    "description": {
+      "zh": "向慕容复学习以彼之道还施彼身的技巧，掌握「以彼之道」技能",
+      "en": "Learn the technique of returning opponent's moves from Murong Fu and master the skill"
+    },
+    "questType": "main",
+    "objectives": [
+      {
+        "id": "defeat_murong_fu",
+        "type": "defeat_npc",
+        "target": "murong_fu",
+        "description": {
+          "zh": "在对弈中击败慕容复",
+          "en": "Defeat Murong Fu in a Go match"
+        }
+      }
+    ],
+    "rewards": {
+      "experience": 2200,
+      "silver": 1100,
+      "skill": "yibi_zhidao"
+    },
+    "prerequisiteQuests": ["quest_019_xu_zhu"]
+  }
+}

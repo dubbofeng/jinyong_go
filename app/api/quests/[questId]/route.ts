@@ -1,28 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/app/db';
-import { quests } from '@/src/db/schema';
-import { eq } from 'drizzle-orm';
+import { questProgress } from '@/src/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { getQuestById, mergeQuestWithProgress } from '@/src/lib/quest-manager';
+import { auth } from '@/app/auth';
 
-// GET /api/quests/[questId] - 获取单个任务
+// GET /api/quests/[questId] - 获取单个任务（包含用户进度，如果已登录）
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ questId: string }> }
 ) {
   try {
     const { questId } = await params;
+    const searchParams = request.nextUrl.searchParams;
+    const locale = searchParams.get('locale') || 'zh';
 
-    // 检查是否为数字ID或字符串questId
-    const isNumericId = /^\d+$/.test(questId);
-    
-    const [quest] = isNumericId
-      ? await db.select().from(quests).where(eq(quests.id, parseInt(questId)))
-      : await db.select().from(quests).where(eq(quests.questId, questId));
+    // 从JSON获取quest定义
+    const questDefinition = getQuestById(questId);
 
-    if (!quest) {
+    if (!questDefinition) {
       return NextResponse.json(
         { success: false, error: 'Quest not found' },
         { status: 404 }
       );
+    }
+
+    // 尝试获取用户session，如果有则加载进度
+    const session = await auth();
+    let quest;
+
+    if (session?.user?.id) {
+      // 从数据库获取用户的quest进度
+      const [progressData] = await db
+        .select()
+        .from(questProgress)
+        .where(
+          and(
+            eq(questProgress.userId, parseInt(session.user.id)),
+            eq(questProgress.questId, questId)
+          )
+        )
+        .limit(1);
+
+      // 合并定义和进度
+      quest = mergeQuestWithProgress(questDefinition, progressData);
+    } else {
+      // 未登录，只返回定义
+      quest = mergeQuestWithProgress(questDefinition);
     }
 
     return NextResponse.json({
@@ -38,84 +62,98 @@ export async function GET(
   }
 }
 
-// PUT /api/quests/[questId] - 更新任务
-export async function PUT(
+// PATCH /api/quests/[questId] - 更新任务进度（仅限已登录用户）
+export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ questId: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { questId } = await params;
     const body = await request.json();
 
-    // 检查是否为数字ID或字符串questId
-    const isNumericId = /^\d+$/.test(questId);
-    
-    const updateData: any = {};
-    
-    if (body.title !== undefined) updateData.title = body.title;
-    if (body.description !== undefined) updateData.description = body.description;
-    if (body.questType !== undefined) updateData.questType = body.questType;
-    if (body.chapter !== undefined) updateData.chapter = body.chapter;
-    if (body.requirements !== undefined) updateData.requirements = body.requirements;
-    if (body.rewards !== undefined) updateData.rewards = body.rewards;
-    if (body.prerequisiteQuests !== undefined) updateData.prerequisiteQuests = body.prerequisiteQuests;
-
-    updateData.updatedAt = new Date();
-
-    const [updatedQuest] = isNumericId
-      ? await db.update(quests).set(updateData).where(eq(quests.id, parseInt(questId))).returning()
-      : await db.update(quests).set(updateData).where(eq(quests.questId, questId)).returning();
-
-    if (!updatedQuest) {
+    // 验证quest定义存在
+    const questDefinition = getQuestById(questId);
+    if (!questDefinition) {
       return NextResponse.json(
         { success: false, error: 'Quest not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: updatedQuest,
-    });
-  } catch (error) {
-    console.error('Error updating quest:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update quest' },
-      { status: 500 }
-    );
-  }
-}
+    const userId = parseInt(session.user.id);
 
-// DELETE /api/quests/[questId] - 删除任务
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ questId: string }> }
-) {
-  try {
-    const { questId } = await params;
+    // 检查是否已有进度记录
+    const [existing] = await db
+      .select()
+      .from(questProgress)
+      .where(
+        and(
+          eq(questProgress.userId, userId),
+          eq(questProgress.questId, questId)
+        )
+      )
+      .limit(1);
 
-    // 检查是否为数字ID或字符串questId
-    const isNumericId = /^\d+$/.test(questId);
-    
-    const [deletedQuest] = isNumericId
-      ? await db.delete(quests).where(eq(quests.id, parseInt(questId))).returning()
-      : await db.delete(quests).where(eq(quests.questId, questId)).returning();
+    let result;
 
-    if (!deletedQuest) {
-      return NextResponse.json(
-        { success: false, error: 'Quest not found' },
-        { status: 404 }
-      );
+    if (existing) {
+      // 更新现有记录
+      const updateData: any = {
+        updatedAt: new Date(),
+      };
+
+      if (body.status !== undefined) updateData.status = body.status;
+      if (body.progress !== undefined) updateData.progress = body.progress;
+      if (body.currentStep !== undefined) updateData.currentStep = body.currentStep;
+      if (body.totalSteps !== undefined) updateData.totalSteps = body.totalSteps;
+      
+      if (body.status === 'in_progress' && !existing.startedAt) {
+        updateData.startedAt = new Date();
+      }
+      if (body.status === 'completed') {
+        updateData.completedAt = new Date();
+      }
+
+      [result] = await db
+        .update(questProgress)
+        .set(updateData)
+        .where(eq(questProgress.id, existing.id))
+        .returning();
+    } else {
+      // 创建新记录
+      [result] = await db
+        .insert(questProgress)
+        .values({
+          userId,
+          questId,
+          status: body.status || 'in_progress',
+          progress: body.progress || {},
+          currentStep: body.currentStep || 0,
+          totalSteps: body.totalSteps || questDefinition.objectives.length,
+          startedAt: new Date(),
+        })
+        .returning();
     }
 
+    // 合并并返回完整quest
+    const quest = mergeQuestWithProgress(questDefinition, result);
+
     return NextResponse.json({
       success: true,
-      data: deletedQuest,
+      data: quest,
     });
   } catch (error) {
-    console.error('Error deleting quest:', error);
+    console.error('Error updating quest progress:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete quest' },
+      { success: false, error: 'Failed to update quest progress' },
       { status: 500 }
     );
   }

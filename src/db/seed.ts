@@ -1,5 +1,8 @@
 import { db } from './index';
-import { npcs, quests } from './schema';
+import { npcs } from './schema';
+
+// 注意：Quest定义已移至 src/data/quests.json
+// 不再需要从数据库中seed quests
 
 // NPC种子数据
 const seedNPCs = [
@@ -85,118 +88,8 @@ const seedNPCs = [
   },
 ];
 
-// 任务种子数据
-const seedQuests = [
-  {
-    questId: 'tutorial_001',
-    title: '初识棋道',
-    description: '在华山传功厅找到洪七公，了解围棋的基本规则。',
-    questType: 'tutorial',
-    chapter: 1,
-    requirements: {
-      type: 'talk',
-      target: 'hongqigong',
-    },
-    rewards: {
-      experience: 100,
-    },
-    prerequisiteQuests: [],
-  },
-  {
-    questId: 'main_001',
-    title: '拜师洪七公',
-    description: '与洪七公对弈，赢得他的认可。使用9路棋盘，难度1。',
-    questType: 'main',
-    chapter: 1,
-    requirements: {
-      type: 'battle',
-      opponent: 'hongqigong',
-      boardSize: 9,
-      difficulty: 1,
-      mustWin: true,
-    },
-    rewards: {
-      experience: 500,
-      skills: ['kanglongyouhui'],
-    },
-    prerequisiteQuests: ['tutorial_001'],
-  },
-  {
-    questId: 'main_002',
-    title: '从少林学艺',
-    description: '前往少林寺，向令狐冲学习独孤九剑。',
-    questType: 'main',
-    chapter: 1,
-    requirements: {
-      type: 'battle',
-      opponent: 'linghuchong',
-      boardSize: 9,
-      difficulty: 2,
-      mustWin: true,
-    },
-    rewards: {
-      experience: 800,
-      skills: ['dugujiujian'],
-    },
-    prerequisiteQuests: ['main_001'],
-  },
-  {
-    questId: 'main_003',
-    title: '襄阳城挑战',
-    description: '协助郭靖守卫襄阳城，与他切磋棋艺。',
-    questType: 'main',
-    chapter: 1,
-    requirements: {
-      type: 'battle',
-      opponent: 'guojing',
-      boardSize: 9,
-      difficulty: 3,
-      mustWin: true,
-    },
-    rewards: {
-      experience: 1200,
-    },
-    prerequisiteQuests: ['main_002'],
-  },
-  {
-    questId: 'side_001',
-    title: '少林奇遇',
-    description: '在少林寺偶遇虚竹，学习腹语传音。',
-    questType: 'side',
-    chapter: 1,
-    requirements: {
-      type: 'battle',
-      opponent: 'xuzhu',
-      boardSize: 9,
-      difficulty: 2,
-      mustWin: true,
-    },
-    rewards: {
-      experience: 600,
-      skills: ['fuyuchuanyin'],
-    },
-    prerequisiteQuests: ['main_001'],
-  },
-  {
-    questId: 'side_002',
-    title: '蓉儿的考验',
-    description: '黄蓉想要考验你的智慧，与她对弈一局。',
-    questType: 'side',
-    chapter: 1,
-    requirements: {
-      type: 'battle',
-      opponent: 'huangrong',
-      boardSize: 9,
-      difficulty: 3,
-      mustWin: true,
-    },
-    rewards: {
-      experience: 1000,
-      skills: ['shenjimiaosuang'],
-    },
-    prerequisiteQuests: ['main_002'],
-  },
-];
+// 注意：任务种子数据已移至 src/data/quests.json
+// 不再需要从数据库中seed quests，改用JSON文件管理
 
 export async function seed() {
   console.log('🌱 开始播种数据...');
@@ -209,14 +102,8 @@ export async function seed() {
       console.log(`✅ 插入NPC: ${npc.name}`);
     }
 
-    // 插入任务数据
-    console.log('📝 插入任务数据...');
-    for (const quest of seedQuests) {
-      await db.insert(quests).values(quest).onConflictDoNothing();
-      console.log(`✅ 插入任务: ${quest.title}`);
-    }
-
     console.log('✨ 数据播种完成！');
+    console.log('ℹ️  任务数据现在从 src/data/quests.json 加载，不再需要seed到数据库');
   } catch (error) {
     console.error('❌ 播种数据时出错:', error);
     throw error;

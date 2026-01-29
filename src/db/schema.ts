@@ -111,32 +111,8 @@ export const npcs = pgTable('npcs', {
 });
 
 // 任务表
-export const quests = pgTable('quests', {
-  id: serial('id').primaryKey(),
-  questId: varchar('quest_id', { length: 50 }).notNull().unique(),
-  title: varchar('title', { length: 200 }).notNull(),
-  description: text('description').notNull(),
-  
-  // 任务类型和章节
-  questType: varchar('quest_type', { length: 50 }).notNull(), // 'main', 'side', 'tutorial'
-  chapter: integer('chapter').notNull(),
-  
-  // 任务要求
-  requirements: json('requirements').$type<any>().notNull(),
-  
-  // 任务奖励
-  rewards: json('rewards').$type<{
-    experience?: number;
-    skills?: string[];
-    items?: string[];
-  }>().notNull(),
-  
-  // 前置任务
-  prerequisiteQuests: json('prerequisite_quests').$type<string[]>().default([]).notNull(),
-  
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+// Quest definitions are now stored in src/data/quests.json
+// Only quest progress is stored in the database (see questProgress table below)
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -149,9 +125,6 @@ export type NewChessRecord = typeof chessRecords.$inferInsert;
 
 export type NPC = typeof npcs.$inferSelect;
 export type NewNPC = typeof npcs.$inferInsert;
-
-export type Quest = typeof quests.$inferSelect;
-export type NewQuest = typeof quests.$inferInsert;
 
 // =============== Isometric 地图系统 ===============
 
