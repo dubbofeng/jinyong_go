@@ -50,6 +50,8 @@ export default function GoGameModal({
           console.error('KataGo自动初始化失败:', err);
         });
       }
+    } else {
+      setIsVisible(false);
     }
   }, [isOpen, vsAI, isKatagoReady, isKatagoLoading, initializeKataGo]);
 

@@ -56,6 +56,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
+  const [completedQuests, setCompletedQuests] = useState<string[]>([]);
+  const completedQuestsRef = useRef<string[]>([]);
   
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
@@ -803,9 +805,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       
       // 创建对话引擎，传入玩家状态
       const playerState = {
-        completedQuests: battleResult === 'win' && pendingGoOpponent === item.itemName 
-          ? [`defeated_${npcId}`] 
-          : []
+        completedQuests: completedQuestsRef.current,
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
       
@@ -1067,8 +1067,13 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
                     pendingGoOpponent === '郭靖' ? 'defeated_guo_jing' : null;
       
       if (npcId) {
-        dialogueEngine.updatePlayerState({
-          completedQuests: [npcId]
+        setCompletedQuests((prev) => {
+          const next = prev.includes(npcId) ? prev : [...prev, npcId];
+          completedQuestsRef.current = next;
+          dialogueEngine.updatePlayerState({
+            completedQuests: next,
+          });
+          return next;
         });
         
         console.log(`✅ Player defeated ${pendingGoOpponent}, updated dialogue state`);
@@ -1348,6 +1353,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         opponentName={goOpponentName}
         boardSize={9}
         onComplete={handleGoGameComplete}
+        vsAI={!isE2EEnabled()}
         npcId={goOpponentName === '洪七公' ? 'hong_qigong' : 
                goOpponentName === '令狐冲' ? 'linghu_chong' :
                goOpponentName === '郭靖' ? 'guo_jing' : undefined}
@@ -1423,10 +1429,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             zIndex: 60,
           }}
+          data-testid="go-challenge-overlay"
           onClick={declineGoChallenge}
         >
           <div 
             className="bg-gradient-to-br from-amber-900 to-amber-800 border-4 border-amber-500 rounded-xl shadow-2xl p-6 max-w-md"
+            data-testid="go-challenge-dialog"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center mb-6">
@@ -1446,12 +1454,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
               <button
                 onClick={acceptGoChallenge}
                 className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-3 px-6 rounded-lg font-bold transition-colors whitespace-nowrap"
+                data-testid="go-challenge-accept"
               >
                 {t('goChallenge.accept')}
               </button>
               <button
                 onClick={declineGoChallenge}
                 className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
+                data-testid="go-challenge-decline"
               >
                 {t('goChallenge.decline')}
               </button>

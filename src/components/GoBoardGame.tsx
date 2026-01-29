@@ -37,6 +37,7 @@ export default function GoBoardGame({
   onGameEnd
 }: GoBoardGameProps) {
   const { data: session } = useSession();
+  const isE2E = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('e2e');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boardRef = useRef<GoBoard | null>(null);
   const engineRef = useRef<GoEngine | null>(null);
@@ -621,9 +622,9 @@ export default function GoBoardGame({
    */
   const handleGameEnd = useCallback(async (winner: 'black' | 'white' | 'draw', reason: 'score' | 'resign' | 'timeout') => {
     const engine = engineRef.current;
-    
-    if (!engine || !session?.user?.id) {
-      console.error('Cannot end game: missing engine or session', { hasEngine: !!engine, hasSession: !!session, userId: session?.user?.id });
+
+    if (!engine) {
+      console.error('Cannot end game: missing engine', { hasEngine: !!engine, hasSession: !!session, userId: session?.user?.id });
       return;
     }
 
@@ -643,6 +644,14 @@ export default function GoBoardGame({
     // 调用游戏结束回调
     if (onGameEnd) {
       onGameEnd({ winner, playerWon });
+    }
+
+    if (!session?.user?.id) {
+      if (isE2E) {
+        return;
+      }
+      console.error('Cannot end game: missing session', { hasSession: !!session, userId: session?.user?.id });
+      return;
     }
 
     // 计算经验值和体力变化
@@ -1600,6 +1609,7 @@ export default function GoBoardGame({
               onClick={() => handleGameEnd('black', 'score')}
               disabled={isAIThinking}
               className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
+              data-testid="go-test-win"
             >
               🎯 测试胜利
             </button>

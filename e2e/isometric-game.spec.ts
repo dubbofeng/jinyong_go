@@ -45,4 +45,38 @@ test.describe('Isometric game E2E', () => {
     await expect(page.getByTestId('dialogue-box')).toBeVisible();
     await expect(page.getByTestId('dialogue-text')).toBeVisible();
   });
+
+  test('hong qigong rematch option after win', async ({ page }) => {
+    await page.goto('/zh/isometric-test?e2e=1');
+    await page.waitForFunction(() => Boolean(window.__e2e));
+
+    await page.evaluate(() => window.__e2e?.openDialogue('hong_qigong'));
+    await expect(page.getByTestId('dialogue-box')).toBeVisible();
+
+    await page.getByTestId('dialogue-text').click();
+    await expect(page.getByTestId('dialogue-continue')).toBeVisible();
+    await page.getByTestId('dialogue-continue').click();
+
+    await expect(page.getByRole('button', { name: '前辈，我想再跟您切磋一局' })).toHaveCount(0);
+
+    await page.getByRole('button', { name: '请前辈指教！' }).click();
+
+    await page.getByTestId('dialogue-text').click();
+    await page.getByTestId('dialogue-continue').click();
+
+    await page.getByTestId('dialogue-text').click();
+    await page.getByRole('button', { name: '好！请前辈指教！' }).click();
+
+    await page.getByTestId('go-challenge-accept').click();
+    await page.getByTestId('go-test-win').click();
+
+    await expect(page.getByTestId('go-test-win')).toHaveCount(0);
+
+    await page.evaluate(() => window.__e2e?.openDialogue('hong_qigong'));
+    await expect(page.getByTestId('dialogue-box')).toBeVisible();
+    await page.getByTestId('dialogue-text').click();
+    await expect(page.getByTestId('dialogue-continue')).toBeVisible();
+    await page.getByTestId('dialogue-continue').click();
+    await expect(page.getByRole('button', { name: '前辈，我想再跟您切磋一局' })).toBeVisible();
+  });
 });
