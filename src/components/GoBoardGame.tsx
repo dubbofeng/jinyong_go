@@ -567,6 +567,25 @@ export default function GoBoardGame({
     }
   };
 
+  /**
+   * 将棋盘坐标转换为围棋标准格式（如 "D4"）
+   * @param row 行号（0-18）
+   * @param col 列号（0-18）
+   * @returns 围棋坐标字符串（如 "D4"）
+   */
+  const formatGoPosition = (row: number, col: number): string => {
+    // 列：A-T（跳过I）
+    let colChar = String.fromCharCode(65 + col);
+    if (col >= 8) { // 如果列数>=8，需要跳过I，所以+1
+      colChar = String.fromCharCode(65 + col + 1);
+    }
+    
+    // 行：从下往上数，19路棋盘中 row=0 对应 19，row=18 对应 1
+    const rowNum = size - row;
+    
+    return `${colChar}${rowNum}`;
+  };
+
   const handleUndo = () => {
     if (engineRef.current && boardRef.current) {
       // 对战AI时，需要撤销2步（AI的一步 + 玩家的一步）
@@ -670,16 +689,100 @@ export default function GoBoardGame({
     setLastMessage('🤔 AI分析中...');
     
     try {
-      const result = await (skill as any).use(engine);
-      if (result) {
-        setEvaluation(result);
-        setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
-        setSkillsRefreshKey(k => k + 1);
+      // 使用KataGo引擎获取详细分析
+      if (katagoEngine?.isEngineReady()) {
+        // 获取当前棋盘上的所有棋子
+        const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size; col++) {
+            const stone = engine.getStoneAt({ row, col });
+            if (stone) {
+              stones.push({ row, col, color: stone });
+            }
+          }
+        }
+
+        // 使用详细分析模式
+        const analysis = await katagoEngine.analyzePosition(size, stones, currentPlayer, true);
         
-        // 8秒后自动隐藏评估结果
-        setTimeout(() => setEvaluation(null), 8000);
+        if (analysis) {
+          // 计算实际地盘
+          const { blackTerritory, whiteTerritory } = engine.countTerritory();
+          const blackCaptures = capturedCount.black;
+          const whiteCaptures = capturedCount.white;
+          
+          // 使用KataGo的评估
+          const winrate = analysis.winrate || 0.5;
+          const scoreLead = analysis.scoreLead || 0;
+          const scoreStdev = analysis.scoreStdev || 0;
+          
+          // 根据胜率判断优势
+          let advantage: 'black' | 'white' | 'even';
+          let evaluation: string;
+          
+          if (Math.abs(winrate - 0.5) < 0.05) {
+            advantage = 'even';
+            evaluation = '局势均衡，难分伯仲';
+          } else if (winrate > 0.5) {
+            advantage = 'black';
+            if (winrate > 0.75) {
+              evaluation = `黑棋大优，胜率${(winrate * 100).toFixed(1)}%`;
+            } else if (winrate > 0.6) {
+              evaluation = `黑棋优势明显，胜率${(winrate * 100).toFixed(1)}%`;
+            } else {
+              evaluation = `黑棋略有优势，胜率${(winrate * 100).toFixed(1)}%`;
+            }
+          } else {
+            advantage = 'white';
+            const whiteWinrate = (1 - winrate) * 100;
+            if (winrate < 0.25) {
+              evaluation = `白棋大优，胜率${whiteWinrate.toFixed(1)}%`;
+            } else if (winrate < 0.4) {
+              evaluation = `白棋优势明显，胜率${whiteWinrate.toFixed(1)}%`;
+            } else {
+              evaluation = `白棋略有优势，胜率${whiteWinrate.toFixed(1)}%`;
+            }
+          }
+          
+          // 添加分数差信息
+          if (Math.abs(scoreLead) > 1) {
+            evaluation += `，${scoreLead > 0 ? '黑' : '白'}领先约${Math.abs(scoreLead).toFixed(1)}目`;
+          }
+          
+          // 添加局势稳定性信息
+          let stability = '';
+          if (scoreStdev < 5) {
+            stability = '局势稳定';
+          } else if (scoreStdev < 15) {
+            stability = '局势有变化';
+          } else {
+            stability = '局势复杂多变';
+          }
+          
+          const result: TerritoryEvaluation = {
+            blackTerritory,
+            whiteTerritory,
+            blackCaptures,
+            whiteCaptures,
+            advantage,
+            score: Math.round(scoreLead),
+            evaluation: evaluation + `（${stability}）`
+          };
+          
+          // 消耗技能使用次数
+          skill.currentUses--;
+          
+          setEvaluation(result);
+          setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
+          setSkillsRefreshKey(k => k + 1);
+          
+          // 8秒后自动隐藏评估结果
+          setTimeout(() => setEvaluation(null), 10000);
+        } else {
+          setLastMessage('❌ AI分析失败');
+        }
       } else {
-        setLastMessage('❌ 无法使用【独孤九剑】');
+        setLastMessage('❌ KataGo引擎未就绪');
       }
     } catch (error) {
       console.error('独孤九剑技能失败:', error);
@@ -697,33 +800,92 @@ export default function GoBoardGame({
     if (!skill || !('use' in skill)) return;
     
     const engine = engineRef.current;
-    if (!engine) return;
+    const board = boardRef.current;
+    if (!engine || !board) return;
     
     setLastMessage('🤔 AI计算中...');
     
     try {
-      const result = await (skill as any).use(engine, currentPlayer) as SuggestedMove[];
-      if (result && result.length > 0) {
-        setSuggestions(result);
-        setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
-        setSkillsRefreshKey(k => k + 1);
-        
-        // 在棋盘上标记建议位置
-        if (boardRef.current) {
-          result.forEach((suggestion: SuggestedMove, index: number) => {
-            boardRef.current!.highlightPosition(suggestion.position, index + 1);
-          });
-        }
-        
-        // 8秒后自动隐藏建议并清除标记
-        setTimeout(() => {
-          setSuggestions([]);
-          if (boardRef.current) {
-            boardRef.current.clearHighlights();
+      // 使用KataGo引擎获取真正的AI建议
+      if (katagoEngine?.isEngineReady()) {
+        // 获取当前棋盘上的所有棋子
+        const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size; col++) {
+            const stone = engine.getStoneAt({ row, col });
+            if (stone) {
+              stones.push({ row, col, color: stone });
+            }
           }
-        }, 8000);
+        }
+
+        // 使用KataGo分析获取最佳着法
+        const analysis = await katagoEngine.analyzePosition(size, stones, currentPlayer);
+        
+        if (analysis && analysis.bestMove) {
+          // KataGo V2只返回一个最佳着法，我们生成3个建议
+          // 第一个是AI推荐，其他两个是周围的可选点
+          const suggestions: SuggestedMove[] = [];
+          
+          // 最佳着法
+          suggestions.push({
+            position: analysis.bestMove,
+            score: 100,
+            reason: `AI最佳推荐，胜率${(analysis.winrate * 100).toFixed(1)}%`
+          });
+          
+          // 找附近的候选点作为备选
+          const neighbors = [
+            { row: analysis.bestMove.row - 1, col: analysis.bestMove.col },
+            { row: analysis.bestMove.row + 1, col: analysis.bestMove.col },
+            { row: analysis.bestMove.row, col: analysis.bestMove.col - 1 },
+            { row: analysis.bestMove.row, col: analysis.bestMove.col + 1 },
+            { row: analysis.bestMove.row - 1, col: analysis.bestMove.col - 1 },
+            { row: analysis.bestMove.row + 1, col: analysis.bestMove.col + 1 },
+          ];
+          
+          let addedCount = 0;
+          for (const pos of neighbors) {
+            if (addedCount >= 2) break;
+            if (pos.row >= 0 && pos.row < size && pos.col >= 0 && pos.col < size) {
+              const existingStone = engine.getStoneAt(pos);
+              if (!existingStone) {
+                suggestions.push({
+                  position: pos,
+                  score: 80 - addedCount * 10,
+                  reason: '备选着法'
+                });
+                addedCount++;
+              }
+            }
+          }
+
+          // 消耗技能使用次数
+          skill.currentUses--;
+          
+          setSuggestions(suggestions);
+          setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
+          setSkillsRefreshKey(k => k + 1);
+          
+          // 在棋盘上标记建议位置
+          if (board) {
+            suggestions.forEach((suggestion: SuggestedMove, index: number) => {
+              board.highlightPosition(suggestion.position, index + 1);
+            });
+          }
+          
+          // 8秒后自动隐藏建议并清除标记
+          setTimeout(() => {
+            setSuggestions([]);
+            if (board) {
+              board.clearHighlights();
+            }
+          }, 8000);
+        } else {
+          setLastMessage('❌ AI分析失败');
+        }
       } else {
-        setLastMessage('❌ 无法使用【腹语传音】');
+        setLastMessage('❌ KataGo引擎未就绪');
       }
     } catch (error) {
       console.error('腹语传音技能失败:', error);
@@ -1020,7 +1182,7 @@ export default function GoBoardGame({
               {suggestions.map((suggestion, index) => (
                 <div key={index} className="bg-black/30 p-2 rounded">
                   <div className="font-bold text-yellow-300">#{index + 1}</div>
-                  <div className="text-sm">位置: ({suggestion.position.row}, {suggestion.position.col})</div>
+                  <div className="text-sm">位置: {formatGoPosition(suggestion.position.row, suggestion.position.col)}</div>
                   <div className="text-xs text-purple-300">{suggestion.reason}</div>
                 </div>
               ))}

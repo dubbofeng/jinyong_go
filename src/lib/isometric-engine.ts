@@ -321,28 +321,9 @@ export class IsometricEngine {
    * 加载地图数据
    */
   async loadMap(mapData: MapData): Promise<void> {
-    console.log('🗺️ IsometricEngine loadMap:', mapData.name, `${mapData.width}x${mapData.height}`);
-    console.log('📦 地图物品数量:', mapData.items?.length || 0);
-    if (mapData.items && mapData.items.length > 0) {
-      console.log('📦 第一个物品:', mapData.items[0]);
-    }
-    
     // 更新配置以匹配实际地图尺寸
     this.config.mapWidth = mapData.width;
     this.config.mapHeight = mapData.height;
-    
-    // 统计瓦片类型分布
-    const typeCount: Record<string, number> = {};
-    for (let y = 0; y < mapData.height; y++) {
-      for (let x = 0; x < mapData.width; x++) {
-        const tile = mapData.tiles[y]?.[x];
-        if (tile) {
-          typeCount[tile.tileType] = (typeCount[tile.tileType] || 0) + 1;
-        }
-      }
-    }
-    console.log('瓦片类型分布:', typeCount);
-    console.log('Sample tiles from engine:', mapData.tiles[0]?.slice(0, 3));
     
     this.mapData = mapData;
     this.cacheValid = false;
@@ -380,16 +361,12 @@ export class IsometricEngine {
     
     await this.resourceLoader.preloadImages(Array.from(spriteUrls));
     
-    console.log('✅ Resources loaded:', spriteUrls.size, 'images');
-    console.log('Images:', Array.from(spriteUrls));
-    
     // 生成静态层缓存
     this.generateStaticLayerCache();
     
     // 初始化玩家（在实际地图的中心）
     const centerX = Math.floor(mapData.width / 2);
     const centerY = Math.floor(mapData.height / 2);
-    console.log(`🎮 Spawning player at map center: (${centerX}, ${centerY}) of ${mapData.width}x${mapData.height} map`);
     await this.spawnPlayer(centerX, centerY);
   }
 
@@ -524,13 +501,11 @@ export class IsometricEngine {
     // 使用普通瓦片精灵
     const tileSprite = this.tileSprites.get(tile.tileType);
     if (!tileSprite) {
-      console.warn(`⚠️ No sprite found for tileType: ${tile.tileType}`);
       return;
     }
     
     const img = this.resourceLoader.getImage(tileSprite.src);
     if (!img) {
-      console.warn(`⚠️ Image not loaded: ${tileSprite.src}`);
       return;
     }
     
@@ -609,12 +584,6 @@ export class IsometricEngine {
   private renderItem(item: MapItem): void {
     const spriteUrl = this.getSpriteUrl(item);
     const img = this.resourceLoader.getImage(spriteUrl);
-    
-    // 调试：记录第一次渲染失败
-    if (!img && !this.debugRenderedItems) {
-      console.warn('⚠️ 无法加载物品图片:', spriteUrl, item);
-      this.debugRenderedItems = true;
-    }
     
     if (!img) return;
     
@@ -884,7 +853,6 @@ export class IsometricEngine {
   isWalkable(x: number, y: number): boolean {
     const tile = this.getTileAt(x, y);
     if (!tile || !tile.walkable) {
-      console.log(`❌ 瓦片不可行走: (${x},${y}) - tile=${tile?.tileType}, walkable=${tile?.walkable}`);
       return false;
     }
     
@@ -931,11 +899,6 @@ export class IsometricEngine {
       }
       
       // 至少有一个点在精灵图范围内，进行详细检测
-      console.log(`🔍 检测阻挡物品: ${item.itemName} @ (${item.x},${item.y}), size=${item.size || 1}`);
-      console.log(`  📐 精灵图屏幕矩形: (${spriteX.toFixed(0)}, ${spriteY.toFixed(0)}) - (${spriteRight.toFixed(0)}, ${spriteBottom.toFixed(0)})`);
-      console.log(`  📏 精灵图尺寸: ${img.width}x${img.height}px`);
-      console.log(`  📍 检测格子(${x},${y})相对物品(${item.x},${item.y})偏移: dx=${x - item.x}, dy=${y - item.y}`);
-      
       // 对每个在精灵图范围内的测试点进行像素检测
       for (const point of testPoints) {
         if (point.x < spriteX || point.x > spriteRight ||
@@ -948,15 +911,12 @@ export class IsometricEngine {
         const pixelY = Math.floor(point.y - spriteY);
         
         const opaque = this.isPixelOpaque(img, pixelX, pixelY);
-        console.log(`  🎯 ${point.name}: 屏幕(${Math.round(point.x)},${Math.round(point.y)}) -> 像素(${pixelX},${pixelY}) = ${opaque ? '不透明❌' : '透明✅'}`);
         
         if (opaque) {
           // 检查是否是树
           if (item.itemType === 'plant' && (item.properties?.plantType === 'tree' || item.itemName?.includes('树'))) {
-            console.log(`  🌳 碰撞！被树阻挡: ${item.itemName}`);
             this.lastBlockingTree = item; // 记录被阻挡的树
           } else {
-            console.log(`  ❌ 碰撞！${item.itemName}的${point.name}位置有不透明像素`);
             this.lastBlockingTree = undefined; // 不是树，清除记录
           }
           return false;
@@ -1056,7 +1016,6 @@ export class IsometricEngine {
    */
   async spawnPlayer(x: number, y: number): Promise<void> {
     this.player = new Player(x, y, 3); // 3 tiles/second
-    console.log(`🎮 Player spawned at (${x}, ${y})`);
   }
 
   /**
@@ -1109,7 +1068,6 @@ export class IsometricEngine {
     // 检查目标是否可行走（包括瓦片和物品阻挡）
     const targetTile = this.getTileAt(targetX, targetY);
     if (!targetTile || !targetTile.walkable) {
-      console.log('⛔ Target tile not walkable:', targetX, targetY);
       return { success: false };
     }
     
@@ -1120,11 +1078,9 @@ export class IsometricEngine {
       
       // 如果被树阻挡，返回树信息
       if (blockedTree) {
-        console.log('🌳 移动被树阻挡:', (blockedTree as any).itemName);
         this.lastBlockingTree = undefined; // 清除记录
         return { success: false, blockedByTree: blockedTree };
       }
-      console.log('⛔ Blocked by item at:', targetX, targetY);
       return { success: false };
     }
 
@@ -1145,7 +1101,6 @@ export class IsometricEngine {
     );
 
     if (path.length === 0) {
-      console.log('⛔ No path found to:', targetX, targetY);
       return { success: false };
     }
 
@@ -1153,7 +1108,6 @@ export class IsometricEngine {
     const formattedPath = path.map(([x, y]) => ({ x, y }));
     this.player.setPath(formattedPath);
     
-    console.log(`🚶 Moving player from (${startX}, ${startY}) to (${targetX}, ${targetY}), path length: ${path.length}`);
     return { success: true };
   }
 
@@ -1386,7 +1340,6 @@ export class IsometricEngine {
   private isPixelOpaque(img: HTMLImageElement, x: number, y: number): boolean {
     // 检查坐标是否在图片范围内
     if (x < 0 || x >= img.width || y < 0 || y >= img.height) {
-      console.warn(`⚠️ 像素坐标越界: (${x},${y}), 图片尺寸: ${img.width}x${img.height}`);
       return false;
     }
     
@@ -1396,13 +1349,11 @@ export class IsometricEngine {
     
     // 如果没有缓存，读取整张图片的像素数据
     if (!imageData) {
-      console.log(`📸 创建像素数据缓存: ${cacheKey} (${img.width}x${img.height})`);
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = img.width;
       tempCanvas.height = img.height;
       const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
       if (!tempCtx) {
-        console.error('❌ 无法创建canvas context');
         return false;
       }
       
@@ -1411,13 +1362,9 @@ export class IsometricEngine {
       try {
         imageData = tempCtx.getImageData(0, 0, img.width, img.height);
         this.pixelDataCache.set(cacheKey, imageData);
-        console.log(`✅ 像素数据缓存成功`);
       } catch (e) {
-        // 跨域图片可能无法读取像素数据
-        console.error('❌ 无法读取像素数据 (CORS?):', e);
-        console.error('  图片URL:', cacheKey);
-        console.error('  使用保守策略：默认阻挡');
-        return true; // 回退到矩形碰撞（阻挡）
+        // 跨域图片可能无法读取像素数据，使用保守策略：默认阻挡
+        return true;
       }
     }
     

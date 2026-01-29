@@ -23,6 +23,12 @@ export interface BrowserAnalysis {
   winrate: number;
   visits: number;
   thinkingTime: number;
+  // 详细分析数据
+  scoreLead?: number;           // 分数差（正数=黑优，负数=白优）
+  scoreStdev?: number;          // 分数标准差
+  ownership?: number[][];       // 地盘归属（-1到1，-1=白方，1=黑方）
+  policy?: Map<string, number>; // 策略网络评估（位置 -> 概率）
+  winrateByMove?: number[];     // 每一手的胜率变化
 }
 
 // stdin输入处理类
@@ -406,12 +412,13 @@ export class KataGoBrowserEngineV2 {
   }
 
   /**
-   * 分析局面
+   * 分析局面（使用kata-analyze获取详细信息）
    */
   async analyzePosition(
     boardSize: number,
     stones: Array<{ row: number; col: number; color: 'black' | 'white' }>,
-    nextColor: 'black' | 'white'
+    nextColor: 'black' | 'white',
+    detailed: boolean = false
   ): Promise<BrowserAnalysis> {
     if (!this.isReady) {
       throw new Error('KataGo not ready');
@@ -434,24 +441,105 @@ export class KataGoBrowserEngineV2 {
         await this.sendCommand(`play ${color} ${x}${y}`);
       }
 
-      // 生成下一步
-      const color = nextColor === 'black' ? 'B' : 'W';
-      const response = await this.sendCommand(`genmove ${color}`);
-      
-      // 解析响应
-      const move = this.parseMove(response, boardSize);
-      
-      const thinkingTime = Date.now() - startTime;
+      if (detailed) {
+        // 使用kata-analyze获取详细分析
+        const color = nextColor === 'black' ? 'B' : 'W';
+        // kata-analyze 参数: interval 100 maxVisits [visits]
+        const response = await this.sendCommand(
+          `kata-analyze ${color} interval 100 maxVisits ${this.maxVisits}`,
+          60000 // 60秒超时
+        );
+        
+        return this.parseDetailedAnalysis(response, boardSize);
+      } else {
+        // 使用genmove获取最佳着法
+        const color = nextColor === 'black' ? 'B' : 'W';
+        const response = await this.sendCommand(`genmove ${color}`);
+        
+        // 解析响应
+        const move = this.parseMove(response, boardSize);
+        
+        const thinkingTime = Date.now() - startTime;
 
-      return {
-        bestMove: move,
-        winrate: 0.5,
-        visits: 100,
-        thinkingTime,
-      };
+        return {
+          bestMove: move,
+          winrate: 0.5,
+          visits: 100,
+          thinkingTime,
+        };
+      }
     } catch (error) {
       console.error('分析失败:', error);
       throw error;
+    }
+  }
+
+  /**
+   * 解析kata-analyze的详细分析结果
+   */
+  private parseDetailedAnalysis(response: string, boardSize: number): BrowserAnalysis {
+    try {
+      // kata-analyze返回JSON格式的分析结果
+      // 示例: info move D4 visits 100 winrate 0.52 scoreMean 1.5 ...
+      
+      const lines = response.split('\n');
+      let bestMove: BoardPosition | null = null;
+      let winrate = 0.5;
+      let visits = 0;
+      let scoreLead = 0;
+      let scoreStdev = 0;
+      
+      for (const line of lines) {
+        if (line.includes('info move')) {
+          // 解析 info move 行
+          const moveMatch = line.match(/move\s+([A-Z])(\d+)/);
+          if (moveMatch) {
+            const col = moveMatch[1].charCodeAt(0) - 65;
+            const row = parseInt(moveMatch[2]) - 1;
+            bestMove = { row, col };
+          }
+          
+          const winrateMatch = line.match(/winrate\s+([\d.]+)/);
+          if (winrateMatch) {
+            winrate = parseFloat(winrateMatch[1]);
+          }
+          
+          const visitsMatch = line.match(/visits\s+(\d+)/);
+          if (visitsMatch) {
+            visits = parseInt(visitsMatch[1]);
+          }
+          
+          const scoreMeanMatch = line.match(/scoreMean\s+([-\d.]+)/);
+          if (scoreMeanMatch) {
+            scoreLead = parseFloat(scoreMeanMatch[1]);
+          }
+          
+          const scoreStdevMatch = line.match(/scoreStdev\s+([\d.]+)/);
+          if (scoreStdevMatch) {
+            scoreStdev = parseFloat(scoreStdevMatch[1]);
+          }
+          
+          break; // 只取第一个推荐
+        }
+      }
+      
+      return {
+        bestMove,
+        winrate,
+        visits,
+        thinkingTime: 0,
+        scoreLead,
+        scoreStdev,
+      };
+    } catch (error) {
+      console.error('解析分析结果失败:', error);
+      // 返回默认值
+      return {
+        bestMove: null,
+        winrate: 0.5,
+        visits: 0,
+        thinkingTime: 0,
+      };
     }
   }
 

@@ -91,18 +91,6 @@ export default function VariationBoardModal({
     });
   };
 
-  // 监听棋盘渲染，自动重绘数字标记
-  useEffect(() => {
-    if (!isOpen || !canvasRef.current) return;
-
-    // 使用MutationObserver监听canvas变化，或使用定时器持续重绘
-    const intervalId = setInterval(() => {
-      drawMoveNumbers();
-    }, 100); // 每100ms重绘一次数字
-
-    return () => clearInterval(intervalId);
-  }, [isOpen, boardSize]);
-
   // 初始化试下棋盘
   useEffect(() => {
     if (!isOpen) return;
@@ -118,6 +106,16 @@ export default function VariationBoardModal({
     // 创建棋盘实例
     const board = new GoBoard(canvas, boardSize);
     boardRef.current = board;
+    
+    // 包装棋盘的render方法，让它在渲染后自动绘制数字
+    const originalRender = board.render.bind(board);
+    board.render = () => {
+      originalRender();
+      // 使用requestAnimationFrame确保在浏览器绘制后立即绘制数字
+      requestAnimationFrame(() => {
+        drawMoveNumbers();
+      });
+    };
 
     // 创建规则引擎实例
     const engine = new GoEngine(boardSize);
