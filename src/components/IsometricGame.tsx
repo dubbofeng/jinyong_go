@@ -487,6 +487,31 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   // ==================== 事件处理 ====================
 
   /**
+   * 处理Canvas鼠标移动事件（改变鼠标样式）
+   */
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const engine = engineRef.current;
+    if (!canvas || !engine) return;
+
+    // 获取Canvas相对坐标
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // 检查是否悬停在可交互物品上
+    const item = engine.getItemAtPixel(x, y);
+    
+    if (item) {
+      // 鼠标悬停在NPC、传送门或建筑物上时，显示为手型
+      canvas.style.cursor = 'pointer';
+    } else {
+      // 默认鼠标样式
+      canvas.style.cursor = 'default';
+    }
+  };
+
+  /**
    * 处理Canvas点击事件
    */
   const handleCanvasClick = async (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -1185,6 +1210,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
+        onMouseMove={handleCanvasMouseMove}
         className="absolute inset-0 w-full h-full"
         style={{ imageRendering: 'pixelated', zIndex: 0 }}
       />
