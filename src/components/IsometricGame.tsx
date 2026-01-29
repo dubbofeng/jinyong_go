@@ -18,6 +18,8 @@ declare global {
       movePlayerTo: (x: number, y: number) => { success: boolean; blockedByTree?: any } | undefined;
       openDialogue: (npcIdOrName?: string) => Promise<boolean>;
       getPlayerPosition: () => { x: number; y: number } | null;
+      getMapSize: () => { width: number; height: number } | null;
+      getTestNpcPosition: () => { x: number; y: number } | null;
     };
   }
 }
@@ -306,16 +308,18 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
     const centerX = Math.floor(map.width / 2);
     const centerY = Math.floor(map.height / 2);
+    const npcX = Math.min(map.width - 2, centerX + 2);
+    const npcY = centerY;
     const testNpc = {
       id: 999999,
       itemId: 'npc_hong_qigong',
       itemName: '洪七公',
       itemType: 'npc',
-      x: centerX,
-      y: centerY,
+      x: npcX,
+      y: npcY,
       itemPath: '/game/isometric/characters/npc_hong_qigong.png',
       imagePath: '/game/isometric/characters/npc_hong_qigong.png',
-      blocking: true,
+      blocking: false,
       size: 1,
     };
 
@@ -845,6 +849,11 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return true;
       },
       getPlayerPosition: () => engineRef.current?.getPlayerPosition() || null,
+      getMapSize: () => ({ width: mapData.width, height: mapData.height }),
+      getTestNpcPosition: () => {
+        const npc = mapData.items?.find((item: any) => item.itemType === 'npc');
+        return npc ? { x: npc.x, y: npc.y } : null;
+      },
     };
 
     return () => {
