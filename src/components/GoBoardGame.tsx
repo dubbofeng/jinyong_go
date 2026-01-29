@@ -10,6 +10,7 @@ import {
 } from '../lib/go-skills';
 import { KataGoBrowserEngineV2 } from '../lib/katago-browser-engine-v2';
 import GameResultModal, { type GameResult } from './GameResultModal';
+import VariationBoardModal from './VariationBoardModal';
 import { useSession } from 'next-auth/react';
 
 interface GoBoardGameProps {
@@ -57,6 +58,11 @@ export default function GoBoardGame({
   const [suggestions, setSuggestions] = useState<SuggestedMove[]>([]);
   const [skillsRefreshKey, setSkillsRefreshKey] = useState(0);
   const [learnedSkills, setLearnedSkills] = useState<string[]>([]); // 已学习的技能列表
+  const [skillLevels, setSkillLevels] = useState<Record<string, number>>({}); // 技能等级映射
+  
+  // 机关算尽：试下棋盘状态
+  const [showVariationBoard, setShowVariationBoard] = useState(false);
+  const [variationStones, setVariationStones] = useState<Array<{ row: number; col: number; color: 'black' | 'white' }>>([]);
 
   // 获取玩家已学习的技能
   useEffect(() => {
@@ -66,12 +72,26 @@ export default function GoBoardGame({
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.data)) {
-            // 只保留已解锁的技能ID
+            // 只保留已解锁的技能ID和等级
             const unlockedSkillIds = data.data
               .filter((skill: any) => skill.unlocked)
               .map((skill: any) => skill.skillId);
+            
+            const levels: Record<string, number> = {};
+            data.data.forEach((skill: any) => {
+              if (skill.unlocked) {
+                levels[skill.skillId] = skill.level || 1;
+              }
+            });
+            
             setLearnedSkills(unlockedSkillIds);
-            console.log('✅ 已学习技能:', unlockedSkillIds);
+            setSkillLevels(levels);
+            console.log('✅ 已学习技能:', unlockedSkillIds, '等级:', levels);
+            
+            // 根据技能等级重新初始化技能管理器
+            if (skillManagerRef.current) {
+              skillManagerRef.current.updateSkillLevels(levels);
+            }
           }
         }
       } catch (error) {
@@ -121,11 +141,20 @@ export default function GoBoardGame({
           setLastMessage('');
         }
         
+        // 立即渲染棋盘，确保黑棋显示
+        board.render();
+        
         // 计算下一个玩家
         const nextPlayer = prevPlayer === 'black' ? 'white' : 'black';
         
         // 更新手数
         setMoveCount((prev) => prev + 1);
+        
+        // 更新技能冷却
+        if (skillManagerRef.current) {
+          skillManagerRef.current.updateCooldowns();
+          setSkillsRefreshKey(k => k + 1); // 刷新技能UI
+        }
         
         // 更新悬停提示的颜色
         board.setNextStoneColor(nextPlayer);
@@ -218,6 +247,13 @@ export default function GoBoardGame({
           }
           
           setMoveCount(prev => prev + 1);
+          
+          // 更新技能冷却
+          if (skillManagerRef.current) {
+            skillManagerRef.current.updateCooldowns();
+            setSkillsRefreshKey(k => k + 1); // 刷新技能UI
+          }
+          
           boardRef.current.setNextStoneColor('black');
           // AI落子成功，切换到玩家回合
           setCurrentPlayer('black');
@@ -250,8 +286,12 @@ export default function GoBoardGame({
   // 监听玩家切换，触发AI落子
   useEffect(() => {
     if (vsAI && currentPlayer === 'white' && !isAIThinking) {
-      // 白棋是AI，需要AI落子
-      makeAIMove();
+      // 白棋是AI，添加短暂延迟确保黑棋先渲染
+      const timer = setTimeout(() => {
+        makeAIMove();
+      }, 100); // 100ms延迟，让黑棋有时间显示
+      
+      return () => clearTimeout(timer);
     }
   }, [vsAI, currentPlayer, isAIThinking, makeAIMove]);
 
@@ -575,6 +615,12 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!engine) return;
     
+    // 检查技能是否可用
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【亢龙有悔】使用次数已用完');
+      return;
+    }
+    
     // 对战AI时，需要撤销2步（AI的一步 + 玩家的一步）
     const stepsToUndo = vsAI ? 2 : 1;
     let allSuccess = true;
@@ -588,8 +634,8 @@ export default function GoBoardGame({
     }
     
     if (allSuccess && boardRef.current) {
-      // 消耗技能使用次数
-      (skill as any).use(engine);
+      // 仅消耗技能使用次数，不再调用engine.undo()
+      skill.currentUses--;
       
       const boardState = engine.getBoard();
       boardRef.current.setBoardState(boardState);
@@ -612,7 +658,7 @@ export default function GoBoardGame({
   /**
    * 技能2：独孤九剑（形势判断）
    */
-  const useDuGuJiuJian = () => {
+  const useDuGuJiuJian = async () => {
     const skillManager = skillManagerRef.current;
     const skill = skillManager?.getSkill('dugujiujian');
     
@@ -621,23 +667,30 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!engine) return;
     
-    const result = (skill as any).use(engine);
-    if (result) {
-      setEvaluation(result);
-      setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
-      setSkillsRefreshKey(k => k + 1);
-      
-      // 5秒后自动隐藏评估结果
-      setTimeout(() => setEvaluation(null), 8000);
-    } else {
-      setLastMessage('❌ 无法使用【独孤九剑】');
+    setLastMessage('🤔 AI分析中...');
+    
+    try {
+      const result = await (skill as any).use(engine);
+      if (result) {
+        setEvaluation(result);
+        setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
+        setSkillsRefreshKey(k => k + 1);
+        
+        // 8秒后自动隐藏评估结果
+        setTimeout(() => setEvaluation(null), 8000);
+      } else {
+        setLastMessage('❌ 无法使用【独孤九剑】');
+      }
+    } catch (error) {
+      console.error('独孤九剑技能失败:', error);
+      setLastMessage('❌ AI分析失败');
     }
   };
 
   /**
    * 技能3：腹语传音（AI建议）
    */
-  const useFuYuChuanYin = () => {
+  const useFuYuChuanYin = async () => {
     const skillManager = skillManagerRef.current;
     const skill = skillManager?.getSkill('fuyuchuanyin');
     
@@ -646,28 +699,35 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!engine) return;
     
-    const result = (skill as any).use(engine, currentPlayer) as SuggestedMove[];
-    if (result && result.length > 0) {
-      setSuggestions(result);
-      setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
-      setSkillsRefreshKey(k => k + 1);
-      
-      // 在棋盘上标记建议位置
-      if (boardRef.current) {
-        result.forEach((suggestion: SuggestedMove, index: number) => {
-          boardRef.current!.highlightPosition(suggestion.position, index + 1);
-        });
-      }
-      
-      // 8秒后自动隐藏建议并清除标记
-      setTimeout(() => {
-        setSuggestions([]);
+    setLastMessage('🤔 AI计算中...');
+    
+    try {
+      const result = await (skill as any).use(engine, currentPlayer) as SuggestedMove[];
+      if (result && result.length > 0) {
+        setSuggestions(result);
+        setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
+        setSkillsRefreshKey(k => k + 1);
+        
+        // 在棋盘上标记建议位置
         if (boardRef.current) {
-          boardRef.current.clearHighlights();
+          result.forEach((suggestion: SuggestedMove, index: number) => {
+            boardRef.current!.highlightPosition(suggestion.position, index + 1);
+          });
         }
-      }, 8000);
-    } else {
-      setLastMessage('❌ 无法使用【腹语传音】');
+        
+        // 8秒后自动隐藏建议并清除标记
+        setTimeout(() => {
+          setSuggestions([]);
+          if (boardRef.current) {
+            boardRef.current.clearHighlights();
+          }
+        }, 8000);
+      } else {
+        setLastMessage('❌ 无法使用【腹语传音】');
+      }
+    } catch (error) {
+      console.error('腹语传音技能失败:', error);
+      setLastMessage('❌ AI推荐失败');
     }
   };
 
@@ -683,163 +743,183 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!engine) return;
     
+    // 检查是否可以使用
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【机关算尽】使用次数已用完');
+      return;
+    }
+    
+    if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
+      setLastMessage(`❌ 【机关算尽】冷却中，还需${(skill as any).currentCooldown}手`);
+      return;
+    }
+    
+    // 使用技能
     const result = (skill as any).use(engine);
     if (result) {
-      setLastMessage(`✨ 使用【机关算尽】创建变化分支！剩余${skill.currentUses}次`);
+      // 收集当前棋局上的所有棋子
+      const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
+      for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+          const stone = engine.getStoneAt({ row, col });
+          if (stone) {
+            stones.push({ row, col, color: stone });
+          }
+        }
+      }
+      
+      setVariationStones(stones);
+      setShowVariationBoard(true);
+      setLastMessage(`✨ 使用【机关算尽】创建试下棋盘！剩余${skill.currentUses}次`);
       setSkillsRefreshKey(k => k + 1);
-      // TODO: 实现变化图UI
-      alert('变化图功能开发中...');
     } else {
       setLastMessage('❌ 无法使用【机关算尽】');
     }
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      {/* 游戏信息 */}
-      <div className="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className={`w-6 h-6 rounded-full ${
-              currentPlayer === 'black' ? 'bg-black' : 'bg-white border border-gray-400'
-            }`} />
-            <span className="font-semibold">
-              {currentPlayer === 'black' ? '黑方' : '白方'}落子
-            </span>
-            {isAIThinking && (
-              <span className="ml-2 text-sm text-blue-400 animate-pulse">
-                🤖 AI思考中...
+    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">
+      {/* 左侧：棋盘区域 */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
+        {/* 游戏信息 */}
+        <div className="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg mb-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className={`w-6 h-6 rounded-full ${
+                currentPlayer === 'black' ? 'bg-black' : 'bg-white border border-gray-400'
+              }`} />
+              <span className="font-semibold">
+                {currentPlayer === 'black' ? '黑方' : '白方'}落子
               </span>
-            )}
-          </div>
-          <div className="text-sm text-gray-300">
-            手数: {moveCount}
-          </div>
-          <div className="text-sm text-gray-300">
-            棋盘: {size}路
-          </div>
-          <div className="text-sm text-gray-300">
-            提子: 黑{capturedCount.black} 白{capturedCount.white}
-          </div>
-        </div>
-        {lastMessage && (
-          <div className="mt-2 text-sm text-yellow-300">
-            {lastMessage}
-          </div>
-        )}
-      </div>
-
-      {/* 棋盘Canvas */}
-      <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl relative">
-        <canvas
-          ref={canvasRef}
-          className={`border-2 border-yellow-800 rounded ${isAIThinking ? 'opacity-50 cursor-wait' : ''}`}
-          style={{ pointerEvents: isAIThinking ? 'none' : 'auto' }}
-        />
-        {isAIThinking && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-black bg-opacity-70 text-white px-6 py-3 rounded-lg text-sm">
-              🤖 AI正在思考...
+              {isAIThinking && (
+                <span className="ml-2 text-sm text-blue-400 animate-pulse">
+                  🤖 AI思考中...
+                </span>
+              )}
+            </div>
+            <div className="text-sm text-gray-300">
+              手数: {moveCount}
+            </div>
+            <div className="text-sm text-gray-300">
+              棋盘: {size}路
+            </div>
+            <div className="text-sm text-gray-300">
+              提子: 黑{capturedCount.black} 白{capturedCount.white}
             </div>
           </div>
-        )}
-      </div>
+          {lastMessage && (
+            <div className="mt-2 text-sm text-yellow-300">
+              {lastMessage}
+            </div>
+          )}
+        </div>
 
-      {/* 控制按钮 */}
-      <div className="flex gap-4">
-        <button
-          onClick={handlePass}
-          disabled={isAIThinking}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          停一手（Pass）
-        </button>
-        <button
-          onClick={handleUndo}
-          disabled={isAIThinking}
-          className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          悔棋（Undo）
-        </button>
-        <button
-          onClick={handleResign}
-          disabled={isAIThinking}
-          className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          认输（Resign）
-        </button>
-        <button
-          onClick={handleReset}
-          disabled={isAIThinking}
-          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          重新开始
-        </button>
-        {/* 测试按钮：只在对战洪七公时显示 */}
-        {npcId === 'hong_qigong' && (
+        {/* 棋盘Canvas */}
+        <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl relative max-w-full">
+          <canvas
+            ref={canvasRef}
+            className={`border-2 border-yellow-800 rounded max-w-full ${isAIThinking ? 'opacity-50 cursor-wait' : ''}`}
+            style={{ pointerEvents: isAIThinking ? 'none' : 'auto' }}
+          />
+          {isAIThinking && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-black bg-opacity-70 text-white px-6 py-3 rounded-lg text-sm">
+                🤖 AI正在思考...
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 控制按钮 */}
+        <div className="flex gap-3 justify-center max-w-full flex-wrap mt-4">
           <button
-            onClick={() => handleGameEnd('black', 'score')}
+            onClick={handlePass}
             disabled={isAIThinking}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            🎯 测试胜利
+            停一手（Pass）
           </button>
-        )}
+          <button
+            onClick={handleResign}
+            disabled={isAIThinking}
+            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            认输（Resign）
+          </button>
+          <button
+            onClick={handleReset}
+            disabled={isAIThinking}
+            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            重新开始
+          </button>
+          {/* 测试按钮：只在对战洪七公时显示 */}
+          {npcId === 'hong_qigong' && (
+            <button
+              onClick={() => handleGameEnd('black', 'score')}
+              disabled={isAIThinking}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
+            >
+              🎯 测试胜利
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* 武侠技能快捷栏 */}
-      <div className="w-full max-w-4xl" key={skillsRefreshKey}>
-        <h3 className="text-center font-bold text-lg text-amber-800 mb-3">⚔️ 武侠技能 ⚔️</h3>
-        <div className={`grid gap-4 ${
-          learnedSkills.length === 1 ? 'grid-cols-1' :
-          learnedSkills.length === 2 ? 'grid-cols-2' :
-          learnedSkills.length === 3 ? 'grid-cols-3' :
-          'grid-cols-4'
-        }`}>
-          {/* 技能1：亢龙有悔 */}
-          {learnedSkills.includes('kanglong_youhui') && (() => {
-            const skill = skillManagerRef.current?.getSkill('kanglongyouhui');
-            const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current);
-            return (
-              <button
-                onClick={useKangLongYouHui}
-                disabled={!canUse}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  canUse
-                    ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-orange-400 hover:scale-105 cursor-pointer shadow-lg'
-                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
-                }`}
-                title="快捷键: 1"
-              >
-                <div className="text-white text-center">
-                  <div className="text-2xl mb-1">🐉</div>
-                  <div className="font-bold text-sm">亢龙有悔</div>
-                  <div className="text-xs opacity-90">{skill?.character}</div>
-                  <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
-                </div>
-              </button>
-            );
-          })()}
+      {/* 右侧：技能区域 */}
+      <div className="w-[480px] bg-gray-800/50 backdrop-blur-sm overflow-y-auto">
+        <div className="p-6 flex flex-col gap-6 min-h-full">
 
-          {/* 技能2：独孤九剑 */}
-          {learnedSkills.includes('dugu_jiujian') && (() => {
-            const skill = skillManagerRef.current?.getSkill('dugujiujian');
-            const canUse = skill && 'canUse' in skill && (skill as any).canUse();
-            return (
-              <button
-                onClick={useDuGuJiuJian}
-                disabled={!canUse}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  canUse
-                    ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 hover:scale-105 cursor-pointer shadow-lg'
-                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
-                }`}
-                title="快捷键: 2"
+        {/* 武侠技能快捷栏 */}
+        <div className="w-full" key={skillsRefreshKey}>
+          <h3 className="text-center font-bold text-lg text-amber-300 mb-3">⚔️ 武侠技能 ⚔️</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {/* 技能1：亢龙有悔 */}
+            {learnedSkills.includes('kanglong_youhui') && (() => {
+              const skill = skillManagerRef.current?.getSkill('kanglongyouhui');
+              const level = skillLevels['kanglong_youhui'] || 1;
+              const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current);
+              return (
+                <button
+                  onClick={useKangLongYouHui}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-orange-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                  title="快捷键: 1"
+                >
+                  <div className="text-white text-center">
+                    <div className="text-2xl mb-1">🐉</div>
+                    <div className="font-bold text-sm">亢龙有悔</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
+                  </div>
+                </button>
+              );
+            })()}
+
+            {/* 技能2：独孤九剑 */}
+            {learnedSkills.includes('dugu_jiujian') && (() => {
+              const skill = skillManagerRef.current?.getSkill('dugujiujian');
+              const level = skillLevels['dugu_jiujian'] || 1;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+              return (
+                <button
+                  onClick={useDuGuJiuJian}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                  title="快捷键: 2"
               >
                 <div className="text-white text-center">
                   <div className="text-2xl mb-1">⚔️</div>
                   <div className="font-bold text-sm">独孤九剑</div>
-                  <div className="text-xs opacity-90">{skill?.character}</div>
+                  <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                   <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
                 </div>
               </button>
@@ -849,6 +929,7 @@ export default function GoBoardGame({
           {/* 技能3：腹语传音 */}
           {learnedSkills.includes('fuyu_chuanyin') && (() => {
             const skill = skillManagerRef.current?.getSkill('fuyuchuanyin');
+            const level = skillLevels['fuyu_chuanyin'] || 1;
             const canUse = skill && 'canUse' in skill && (skill as any).canUse();
             return (
               <button
@@ -864,92 +945,90 @@ export default function GoBoardGame({
                 <div className="text-white text-center">
                   <div className="text-2xl mb-1">🗨️</div>
                   <div className="font-bold text-sm">腹语传音</div>
-                  <div className="text-xs opacity-90">{skill?.character}</div>
+                  <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                   <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
                 </div>
               </button>
             );
           })()}
 
-          {/* 技能4：机关算尽 */}
-          {learnedSkills.includes('jiguan_suanjin') && (() => {
-            const skill = skillManagerRef.current?.getSkill('jiguansuanjin');
-            const canUse = skill && 'canUse' in skill && (skill as any).canUse();
-            const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
-            return (
-              <button
-                onClick={useJiGuanSuanJin}
-                disabled={!canUse}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  canUse
-                    ? 'bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 hover:scale-105 cursor-pointer shadow-lg'
-                    : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
-                }`}
-                title="快捷键: 4"
-              >
-                <div className="text-white text-center">
-                  <div className="text-2xl mb-1">🧩</div>
-                  <div className="font-bold text-sm">机关算尽</div>
-                  <div className="text-xs opacity-90">{skill?.character}</div>
-                  <div className="text-xs mt-1">
-                    {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+            {/* 技能4：机关算尽 */}
+            {learnedSkills.includes('jiguan_suanjin') && (() => {
+              const skill = skillManagerRef.current?.getSkill('jiguansuanjin');
+              const level = skillLevels['jiguan_suanjin'] || 1;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse();
+              const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
+              return (
+                <button
+                  onClick={useJiGuanSuanJin}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                  title="快捷键: 4"
+                >
+                  <div className="text-white text-center">
+                    <div className="text-2xl mb-1">🧩</div>
+                    <div className="font-bold text-sm">机关算尽</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">
+                      {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+                    </div>
                   </div>
+                </button>
+              );
+            })()}
+          </div>
+        </div>
+
+        {/* 形势判断结果显示 */}
+        {evaluation && (
+          <div className="bg-gradient-to-br from-green-900 to-green-800 border-4 border-green-500 rounded-xl p-4 text-white shadow-2xl">
+            <h3 className="text-lg font-bold text-center mb-3">⚔️ 独孤九剑 · 形势判断 ⚔️</h3>
+            <div className="space-y-2">
+              <div className="text-center text-xl font-bold text-yellow-300">
+                {evaluation.evaluation}
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="bg-black/30 p-2 rounded">
+                  <div className="font-semibold">黑方</div>
+                  <div>地盘: {evaluation.blackTerritory}</div>
+                  <div>提子: {evaluation.blackCaptures}</div>
+                  <div className="font-bold mt-1">总计: {evaluation.blackTerritory + evaluation.blackCaptures}</div>
                 </div>
-              </button>
-            );
-          })()}
+                <div className="bg-white/20 p-2 rounded">
+                  <div className="font-semibold">白方</div>
+                  <div>地盘: {evaluation.whiteTerritory}</div>
+                  <div>提子: {evaluation.whiteCaptures}</div>
+                  <div className="font-bold mt-1">总计: {evaluation.whiteTerritory + evaluation.whiteCaptures}</div>
+                </div>
+              </div>
+              <div className="text-center text-base">
+                优势分数: <span className="font-bold text-yellow-300">{evaluation.score > 0 ? '+' : ''}{evaluation.score}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* AI建议结果显示 */}
+        {suggestions.length > 0 && (
+          <div className="bg-gradient-to-br from-purple-900 to-purple-800 border-4 border-purple-500 rounded-xl p-4 text-white shadow-2xl">
+            <h3 className="text-lg font-bold text-center mb-3">🗨️ 腹语传音 · AI建议 🗨️</h3>
+            <div className="space-y-2">
+              {suggestions.map((suggestion, index) => (
+                <div key={index} className="bg-black/30 p-2 rounded">
+                  <div className="font-bold text-yellow-300">#{index + 1}</div>
+                  <div className="text-sm">位置: ({suggestion.position.row}, {suggestion.position.col})</div>
+                  <div className="text-xs text-purple-300">{suggestion.reason}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         </div>
       </div>
-
-      {/* 形势判断结果显示 */}
-      {evaluation && (
-        <div className="bg-gradient-to-br from-green-900 to-green-800 border-4 border-green-500 rounded-xl p-6 max-w-md text-white shadow-2xl">
-          <h3 className="text-xl font-bold text-center mb-4">⚔️ 独孤九剑 · 形势判断 ⚔️</h3>
-          <div className="space-y-3">
-            <div className="text-center text-2xl font-bold text-yellow-300">
-              {evaluation.evaluation}
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-black/30 p-3 rounded">
-                <div className="font-semibold">黑方</div>
-                <div>地盘: {evaluation.blackTerritory}</div>
-                <div>提子: {evaluation.blackCaptures}</div>
-                <div className="font-bold mt-1">总计: {evaluation.blackTerritory + evaluation.blackCaptures}</div>
-              </div>
-              <div className="bg-white/20 p-3 rounded">
-                <div className="font-semibold">白方</div>
-                <div>地盘: {evaluation.whiteTerritory}</div>
-                <div>提子: {evaluation.whiteCaptures}</div>
-                <div className="font-bold mt-1">总计: {evaluation.whiteTerritory + evaluation.whiteCaptures}</div>
-              </div>
-            </div>
-            <div className="text-center text-lg">
-              优势分数: <span className="font-bold text-yellow-300">{evaluation.score > 0 ? '+' : ''}{evaluation.score}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* AI建议结果显示 */}
-      {suggestions.length > 0 && (
-        <div className="bg-gradient-to-br from-purple-900 to-purple-800 border-4 border-purple-500 rounded-xl p-6 max-w-md text-white shadow-2xl">
-          <h3 className="text-xl font-bold text-center mb-4">🗨️ 腹语传音 · AI建议 🗨️</h3>
-          <div className="space-y-2">
-            {suggestions.map((suggestion, index) => (
-              <div key={index} className="bg-black/30 p-3 rounded flex items-center justify-between">
-                <div>
-                  <span className="font-bold text-yellow-300">#{index + 1}</span>
-                  {' '}位置: ({suggestion.position.row}, {suggestion.position.col})
-                </div>
-                <div className="text-sm">
-                  <span className="text-purple-300">{suggestion.reason}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* 游戏结果Modal */}
       {showResultModal && gameResult && (
         <GameResultModal
@@ -970,6 +1049,17 @@ export default function GoBoardGame({
             setGameResult(null);
             handleReset();
           }}
+        />
+      )}
+
+      {/* 机关算尽：试下棋盘Modal */}
+      {showVariationBoard && (
+        <VariationBoardModal
+          isOpen={showVariationBoard}
+          onClose={() => setShowVariationBoard(false)}
+          boardSize={size}
+          currentStones={variationStones}
+          nextPlayer={currentPlayer}
         />
       )}
     </div>

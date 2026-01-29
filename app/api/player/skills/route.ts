@@ -84,15 +84,13 @@ export async function GET(request: NextRequest) {
         return skill;
       }
 
-      // 根据等级计算属性
+      // 简化公式：等级 = 使用次数
       const level = skill.level;
-      const qiCost = Math.max(2, definition.baseQiCost - (level - 1) * 2);
-      const usesPerGame = definition.baseUsesPerGame + Math.floor((level - 1) / 2) * 2;
+      const usesPerGame = level; // Lv.1=1次, Lv.2=2次, Lv.3=3次, Lv.4=4次, Lv.5=5次
 
       return {
         ...skill,
         ...definition,
-        qiCost,
         usesPerGame,
         cooldown: definition.baseCooldown,
       };

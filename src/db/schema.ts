@@ -37,6 +37,7 @@ export const gameProgress = pgTable('game_progress', {
   // 技能系统
   unlockedSkills: json('unlocked_skills').$type<string[]>().default([]).notNull(),
   skillLevels: json('skill_levels').$type<Record<string, number>>().default({}).notNull(),
+  skillPoints: integer('skill_points').default(0).notNull(), // 可用技能点
   
   // 对战统计
   totalGames: integer('total_games').default(0).notNull(),

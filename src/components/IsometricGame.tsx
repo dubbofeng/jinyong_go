@@ -760,17 +760,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       
       setDialogueEngine(engine);
       
-      // 尝试从数据库获取头像路径，否则使用默认路径
-      let avatarPath = item.imagePath || null;
-      
-      // 如果item没有单独的avatarPath，构建默认路径
-      // 精灵图路径格式: /game/isometric/characters/npc_xxx.png
-      // 头像路径格式: /game/avatars/xxx.png
-      if (avatarPath && avatarPath.includes('/isometric/characters/')) {
-        avatarPath = avatarPath.replace('/isometric/characters/npc_', '/avatars/');
-      } else if (!avatarPath) {
-        avatarPath = `/game/avatars/${npcId}.png`;
-      }
+      // 使用NPC全身像的路径（头像会显示上1/3部分）
+      const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
       
       setCurrentNpcAvatar(avatarPath);
       
