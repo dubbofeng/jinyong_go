@@ -21,13 +21,15 @@ interface SkillPointsModalProps {
 }
 
 const SKILL_ICONS: Record<string, string> = {
-  kanglong_youhui: '🐉',
-  dugu_jiujian: '⚔️',
-  fuyu_chuanyin: '🗨️',
-  jiguan_suanjin: '🧩',
-  qizi_anqi: '🎯',
-  qiankun_danuo: '☯️',
-  beiming_shengong: '🌀',
+  kanglong_youhui: '/generated/skill/kanglongyouhui.png',
+  dugu_jiujian: '/generated/skill/dugujiujian.png',
+  fuyu_chuanyin: '/generated/skill/fuyuchuanyin.png',
+  jiguan_suanjin: '/generated/skill/jiguansuanjin.png',
+  qizi_anqi: '/generated/skill/qizi_anqi.png',
+  qiankun_danuo: '/generated/skill/qiankun_danuo.png',
+  yiyang_zhi: '/generated/skill/yiyang_zhi.png',
+  zuoyou_hubo: '/generated/skill/zuoyou_hubo.png',
+  beiming_shengong: '/generated/skill/beiming_shengong.png',
 };
 
 export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: SkillPointsModalProps) {
@@ -181,6 +183,7 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
               skills.map((skill) => {
                 const canUpgrade = skillPoints > 0 && skill.level < 9;
                 const icon = SKILL_ICONS[skill.skillId] || '❓';
+                const isImageIcon = icon.startsWith('/');
                 
                 return (
                   <div
@@ -188,7 +191,15 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
                     className="bg-gradient-to-r from-amber-800 to-amber-700 rounded-xl p-4 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="text-4xl">{icon}</div>
+                      {isImageIcon ? (
+                        <img
+                          src={icon}
+                          alt={skill.name}
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="text-4xl">{icon}</div>
+                      )}
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="text-xl font-bold text-white">{skill.name}</h3>

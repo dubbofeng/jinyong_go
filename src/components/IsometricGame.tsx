@@ -847,13 +847,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
               if (data.isNew) {
                 // 技能ID到图标的映射
                 const skillIcons: Record<string, string> = {
-                  kanglong_youhui: '🐉',
-                  dugu_jiujian: '⚔️',
-                  fuyu_chuanyin: '🗨️',
-                  jiguan_suanjin: '🧩',
-                  qizi_anqi: '🎯',
-                  qiankun_danuo: '☯️',
-                  beiming_shengong: '🌀',
+                  kanglong_youhui: '/generated/skill/kanglongyouhui.png',
+                  dugu_jiujian: '/generated/skill/dugujiujian.png',
+                  fuyu_chuanyin: '/generated/skill/fuyuchuanyin.png',
+                  jiguan_suanjin: '/generated/skill/jiguansuanjin.png',
+                  qizi_anqi: '/generated/skill/qizi_anqi.png',
+                  qiankun_danuo: '/generated/skill/qiankun_danuo.png',
+                  yiyang_zhi: '/generated/skill/yiyang_zhi.png',
+                  zuoyou_hubo: '/generated/skill/zuoyou_hubo.png',
+                  beiming_shengong: '/generated/skill/beiming_shengong.png',
                 };
                 
                 // 显示Toast

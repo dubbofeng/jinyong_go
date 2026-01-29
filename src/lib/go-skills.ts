@@ -1,14 +1,16 @@
 /**
  * 围棋武侠技能系统
  * 
- * 七个基础技能：
+ * 九个基础技能：
  * 1. 亢龙有悔（郭靖）- 悔棋
  * 2. 独孤九剑（令狐冲）- 形势判断
  * 3. 腹语传音（虚竹）- AI建议
  * 4. 机关算尽（黄蓉）- 变化图
  * 5. 棋子暗器（陈家洛）- 打歪对手刚下的棋子
  * 6. 乾坤大挪移（张无忌）- 交换上一手黑白棋子位置
- * 7. 北冥神功（段誉）- 恢复内力并清除技能冷却
+ * 7. 一阳指（ 一灯大师）- 限制对手落子区域
+ * 8. 左右互搏（周伯通）- 连下两手
+ * 9. 北冥神功（段誉）- 恢复内力并清除技能冷却
  */
 
 import type { GoEngine } from './go-engine';
@@ -867,7 +869,109 @@ export class QianKunDaNuoSkill implements Skill {
   }
 }
 
-// ==================== 技能7：北冥神功（内力回复）====================
+// ==================== 技能7：一阳指（限制区域）====================
+
+/**
+ * 一阳指技能
+ * 效果：限制对手下一手落子区域（水平/垂直分割）
+ */
+export class YiYangZhiSkill implements Skill {
+  id = 'yiyangzhi';
+  name = '一阳指';
+  nameEn = 'One Yang Finger';
+  character = '一灯大师';
+  description = '限制对手落子区域（水平/垂直分割）';
+  qiCost = 25;
+  maxUses: number;
+  currentUses: number;
+  cooldown: number;
+  currentCooldown: number;
+
+  constructor(maxUses: number = 1, cooldown: number = 20) {
+    this.maxUses = maxUses;
+    this.currentUses = maxUses;
+    this.cooldown = cooldown;
+    this.currentCooldown = 0;
+  }
+
+  use(): boolean {
+    if (this.currentUses <= 0 || this.currentCooldown > 0) {
+      return false;
+    }
+
+    this.currentUses--;
+    this.currentCooldown = this.cooldown;
+    return true;
+  }
+
+  updateCooldown(): void {
+    if (this.currentCooldown > 0) {
+      this.currentCooldown--;
+    }
+  }
+
+  reset() {
+    this.currentUses = this.maxUses;
+    this.currentCooldown = 0;
+  }
+
+  canUse(): boolean {
+    return this.currentUses > 0 && this.currentCooldown === 0;
+  }
+}
+
+// ==================== 技能8：左右互搏（连下两手）====================
+
+/**
+ * 左右互搏技能
+ * 效果：触发后可连下两手（本方额外一手）
+ */
+export class ZuoYouHuBoSkill implements Skill {
+  id = 'zuoyouhubo';
+  name = '左右互搏';
+  nameEn = 'Dual Wielding';
+  character = '周伯通';
+  description = '触发后可连下两手';
+  qiCost = 30;
+  maxUses: number;
+  currentUses: number;
+  cooldown: number;
+  currentCooldown: number;
+
+  constructor(maxUses: number = 1, cooldown: number = 10) {
+    this.maxUses = maxUses;
+    this.currentUses = maxUses;
+    this.cooldown = cooldown;
+    this.currentCooldown = 0;
+  }
+
+  use(): boolean {
+    if (this.currentUses <= 0 || this.currentCooldown > 0) {
+      return false;
+    }
+
+    this.currentUses--;
+    this.currentCooldown = this.cooldown;
+    return true;
+  }
+
+  updateCooldown(): void {
+    if (this.currentCooldown > 0) {
+      this.currentCooldown--;
+    }
+  }
+
+  reset() {
+    this.currentUses = this.maxUses;
+    this.currentCooldown = 0;
+  }
+
+  canUse(): boolean {
+    return this.currentUses > 0 && this.currentCooldown === 0;
+  }
+}
+
+// ==================== 技能9：北冥神功（内力回复）====================
 
 /**
  * 北冥神功技能
@@ -928,6 +1032,8 @@ export class SkillManager {
     this.initializeSkill('jiguansuanjin', 1);
     this.initializeSkill('qizianqi', 1);
     this.initializeSkill('qiankundanuo', 1);
+    this.initializeSkill('yiyangzhi', 1);
+    this.initializeSkill('zuoyouhubo', 1);
     this.initializeSkill('beimingshengong', 1);
   }
   
@@ -957,6 +1063,12 @@ export class SkillManager {
         break;
       case 'qiankundanuo':
         this.skills.set(skillId, new QianKunDaNuoSkill(level, 50));
+        break;
+      case 'yiyangzhi':
+        this.skills.set(skillId, new YiYangZhiSkill(level, 20));
+        break;
+      case 'zuoyouhubo':
+        this.skills.set(skillId, new ZuoYouHuBoSkill(level, 10));
         break;
       case 'beimingshengong':
         this.skills.set(skillId, new BeiMingShenGongSkill(level));

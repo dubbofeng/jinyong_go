@@ -23,6 +23,7 @@ export default function SkillUnlockToast({
   onClose
 }: SkillUnlockToastProps) {
   const [visible, setVisible] = useState(false);
+  const isImageIcon = skillIcon.startsWith('/');
 
   useEffect(() => {
     // 动画入场
@@ -55,7 +56,15 @@ export default function SkillUnlockToast({
         {/* 技能信息 */}
         <div className="bg-black/30 rounded-xl p-4 text-white">
           <div className="flex items-center gap-4 mb-3">
-            <div className="text-5xl">{skillIcon}</div>
+            {isImageIcon ? (
+              <img
+                src={skillIcon}
+                alt={skillName}
+                className="w-14 h-14 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="text-5xl">{skillIcon}</div>
+            )}
             <div className="flex-1">
               <div className="text-2xl font-bold text-yellow-300">{skillName}</div>
               <div className="text-sm text-amber-200">来自：{character}</div>

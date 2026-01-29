@@ -41,6 +41,18 @@ const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; characte
     character: '陈家洛',
     description: '陈家洛的棋子暗器，可以打歪对手刚下的棋子',
   },
+  yiyang_zhi: {
+    name: '一阳指',
+    nameEn: 'One Yang Finger',
+    character: '一灯大师',
+    description: '一阳指，限制对手下一手落子区域',
+  },
+  zuoyou_hubo: {
+    name: '左右互搏',
+    nameEn: 'Dual Wielding',
+    character: '周伯通',
+    description: '左右互搏，触发后可连下两手',
+  },
   qiankun_danuo: {
     name: '乾坤大挪移',
     nameEn: 'Heaven and Earth Shift',

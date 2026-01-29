@@ -566,14 +566,6 @@ GET /api/quests/player/:userId?type=active
       "status": "not_started",
       ...
     },
-    {
-      "id": "quest_020_murong_fu",
-      "name": { "zh": "斗转星移", "en": "Shifting Stars" },
-      "canStart": false,
-      "isActive": false,
-      "lockReason": "Prerequisites not met",
-      ...
-    }
   ],
   "count": 15
 }

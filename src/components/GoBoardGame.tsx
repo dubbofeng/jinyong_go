@@ -61,6 +61,77 @@ export default function GoBoardGame({
   const [skillLevels, setSkillLevels] = useState<Record<string, number>>({}); // 技能等级映射
   const [playerQi, setPlayerQi] = useState<number | null>(null);
   const [playerMaxQi, setPlayerMaxQi] = useState<number | null>(null);
+  const [boardPixelSize, setBoardPixelSize] = useState(() => Math.min(width, height));
+
+  const npcNameMap: Record<string, string> = {
+    musang_daoren: '木桑道人',
+    hong_qigong: '洪七公',
+    linghu_chong: '令狐冲',
+    guo_jing: '郭靖',
+    huang_rong: '黄蓉',
+    duan_yu: '段誉',
+    huangmei_seng: '黄眉僧',
+    duan_yanqing: '段延庆',
+    yideng_dashi: '一灯大师',
+    huang_yaoshi: '黄药师',
+    hei_baizi: '黑白子',
+    chen_jialuo: '陈家洛',
+    he_zudao: '何足道',
+    zhang_wuji: '张无忌',
+    zhou_botong: '周伯通',
+    xiao_longnv: '小龙女',
+    yang_guo: '杨过',
+    qiao_feng: '乔峰',
+    xu_zhu: '虚竹',
+    murong_fu: '慕容复',
+  };
+
+  const skillSpeakerMap: Record<string, string> = {
+    kanglongyouhui: '郭靖',
+    dugujiujian: '令狐冲',
+    fuyuchuanyin: '段延庆',
+    jiguansuanjin: '黄蓉',
+    qizianqi: '陈家洛',
+    qiankundanuo: '张无忌',
+    yiyangzhi: '一灯大师',
+    zuoyouhubo: '周伯通',
+    beimingshengong: '段誉',
+  };
+
+  const skillIconMap: Record<string, string> = {
+    kanglong_youhui: '/generated/skill/kanglongyouhui.png',
+    dugu_jiujian: '/generated/skill/dugujiujian.png',
+    fuyu_chuanyin: '/generated/skill/fuyuchuanyin.png',
+    jiguan_suanjin: '/generated/skill/jiguansuanjin.png',
+    qizi_anqi: '/generated/skill/qizi_anqi.png',
+    qiankun_danuo: '/generated/skill/qiankun_danuo.png',
+    yiyang_zhi: '/generated/skill/yiyang_zhi.png',
+    zuoyou_hubo: '/generated/skill/zuoyou_hubo.png',
+    beiming_shengong: '/generated/skill/beiming_shengong.png',
+  };
+
+  const renderSkillIcon = (skillId: string, name: string) => (
+    <img
+      src={skillIconMap[skillId]}
+      alt={name}
+      className="w-10 h-10 rounded-lg object-cover mx-auto mb-1"
+    />
+  );
+
+  // 一阳指：限制对手落子区域
+  const [yiYangRestriction, setYiYangRestriction] = useState<null | {
+    restrictedColor: 'black' | 'white';
+    allowedRegion: 'left' | 'right' | 'top' | 'bottom';
+    remainingMoves: number;
+  }>(null);
+  const [showYiYangSelect, setShowYiYangSelect] = useState(false);
+  const [pendingYiYangSkill, setPendingYiYangSkill] = useState<any>(null);
+
+  // 左右互搏：连下两手
+  const [doubleMoveState, setDoubleMoveState] = useState<null | {
+    color: 'black' | 'white';
+    remainingMoves: number;
+  }>(null);
   
   // 机关算尽：试下棋盘状态
   const [showVariationBoard, setShowVariationBoard] = useState(false);
@@ -105,6 +176,19 @@ export default function GoBoardGame({
       fetchLearnedSkills();
     }
   }, [session]);
+
+  useEffect(() => {
+    const updateBoardSize = () => {
+      const maxByHeight = window.innerHeight * 0.8;
+      const maxByWidth = window.innerWidth * 0.9;
+      const desired = Math.min(width, height, maxByHeight, maxByWidth);
+      setBoardPixelSize(Math.max(240, Math.floor(desired)));
+    };
+
+    updateBoardSize();
+    window.addEventListener('resize', updateBoardSize);
+    return () => window.removeEventListener('resize', updateBoardSize);
+  }, [width, height]);
 
   const fetchPlayerStats = useCallback(async () => {
     try {
@@ -176,6 +260,60 @@ export default function GoBoardGame({
     return true;
   };
 
+  const isPositionAllowed = (
+    position: { row: number; col: number },
+    restriction: { allowedRegion: 'left' | 'right' | 'top' | 'bottom' },
+    boardSize: number
+  ) => {
+    const mid = Math.floor(boardSize / 2);
+    switch (restriction.allowedRegion) {
+      case 'left':
+        return position.col <= mid - 1;
+      case 'right':
+        return position.col >= mid + 1;
+      case 'top':
+        return position.row <= mid - 1;
+      case 'bottom':
+        return position.row >= mid + 1;
+      default:
+        return true;
+    }
+  };
+
+  const findFirstAllowedMove = (
+    engine: GoEngine,
+    restriction: { allowedRegion: 'left' | 'right' | 'top' | 'bottom' },
+    boardSize: number
+  ): BoardPosition | null => {
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const position = { row, col };
+        if (!isPositionAllowed(position, restriction, boardSize)) {
+          continue;
+        }
+        if (engine.isValidMove(position, 'white')) {
+          return position;
+        }
+      }
+    }
+    return null;
+  };
+
+  const getRegionLabel = (region: 'left' | 'right' | 'top' | 'bottom') => {
+    switch (region) {
+      case 'left':
+        return '左半盘';
+      case 'right':
+        return '右半盘';
+      case 'top':
+        return '上半盘';
+      case 'bottom':
+        return '下半盘';
+      default:
+        return '指定区域';
+    }
+  };
+
   /**
    * 处理落子
    */
@@ -194,6 +332,15 @@ export default function GoBoardGame({
 
     // 使用函数式更新来避免闭包问题
     setCurrentPlayer((prevPlayer) => {
+      if (
+        yiYangRestriction &&
+        yiYangRestriction.restrictedColor === prevPlayer &&
+        !isPositionAllowed(position, yiYangRestriction, size)
+      ) {
+        setLastMessage('❌ 一阳指限制：此区域不可落子');
+        return prevPlayer;
+      }
+
       // 尝试通过规则引擎落子
       const result = engine.placeStone(position, prevPlayer);
       
@@ -221,8 +368,9 @@ export default function GoBoardGame({
         // 立即渲染棋盘，确保黑棋显示
         board.render();
         
-        // 计算下一个玩家
-        const nextPlayer = prevPlayer === 'black' ? 'white' : 'black';
+        const nextPlayer = (doubleMoveState && doubleMoveState.color === prevPlayer && doubleMoveState.remainingMoves > 0)
+          ? prevPlayer
+          : (prevPlayer === 'black' ? 'white' : 'black');
         
         // 更新手数
         setMoveCount((prev) => prev + 1);
@@ -232,6 +380,18 @@ export default function GoBoardGame({
           skillManagerRef.current.updateCooldowns();
           setSkillsRefreshKey(k => k + 1); // 刷新技能UI
         }
+
+        setYiYangRestriction(prev => {
+          if (!prev || prev.restrictedColor !== prevPlayer) return prev;
+          const remaining = prev.remainingMoves - 1;
+          return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
+        });
+
+        setDoubleMoveState(prev => {
+          if (!prev || prev.color !== prevPlayer) return prev;
+          const remaining = prev.remainingMoves - 1;
+          return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
+        });
         
         // 更新悬停提示的颜色
         board.setNextStoneColor(nextPlayer);
@@ -249,7 +409,7 @@ export default function GoBoardGame({
         return prevPlayer;
       }
     });
-  }, [currentPlayer, isAIThinking, vsAI]);
+  }, [currentPlayer, isAIThinking, vsAI, yiYangRestriction, size, doubleMoveState]);
 
   /**
    * AI落子
@@ -297,7 +457,17 @@ export default function GoBoardGame({
       }
 
       if (bestMove) {
-        const position = bestMove;
+        let position = bestMove;
+
+        if (yiYangRestriction && yiYangRestriction.restrictedColor === 'white') {
+          const allowedPreferred = isPositionAllowed(position, yiYangRestriction, size);
+          if (!allowedPreferred || !engineRef.current.isValidMove(position, 'white')) {
+            const fallback = findFirstAllowedMove(engineRef.current, yiYangRestriction, size);
+            if (fallback) {
+              position = fallback;
+            }
+          }
+        }
         
         // AI落子
         const result = engineRef.current.placeStone(position, 'white');
@@ -324,6 +494,12 @@ export default function GoBoardGame({
           }
           
           setMoveCount(prev => prev + 1);
+
+          setYiYangRestriction(prev => {
+            if (!prev || prev.restrictedColor !== 'white') return prev;
+            const remaining = prev.remainingMoves - 1;
+            return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
+          });
           
           // 更新技能冷却
           if (skillManagerRef.current) {
@@ -358,7 +534,7 @@ export default function GoBoardGame({
     } finally {
       setIsAIThinking(false);
     }
-  }, [vsAI, aiDifficulty, katagoEngine, size]);
+  }, [vsAI, aiDifficulty, katagoEngine, size, yiYangRestriction]);
 
   // 监听玩家切换，触发AI落子
   useEffect(() => {
@@ -378,8 +554,8 @@ export default function GoBoardGame({
     if (!canvas) return;
 
     // 设置Canvas尺寸
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = boardPixelSize;
+    canvas.height = boardPixelSize;
 
     // 创建棋盘实例
     const board = new GoBoard(canvas, size);
@@ -406,7 +582,7 @@ export default function GoBoardGame({
       board.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, width, height, vsAI, aiDifficulty]);
+  }, [size, boardPixelSize, vsAI, aiDifficulty]);
 
   const handlePass = () => {
     setConsecutivePasses(prev => prev + 1);
@@ -641,6 +817,11 @@ export default function GoBoardGame({
         skillManagerRef.current.resetAll();
         setSkillsRefreshKey(k => k + 1);
       }
+
+      setYiYangRestriction(null);
+      setShowYiYangSelect(false);
+      setPendingYiYangSkill(null);
+      setDoubleMoveState(null);
     }
   };
 
@@ -661,6 +842,20 @@ export default function GoBoardGame({
     const rowNum = size - row;
     
     return `${colChar}${rowNum}`;
+  };
+
+  const formatSpeakerMessage = (speaker: string, message: string) => `${speaker}：${message}`;
+
+  const getOpponentName = () => {
+    if (npcId && npcNameMap[npcId]) {
+      return npcNameMap[npcId];
+    }
+    return '对手';
+  };
+
+  const setSkillMessage = (skillId: string, message: string) => {
+    const speaker = skillSpeakerMap[skillId] || '系统';
+    setLastMessage(formatSpeakerMessage(speaker, message));
   };
 
   const handleUndo = () => {
@@ -749,7 +944,10 @@ export default function GoBoardGame({
       
       setMoveCount(prev => Math.max(0, prev - stepsToUndo));
       await applyQiDelta(-skill.qiCost);
-      setLastMessage(`✨ 使用【亢龙有悔】悔棋成功！剩余${skill.currentUses}次`);
+      setSkillMessage(
+        'kanglongyouhui',
+        `亢龙有悔，悔棋成功（撤销${stepsToUndo}手）${vsAI ? '，已撤销你和AI的落子' : ''}，剩余${skill.currentUses}次`
+      );
       setSkillsRefreshKey(k => k + 1);
     } else {
       setLastMessage('❌ 无法使用【亢龙有悔】');
@@ -777,7 +975,7 @@ export default function GoBoardGame({
       return;
     }
     
-    setLastMessage('🤔 AI分析中...');
+    setSkillMessage('dugujiujian', '独孤九剑推演局势中...');
     
     try {
       // 使用KataGo引擎获取详细分析
@@ -865,7 +1063,7 @@ export default function GoBoardGame({
           await applyQiDelta(-skill.qiCost);
           
           setEvaluation(result);
-          setLastMessage(`✨ 使用【独孤九剑】！剩余${skill.currentUses}次`);
+          setSkillMessage('dugujiujian', `${result.evaluation}，剩余${skill.currentUses}次`);
           setSkillsRefreshKey(k => k + 1);
           
           // 在棋盘上显示地盘归属
@@ -925,7 +1123,7 @@ export default function GoBoardGame({
       return;
     }
     
-    setLastMessage('🤔 AI计算中...');
+    setSkillMessage('fuyuchuanyin', '腹语传音推演中...');
     
     try {
       // 使用KataGo引擎获取真正的AI建议
@@ -987,7 +1185,10 @@ export default function GoBoardGame({
           await applyQiDelta(-skill.qiCost);
           
           setSuggestions(suggestions);
-          setLastMessage(`✨ 使用【腹语传音】！剩余${skill.currentUses}次`);
+          setSkillMessage(
+            'fuyuchuanyin',
+            `已给出推荐落点：${formatGoPosition(analysis.bestMove.row, analysis.bestMove.col)}，剩余${skill.currentUses}次`
+          );
           setSkillsRefreshKey(k => k + 1);
           
           // 在棋盘上标记建议位置
@@ -1060,7 +1261,7 @@ export default function GoBoardGame({
       setVariationStones(stones);
       setShowVariationBoard(true);
       await applyQiDelta(-skill.qiCost);
-      setLastMessage(`✨ 使用【机关算尽】创建试下棋盘！剩余${skill.currentUses}次`);
+      setSkillMessage('jiguansuanjin', `机关算尽已开启试下棋盘，剩余${skill.currentUses}次`);
       setSkillsRefreshKey(k => k + 1);
     } else {
       setLastMessage('❌ 无法使用【机关算尽】');
@@ -1111,9 +1312,13 @@ export default function GoBoardGame({
     await applyQiDelta(-skill.qiCost);
 
     const colorLabel = result.color === 'black' ? '黑子' : '白子';
-    setLastMessage(
-      `🎯 【棋子暗器】${colorLabel}从 ${formatGoPosition(result.from.row, result.from.col)} 打歪到 ${formatGoPosition(result.to.row, result.to.col)}`
+    setSkillMessage(
+      'qizianqi',
+      `棋子暗器出手，${colorLabel}从 ${formatGoPosition(result.from.row, result.from.col)} 打歪到 ${formatGoPosition(result.to.row, result.to.col)}`
     );
+    setTimeout(() => {
+      setLastMessage(formatSpeakerMessage(getOpponentName(), '😡 可恶！我的棋子竟被你打歪了！'));
+    }, 1200);
     setSkillsRefreshKey(k => k + 1);
   };
 
@@ -1168,12 +1373,118 @@ export default function GoBoardGame({
     const whiteFrom = formatGoPosition(result.white.from.row, result.white.from.col);
     const whiteTo = formatGoPosition(result.white.to.row, result.white.to.col);
 
-    setLastMessage(`🔄 使用【乾坤大挪移】黑子 ${blackFrom}→${blackTo}，白子 ${whiteFrom}→${whiteTo}`);
+    setSkillMessage(
+      'qiankundanuo',
+      `乾坤大挪移完成：黑子 ${blackFrom}→${blackTo}，白子 ${whiteFrom}→${whiteTo}`
+    );
     setSkillsRefreshKey(k => k + 1);
   };
 
   /**
-   * 技能7：北冥神功（回复内力并清除冷却）
+   * 技能7：一阳指（限制对手落子区域）
+   */
+  const useYiYangZhi = async () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('yiyangzhi');
+
+    if (!skill || !('use' in skill)) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【一阳指】使用次数已用完');
+      return;
+    }
+
+    if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
+      setLastMessage(`❌ 【一阳指】冷却中，还需${(skill as any).currentCooldown}手`);
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
+
+    setSkillMessage('yiyangzhi', '一阳指已起，请选择限制区域');
+    setPendingYiYangSkill(skill);
+    setShowYiYangSelect(true);
+  };
+
+  const confirmYiYangRegion = async (region: 'left' | 'right' | 'top' | 'bottom') => {
+    const skill = pendingYiYangSkill;
+    if (!skill || !('use' in skill)) return;
+
+    const success = (skill as any).use();
+    if (!success) {
+      setLastMessage('❌ 无法使用【一阳指】');
+      setShowYiYangSelect(false);
+      setPendingYiYangSkill(null);
+      return;
+    }
+
+    const restrictedColor = currentPlayer === 'black' ? 'white' : 'black';
+    setYiYangRestriction({
+      restrictedColor,
+      allowedRegion: region,
+      remainingMoves: 1,
+    });
+
+    await applyQiDelta(-skill.qiCost);
+    setShowYiYangSelect(false);
+    setPendingYiYangSkill(null);
+    setSkillMessage(
+      'yiyangzhi',
+      `限制${restrictedColor === 'black' ? '黑棋' : '白棋'}仅可在${getRegionLabel(region)}落子`
+    );
+    setSkillsRefreshKey(k => k + 1);
+  };
+
+  /**
+   * 技能8：左右互搏（连下两手）
+   */
+  const useZuoYouHuBo = async () => {
+    const skillManager = skillManagerRef.current;
+    const skill = skillManager?.getSkill('zuoyouhubo');
+
+    if (!skill || !('use' in skill)) return;
+
+    if (skill.currentUses <= 0) {
+      setLastMessage('❌ 【左右互搏】使用次数已用完');
+      return;
+    }
+
+    if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
+      setLastMessage(`❌ 【左右互搏】冷却中，还需${(skill as any).currentCooldown}手`);
+      return;
+    }
+
+    if (doubleMoveState) {
+      setLastMessage('❌ 【左右互搏】已在连下两手状态');
+      return;
+    }
+
+    const inWindow = moveCount >= 10 && moveCount <= 39;
+    if (!inWindow) {
+      setLastMessage('❌ 【左右互搏】仅限第11-40手之间使用');
+      return;
+    }
+
+    if (!canAffordSkill(skill)) {
+      return;
+    }
+
+    const success = (skill as any).use();
+    if (!success) {
+      setLastMessage('❌ 无法使用【左右互搏】');
+      return;
+    }
+
+    setDoubleMoveState({ color: currentPlayer, remainingMoves: 1 });
+    await applyQiDelta(-skill.qiCost);
+    setSkillMessage('zuoyouhubo', '左右互搏生效，获得额外一手');
+    setSkillsRefreshKey(k => k + 1);
+  };
+
+  /**
+   * 技能9：北冥神功（回复内力并清除冷却）
    */
   const useBeiMingShenGong = async () => {
     const skillManager = skillManagerRef.current;
@@ -1200,7 +1511,7 @@ export default function GoBoardGame({
     await applyQiDelta(result.qiRestore);
     skillManager?.clearAllCooldowns();
 
-    setLastMessage(`🌀 使用【北冥神功】恢复内力${result.qiRestore}点，已清除技能冷却`);
+    setSkillMessage('beimingshengong', `北冥神功恢复内力${result.qiRestore}点，已清除技能冷却`);
     setSkillsRefreshKey(k => k + 1);
   };
 
@@ -1322,7 +1633,7 @@ export default function GoBoardGame({
                   title="快捷键: 1"
                 >
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-1">🐉</div>
+                    {renderSkillIcon('kanglong_youhui', '亢龙有悔')}
                     <div className="font-bold text-sm">亢龙有悔</div>
                     <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                     <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
@@ -1350,7 +1661,7 @@ export default function GoBoardGame({
                   title="快捷键: 2"
               >
                 <div className="text-white text-center">
-                  <div className="text-2xl mb-1">⚔️</div>
+                  {renderSkillIcon('dugu_jiujian', '独孤九剑')}
                   <div className="font-bold text-sm">独孤九剑</div>
                   <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                   <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
@@ -1378,7 +1689,7 @@ export default function GoBoardGame({
                 title="快捷键: 3"
               >
                 <div className="text-white text-center">
-                  <div className="text-2xl mb-1">🗨️</div>
+                  {renderSkillIcon('fuyu_chuanyin', '腹语传音')}
                   <div className="font-bold text-sm">腹语传音</div>
                   <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                   <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
@@ -1407,7 +1718,7 @@ export default function GoBoardGame({
                   title="快捷键: 4"
                 >
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-1">🧩</div>
+                    {renderSkillIcon('jiguan_suanjin', '机关算尽')}
                     <div className="font-bold text-sm">机关算尽</div>
                     <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                     <div className="text-xs mt-1">
@@ -1438,7 +1749,7 @@ export default function GoBoardGame({
                   title="快捷键: 5"
                 >
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-1">🎯</div>
+                    {renderSkillIcon('qizi_anqi', '棋子暗器')}
                     <div className="font-bold text-sm">棋子暗器</div>
                     <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                     <div className="text-xs mt-1">
@@ -1468,7 +1779,7 @@ export default function GoBoardGame({
                   }`}
                 >
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-1">☯️</div>
+                    {renderSkillIcon('qiankun_danuo', '乾坤大挪移')}
                     <div className="font-bold text-sm">乾坤大挪移</div>
                     <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                     <div className="text-xs mt-1">
@@ -1480,7 +1791,73 @@ export default function GoBoardGame({
               );
             })()}
 
-            {/* 技能7：北冥神功 */}
+            {/* 技能7：一阳指 */}
+            {learnedSkills.includes('yiyang_zhi') && (() => {
+              const skill = skillManagerRef.current?.getSkill('yiyangzhi');
+              const level = skillLevels['yiyang_zhi'] || 1;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
+              const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
+              return (
+                <button
+                  onClick={useYiYangZhi}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-yellow-600 to-amber-800 border-yellow-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="text-white text-center">
+                    {renderSkillIcon('yiyang_zhi', '一阳指')}
+                    <div className="font-bold text-sm">一阳指</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">
+                      {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+                    </div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
+                  </div>
+                </button>
+              );
+            })()}
+
+            {/* 技能8：左右互搏 */}
+            {learnedSkills.includes('zuoyou_hubo') && (() => {
+              const skill = skillManagerRef.current?.getSkill('zuoyouhubo');
+              const level = skillLevels['zuoyou_hubo'] || 1;
+              const inWindow = moveCount >= 10 && moveCount <= 39;
+              const canUse = skill && 'canUse' in skill && (skill as any).canUse()
+                && inWindow
+                && !doubleMoveState
+                && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
+              const cooldown = skill && 'currentCooldown' in skill ? (skill as any).currentCooldown : 0;
+              return (
+                <button
+                  onClick={useZuoYouHuBo}
+                  disabled={!canUse}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    canUse
+                      ? 'bg-gradient-to-br from-pink-600 to-rose-800 border-pink-400 hover:scale-105 cursor-pointer shadow-lg'
+                      : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="text-white text-center">
+                    {renderSkillIcon('zuoyou_hubo', '左右互搏')}
+                    <div className="font-bold text-sm">左右互搏</div>
+                    <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
+                    <div className="text-xs mt-1">
+                      {cooldown > 0 ? `冷却: ${cooldown}手` : `剩余: ${skill?.currentUses}/${skill?.maxUses}`}
+                    </div>
+                    <div className="text-xs opacity-80">内力: {skill?.qiCost ?? '--'}</div>
+                    {!inWindow && (
+                      <div className="text-[10px] opacity-80 mt-1">仅限11-40手</div>
+                    )}
+                  </div>
+                </button>
+              );
+            })()}
+
+            {/* 技能9：北冥神功 */}
             {learnedSkills.includes('beiming_shengong') && (() => {
               const skill = skillManagerRef.current?.getSkill('beimingshengong');
               const level = skillLevels['beiming_shengong'] || 1;
@@ -1498,7 +1875,7 @@ export default function GoBoardGame({
                   title="快捷键: 6"
                 >
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-1">🌀</div>
+                    {renderSkillIcon('beiming_shengong', '北冥神功')}
                     <div className="font-bold text-sm">北冥神功</div>
                     <div className="text-xs opacity-90">{skill?.character} · Lv.{level}</div>
                     <div className="text-xs mt-1">剩余: {skill?.currentUses}/{skill?.maxUses}</div>
@@ -1556,6 +1933,50 @@ export default function GoBoardGame({
         )}
         </div>
       </div>
+      {showYiYangSelect && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+          <div className="bg-gray-900 border-2 border-yellow-500 rounded-xl p-6 w-[360px] text-white shadow-2xl">
+            <h3 className="text-center font-bold text-lg mb-4">☀️ 一阳指 · 选择限制区域</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                className="bg-yellow-700 hover:bg-yellow-600 rounded-lg py-2"
+                onClick={() => confirmYiYangRegion('top')}
+              >
+                上半盘
+              </button>
+              <button
+                className="bg-yellow-700 hover:bg-yellow-600 rounded-lg py-2"
+                onClick={() => confirmYiYangRegion('bottom')}
+              >
+                下半盘
+              </button>
+              <button
+                className="bg-yellow-700 hover:bg-yellow-600 rounded-lg py-2"
+                onClick={() => confirmYiYangRegion('left')}
+              >
+                左半盘
+              </button>
+              <button
+                className="bg-yellow-700 hover:bg-yellow-600 rounded-lg py-2"
+                onClick={() => confirmYiYangRegion('right')}
+              >
+                右半盘
+              </button>
+            </div>
+            <button
+              className="mt-4 w-full bg-gray-700 hover:bg-gray-600 rounded-lg py-2"
+              onClick={() => {
+                setShowYiYangSelect(false);
+                setPendingYiYangSkill(null);
+                setSkillMessage('yiyangzhi', '已取消一阳指');
+              }}
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 游戏结果Modal */}
       {showResultModal && gameResult && (
         <GameResultModal
@@ -1583,7 +2004,10 @@ export default function GoBoardGame({
       {showVariationBoard && (
         <VariationBoardModal
           isOpen={showVariationBoard}
-          onClose={() => setShowVariationBoard(false)}
+          onClose={() => {
+            setShowVariationBoard(false);
+            setSkillMessage('jiguansuanjin', '已退出试下棋盘');
+          }}
           boardSize={size}
           currentStones={variationStones}
           nextPlayer={currentPlayer}
