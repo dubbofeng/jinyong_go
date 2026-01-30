@@ -21,7 +21,7 @@ export const gameProgress = pgTable('game_progress', {
   experience: integer('experience').default(0).notNull(),
   
   // 当前位置
-  currentMap: varchar('current_map', { length: 100 }).default('huashan').notNull(),
+  currentMap: varchar('current_map', { length: 100 }).default('daoguan_scene').notNull(),
   currentX: integer('current_x').default(0).notNull(),
   currentY: integer('current_y').default(0).notNull(),
   

@@ -31,7 +31,7 @@ export default async function GamePage({ params }: { params: Promise<{ locale: s
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 to-slate-800">
-      <GameLayout mapId="huashan_scene" userId={session.user.id!} />
+      <GameLayout mapId="daoguan_scene" userId={session.user.id!} />
     </div>
   );
 }

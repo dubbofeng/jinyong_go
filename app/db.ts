@@ -33,7 +33,7 @@ export async function createUser(email: string, password: string, username?: str
       playerName: username || email.split('@')[0],
       level: 1,
       experience: 0,
-      currentMap: 'huashan',
+      currentMap: 'daoguan_scene',
       currentX: 0,
       currentY: 0,
       currentChapter: 1,
