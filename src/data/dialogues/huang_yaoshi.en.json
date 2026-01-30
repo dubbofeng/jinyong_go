@@ -33,7 +33,6 @@
         {
           "text": "Island Master Huang, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
-          "action": {"type": "battle", "value": "huang_yaoshi"},
           "nextNodeId": "start_battle"
         },
         {"text": "How are the Eight Trigrams used in Go?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Island Master Huang!",
-          "action": {"type": "battle", "value": "huang_yaoshi"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Huang Yaoshi",
       "text": "Remember, 'troops have no constant formation, water has no constant shape.' When using this technique, be flexible and don't be constrained by form. This old man has lived unconventionally - you must also learn to break conventions.",
-      "action": {"type": "skill", "value": {"skillId": "qimen_dunjia", "questId": "quest_010_huang_yaoshi"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Island Master Huang!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "huang_yaoshi"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

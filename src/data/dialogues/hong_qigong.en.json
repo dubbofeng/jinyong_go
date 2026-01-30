@@ -27,7 +27,6 @@
         {
           "text": "Senior, I'd like to challenge you again",
           "condition": {"type": "quest", "value": "defeated_hong_qigong"},
-          "action": {"type": "battle", "value": "hong_qigong"},
           "nextNodeId": "start_battle"
         },
         {"text": "I want to learn about Go first", "nextNodeId": "explain_go"},
@@ -62,7 +61,6 @@
       "options": [
         {
           "text": "Alright! Please teach me, Senior!",
-          "action": {"type": "battle", "value": "hong_qigong"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -82,7 +80,8 @@
     {
       "id": "teach_skill_detail",
       "speaker": "Hong Qigong",
-      "text": "Everyone makes mistakes in Go. This move gives you a chance to take back one move. But remember the rules: only once per game!",      "action": {"type": "skill", "value": {"skillId": "kanglong_youhui", "questId": "quest_002_hong_qigong"}},      "nextNodeId": "teach_complete"
+      "text": "Everyone makes mistakes in Go. This move gives you a chance to take back one move. But remember the rules: only once per game!",
+      "nextNodeId": "teach_complete"
     },
     {
       "id": "teach_complete",
@@ -91,7 +90,7 @@
       "options": [
         {"text": "Thank you, Senior!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
-        {"text": "Senior, may I challenge you again?", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"}
+        {"text": "Senior, may I challenge you again?", "nextNodeId": "start_battle"}
       ]
     },
     {
@@ -99,7 +98,7 @@
       "speaker": "Hong Qigong",
       "text": "Haha! Losing is no big deal. It's all about improving your skills. Want to try again?",
       "options": [
-        {"text": "Yes! Please let me try again, Senior!", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"},
+        {"text": "Yes! Please let me try again, Senior!", "nextNodeId": "start_battle"},
         {"text": "Let me practice more first", "nextNodeId": "not_ready"}
       ]
     },
@@ -117,7 +116,7 @@
       "speaker": "Hong Qigong",
       "text": "You've completed all the main quests! Xiangyang needs someone like you. But there's always more to learn in the martial arts world. Want to compete with me again?",
       "options": [
-        {"text": "Yes! Please teach me, Senior!", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"},
+        {"text": "Yes! Please teach me, Senior!", "nextNodeId": "start_battle"},
         {"text": "I need to consolidate what I've learned", "nextNodeId": "farewell"}
       ]
     },
@@ -126,7 +125,7 @@
       "speaker": "Hong Qigong",
       "text": "Ready for another game? Playing more will improve your skills!",
       "options": [
-        {"text": "Yes! Let's start!", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"},
+        {"text": "Yes! Let's start!", "nextNodeId": "start_battle"},
         {"text": "Next time", "nextNodeId": "farewell"}
       ]
     },
@@ -136,7 +135,7 @@
       "text": "Playing Go is like commanding an army - you must know when to advance and retreat, understand what's real and what's feint. Remember: corners are gold, edges are silver, center is grass. Don't rush to the middle at the start.",
       "options": [
         {"text": "I've learned so much!", "nextNodeId": "farewell"},
-        {"text": "May I challenge you again?", "action": {"type": "battle", "value": "hong_qigong"}, "nextNodeId": "start_battle"}
+        {"text": "May I challenge you again?", "nextNodeId": "start_battle"}
       ]
     },
     {

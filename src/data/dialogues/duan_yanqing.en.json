@@ -33,7 +33,6 @@
         {
           "text": "Senior, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_duan_yanqing"},
-          "action": {"type": "battle", "value": "duan_yanqing"},
           "nextNodeId": "start_battle"
         },
         {"text": "How is Ventriloquism used in Go?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Senior!",
-          "action": {"type": "battle", "value": "duan_yanqing"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Duan Yanqing",
       "text": "Remember, when using it, be 'silent and impossible to guard against.' Jianghu is treacherous - learn this technique and you'll have something to rely on when facing strong enemies.",
-      "action": {"type": "skill", "value": {"skillId": "fuyu_chuanyin", "questId": "quest_008_duan_yanqing"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Senior!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your experiences", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "duan_yanqing"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

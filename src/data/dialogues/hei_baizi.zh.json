@@ -33,7 +33,6 @@
         {
           "text": "前辈，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_hei_baizi"},
-          "action": {"type": "battle", "value": "hei_baizi"},
           "nextNodeId": "start_battle"
         },
         {"text": "什么是呕血破局？", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "请前辈赐教！",
-          "action": {"type": "battle", "value": "hei_baizi"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先准备一下", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "黑白子",
       "text": "记住，「置之死地而后生」。用此招时要有破釜沉舟的决心，方能发挥最大威力。",
-      "action": {"type": "skill", "value": {"skillId": "ouxue_poju", "questId": "quest_011_hei_baizi"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "多谢前辈！", "nextNodeId": "farewell"},
         {"text": "我还想听听前辈的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "hei_baizi"}, "nextNodeId": "start_battle"}
+        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
       ]
     },
     {

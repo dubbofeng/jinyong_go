@@ -69,7 +69,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [npcDialogueFlags, setNpcDialogueFlags] = useState<Record<string, string[]>>({});
   const npcDialogueFlagsRef = useRef<Record<string, string[]>>({});
   const currentNpcIdRef = useRef<string | null>(null);
-  const musangTutorialProgressRef = useRef<string | null>(null);
+  const tutorialProgressCacheRef = useRef<Record<string, string>>({});
+  const tutorialNodeCacheRef = useRef<Record<string, string>>({});
   const pendingStoryNpcRef = useRef<any>(null);
   const [activeStory, setActiveStory] = useState<any | null>(null);
   const [storySceneIndex, setStorySceneIndex] = useState(0);
@@ -120,52 +121,20 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
   const stories = storiesData as any[];
 
-  const MUSANG_TUTORIAL_NODES = [
-    'teach_intro',
-    'teach_basics',
-    'lesson_1',
-    'lesson_2',
-    'lesson_3',
-    'practice_1',
-    'after_practice_1',
-    'lesson_alive_eyes',
-    'lesson_true_eye',
-    'lesson_false_eye',
-    'lesson_tiger_mouth',
-    'lesson_atari',
-    'lesson_double_atari',
-    'lesson_ladder',
-    'lesson_snapback',
-    'lesson_net',
-    'lesson_4',
-    'lesson_5',
-    'practice_2',
-    'after_practice_2',
-    'lesson_6',
-    'lesson_7',
-    'final_test',
-    'after_final_test',
-    'graduation',
-    'graduation_2',
-    'farewell',
-  ];
-
-  const musangTutorialIndexMap = useRef(
-    new Map(MUSANG_TUTORIAL_NODES.map((id, index) => [id, index]))
-  );
-
-  const getMusangProgressNode = (flags: string[]): string | null => {
-    let bestIndex = -1;
+  const getLatestTutorialProgressNode = (flags: string[], npcId: string): string | null => {
+    let bestValue = -1;
     let bestNodeId: string | null = null;
 
     flags.forEach((flag) => {
-      const match = /^tutorial_progress:(\d+):(.+)$/.exec(flag);
+      const match = /^tutorial_progress:(?:([^:]+):)?(\d+):(.+)$/.exec(flag);
       if (!match) return;
-      const index = Number(match[1]);
-      const nodeId = match[2];
-      if (Number.isNaN(index)) return;
-      if (index > bestIndex) {
-        bestIndex = index;
+      const flagNpcId = match[1] || npcId;
+      if (flagNpcId !== npcId) return;
+      const value = Number(match[2]);
+      const nodeId = match[3];
+      if (Number.isNaN(value)) return;
+      if (value > bestValue) {
+        bestValue = value;
         bestNodeId = nodeId;
       }
     });
@@ -462,50 +431,6 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     };
   };
 
-  /**
-   * 将数据库瓦片数组转换为二维网格
-   */
-  const convertTilesToGrid = (tiles: any[], width: number, height: number) => {
-    const grid: any[][] = [];
-    
-    for (let y = 0; y < height; y++) {
-      grid[y] = [];
-      for (let x = 0; x < width; x++) {
-        const tile = tiles.find(t => t.x === x && t.y === y);
-        grid[y][x] = tile || {
-          x,
-          y,
-          tileType: 'wood',
-          walkable: true,
-        };
-      }
-    }
-    
-    return grid;
-  };
-
-  /**
-   * 生成条件提示文本
-   */
-  const getRequirementHint = (requirement: any): string => {
-    switch (requirement.type) {
-      case 'level':
-        return `等级达到 ${requirement.minLevel} 级`;
-      case 'chapter':
-        return `完成第 ${requirement.chapter} 章`;
-      case 'quest_completed':
-        return `完成任务：${requirement.questId}`;
-      case 'npc_defeated':
-        return `击败NPC：${requirement.npcId}`;
-      case 'skill_unlocked':
-        return `学会技能：${requirement.skillId}`;
-      case 'affection_level':
-        return `与 ${requirement.npcId} 好感度达到 ${requirement.minAffection}`;
-      default:
-        return requirement.description || '未知条件';
-    }
-  };
-
   // ==================== 引擎初始化 ====================
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -670,6 +595,28 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       if (ctx) {
         engineRef.current.renderPlayer(ctx);
       }
+    }
+  };
+
+  /**
+   * 生成条件提示文本
+   */
+  const getRequirementHint = (requirement: any): string => {
+    switch (requirement.type) {
+      case 'level':
+        return `等级达到 ${requirement.minLevel} 级`;
+      case 'chapter':
+        return `完成第 ${requirement.chapter} 章`;
+      case 'quest_completed':
+        return `完成任务：${requirement.questId}`;
+      case 'npc_defeated':
+        return `击败NPC：${requirement.npcId}`;
+      case 'skill_unlocked':
+        return `学会技能：${requirement.skillId}`;
+      case 'affection_level':
+        return `与 ${requirement.npcId} 好感度达到 ${requirement.minAffection}`;
+      default:
+        return requirement.description || '未知条件';
     }
   };
 
@@ -953,6 +900,36 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       case 'reward':
         // 处理奖励
         console.log('🎁 Reward action:', action.value);
+        {
+          const reward = action.value || {};
+          const rewardItems = Array.isArray(reward.items)
+            ? reward.items
+            : reward.itemId
+              ? [{ itemId: reward.itemId, quantity: reward.quantity ?? 1 }]
+              : [];
+          const questId = reward.questId as string | undefined;
+
+          if (questId) {
+            recordDialogueFlags([`quest:${questId}`]);
+          }
+
+          if (rewardItems.length > 0) {
+            fetch('/api/player/inventory/add', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ items: rewardItems }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (!data?.success) {
+                  console.warn('⚠️ 发放奖励失败:', data?.error);
+                }
+              })
+              .catch((error) => {
+                console.error('❌ 发放奖励失败:', error);
+              });
+          }
+        }
         break;
       
       case 'tutorial_board': {
@@ -988,17 +965,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       handleDialogueAction(node.action);
     }
 
-    if (node?.id && currentNpcIdRef.current === 'musang_daoren') {
-      const flags = npcDialogueFlagsRef.current.musang_daoren || [];
-      const hasCompleted = flags.includes('quest:learned_go_basics') || flags.includes('quest:skipped_tutorial');
-      if (!hasCompleted && musangTutorialIndexMap.current.has(node.id)) {
-        const index = musangTutorialIndexMap.current.get(node.id) ?? -1;
-        if (index >= 0) {
-          const flag = `tutorial_progress:${index}:${node.id}`;
-          if (musangTutorialProgressRef.current !== flag) {
-            musangTutorialProgressRef.current = flag;
-            recordDialogueFlags([flag]);
-          }
+    if (node?.id && node.action?.type === 'tutorial_board') {
+      const npcId = currentNpcIdRef.current;
+      if (npcId) {
+        const lastNode = tutorialNodeCacheRef.current[npcId];
+        if (lastNode !== node.id) {
+          const flag = `tutorial_progress:${npcId}:${Date.now()}:${node.id}`;
+          tutorialNodeCacheRef.current[npcId] = node.id;
+          tutorialProgressCacheRef.current[npcId] = flag;
+          recordDialogueFlags([flag]);
         }
       }
     }
@@ -1078,15 +1053,10 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
 
-      if (npcId === 'musang_daoren') {
-        const flags = npcDialogueFlagsRef.current.musang_daoren || [];
-        const hasCompleted = flags.includes('quest:learned_go_basics') || flags.includes('quest:skipped_tutorial');
-        if (!hasCompleted) {
-          const progressNodeId = getMusangProgressNode(flags);
-          if (progressNodeId && dialogueTree.nodes.some((node) => node.id === progressNodeId)) {
-            engine.setCurrentNodeId(progressNodeId);
-          }
-        }
+      const flags = npcDialogueFlagsRef.current[npcId] || [];
+      const progressNodeId = getLatestTutorialProgressNode(flags, npcId);
+      if (progressNodeId && dialogueTree.nodes.some((node) => node.id === progressNodeId)) {
+        engine.setCurrentNodeId(progressNodeId);
       }
 
       setDialogueEngine(engine);

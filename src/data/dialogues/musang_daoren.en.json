@@ -93,7 +93,6 @@
       "options": [
         {
           "text": "Yes, please teach me!",
-          "action": {"type": "tutorial_board", "value": "musang_liberties"},
           "nextNodeId": "after_practice_1"
         }
       ]
@@ -237,7 +236,6 @@
       "options": [
         {
           "text": "Alright!",
-          "action": {"type": "tutorial_board", "value": "musang_ko"},
           "nextNodeId": "after_practice_2"
         }
       ]
@@ -267,7 +265,6 @@
       "options": [
         {
           "text": "Yes! Please teach me!",
-          "action": {"type": "tutorial_board", "value": "musang_scoring"},
           "nextNodeId": "after_final_test"
         }
       ]
@@ -276,8 +273,7 @@
       "id": "after_final_test",
       "speaker": "Taoist Musang",
       "text": "Good! Excellent! Though you're a beginner, your intuition is outstanding. In this world, Go mastery determines martial prowess. Go out and explore, make friends through Go, and you'll understand the true essence.",
-      "nextNodeId": "graduation",
-      "action": {"type": "quest", "value": "learned_go_basics"}
+      "nextNodeId": "graduation"
     },
     {
       "id": "graduation",
@@ -297,7 +293,6 @@
       "id": "skip_tutorial",
       "speaker": "Taoist Musang",
       "text": "Oh? You already know Go? Good, then I won't be long-winded. Go to Mount Hua and find Hong Qigong - he has the way of true masters.",
-      "action": {"type": "quest", "value": "skipped_tutorial"},
       "nextNodeId": "farewell"
     },
     {

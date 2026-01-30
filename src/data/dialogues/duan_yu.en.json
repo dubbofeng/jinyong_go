@@ -33,7 +33,6 @@
         {
           "text": "Young Master Duan, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_duan_yu"},
-          "action": {"type": "battle", "value": "duan_yu"},
           "nextNodeId": "start_battle"
         },
         {"text": "Beiming Divine Art in Go?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Alright! Please guide me, Young Master Duan!",
-          "action": {"type": "battle", "value": "duan_yu"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Duan Yu",
       "text": "Remember, when using it, be 'flowing like clouds and water, in one breath.' My uncle says a true master reveals their skill with one move.",
-       "action": {"type": "skill", "value": {"skillId": "beiming_shengong", "questId": "quest_006_duan_yu"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Young Master Duan!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "duan_yu"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

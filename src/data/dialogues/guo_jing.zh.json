@@ -79,6 +79,69 @@
       "id": "learn_request",
       "speaker": "郭靖",
       "text": "靖哥哥资质愚钝，多亏恩师和蓉儿教导，才学得一些本事。既然你诚心求教，我便倾囊相授。",
+      "nextNodeId": "eye_intro"
+    },
+    {
+      "id": "eye_intro",
+      "speaker": "郭靖",
+      "text": "先从常见眼型讲起。你也可跳过，直接听兵法心得。",
+      "options": [
+        {
+          "text": "请郭大侠指点眼型",
+          "nextNodeId": "eye_straight_three"
+        },
+        {
+          "text": "先跳过，改日再学",
+          "nextNodeId": "teach_wisdom"
+        }
+      ]
+    },
+    {
+      "id": "eye_straight_three",
+      "speaker": "郭靖",
+      "text": "「直三」：三个点呈一线。此形通常需补一手，否则被占要点即死。",
+      "nextNodeId": "eye_bent_three"
+    },
+    {
+      "id": "eye_bent_three",
+      "speaker": "郭靖",
+      "text": "「弯三」：三个点弯成折角。此形也往往要补一手。",
+      "nextNodeId": "eye_t_four"
+    },
+    {
+      "id": "eye_t_four",
+      "speaker": "郭靖",
+      "text": "「丁四」：四点呈丁字形。看似宽阔，其实要点被占即可死。",
+      "nextNodeId": "eye_knife_five"
+    },
+    {
+      "id": "eye_knife_five",
+      "speaker": "郭靖",
+      "text": "「刀把五」：形如菜刀。通常为死形，需先手补棋方能做活。",
+      "nextNodeId": "eye_plum_five"
+    },
+    {
+      "id": "eye_plum_five",
+      "speaker": "郭靖",
+      "text": "「梅花五」：五点呈梅花状。多为死形，须先手补棋。",
+      "nextNodeId": "eye_straight_four"
+    },
+    {
+      "id": "eye_straight_four",
+      "speaker": "郭靖",
+      "text": "「直四」：四点成一直线。此形为经典活棋眼形，无需补棋。",
+      "nextNodeId": "eye_bent_four"
+    },
+    {
+      "id": "eye_bent_four",
+      "speaker": "郭靖",
+      "text": "「曲四」：四点弯曲排列。也是活棋眼形，一般不必补棋。",
+      "nextNodeId": "eye_grape_six"
+    },
+    {
+      "id": "eye_grape_six",
+      "speaker": "郭靖",
+      "text": "「葡萄六」：六点成特殊形。死活视局面而定，需判断要点。",
       "nextNodeId": "teach_wisdom"
     },
     {
@@ -143,10 +206,6 @@
       "id": "ready_challenge",
       "speaker": "郭靖",
       "text": "哦？看你气度不凡，想必棋力已有根基。好，那咱们就来战上一局！",
-      "action": {
-        "type": "battle",
-        "value": "guo_jing_battle_1"
-      },
       "nextNodeId": "farewell"
     },
     {

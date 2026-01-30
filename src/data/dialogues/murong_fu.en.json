@@ -28,7 +28,6 @@
         {
           "text": "Young Master Murong, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_murong_fu"},
-          "action": {"type": "battle", "value": "murong_fu"},
           "nextNodeId": "start_battle"
         },
         {"text": "How is your Go style?", "nextNodeId": "explain_skill"},
@@ -63,7 +62,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Young Master Murong!",
-          "action": {"type": "battle", "value": "murong_fu"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}

@@ -33,7 +33,6 @@
         {
           "text": "Chief Chen, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_chen_jialuo"},
-          "action": {"type": "battle", "value": "chen_jialuo"},
           "nextNodeId": "start_battle"
         },
         {"text": "What are Stone Hidden Weapons?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Chief Chen!",
-          "action": {"type": "battle", "value": "chen_jialuo"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Chen Jialuo",
       "text": "Remember, when using it, be 'fast, accurate, and fierce' - all three are indispensable. Jianghu is treacherous, the Go board is like a battlefield - stay vigilant at all times.",
-      "action": {"type": "skill", "value": {"skillId": "qizi_anqi", "questId": "quest_012_chen_jialuo"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Chief Chen!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "chen_jialuo"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

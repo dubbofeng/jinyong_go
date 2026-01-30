@@ -28,7 +28,6 @@
         {
           "text": "慕容公子，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_murong_fu"},
-          "action": {"type": "battle", "value": "murong_fu"},
           "nextNodeId": "start_battle"
         },
         {"text": "慕容公子棋风如何？", "nextNodeId": "explain_skill"},
@@ -63,7 +62,6 @@
       "options": [
         {
           "text": "请慕容公子赐教！",
-          "action": {"type": "battle", "value": "murong_fu"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先准备一下", "nextNodeId": "not_ready"}

@@ -28,7 +28,6 @@
         {
           "text": "Master, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_xu_zhu"},
-          "action": {"type": "battle", "value": "xu_zhu"},
           "nextNodeId": "start_battle"
         },
         {"text": "What is Breaking Zhenlong?", "nextNodeId": "explain_skill"},
@@ -63,7 +62,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Master!",
-          "action": {"type": "battle", "value": "xu_zhu"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}

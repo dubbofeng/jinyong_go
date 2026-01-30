@@ -28,7 +28,6 @@
         {
           "text": "Chief Qiao, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_qiao_feng"},
-          "action": {"type": "battle", "value": "qiao_feng"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -47,7 +46,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Chief Qiao!",
-          "action": {"type": "battle", "value": "qiao_feng"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}

@@ -453,76 +453,145 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
     npcId: 'guo_jing',
     startNodeId: 'greeting',
     nodes: [
-      { id: 'greeting', nextNodeId: 'first_meet' },
-      { id: 'first_meet', nextNodeId: 'check_status' },
+      { id: 'greeting', nextNodeId: 'check_status' },
       {
         id: 'check_status',
         options: [
           {
             optionId: '0',
-            nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_guo_jing', inverse: true }
+            nextNodeId: 'respect_response',
+            condition: { type: 'quest', value: 'unlock_skill_fuyu', inverse: true }
           },
           {
             optionId: '1',
-            nextNodeId: 'learned_spirit',
-            condition: { type: 'quest', value: 'defeated_guo_jing' }
+            nextNodeId: 'learn_request',
+            condition: { type: 'quest', value: 'unlock_skill_fuyu', inverse: true }
           },
           {
             optionId: '2',
-            nextNodeId: 'start_battle',
-            condition: { type: 'quest', value: 'defeated_guo_jing' },
-            action: { type: 'battle', value: 'guo_jing' }
+            nextNodeId: 'after_learn_chat',
+            condition: { type: 'quest', value: 'unlock_skill_fuyu' }
           },
-          { optionId: '3', nextNodeId: 'explain_spirit' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '3', nextNodeId: 'just_visit' }
         ]
       },
-      { id: 'explain_spirit', nextNodeId: 'explain_spirit_2' },
       {
-        id: 'explain_spirit_2',
+        id: 'ask_purpose',
         options: [
-          { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
+          { optionId: '0', nextNodeId: 'respect_response' },
+          { optionId: '1', nextNodeId: 'learn_request' },
+          { optionId: '2', nextNodeId: 'just_visit' }
         ]
       },
-      { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
+      { id: 'respect_response', nextNodeId: 'talk_rong' },
+      {
+        id: 'talk_rong',
+        options: [
+          { optionId: '0', nextNodeId: 'teach_wisdom' },
+          { optionId: '1', nextNodeId: 'challenge' }
+        ]
+      },
+      { id: 'learn_request', nextNodeId: 'eye_intro' },
+      {
+        id: 'eye_intro',
+        options: [
+          { optionId: '0', nextNodeId: 'eye_straight_three' },
+          { optionId: '1', nextNodeId: 'teach_wisdom' }
+        ]
+      },
+      {
+        id: 'eye_straight_three',
+        nextNodeId: 'eye_bent_three',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_straight_three' }
+      },
+      {
+        id: 'eye_bent_three',
+        nextNodeId: 'eye_t_four',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_bent_three' }
+      },
+      {
+        id: 'eye_t_four',
+        nextNodeId: 'eye_knife_five',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_t_four' }
+      },
+      {
+        id: 'eye_knife_five',
+        nextNodeId: 'eye_plum_five',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_knife_five' }
+      },
+      {
+        id: 'eye_plum_five',
+        nextNodeId: 'eye_straight_four',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_plum_five' }
+      },
+      {
+        id: 'eye_straight_four',
+        nextNodeId: 'eye_bent_four',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_straight_four' }
+      },
+      {
+        id: 'eye_bent_four',
+        nextNodeId: 'eye_grape_six',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_bent_four' }
+      },
+      {
+        id: 'eye_grape_six',
+        nextNodeId: 'teach_wisdom',
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_grape_six' }
+      },
+      { id: 'teach_wisdom', nextNodeId: 'teach_skill' },
+      { id: 'teach_skill', nextNodeId: 'after_teach' },
+      {
+        id: 'after_teach',
+        options: [
+          { optionId: '0', nextNodeId: 'thank_you' },
+          { optionId: '1', nextNodeId: 'challenge' }
+        ]
+      },
+      { id: 'challenge', nextNodeId: 'challenge_condition' },
       {
         id: 'challenge_condition',
         options: [
+          { optionId: '0', nextNodeId: 'accept_challenge' },
           {
-            optionId: '0',
-            nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'guo_jing' }
-          },
-          { optionId: '1', nextNodeId: 'not_ready' }
+            optionId: '1',
+            nextNodeId: 'ready_challenge',
+            condition: { type: 'level', value: 5 }
+          }
         ]
       },
-      { id: 'start_battle', action: { type: 'battle', value: 'guo_jing' } },
+      { id: 'accept_challenge', nextNodeId: 'farewell' },
       {
-        id: 'learned_spirit',
-        nextNodeId: 'spirit_complete',
-        action: { type: 'quest', value: 'quest_004_guo_jing' }
+        id: 'ready_challenge',
+        nextNodeId: 'farewell',
+        action: { type: 'battle', value: 'guo_jing_battle_1' }
       },
       {
-        id: 'spirit_complete',
+        id: 'just_visit',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'daily_chat' }
+          { optionId: '1', nextNodeId: 'learn_request' }
         ]
       },
+      { id: 'thank_you', nextNodeId: 'farewell' },
       {
-        id: 'try_again',
+        id: 'after_learn_chat',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
+          { optionId: '1', nextNodeId: 'talk_strategy' }
         ]
       },
       {
-        id: 'daily_chat',
+        id: 'talk_strategy',
         options: [{ optionId: '0', nextNodeId: 'farewell' }]
       },
-      { id: 'not_ready' },
+      {
+        id: 'final_chapter',
+        options: [
+          { optionId: '0', nextNodeId: 'farewell' },
+          { optionId: '1', nextNodeId: 'talk_strategy' }
+        ]
+      },
       { id: 'farewell' }
     ]
   },
@@ -959,7 +1028,14 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
         id: 'teach_skill_detail',
-        nextNodeId: 'teach_complete'
+        nextNodeId: 'teach_complete',
+        action: {
+          type: 'reward',
+          value: {
+            items: [{ itemId: 'qimen_dunjia', quantity: 1 }],
+            questId: 'quest_010_huang_yaoshi'
+          }
+        }
       },
       {
         id: 'teach_complete',
@@ -1011,7 +1087,13 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       {
         id: 'oupu_lesson',
         nextNodeId: 'oupu_complete',
-        action: { type: 'quest', value: 'studied_ouxuepu' }
+        action: {
+          type: 'reward',
+          value: {
+            items: [{ itemId: 'ouxue_poju', quantity: 1 }],
+            questId: 'quest_011_hei_baizi'
+          }
+        }
       },
       {
         id: 'oupu_complete',
@@ -1139,7 +1221,13 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       {
         id: 'story_lesson',
         nextNodeId: 'story_complete',
-        action: { type: 'quest', value: 'witnessed_he_zudao_enlightenment' }
+        action: {
+          type: 'reward',
+          value: {
+            items: [{ itemId: 'sansheng_heyi', quantity: 1 }],
+            questId: 'quest_013_he_zudao'
+          }
+        }
       },
       {
         id: 'story_complete',
@@ -1366,7 +1454,13 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       {
         id: 'puzzle_complete',
         nextNodeId: 'cold_farewell',
-        action: { type: 'quest', value: 'quest_016_xiao_longnv' }
+        action: {
+          type: 'reward',
+          value: {
+            items: [{ itemId: 'yunv_xinjing', quantity: 1 }],
+            questId: 'quest_016_xiao_longnv'
+          }
+        }
       },
       {
         id: 'cold_farewell',

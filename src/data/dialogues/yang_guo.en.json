@@ -28,7 +28,6 @@
         {
           "text": "Hero Yang, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_yang_guo"},
-          "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
         {"text": "I'd like to hear your thoughts on Go", "nextNodeId": "daily_chat"},
@@ -48,7 +47,6 @@
       "options": [
         {
           "text": "Please begin, Hero Yang!",
-          "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}

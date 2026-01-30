@@ -336,5 +336,190 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
       { row: 6, col: 5, color: 'black' }
     ],
     highlights: [{ row: 4, col: 4, label: 1 }]
+  },
+  guo_jing_eye_straight_three: {
+    id: 'guo_jing_eye_straight_three',
+    title: '直三',
+    description: '三点成一直线，通常需要补一手。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 3, color: 'black' },
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 5, col: 4, color: 'black' },
+      { row: 5, col: 5, color: 'black' },
+      { row: 4, col: 2, color: 'black' },
+      { row: 4, col: 6, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 3, label: 1 },
+      { row: 4, col: 4, label: 2 },
+      { row: 4, col: 5, label: 3 }
+    ]
+  },
+  guo_jing_eye_bent_three: {
+    id: 'guo_jing_eye_bent_three',
+    title: '弯三',
+    description: '三点成折角，通常需要补一手。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 4, col: 3, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 6, col: 4, color: 'black' },
+      { row: 6, col: 5, color: 'black' },
+      { row: 4, col: 6, color: 'black' },
+      { row: 5, col: 6, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 4, label: 1 },
+      { row: 4, col: 5, label: 2 },
+      { row: 5, col: 4, label: 3 }
+    ]
+  },
+  guo_jing_eye_t_four: {
+    id: 'guo_jing_eye_t_four',
+    title: '丁四',
+    description: '四点呈丁字形，常需补一手。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 3, col: 6, color: 'black' },
+      { row: 5, col: 4, color: 'black' },
+      { row: 5, col: 6, color: 'black' },
+      { row: 6, col: 5, color: 'black' },
+      { row: 4, col: 3, color: 'black' },
+      { row: 4, col: 7, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 4, label: 1 },
+      { row: 4, col: 5, label: 2 },
+      { row: 4, col: 6, label: 3 },
+      { row: 5, col: 5, label: 4 }
+    ]
+  },
+  guo_jing_eye_knife_five: {
+    id: 'guo_jing_eye_knife_five',
+    title: '刀把五',
+    description: '形如菜刀，多为死形。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 3, color: 'black' },
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 3, col: 6, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 5, col: 4, color: 'black' },
+      { row: 5, col: 5, color: 'black' },
+      { row: 6, col: 6, color: 'black' },
+      { row: 4, col: 2, color: 'black' },
+      { row: 4, col: 7, color: 'black' },
+      { row: 5, col: 7, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 3, label: 1 },
+      { row: 4, col: 4, label: 2 },
+      { row: 4, col: 5, label: 3 },
+      { row: 4, col: 6, label: 4 },
+      { row: 5, col: 6, label: 5 }
+    ]
+  },
+  guo_jing_eye_plum_five: {
+    id: 'guo_jing_eye_plum_five',
+    title: '梅花五',
+    description: '五点呈梅花状，多为死形。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 3, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 5, col: 5, color: 'black' },
+      { row: 2, col: 4, color: 'black' },
+      { row: 6, col: 4, color: 'black' },
+      { row: 4, col: 2, color: 'black' },
+      { row: 4, col: 6, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 4, label: 1 },
+      { row: 4, col: 3, label: 2 },
+      { row: 4, col: 5, label: 3 },
+      { row: 3, col: 4, label: 4 },
+      { row: 5, col: 4, label: 5 }
+    ]
+  },
+  guo_jing_eye_straight_four: {
+    id: 'guo_jing_eye_straight_four',
+    title: '直四',
+    description: '四点成一直线，为经典活形。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 3, color: 'black' },
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 3, col: 6, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 5, col: 4, color: 'black' },
+      { row: 5, col: 5, color: 'black' },
+      { row: 5, col: 6, color: 'black' },
+      { row: 4, col: 2, color: 'black' },
+      { row: 4, col: 7, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 3, label: 1 },
+      { row: 4, col: 4, label: 2 },
+      { row: 4, col: 5, label: 3 },
+      { row: 4, col: 6, label: 4 }
+    ]
+  },
+  guo_jing_eye_bent_four: {
+    id: 'guo_jing_eye_bent_four',
+    title: '曲四',
+    description: '四点弯曲排列，为活形。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 4, col: 3, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 6, col: 4, color: 'black' },
+      { row: 5, col: 5, color: 'black' },
+      { row: 6, col: 5, color: 'black' },
+      { row: 4, col: 6, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 4, label: 1 },
+      { row: 4, col: 5, label: 2 },
+      { row: 5, col: 4, label: 3 },
+      { row: 6, col: 4, label: 4 }
+    ]
+  },
+  guo_jing_eye_grape_six: {
+    id: 'guo_jing_eye_grape_six',
+    title: '葡萄六',
+    description: '六点成特殊形，死活视情况而定。',
+    boardSize: 9,
+    stones: [
+      { row: 3, col: 4, color: 'black' },
+      { row: 3, col: 5, color: 'black' },
+      { row: 3, col: 6, color: 'black' },
+      { row: 6, col: 4, color: 'black' },
+      { row: 6, col: 5, color: 'black' },
+      { row: 6, col: 6, color: 'black' },
+      { row: 4, col: 3, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 4, col: 7, color: 'black' },
+      { row: 5, col: 7, color: 'black' }
+    ],
+    highlights: [
+      { row: 4, col: 4, label: 1 },
+      { row: 4, col: 5, label: 2 },
+      { row: 4, col: 6, label: 3 },
+      { row: 5, col: 4, label: 4 },
+      { row: 5, col: 5, label: 5 },
+      { row: 5, col: 6, label: 6 }
+    ]
   }
 };

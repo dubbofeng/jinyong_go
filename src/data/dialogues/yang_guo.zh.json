@@ -28,7 +28,6 @@
         {
           "text": "杨大侠，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_yang_guo"},
-          "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
         {"text": "我想听听你的棋道心得", "nextNodeId": "daily_chat"},
@@ -48,7 +47,6 @@
       "options": [
         {
           "text": "请杨大侠赐教！",
-          "action": {"type": "battle", "value": "yang_guo"},
           "nextNodeId": "start_battle"
         },
         {"text": "我还想准备一下", "nextNodeId": "not_ready"}

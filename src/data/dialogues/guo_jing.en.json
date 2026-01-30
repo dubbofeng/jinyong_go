@@ -12,28 +12,70 @@
     {
       "id": "check_status",
       "speaker": "Guo Jing",
-      "text": "You look travel-worn. What brings you here?",
+      "nextNodeId": "eye_intro"
+    },
+    {
+      "id": "eye_intro",
+      "speaker": "Guo Jing",
+      "text": "Let's start with common eye shapes. You may also skip and hear my strategy notes instead.",
       "options": [
         {
-          "text": "I've long admired Hero Guo!",
-          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
-          "nextNodeId": "respect_response"
+          "text": "Please teach the eye shapes",
+          "nextNodeId": "eye_straight_three"
         },
         {
-          "text": "I'd like to learn Go from Hero Guo",
-          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
-          "nextNodeId": "learn_request"
-        },
-        {
-          "text": "Hero Guo, I'd like to hear more of your teachings",
-          "condition": {"type": "quest", "value": "unlock_skill_fuyu"},
-          "nextNodeId": "after_learn_chat"
-        },
-        {
-          "text": "Just passing by",
-          "nextNodeId": "just_visit"
+          "text": "Skip for now",
+          "nextNodeId": "teach_wisdom"
         }
       ]
+    },
+    {
+      "id": "eye_straight_three",
+      "speaker": "Guo Jing",
+      "text": "Straight three: three points in a line. It usually needs a move; the vital point taken means death.",
+      "nextNodeId": "eye_bent_three"
+    },
+    {
+      "id": "eye_bent_three",
+      "speaker": "Guo Jing",
+      "text": "Bent three: three points in an L-shape. It also typically needs a move to live.",
+      "nextNodeId": "eye_t_four"
+    },
+    {
+      "id": "eye_t_four",
+      "speaker": "Guo Jing",
+      "text": "T-four: four points in a T shape. It looks large but dies if the vital point is taken.",
+      "nextNodeId": "eye_knife_five"
+    },
+    {
+      "id": "eye_knife_five",
+      "speaker": "Guo Jing",
+      "text": "Knife-handle five: shaped like a cleaver. Usually dead unless you play first to fix it.",
+      "nextNodeId": "eye_plum_five"
+    },
+    {
+      "id": "eye_plum_five",
+      "speaker": "Guo Jing",
+      "text": "Plum blossom five: five points in a flower shape. Often dead without a timely move.",
+      "nextNodeId": "eye_straight_four"
+    },
+    {
+      "id": "eye_straight_four",
+      "speaker": "Guo Jing",
+      "text": "Straight four: four points in a line. A classic living shape that needs no extra move.",
+      "nextNodeId": "eye_bent_four"
+    },
+    {
+      "id": "eye_bent_four",
+      "speaker": "Guo Jing",
+      "text": "Bent four: four points in a curved shape. Also a living eye shape.",
+      "nextNodeId": "eye_grape_six"
+    },
+    {
+      "id": "eye_grape_six",
+      "speaker": "Guo Jing",
+      "text": "Grapes six: a special six-point shape. Life and death depend on the surrounding position.",
+      "nextNodeId": "teach_wisdom"
     },
     {
       "id": "ask_purpose",
@@ -289,10 +331,6 @@
       "id": "ready_challenge",
       "speaker": "Guo Jing",
       "text": "Oh? You carry yourself well - your Go skills must have a solid foundation. Good, let's play a game!",
-      "action": {
-        "type": "battle",
-        "value": "guo_jing_battle_1"
-      },
       "nextNodeId": "farewell"
     },
     {

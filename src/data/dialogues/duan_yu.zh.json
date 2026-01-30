@@ -33,7 +33,6 @@
         {
           "text": "段公子，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_duan_yu"},
-          "action": {"type": "battle", "value": "duan_yu"},
           "nextNodeId": "start_battle"
         },
         {"text": "北冥神功用在围棋上？", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "好！请段公子指教！",
-          "action": {"type": "battle", "value": "duan_yu"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先准备一下", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "段誉",
       "text": "记住，使用时要「行云流水，一气呵成」。我叔父说，真正的高手，出手便知有没有。",
-      "action": {"type": "skill", "value": {"skillId": "beiming_shengong", "questId": "quest_006_duan_yu"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "多谢段公子！", "nextNodeId": "farewell"},
         {"text": "我还想听听你的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "duan_yu"}, "nextNodeId": "start_battle"}
+        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
       ]
     },
     {

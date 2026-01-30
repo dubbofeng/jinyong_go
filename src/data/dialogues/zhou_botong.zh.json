@@ -33,7 +33,6 @@
         {
           "text": "老前辈，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_zhou_botong"},
-          "action": {"type": "battle", "value": "zhou_botong"},
           "nextNodeId": "start_battle"
         },
         {"text": "左右互搏是什么？", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "好！请老前辈指教！",
-          "action": {"type": "battle", "value": "zhou_botong"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先准备一下", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "周伯通",
       "text": "记住哦，用这招的时候要「左手画圆，右手画方」，不能乱！老顽童我练了好久才学会呢！",
-      "action": {"type": "skill", "value": {"skillId": "zuoyou_hubo", "questId": "quest_015_zhou_botong"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "多谢老前辈！", "nextNodeId": "farewell"},
         {"text": "我还想和您聊聊", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "zhou_botong"}, "nextNodeId": "start_battle"}
+        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
       ]
     },
     {

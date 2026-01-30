@@ -33,7 +33,6 @@
         {
           "text": "Leader Zhang, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
-          "action": {"type": "battle", "value": "zhang_wuji"},
           "nextNodeId": "start_battle"
         },
         {"text": "How is Great Universe Shift used in Go?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Leader Zhang!",
-          "action": {"type": "battle", "value": "zhang_wuji"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Zhang Wuji",
       "text": "Remember, 'combine hard and soft, complement Yin and Yang.' When using this technique, go with the flow and don't force it. Great-uncle taught me that mental cultivation is more important than moves.",
-        "action": {"type": "skill", "value": {"skillId": "qiankun_danuo", "questId": "quest_014_zhang_wuji"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Leader Zhang!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "zhang_wuji"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

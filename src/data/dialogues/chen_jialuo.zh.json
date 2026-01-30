@@ -33,7 +33,6 @@
         {
           "text": "陈总舵主，我想再和你对弈一局",
           "condition": {"type": "quest", "value": "defeated_chen_jialuo"},
-          "action": {"type": "battle", "value": "chen_jialuo"},
           "nextNodeId": "start_battle"
         },
         {"text": "棋子暗器是什么？", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "请陈总舵主赐教！",
-          "action": {"type": "battle", "value": "chen_jialuo"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先准备一下", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "陈家洛",
       "text": "记住，使用时要「快、准、狠」，三者缺一不可。江湖险恶，棋场如战场，你要时刻保持警惕。",
-      "action": {"type": "skill", "value": {"skillId": "qizi_anqi", "questId": "quest_012_chen_jialuo"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "多谢陈总舵主！", "nextNodeId": "farewell"},
         {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "action": {"type": "battle", "value": "chen_jialuo"}, "nextNodeId": "start_battle"}
+        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
       ]
     },
     {

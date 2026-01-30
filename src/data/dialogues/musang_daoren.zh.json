@@ -93,7 +93,6 @@
       "options": [
         {
           "text": "好的，请道长指教！",
-          "action": {"type": "tutorial_board", "value": "musang_liberties"},
           "nextNodeId": "after_practice_1"
         }
       ]
@@ -237,7 +236,6 @@
       "options": [
         {
           "text": "好！",
-          "action": {"type": "tutorial_board", "value": "musang_ko"},
           "nextNodeId": "after_practice_2"
         }
       ]
@@ -267,7 +265,6 @@
       "options": [
         {
           "text": "是！请道长指教！",
-          "action": {"type": "tutorial_board", "value": "musang_scoring"},
           "nextNodeId": "after_final_test"
         }
       ]
@@ -276,8 +273,7 @@
       "id": "after_final_test",
       "speaker": "木桑道长",
       "text": "好！好极了！你虽初学，但悟性甚高。这江湖中，围棋修为决定武功高低。你且下山闯荡，以棋会友，自能领悟真谛。",
-      "nextNodeId": "graduation",
-      "action": {"type": "quest", "value": "learned_go_basics"}
+      "nextNodeId": "graduation"
     },
     {
       "id": "graduation",
@@ -297,7 +293,6 @@
       "id": "skip_tutorial",
       "speaker": "木桑道长",
       "text": "哦？你已经懂围棋了？那好，老道就不啰嗦了。你去华山找洪七公吧，他那里有真正的高手之道。",
-      "action": {"type": "quest", "value": "skipped_tutorial"},
       "nextNodeId": "farewell"
     },
     {

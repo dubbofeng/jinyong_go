@@ -33,7 +33,6 @@
         {
           "text": "Miss Huang, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_huang_rong"},
-          "action": {"type": "battle", "value": "huang_rong"},
           "nextNodeId": "start_battle"
         },
         {"text": "What is Mechanism Mastery?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Alright! Please guide me, Miss Huang!",
-          "action": {"type": "battle", "value": "huang_rong"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Huang Rong",
       "text": "Remember, when using this technique, be 'meticulous and flawless.' Father always says, 'Too clever by half,' but on the Go board, cleverness wins games!",
-      "action": {"type": "skill", "value": {"skillId": "jiguan_suanjin", "questId": "quest_005_huang_rong"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Miss Huang!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "huang_rong"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

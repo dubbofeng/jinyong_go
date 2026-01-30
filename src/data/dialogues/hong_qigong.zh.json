@@ -27,7 +27,6 @@
         {
           "text": "前辈，我想再跟您切磋一局",
           "condition": {"type": "quest", "value": "defeated_hong_qigong"},
-          "action": {"type": "battle", "value": "hong_qigong"},
           "nextNodeId": "start_battle"
         },
         {"text": "我想先了解一下围棋", "nextNodeId": "explain_go"},
@@ -62,7 +61,6 @@
       "options": [
         {
           "text": "好！请前辈指教！",
-          "action": {"type": "battle", "value": "hong_qigong"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先准备一下", "nextNodeId": "not_ready"}
@@ -83,7 +81,6 @@
       "id": "teach_skill_detail",
       "speaker": "洪七公",
       "text": "下棋时难免失误，这招能让你有反悔一次的机会。不过记住，江湖规矩，每局只能用一次！",
-      "action": {"type": "skill", "value": {"skillId": "kanglong_youhui", "questId": "quest_002_hong_qigong"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -103,7 +100,6 @@
       "options": [
         {
           "text": "好！请前辈指教！",
-          "action": {"type": "battle", "value": "hong_qigong"},
           "nextNodeId": "start_battle"
         },
         {"text": "我先休息一下", "nextNodeId": "daily_chat"}

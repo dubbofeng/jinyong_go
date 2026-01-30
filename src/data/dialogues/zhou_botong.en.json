@@ -33,7 +33,6 @@
         {
           "text": "Old Senior, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_zhou_botong"},
-          "action": {"type": "battle", "value": "zhou_botong"},
           "nextNodeId": "start_battle"
         },
         {"text": "What is Ambidextrous Fighting?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Alright! Please guide me, Old Senior!",
-          "action": {"type": "battle", "value": "zhou_botong"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Zhou Botong",
       "text": "Remember, when using this technique, 'left hand draws circle, right hand draws square' - don't mix them up! The Old Urchin practiced for a long time to learn it!",
-      "action": {"type": "skill", "value": {"skillId": "zuoyou_hubo", "questId": "quest_015_zhou_botong"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Old Senior!", "nextNodeId": "farewell"},
         {"text": "I'd like to chat with you more", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "zhou_botong"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

@@ -33,7 +33,6 @@
         {
           "text": "Senior, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_he_zudao"},
-          "action": {"type": "battle", "value": "he_zudao"},
           "nextNodeId": "start_battle"
         },
         {"text": "What is Three Saints Unity?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Senior!",
-          "action": {"type": "battle", "value": "he_zudao"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "He Zudao",
       "text": "Remember, 'Qin has its rhythm, Go has its principles, Sword has its intent.' Only when the three unite can you unleash maximum power.",
-      "action": {"type": "skill", "value": {"skillId": "sansheng_heyi", "questId": "quest_013_he_zudao"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you for your teaching, Senior!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "he_zudao"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {

@@ -33,7 +33,6 @@
         {
           "text": "Master, I'd like to play another game with you",
           "condition": {"type": "quest", "value": "defeated_huangmei_seng"},
-          "action": {"type": "battle", "value": "huangmei_seng"},
           "nextNodeId": "start_battle"
         },
         {"text": "What is Zen Enlightenment of Go Mind?", "nextNodeId": "explain_skill"},
@@ -68,7 +67,6 @@
       "options": [
         {
           "text": "Please bestow your teaching, Master!",
-          "action": {"type": "battle", "value": "huangmei_seng"},
           "nextNodeId": "start_battle"
         },
         {"text": "Let me prepare first", "nextNodeId": "not_ready"}
@@ -95,7 +93,6 @@
       "id": "teach_skill_practice",
       "speaker": "Monk Huangmei",
       "text": "Remember, 'Form is emptiness, emptiness is form.' Sometimes, what seems like a useless move is actually the key to victory.",
-      "action": {"type": "skill", "value": {"skillId": "chanwu_qixin", "questId": "quest_007_huangmei_seng"}},
       "nextNodeId": "teach_complete"
     },
     {
@@ -105,7 +102,7 @@
       "options": [
         {"text": "Thank you, Master!", "nextNodeId": "farewell"},
         {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "action": {"type": "battle", "value": "huangmei_seng"}, "nextNodeId": "start_battle"}
+        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
       ]
     },
     {
