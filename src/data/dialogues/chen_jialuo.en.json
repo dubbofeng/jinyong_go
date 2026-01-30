@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Chen Jialuo",
-      "text": "Greetings, my friend. I am Chen Jialuo, Chief of the Red Flower Society. Your bearing is extraordinary - you must also be from Jianghu?",
-      "nextNodeId": "first_meet"
+      "text": "Greetings, my friend. I am Chen Jialuo, Chief of the Red Flower Society. Your bearing is extraordinary - you must also be from Jianghu?"
     },
     {
       "id": "first_meet",
       "speaker": "Chen Jialuo",
-      "text": "Though I've established myself in Jianghu through martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - would you care to exchange some moves with me?",
-      "nextNodeId": "check_status"
+      "text": "Though I've established myself in Jianghu through martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - would you care to exchange some moves with me?"
     },
     {
       "id": "check_status",
@@ -21,44 +19,44 @@
       "text": "I have a technique called 'Stone Hidden Weapons' that combines martial arts with Go skill - quite effective. If you're interested, I can teach you.",
       "options": [
         {
-          "text": "Please teach me, Chief Chen!",
-          "condition": {"type": "quest", "value": "defeated_chen_jialuo", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Chief Chen!"
         },
         {
-          "text": "I want to learn 'Stone Hidden Weapons'",
-          "condition": {"type": "quest", "value": "defeated_chen_jialuo"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn 'Stone Hidden Weapons'"
         },
         {
-          "text": "Chief Chen, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_chen_jialuo"},
-          "nextNodeId": "start_battle"
+          "text": "Chief Chen, I'd like to play another game with you"
         },
-        {"text": "What are Stone Hidden Weapons?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {
+          "text": "What are Stone Hidden Weapons?"
+        },
+        {
+          "text": "Let me prepare first"
+        }
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Chen Jialuo",
-      "text": "Jianghu people often use hidden weapons to defeat enemies. I've applied this principle to Go. 'Stone Hidden Weapons' allows you to strike unexpectedly and catch opponents off guard.",
-      "nextNodeId": "explain_skill_2"
+      "text": "Jianghu people often use hidden weapons to defeat enemies. I've applied this principle to Go. 'Stone Hidden Weapons' allows you to strike unexpectedly and catch opponents off guard."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Chen Jialuo",
       "text": "This technique lets you rapidly place stones at multiple key positions, like firing hidden weapons in succession, making it impossible for opponents to defend. However, it requires extremely high hand speed and judgment.",
       "options": [
-        {"text": "Brilliant! Please teach me, Chief Chen", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+        {
+          "text": "Brilliant! Please teach me, Chief Chen"
+        },
+        {
+          "text": "Let me think about it"
+        }
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Chen Jialuo",
-      "text": "Good! I most respect people with courage. However, to learn this technique, you must first prove your Go skill.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! I most respect people with courage. However, to learn this technique, you must first prove your Go skill."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +64,11 @@
       "text": "I've roamed Jianghu for many years and witnessed countless masters. If you can beat me on the Go board, it proves you're qualified to learn this technique.",
       "options": [
         {
-          "text": "Please bestow your teaching, Chief Chen!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Chief Chen!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {
+          "text": "Let me prepare first"
+        }
       ]
     },
     {
@@ -80,29 +79,32 @@
     {
       "id": "teach_skill",
       "speaker": "Chen Jialuo",
-      "text": "Excellent game! Your play is decisive and clean, quite heroic in style. In that case, I'll teach you 'Stone Hidden Weapons.'",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Excellent game! Your play is decisive and clean, quite heroic in style. In that case, I'll teach you 'Stone Hidden Weapons.'"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Chen Jialuo",
-      "text": "The key to this technique is: at crucial moments, rapidly place stones in succession like firing hidden weapons. Can be used once per game with a 20-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: at crucial moments, rapidly place stones in succession like firing hidden weapons. Can be used once per game with a 20-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Chen Jialuo",
-      "text": "Remember, when using it, be 'fast, accurate, and fierce' - all three are indispensable. Jianghu is treacherous, the Go board is like a battlefield - stay vigilant at all times.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, when using it, be 'fast, accurate, and fierce' - all three are indispensable. Jianghu is treacherous, the Go board is like a battlefield - stay vigilant at all times."
     },
     {
       "id": "teach_complete",
       "speaker": "Chen Jialuo",
       "text": "Now that you've learned this technique, you have the power to protect yourself against strong enemies. But remember, no matter how high your martial arts, you must have a chivalrous heart.",
       "options": [
-        {"text": "Thank you, Chief Chen!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {
+          "text": "Thank you, Chief Chen!"
+        },
+        {
+          "text": "I'd like to hear more of your insights"
+        },
+        {
+          "text": "I want to challenge you again"
+        }
       ]
     },
     {
@@ -110,22 +112,27 @@
       "speaker": "Chen Jialuo",
       "text": "Don't be discouraged. When I was learning martial arts, I also endured many hardships. Practice more and you'll surely improve.",
       "options": [
-        {"text": "I take my leave", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {
+          "text": "I take my leave"
+        },
+        {
+          "text": "Let me challenge you again!"
+        }
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Chen Jialuo",
-      "text": "Though I am Chief of the Red Flower Society, my greatest wish is to overthrow the Qing and restore the Ming, returning our Great Ming's realm. Life's game is the same.",
-      "nextNodeId": "daily_chat_2"
+      "text": "Though I am Chief of the Red Flower Society, my greatest wish is to overthrow the Qing and restore the Ming, returning our Great Ming's realm. Life's game is the same."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Chen Jialuo",
       "text": "However, no matter how the world changes, I will hold fast to my beliefs. The same goes for Go - have principles and don't resort to any means just for victory.",
       "options": [
-        {"text": "Chief Chen is truly noble!", "nextNodeId": "farewell"}
+        {
+          "text": "Chief Chen is truly noble!"
+        }
       ]
     },
     {

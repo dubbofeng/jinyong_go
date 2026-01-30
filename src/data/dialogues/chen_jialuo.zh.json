@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "陈家洛",
-      "text": "这位朋友，你好。在下陈家洛，红花会总舵主。看你举止不凡，想必也是江湖中人？",
-      "nextNodeId": "first_meet"
+      "text": "这位朋友，你好。在下陈家洛，红花会总舵主。看你举止不凡，想必也是江湖中人？"
     },
     {
       "id": "first_meet",
       "speaker": "陈家洛",
-      "text": "在下虽以武功立身江湖，但对棋道也颇有研究。听说你以棋会友，不知可愿与在下切磋一二？",
-      "nextNodeId": "check_status"
+      "text": "在下虽以武功立身江湖，但对棋道也颇有研究。听说你以棋会友，不知可愿与在下切磋一二？"
     },
     {
       "id": "check_status",
@@ -21,44 +19,44 @@
       "text": "在下有一套「棋子暗器」之法，将武功与棋艺相结合，颇有奇效。你若有兴趣，在下可以传授。",
       "options": [
         {
-          "text": "请陈总舵主指教！",
-          "condition": {"type": "quest", "value": "defeated_chen_jialuo", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请陈总舵主指教！"
         },
         {
-          "text": "我想学习「棋子暗器」",
-          "condition": {"type": "quest", "value": "defeated_chen_jialuo"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「棋子暗器」"
         },
         {
-          "text": "陈总舵主，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_chen_jialuo"},
-          "nextNodeId": "start_battle"
+          "text": "陈总舵主，我想再和你对弈一局"
         },
-        {"text": "棋子暗器是什么？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {
+          "text": "棋子暗器是什么？"
+        },
+        {
+          "text": "我还想准备一下"
+        }
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "陈家洛",
-      "text": "江湖中人常用暗器制敌，在下将这个道理用在围棋上。「棋子暗器」能让你在对局中出其不意，攻其不备。",
-      "nextNodeId": "explain_skill_2"
+      "text": "江湖中人常用暗器制敌，在下将这个道理用在围棋上。「棋子暗器」能让你在对局中出其不意，攻其不备。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "陈家洛",
       "text": "这招能让你快速在多个关键位置落子，如同暗器连发，让对手防不胜防。不过需要极高的手速和判断力。",
       "options": [
-        {"text": "高明！请陈总舵主教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
+        {
+          "text": "高明！请陈总舵主教我"
+        },
+        {
+          "text": "我再考虑考虑"
+        }
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "陈家洛",
-      "text": "好！在下平生最敬佩有胆识的人。不过要学这招，你得先证明自己的棋力。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！在下平生最敬佩有胆识的人。不过要学这招，你得先证明自己的棋力。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +64,11 @@
       "text": "在下纵横江湖多年，见识过无数高手。你若能在棋盘上胜过在下，就说明你有资格学这招。",
       "options": [
         {
-          "text": "请陈总舵主赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请陈总舵主赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {
+          "text": "我先准备一下"
+        }
       ]
     },
     {
@@ -80,29 +79,32 @@
     {
       "id": "teach_skill",
       "speaker": "陈家洛",
-      "text": "好棋！你这棋下得果断利落，颇有侠客之风。既然如此，在下就传你「棋子暗器」。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "好棋！你这棋下得果断利落，颇有侠客之风。既然如此，在下就传你「棋子暗器」。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "陈家洛",
-      "text": "这招的要领是：在关键时刻，快速连续落子，如同暗器连发。每局可用一次，冷却20步。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：在关键时刻，快速连续落子，如同暗器连发。每局可用一次，冷却20步。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "陈家洛",
-      "text": "记住，使用时要「快、准、狠」，三者缺一不可。江湖险恶，棋场如战场，你要时刻保持警惕。",
-      "nextNodeId": "teach_complete"
+      "text": "记住，使用时要「快、准、狠」，三者缺一不可。江湖险恶，棋场如战场，你要时刻保持警惕。"
     },
     {
       "id": "teach_complete",
       "speaker": "陈家洛",
       "text": "你既然学了这招，以后遇到强敌也有自保之力。不过要记住，武功再高，也要有侠义之心。",
       "options": [
-        {"text": "多谢陈总舵主！", "nextNodeId": "farewell"},
-        {"text": "我还想听听您的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {
+          "text": "多谢陈总舵主！"
+        },
+        {
+          "text": "我还想听听您的见解"
+        },
+        {
+          "text": "我想再挑战一次"
+        }
       ]
     },
     {
@@ -110,22 +112,27 @@
       "speaker": "陈家洛",
       "text": "不必气馁。在下当年学武，也是历经磨难。你再多练习，必有进步。",
       "options": [
-        {"text": "在下告退", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {
+          "text": "在下告退"
+        },
+        {
+          "text": "我再挑战一次！"
+        }
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "陈家洛",
-      "text": "在下虽是红花会总舵主，但最大的心愿是反清复明，还我大明江山。这棋局人生，也是如此。",
-      "nextNodeId": "daily_chat_2"
+      "text": "在下虽是红花会总舵主，但最大的心愿是反清复明，还我大明江山。这棋局人生，也是如此。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "陈家洛",
       "text": "不过，无论世事如何变幻，在下都会坚守心中的信念。下棋也是一样，要有原则，不能为了胜利而不择手段。",
       "options": [
-        {"text": "陈总舵主高义！", "nextNodeId": "farewell"}
+        {
+          "text": "陈总舵主高义！"
+        }
       ]
     },
     {
