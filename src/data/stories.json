@@ -76,7 +76,7 @@
     "scenes": [
       {
         "sceneId": "wanjie_00",
-        "backgroundId": "story_wanjie_stone_chamber",
+        "backgroundId": "story_wanjie_stone_board",
         "lines": [
           { "type": "narration", "text": "万劫谷石屋内，石屑纷飞，一张十九道棋盘在青石上刻成。" },
           { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "段施主，棋局定胜负，可敢一局？" },
@@ -114,7 +114,7 @@
       },
       {
         "sceneId": "wanjie_02",
-        "backgroundId": "story_wanjie_stone_board",
+        "backgroundId": "story_wanjie_stone_chamber",
         "lines": [
           { "type": "narration", "text": "棋局中盘，黑子突变，白势摇摇欲坠。" },
           { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "（低声）这一手若不变，怕要失先。" },
