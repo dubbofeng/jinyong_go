@@ -313,7 +313,7 @@ const npcData = [
     nameEn: 'Yang Guo',
     description: '神雕侠，小龙女的挚爱。棋艺亦高超，棋风多变。',
     descriptionEn: 'Divine Eagle Hero, deeply in love with Xiaolongnv. A refined Go player with adaptable style.',
-    mapId: 'huashan_scene',
+    mapId: 'gumu_scene',
     positionX: 20,
     positionY: 20,
     npcType: 'teacher',

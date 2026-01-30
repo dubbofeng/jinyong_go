@@ -14,7 +14,7 @@
     "db:seed": "dotenv -e .env.local -- tsx src/db/seed.ts",
     "init:npcs": "dotenv -e .env.local -- tsx scripts/init-all-npcs.ts",
     "init:maps": "dotenv -e .env.local -- tsx scripts/init-complete-maps.ts",
-    "generate:maps": "dotenv -e .env.local -- tsx scripts/generate-complete-maps.ts",
+    "generate:maps": "dotenv -e .env.local -- tsx scripts/generate-complete-maps.ts && dotenv -e .env.local -- tsx scripts/add-npcs-to-map.ts",
     "seed:maps": "dotenv -e .env.local -- tsx scripts/init-maps.ts",
     "db:reset": "pnpm db:push && pnpm init:npcs && pnpm init:maps",
     "generate:player": "tsx scripts/generate-player-sprite.ts",
