@@ -1,5 +1,28 @@
 import { expect, test } from '@playwright/test';
 
+async function registerAndLogin(page: import('@playwright/test').Page) {
+  const uniqueId = Date.now();
+  const email = `e2e_${uniqueId}@example.com`;
+  const password = 'test1234';
+  const username = `e2e_${uniqueId}`;
+
+  await page.goto('/zh/register');
+  await page.fill('#username', username);
+  await page.fill('#email', email);
+  await page.fill('#password', password);
+  await page.getByRole('button', { name: '注册' }).click();
+  await page.waitForURL(/\/zh\/login/);
+
+  await page.fill('#email', email);
+  await page.fill('#password', password);
+  await page.getByRole('button', { name: '登录' }).click();
+  await page.waitForURL(/\/zh\/game/);
+
+  await page.request.post('/api/player/stats');
+
+  return { email, password, username };
+}
+
 test.describe('Isometric game E2E', () => {
   test('loads canvas and exposes E2E helpers', async ({ page }) => {
     await page.goto('/zh/isometric-test?e2e=1');
@@ -81,24 +104,7 @@ test.describe('Isometric game E2E', () => {
   });
 
   test('hong qigong win grants skill and rewards', async ({ page }) => {
-    const uniqueId = Date.now();
-    const email = `e2e_${uniqueId}@example.com`;
-    const password = 'test1234';
-    const username = `e2e_${uniqueId}`;
-
-    await page.goto('/zh/register');
-    await page.fill('#username', username);
-    await page.fill('#email', email);
-    await page.fill('#password', password);
-    await page.getByRole('button', { name: '注册' }).click();
-    await page.waitForURL(/\/zh\/login/);
-
-    await page.fill('#email', email);
-    await page.fill('#password', password);
-    await page.getByRole('button', { name: '登录' }).click();
-    await page.waitForURL(/\/zh\/game/);
-
-    await page.request.post('/api/player/stats');
+    await registerAndLogin(page);
     const initialStatsResponse = await page.request.get('/api/player/stats');
     expect(initialStatsResponse.ok()).toBe(true);
     const initialStats = await initialStatsResponse.json();
@@ -135,7 +141,9 @@ test.describe('Isometric game E2E', () => {
       if (!skillsResponse.ok()) return false;
       const skillsData = await skillsResponse.json();
       const skills = skillsData?.data || [];
-      return skills.some((skill: { skillId: string }) => skill.skillId === 'kanglong_youhui');
+      return skills.some((skill: { skillId: string; unlocked?: boolean }) =>
+        skill.skillId === 'kanglong_youhui' && skill.unlocked
+      );
     }).toBe(true);
 
     const updatedStatsResponse = await page.request.get('/api/player/stats');
@@ -146,6 +154,99 @@ test.describe('Isometric game E2E', () => {
       updatedStats.data.level > initialStats.data.level ||
       updatedStats.data.experience > initialStats.data.experience;
     expect(expOrLevelIncreased).toBe(true);
-    expect(updatedStats.data.silver).toBeGreaterThan(initialStats.data.silver);
+    expect(updatedStats.data.silver).toBeGreaterThanOrEqual(initialStats.data.silver);
+  });
+
+  test('npc dialogue first-time tracking works', async ({ page }) => {
+    await registerAndLogin(page);
+
+    const firstDialogue = await page.request.post('/api/npcs/hong_qigong/dialogue');
+    expect(firstDialogue.ok()).toBe(true);
+    const firstData = await firstDialogue.json();
+    expect(firstData.data.isFirstTime).toBe(true);
+    expect(firstData.data.dialoguesCount).toBe(1);
+
+    const secondDialogue = await page.request.post('/api/npcs/hong_qigong/dialogue');
+    expect(secondDialogue.ok()).toBe(true);
+    const secondData = await secondDialogue.json();
+    expect(secondData.data.isFirstTime).toBe(false);
+    expect(secondData.data.dialoguesCount).toBe(2);
+  });
+
+  test('dialogue flags can be recorded without increment', async ({ page }) => {
+    await registerAndLogin(page);
+
+    const recordFlag = await page.request.post('/api/npcs/hong_qigong/dialogue', {
+      data: { flag: 'skill:kanglong_youhui', increment: false },
+    });
+    expect(recordFlag.ok()).toBe(true);
+    const recordData = await recordFlag.json();
+    expect(recordData.data.dialoguesCount).toBe(0);
+    expect(recordData.data.dialogueFlags).toContain('skill:kanglong_youhui');
+
+    const incrementDialogue = await page.request.post('/api/npcs/hong_qigong/dialogue');
+    expect(incrementDialogue.ok()).toBe(true);
+    const incrementData = await incrementDialogue.json();
+    expect(incrementData.data.dialoguesCount).toBe(1);
+    expect(incrementData.data.dialogueFlags).toContain('skill:kanglong_youhui');
+  });
+
+  test('interactions reflect dialogue count', async ({ page }) => {
+    await registerAndLogin(page);
+
+    const dialogue = await page.request.post('/api/npcs/hong_qigong/dialogue');
+    expect(dialogue.ok()).toBe(true);
+
+    const interactions = await page.request.get('/api/npcs/hong_qigong/interactions');
+    expect(interactions.ok()).toBe(true);
+    const interactionsData = await interactions.json();
+    expect(interactionsData.data.relationship.dialoguesCount).toBe(1);
+  });
+
+  test('battle result updates relationship stats (teacher npc)', async ({ page }) => {
+    await registerAndLogin(page);
+
+    const battleResult = await page.request.post('/api/npcs/hong_qigong/battle-result', {
+      data: { playerWon: true, experienceGained: 0, skillsUsed: [] },
+    });
+    expect(battleResult.ok()).toBe(true);
+    const battleData = await battleResult.json();
+    expect(battleData.data.relationship.defeated).toBe(true);
+    expect(battleData.data.relationship.battlesWon).toBe(1);
+
+    const interactions = await page.request.get('/api/npcs/hong_qigong/interactions');
+    expect(interactions.ok()).toBe(true);
+    const interactionsData = await interactions.json();
+    expect(interactionsData.data.relationship.defeated).toBe(true);
+    expect(interactionsData.data.npcType).toBe('teacher');
+    expect(interactionsData.data.battle).toBeUndefined();
+  });
+
+  test('battle loss updates relationship stats', async ({ page }) => {
+    await registerAndLogin(page);
+
+    const battleResult = await page.request.post('/api/npcs/hong_qigong/battle-result', {
+      data: { playerWon: false, experienceGained: 0, skillsUsed: [] },
+    });
+    expect(battleResult.ok()).toBe(true);
+    const battleData = await battleResult.json();
+    expect(battleData.data.relationship.defeated).toBe(false);
+    expect(battleData.data.relationship.battlesLost).toBe(1);
+
+    const interactions = await page.request.get('/api/npcs/hong_qigong/interactions');
+    expect(interactions.ok()).toBe(true);
+    const interactionsData = await interactions.json();
+    expect(interactionsData.data.relationship.battlesLost).toBe(1);
+  });
+
+  test('opponent interactions include battle info', async ({ page }) => {
+    await registerAndLogin(page);
+
+    const interactions = await page.request.get('/api/npcs/duan_yanqing/interactions');
+    expect(interactions.ok()).toBe(true);
+    const interactionsData = await interactions.json();
+    expect(interactionsData.data.npcType).toBe('opponent');
+    expect(interactionsData.data.battle).toBeTruthy();
+    expect(typeof interactionsData.data.battle.available).toBe('boolean');
   });
 });

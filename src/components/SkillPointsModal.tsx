@@ -12,6 +12,9 @@ interface Skill {
   level: number;
   unlocked: boolean;
   maxLevel: number;
+  qiCost: number;
+  cooldown: number;
+  usesPerGame: number;
 }
 
 interface SkillPointsModalProps {
@@ -55,7 +58,7 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
       if (skillsRes.ok) {
         const skillsData = await skillsRes.json();
         if (skillsData.success) {
-          setSkills(skillsData.data.filter((s: Skill) => s.unlocked));
+          setSkills(skillsData.data);
         }
       }
 
@@ -181,14 +184,21 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
               </div>
             ) : (
               skills.map((skill) => {
-                const canUpgrade = skillPoints > 0 && skill.level < 9;
+                const canUpgrade = skillPoints > 0 && skill.level < skill.maxLevel && skill.unlocked;
                 const icon = SKILL_ICONS[skill.skillId] || '❓';
                 const isImageIcon = icon.startsWith('/');
+                const qiLabel = skill.qiCost >= 0 ? '内力消耗' : '内力恢复';
+                const qiValue = Math.abs(skill.qiCost);
+                const cooldownText = skill.cooldown > 0 ? `${skill.cooldown}手` : '无';
+                const levelLabel = skill.unlocked ? `Lv.${skill.level}` : '未学会';
+                const usesText = skill.unlocked ? `${skill.level}/局` : '未解锁';
                 
                 return (
                   <div
                     key={skill.skillId}
-                    className="bg-gradient-to-r from-amber-800 to-amber-700 rounded-xl p-4 flex items-center justify-between"
+                    className={`bg-gradient-to-r from-amber-800 to-amber-700 rounded-xl p-4 flex items-center justify-between ${
+                      skill.unlocked ? '' : 'opacity-60'
+                    }`}
                   >
                     <div className="flex items-center gap-4 flex-1">
                       {isImageIcon ? (
@@ -204,17 +214,26 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
                         <div className="flex items-center gap-2">
                           <h3 className="text-xl font-bold text-white">{skill.name}</h3>
                           <span className="text-amber-300 text-sm">({skill.character})</span>
+                          {!skill.unlocked && (
+                            <span className="text-xs bg-gray-700 text-gray-200 px-2 py-1 rounded">
+                              未学会
+                            </span>
+                          )}
                         </div>
                         <p className="text-amber-200 text-sm mt-1">{skill.description}</p>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-yellow-300 font-bold">Lv.{skill.level}</span>
+                          <span className="text-yellow-300 font-bold">{levelLabel}</span>
                           <div className="flex-1 bg-amber-950 h-2 rounded-full overflow-hidden">
                             <div
                               className="bg-yellow-400 h-full transition-all"
-                              style={{ width: `${(skill.level / 9) * 100}%` }}
+                              style={{ width: `${(skill.level / skill.maxLevel) * 100}%` }}
                             />
                           </div>
-                          <span className="text-amber-300 text-xs">使用次数: {skill.level}/局</span>
+                          <span className="text-amber-300 text-xs">使用次数: {usesText}</span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-amber-200">
+                          <span>{qiLabel}: {qiValue}</span>
+                          <span>冷却: {cooldownText}</span>
                         </div>
                       </div>
                     </div>
@@ -227,7 +246,11 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
                           : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
                       }`}
                     >
-                      {skill.level >= 9 ? '已满级' : '升级 ⬆️'}
+                      {!skill.unlocked
+                        ? '未学会'
+                        : skill.level >= skill.maxLevel
+                          ? '已满级'
+                          : '升级 ⬆️'}
                     </button>
                   </div>
                 );

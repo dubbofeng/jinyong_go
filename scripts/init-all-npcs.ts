@@ -356,7 +356,7 @@ const npcData = [
     chapter: 5,
     spritePath: '/game/isometric/characters/npc_xu_zhu.png',
     avatarPath: '/game/avatars/xu_zhu.png',
-    aiPrompt: 'Isometric sprite of young Buddhist monk in simple robes, honest face, pure eyes, 2.5D game character, pixel art style',
+    aiPrompt: 'Isometric sprite of a 20-year-old Buddhist monk in simple robes, adult proportions (not childlike), honest face and calm eyes, 2.5D game character, pixel art style',
   },
   {
     npcId: 'murong_fu',

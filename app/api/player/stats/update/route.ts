@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '../../../../auth';
 import { db } from '../../../../../src/db';
-import { playerStats } from '../../../../../src/db/schema';
+import { playerStats, gameProgress } from '../../../../../src/db/schema';
 import { eq } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../../src/lib/rank-system';
 
@@ -60,6 +60,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // 经验变化
+    let levelDelta = 0;
     if (body.experienceDelta !== undefined) {
       let newExp = stats.experience + body.experienceDelta;
       let newLevel = stats.level;
@@ -84,6 +85,7 @@ export async function PATCH(request: NextRequest) {
         expToNext = 0;
       }
 
+      levelDelta = newLevel - stats.level;
       updates.experience = newExp;
       updates.level = newLevel;
       updates.experienceToNext = expToNext;
@@ -111,6 +113,25 @@ export async function PATCH(request: NextRequest) {
       .set(updates)
       .where(eq(playerStats.userId, userId))
       .returning();
+
+    if (body.experienceDelta !== undefined) {
+      const progress = await db.query.gameProgress.findFirst({
+        where: eq(gameProgress.userId, userId),
+      });
+
+      if (progress) {
+        const nextSkillPoints = progress.skillPoints + Math.max(0, levelDelta);
+        await db
+          .update(gameProgress)
+          .set({
+            level: updates.level ?? progress.level,
+            experience: updates.experience ?? progress.experience,
+            skillPoints: nextSkillPoints,
+            updatedAt: new Date(),
+          })
+          .where(eq(gameProgress.userId, userId));
+      }
+    }
 
     return NextResponse.json({
       success: true,

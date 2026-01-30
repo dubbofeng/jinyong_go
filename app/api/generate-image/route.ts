@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir, rename } from 'fs/promises';
-import { join } from 'path';
+import { writeFile, mkdir, rename, readFile } from 'fs/promises';
+import { join, extname } from 'path';
 import { existsSync } from 'fs';
 import { getPromptById } from '@/src/lib/image-prompts';
 import { db } from '@/app/db';
@@ -20,8 +20,42 @@ const getProvider = (): AIProvider => {
   return 'placeholder';
 };
 
+type ReferenceImage = { data: string; mimeType: string };
+
+const getMimeType = (filePath: string): string => {
+  const ext = extname(filePath).toLowerCase();
+  if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
+  if (ext === '.webp') return 'image/webp';
+  return 'image/png';
+};
+
+const resolvePublicImagePath = (inputPath: string): string => {
+  const publicRoot = join(process.cwd(), 'public');
+  if (inputPath.startsWith('/public/')) {
+    return join(process.cwd(), inputPath.replace(/^\/public\//, ''));
+  }
+  if (inputPath.startsWith('/')) {
+    return join(publicRoot, inputPath.replace(/^\//, ''));
+  }
+  return join(publicRoot, inputPath);
+};
+
+const extractReferenceFromPrompt = (prompt: string): { cleanedPrompt: string; referencePath?: string } => {
+  const match = prompt.match(/use character reference:\s*([^\s,]+)/i);
+  if (!match) return { cleanedPrompt: prompt };
+
+  const cleanedPrompt = prompt.replace(match[0], '').replace(/\s+,/g, ',').trim();
+  return { cleanedPrompt, referencePath: match[1] };
+};
+
 // Gemini 2.5 Flash Image API调用
-async function generateWithGemini(prompt: string, width: number, height: number, category: string): Promise<Buffer> {
+async function generateWithGemini(
+  prompt: string,
+  width: number,
+  height: number,
+  category: string,
+  referenceImage?: ReferenceImage
+): Promise<Buffer> {
   // 使用 Gemini 2.5 Flash Image 模型 (Nano Banana)
   // 文档: https://ai.google.dev/gemini-api/docs/image-generation
   
@@ -62,6 +96,19 @@ IMPORTANT: This is a game asset that needs:
   
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent`;
   
+  const parts: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [
+    { text: enhancedPrompt }
+  ];
+
+  if (referenceImage) {
+    parts.push({
+      inlineData: {
+        mimeType: referenceImage.mimeType,
+        data: referenceImage.data
+      }
+    });
+  }
+
   const response = await fetch(`${API_URL}?key=${process.env.GEMINI_API_KEY}`, {
     method: 'POST',
     headers: {
@@ -69,9 +116,7 @@ IMPORTANT: This is a game asset that needs:
     },
     body: JSON.stringify({
       contents: [{
-        parts: [{
-          text: enhancedPrompt
-        }]
+        parts
       }],
       generationConfig: {
         responseModalities: ['IMAGE'],
@@ -391,6 +436,23 @@ export async function POST(request: NextRequest) {
       await mkdir(saveDir, { recursive: true });
     }
 
+    const { cleanedPrompt, referencePath } = extractReferenceFromPrompt(template.prompt);
+    template.prompt = cleanedPrompt;
+
+    let referenceImage: ReferenceImage | undefined;
+    if (referencePath) {
+      try {
+        const resolvedPath = resolvePublicImagePath(referencePath);
+        const fileBuffer = await readFile(resolvedPath);
+        referenceImage = {
+          data: fileBuffer.toString('base64'),
+          mimeType: getMimeType(resolvedPath)
+        };
+      } catch (error) {
+        console.warn('[Reference Image Missing]:', referencePath, error);
+      }
+    }
+
     const provider = getProvider();
     console.log('[AI Provider]:', provider);
     console.log('[Generating]:', template.name);
@@ -402,7 +464,13 @@ export async function POST(request: NextRequest) {
     let status: string = 'generated';
 
     if (provider === 'gemini') {
-      imageBuffer = await generateWithGemini(template.prompt, template.width, template.height, template.category);
+      imageBuffer = await generateWithGemini(
+        template.prompt,
+        template.width,
+        template.height,
+        template.category,
+        referenceImage
+      );
     } else if (provider === 'huggingface') {
       imageBuffer = await generateWithHuggingFace(template.prompt, template.width, template.height);
     } else if (provider === 'stability') {

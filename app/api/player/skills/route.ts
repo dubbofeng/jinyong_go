@@ -131,23 +131,24 @@ export async function GET(request: NextRequest) {
       .from(playerSkills)
       .where(eq(playerSkills.userId, userId));
 
-    // 合并技能定义和玩家数据
-    const enrichedSkills = skills.map((skill: any) => {
-      const definition = SKILL_DEFINITIONS[skill.skillId as keyof typeof SKILL_DEFINITIONS];
-      
-      if (!definition) {
-        return skill;
-      }
+    const skillMap = new Map(skills.map((skill: any) => [skill.skillId, skill]));
 
-      // 简化公式：等级 = 使用次数
-      const level = skill.level;
-      const usesPerGame = level; // Lv.1=1次, Lv.2=2次, Lv.3=3次, Lv.4=4次, Lv.5=5次
+    // 合并技能定义和玩家数据（返回全部技能，未解锁的标记为 unlocked=false）
+    const enrichedSkills = Object.values(SKILL_DEFINITIONS).map((definition) => {
+      const skill = skillMap.get(definition.id);
+      const unlocked = Boolean(skill?.unlocked);
+      const level = unlocked ? skill.level : 0;
+      const usesPerGame = unlocked ? level : 0;
 
       return {
-        ...skill,
+        skillId: definition.id,
+        unlocked,
+        level,
+        experience: skill?.experience ?? 0,
         ...definition,
-        usesPerGame,
+        qiCost: definition.baseQiCost,
         cooldown: definition.baseCooldown,
+        usesPerGame,
       };
     });
 

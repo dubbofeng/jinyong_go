@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { IsometricEngine, type MapData } from '@/src/lib/isometric-engine';
 import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
 import DialogueBox from '@/src/components/DialogueBox';
+import StoryModal from '@/src/components/StoryModal';
+import storiesData from '@/src/data/stories.json';
 import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
@@ -63,6 +65,11 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [npcDialogueFlags, setNpcDialogueFlags] = useState<Record<string, string[]>>({});
   const npcDialogueFlagsRef = useRef<Record<string, string[]>>({});
   const currentNpcIdRef = useRef<string | null>(null);
+  const pendingStoryNpcRef = useRef<any>(null);
+  const [activeStory, setActiveStory] = useState<any | null>(null);
+  const [storySceneIndex, setStorySceneIndex] = useState(0);
+  const [storyLineIndex, setStoryLineIndex] = useState(0);
+  const [isStoryVisible, setIsStoryVisible] = useState(false);
   
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
@@ -99,6 +106,62 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const isE2EEnabled = useCallback((): boolean => {
     if (typeof window === 'undefined') return false;
     return new URLSearchParams(window.location.search).has('e2e');
+  }, []);
+
+  const stories = storiesData as any[];
+
+  const getStoryByNpcId = useCallback((npcId: string) => {
+    return stories.find((story) => Array.isArray(story.npcIds) && story.npcIds.includes(npcId)) || null;
+  }, [stories]);
+
+  const saveStoryProgress = useCallback(async (payload: {
+    storyId: string;
+    sceneId?: string | null;
+    lineIndex?: number;
+    backgroundId?: string | null;
+    completed?: boolean;
+    choiceId?: string | null;
+  }) => {
+    try {
+      await fetch('/api/stories/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.warn('保存故事进度失败:', error);
+    }
+  }, []);
+
+  const openStory = useCallback(async (story: any, progress?: any | null) => {
+    const defaultSceneIndex = 0;
+    const sceneIndex = progress?.sceneId
+      ? Math.max(0, story.scenes.findIndex((scene: any) => scene.sceneId === progress.sceneId))
+      : defaultSceneIndex;
+    const normalizedSceneIndex = sceneIndex >= 0 ? sceneIndex : defaultSceneIndex;
+    const scene = story.scenes[normalizedSceneIndex];
+    const maxLineIndex = Math.max(0, scene.lines.length - 1);
+    const normalizedLineIndex = Math.min(progress?.lineIndex ?? 0, maxLineIndex);
+
+    setActiveStory(story);
+    setStorySceneIndex(normalizedSceneIndex);
+    setStoryLineIndex(normalizedLineIndex);
+    setIsStoryVisible(true);
+
+    await saveStoryProgress({
+      storyId: story.storyId,
+      sceneId: scene.sceneId,
+      lineIndex: normalizedLineIndex,
+      backgroundId: scene.backgroundId,
+      completed: false,
+    });
+  }, [saveStoryProgress]);
+
+  const closeStory = useCallback(() => {
+    setIsStoryVisible(false);
+    setActiveStory(null);
+    setStorySceneIndex(0);
+    setStoryLineIndex(0);
   }, []);
 
   // 地图ID到名称的映射（现在使用翻译）
@@ -860,25 +923,28 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   /**
    * 开始与NPC对话
    */
-  const startDialogue = useCallback(async (item: any) => {
+  const getNpcIdFromItem = useCallback((item: any) => {
+    let npcId = '';
+    if (item.itemId && item.itemId.startsWith('npc_')) {
+      npcId = item.itemId.substring(4);
+    }
+
+    if (!npcId) {
+      const npcIdMap: Record<string, string> = {
+        '洪七公': 'hong_qigong',
+        '郭靖': 'guo_jing',
+        '令狐冲': 'linghu_chong',
+        '黄蓉': 'huang_rong',
+      };
+      npcId = npcIdMap[item.itemName] || '';
+    }
+
+    return npcId;
+  }, []);
+
+  const startDialogueInternal = useCallback(async (item: any) => {
     try {
-      // 从item.itemId提取NPC ID（格式：npc_xxxx -> xxxx）
-      let npcId = '';
-      if (item.itemId && item.itemId.startsWith('npc_')) {
-        npcId = item.itemId.substring(4); // 移除 'npc_' 前缀
-      }
-      
-      // 如果无法从itemId提取，尝试使用旧的映射表（向后兼容）
-      if (!npcId) {
-        const npcIdMap: Record<string, string> = {
-          '洪七公': 'hong_qigong',
-          '郭靖': 'guo_jing',
-          '令狐冲': 'linghu_chong',
-          '黄蓉': 'huang_rong',
-        };
-        npcId = npcIdMap[item.itemName] || '';
-      }
-      
+      const npcId = getNpcIdFromItem(item);
       if (!npcId) {
         console.warn(`未找到 NPC ${item.itemName} 的ID`);
         await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
@@ -911,35 +977,189 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           console.warn('记录NPC对话次数失败:', error);
         }
       }
-      
-      // 加载对话树（根据当前语言环境）
+
       const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
-      
-      // 创建对话引擎，传入玩家状态
+
       const playerState = {
         completedQuests: completedQuestsRef.current,
         npcDialoguesCount: npcDialogueCountsRef.current,
         npcDialogueFlags: npcDialogueFlagsRef.current,
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
-      
+
       setDialogueEngine(engine);
-      
-      // 使用NPC全身像的路径（头像会显示上1/3部分）
+
       const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
-      
       setCurrentNpcAvatar(avatarPath);
-      
-      // 更新当前对话节点和选项
+
       updateDialogueState(engine);
-      
-      // 显示对话框
       setIsDialogueVisible(true);
     } catch (error) {
       console.error('启动对话失败:', error);
       await showAlert(`无法与 ${item.itemName} 对话`, 'error');
     }
-  }, [isE2EEnabled, locale, showAlert, updateDialogueState]);
+  }, [getNpcIdFromItem, isE2EEnabled, locale, showAlert, updateDialogueState]);
+
+  const startDialogue = useCallback(async (item: any) => {
+    if (isE2EEnabled()) {
+      await startDialogueInternal(item);
+      return;
+    }
+
+    const npcId = getNpcIdFromItem(item);
+    if (!npcId) {
+      await startDialogueInternal(item);
+      return;
+    }
+
+    const story = getStoryByNpcId(npcId);
+    if (!story) {
+      await startDialogueInternal(item);
+      return;
+    }
+
+    try {
+      const progressResponse = await fetch(`/api/stories/progress?storyId=${story.storyId}`);
+      if (progressResponse.ok) {
+        const progressData = await progressResponse.json();
+        if (progressData?.data?.completed) {
+          await startDialogueInternal(item);
+          return;
+        }
+
+        pendingStoryNpcRef.current = item;
+        await openStory(story, progressData?.data || null);
+        return;
+      }
+    } catch (error) {
+      console.warn('获取故事进度失败:', error);
+    }
+
+    pendingStoryNpcRef.current = item;
+    await openStory(story, null);
+  }, [getNpcIdFromItem, getStoryByNpcId, isE2EEnabled, openStory, startDialogueInternal]);
+
+  const handleStoryAdvance = useCallback(async () => {
+    if (!activeStory) return;
+    const scene = activeStory.scenes[storySceneIndex];
+    const isLastLine = storyLineIndex >= scene.lines.length - 1;
+
+    if (!isLastLine) {
+      const nextLineIndex = storyLineIndex + 1;
+      setStoryLineIndex(nextLineIndex);
+      await saveStoryProgress({
+        storyId: activeStory.storyId,
+        sceneId: scene.sceneId,
+        lineIndex: nextLineIndex,
+        backgroundId: scene.backgroundId,
+        completed: false,
+      });
+      return;
+    }
+
+    if (scene.choices && scene.choices.length > 0) {
+      return;
+    }
+
+    const nextSceneIndex = storySceneIndex + 1;
+    if (nextSceneIndex < activeStory.scenes.length) {
+      const nextScene = activeStory.scenes[nextSceneIndex];
+      setStorySceneIndex(nextSceneIndex);
+      setStoryLineIndex(0);
+      await saveStoryProgress({
+        storyId: activeStory.storyId,
+        sceneId: nextScene.sceneId,
+        lineIndex: 0,
+        backgroundId: nextScene.backgroundId,
+        completed: false,
+      });
+      return;
+    }
+
+    await saveStoryProgress({
+      storyId: activeStory.storyId,
+      sceneId: scene.sceneId,
+      lineIndex: storyLineIndex,
+      backgroundId: scene.backgroundId,
+      completed: true,
+    });
+
+    closeStory();
+
+    if (pendingStoryNpcRef.current) {
+      const npcItem = pendingStoryNpcRef.current;
+      pendingStoryNpcRef.current = null;
+      await startDialogueInternal(npcItem);
+    }
+  }, [activeStory, storyLineIndex, storySceneIndex, saveStoryProgress, closeStory, startDialogueInternal]);
+
+  const applyStoryRewards = useCallback(async (rewards?: {
+    exp?: number;
+    silver?: number;
+    items?: Array<{ itemId: string; quantity?: number }>;
+  }) => {
+    if (!rewards) return;
+
+    const tasks: Array<Promise<Response>> = [];
+
+    if (rewards.exp || rewards.silver) {
+      tasks.push(
+        fetch('/api/player/stats/update', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            experienceDelta: rewards.exp || 0,
+            silverDelta: rewards.silver || 0,
+          }),
+        })
+      );
+    }
+
+    if (rewards.items && rewards.items.length > 0) {
+      tasks.push(
+        fetch('/api/player/inventory/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: rewards.items.map((item) => ({
+              itemId: item.itemId,
+              quantity: item.quantity ?? 1,
+            })),
+          }),
+        })
+      );
+    }
+
+    if (tasks.length === 0) return;
+
+    try {
+      await Promise.all(tasks);
+    } catch (error) {
+      console.warn('发放故事奖励失败:', error);
+    }
+  }, []);
+
+  const handleStoryChoice = useCallback(async (choice: any) => {
+    if (!activeStory) return;
+    const scene = activeStory.scenes[storySceneIndex];
+    await applyStoryRewards(choice?.rewards);
+    await saveStoryProgress({
+      storyId: activeStory.storyId,
+      sceneId: scene.sceneId,
+      lineIndex: storyLineIndex,
+      backgroundId: scene.backgroundId,
+      completed: true,
+      choiceId: choice?.choiceId || null,
+    });
+
+    closeStory();
+
+    if (pendingStoryNpcRef.current) {
+      const npcItem = pendingStoryNpcRef.current;
+      pendingStoryNpcRef.current = null;
+      await startDialogueInternal(npcItem);
+    }
+  }, [activeStory, storyLineIndex, storySceneIndex, applyStoryRewards, saveStoryProgress, closeStory, startDialogueInternal]);
 
   /**
    * E2E测试辅助方法（通过window.__e2e暴露）
@@ -1410,6 +1630,16 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       )}
       
       {/* 对话框 */}
+      <StoryModal
+        isOpen={isStoryVisible}
+        story={activeStory}
+        sceneIndex={storySceneIndex}
+        lineIndex={storyLineIndex}
+        onAdvance={handleStoryAdvance}
+        onChoose={handleStoryChoice}
+        onClose={closeStory}
+      />
+
       <DialogueBox
         node={currentDialogueNode}
         options={dialogueOptions}

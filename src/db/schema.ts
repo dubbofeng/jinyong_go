@@ -265,6 +265,20 @@ export const playerSkills = pgTable('player_skills', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+// 故事进度表（剧情播放与断点续播）
+export const storyProgress = pgTable('story_progress', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  storyId: varchar('story_id', { length: 100 }).notNull(),
+  sceneId: varchar('scene_id', { length: 100 }),
+  lineIndex: integer('line_index').notNull().default(0),
+  backgroundId: varchar('background_id', { length: 100 }),
+  completed: boolean('completed').notNull().default(false),
+  choiceId: varchar('choice_id', { length: 100 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 // 物品定义表（统一管理：道具、装饰物、植物、建筑等）
 export const items: any = pgTable('items', {
   id: serial('id').primaryKey(),
