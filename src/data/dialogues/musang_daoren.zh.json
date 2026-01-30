@@ -89,11 +89,11 @@
     {
       "id": "practice_1",
       "speaker": "木桑道长",
-      "text": "来，咱们下一局九路棋，老道让你先走。你慢慢体会气与提子的妙处。",
+      "text": "来，咱们用九路棋摆个小型棋形，看看气与提子的关系。",
       "options": [
         {
           "text": "好的，请道长指教！",
-          "action": {"type": "battle", "value": "musang_daoren_tutorial_1"},
+          "action": {"type": "tutorial_board", "value": "musang_liberties"},
           "nextNodeId": "after_practice_1"
         }
       ]
@@ -101,7 +101,25 @@
     {
       "id": "after_practice_1",
       "speaker": "木桑道长",
-      "text": "不错不错！老道我这些年来棋艺虽不算高，但对围棋的热爱从未衰减。你这一局下得还像个样子。",
+      "text": "不错不错！一眼看出哪里是气口，提子也就顺理成章了。",
+      "nextNodeId": "lesson_alive_eyes"
+    },
+    {
+      "id": "lesson_alive_eyes",
+      "speaker": "木桑道长",
+      "text": "再讲「两眼活棋」。一块棋若能做出两眼，便不会被提走，称为活棋。",
+      "nextNodeId": "lesson_true_eye"
+    },
+    {
+      "id": "lesson_true_eye",
+      "speaker": "木桑道长",
+      "text": "所谓「真眼」，是对手无法落子的眼位。即使轮到他，也不能在此落子。",
+      "nextNodeId": "lesson_false_eye"
+    },
+    {
+      "id": "lesson_false_eye",
+      "speaker": "木桑道长",
+      "text": "「假眼」看似成眼，却能被对手破坏。你要学会分辨真假，免得误判生死。",
       "nextNodeId": "lesson_4"
     },
     {
@@ -119,11 +137,11 @@
     {
       "id": "practice_2",
       "speaker": "木桑道长",
-      "text": "再来一局，老道我特意设个劫给你看看。",
+      "text": "再看一处劫形，劫争的规矩可要记牢。",
       "options": [
         {
           "text": "好！",
-          "action": {"type": "battle", "value": "musang_daoren_tutorial_2"},
+          "action": {"type": "tutorial_board", "value": "musang_ko"},
           "nextNodeId": "after_practice_2"
         }
       ]
@@ -149,11 +167,11 @@
     {
       "id": "final_test",
       "speaker": "木桑道长",
-      "text": "好了，基本规则你都学会了。老道我再和你下一局十九路，看看你学得如何。",
+      "text": "好了，最后看看如何数目，明白目数就知胜负。",
       "options": [
         {
           "text": "是！请道长指教！",
-          "action": {"type": "battle", "value": "musang_daoren_final_test"},
+          "action": {"type": "tutorial_board", "value": "musang_scoring"},
           "nextNodeId": "after_final_test"
         }
       ]
@@ -203,7 +221,7 @@
     {
       "id": "farewell",
       "speaker": "木桑道长",
-      "text": "去吧去吧！老道我要继续下棋了。你若有空，随时回来找我对弈几局！"
+      "text": "去吧去吧！老道我要继续研读棋谱了。你若有空，随时回来找我聊棋！"
     }
   ]
 }

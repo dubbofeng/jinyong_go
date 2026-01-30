@@ -89,11 +89,11 @@
     {
       "id": "practice_1",
       "speaker": "Taoist Musang",
-      "text": "Come, let's play a 9x9 game. I'll let you go first. Slowly experience the mysteries of liberties and capturing.",
+      "text": "Come, let's set up a small 9x9 shape and see how liberties and captures work.",
       "options": [
         {
           "text": "Yes, please teach me!",
-          "action": {"type": "battle", "value": "musang_daoren_tutorial_1"},
+          "action": {"type": "tutorial_board", "value": "musang_liberties"},
           "nextNodeId": "after_practice_1"
         }
       ]
@@ -101,7 +101,25 @@
     {
       "id": "after_practice_1",
       "speaker": "Taoist Musang",
-      "text": "Excellent! Excellent! Though my Go skills aren't that high these years, my love for Go has never diminished. You played quite well for your first game.",
+      "text": "Excellent. Once you can see the last liberty, capturing becomes straightforward.",
+      "nextNodeId": "lesson_alive_eyes"
+    },
+    {
+      "id": "lesson_alive_eyes",
+      "speaker": "Taoist Musang",
+      "text": "Next is the idea of two eyes. A group with two eyes lives and cannot be captured.",
+      "nextNodeId": "lesson_true_eye"
+    },
+    {
+      "id": "lesson_true_eye",
+      "speaker": "Taoist Musang",
+      "text": "A true eye is a point the opponent cannot play in. Even on their turn, they cannot place a stone there.",
+      "nextNodeId": "lesson_false_eye"
+    },
+    {
+      "id": "lesson_false_eye",
+      "speaker": "Taoist Musang",
+      "text": "A false eye looks like an eye but can be broken. Learn to tell them apart to judge life and death.",
       "nextNodeId": "lesson_4"
     },
     {
@@ -119,11 +137,11 @@
     {
       "id": "practice_2",
       "speaker": "Taoist Musang",
-      "text": "Let's play another game. I'll deliberately create a ko situation to show you.",
+      "text": "Now look at a ko shape. The rule must be remembered.",
       "options": [
         {
           "text": "Alright!",
-          "action": {"type": "battle", "value": "musang_daoren_tutorial_2"},
+          "action": {"type": "tutorial_board", "value": "musang_ko"},
           "nextNodeId": "after_practice_2"
         }
       ]
@@ -149,11 +167,11 @@
     {
       "id": "final_test",
       "speaker": "Taoist Musang",
-      "text": "Alright, you've learned the basic rules. Let me play one more 19x19 game with you to see how well you've learned.",
+      "text": "Finally, let's see how to count territory. Once you know the points, you know the outcome.",
       "options": [
         {
           "text": "Yes! Please teach me!",
-          "action": {"type": "battle", "value": "musang_daoren_final_test"},
+          "action": {"type": "tutorial_board", "value": "musang_scoring"},
           "nextNodeId": "after_final_test"
         }
       ]
@@ -203,7 +221,7 @@
     {
       "id": "farewell",
       "speaker": "Taoist Musang",
-      "text": "Go, go! I need to continue playing. If you have time, come back anytime for a few games!"
+      "text": "Go, go! I need to continue studying Go records. If you have time, come back and we can discuss the game."
     }
   ]
 }

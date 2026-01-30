@@ -9,10 +9,12 @@ import StoryModal from '@/src/components/StoryModal';
 import storiesData from '@/src/data/stories.json';
 import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
+import TutorialBoardModal from '@/src/components/TutorialBoardModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
+import { tutorialBoards, type TutorialBoardConfig } from '@/src/data/go-tutorials';
 
 declare global {
   interface Window {
@@ -58,6 +60,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
+  const [showTutorialBoard, setShowTutorialBoard] = useState(false);
+  const [tutorialBoard, setTutorialBoard] = useState<TutorialBoardConfig | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
   const completedQuestsRef = useRef<string[]>([]);
   const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
@@ -65,6 +69,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [npcDialogueFlags, setNpcDialogueFlags] = useState<Record<string, string[]>>({});
   const npcDialogueFlagsRef = useRef<Record<string, string[]>>({});
   const currentNpcIdRef = useRef<string | null>(null);
+  const musangTutorialProgressRef = useRef<string | null>(null);
   const pendingStoryNpcRef = useRef<any>(null);
   const [activeStory, setActiveStory] = useState<any | null>(null);
   const [storySceneIndex, setStorySceneIndex] = useState(0);
@@ -114,6 +119,53 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   }, []);
 
   const stories = storiesData as any[];
+
+  const MUSANG_TUTORIAL_NODES = [
+    'teach_intro',
+    'teach_basics',
+    'lesson_1',
+    'lesson_2',
+    'lesson_3',
+    'practice_1',
+    'after_practice_1',
+    'lesson_alive_eyes',
+    'lesson_true_eye',
+    'lesson_false_eye',
+    'lesson_4',
+    'lesson_5',
+    'practice_2',
+    'after_practice_2',
+    'lesson_6',
+    'lesson_7',
+    'final_test',
+    'after_final_test',
+    'graduation',
+    'graduation_2',
+    'farewell',
+  ];
+
+  const musangTutorialIndexMap = useRef(
+    new Map(MUSANG_TUTORIAL_NODES.map((id, index) => [id, index]))
+  );
+
+  const getMusangProgressNode = (flags: string[]): string | null => {
+    let bestIndex = -1;
+    let bestNodeId: string | null = null;
+
+    flags.forEach((flag) => {
+      const match = /^tutorial_progress:(\d+):(.+)$/.exec(flag);
+      if (!match) return;
+      const index = Number(match[1]);
+      const nodeId = match[2];
+      if (Number.isNaN(index)) return;
+      if (index > bestIndex) {
+        bestIndex = index;
+        bestNodeId = nodeId;
+      }
+    });
+
+    return bestNodeId;
+  };
 
   const getStoryByNpcId = useCallback((npcId: string) => {
     return stories.find((story) => Array.isArray(story.npcIds) && story.npcIds.includes(npcId)) || null;
@@ -897,6 +949,19 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         console.log('🎁 Reward action:', action.value);
         break;
       
+      case 'tutorial_board': {
+        const tutorialId = action.value as string;
+        const tutorial = tutorialBoards[tutorialId];
+        if (tutorial) {
+          setTutorialBoard(tutorial);
+          setShowTutorialBoard(true);
+          setIsDialogueVisible(false);
+        } else {
+          console.warn('Unknown tutorial board:', tutorialId);
+        }
+        break;
+      }
+      
       default:
         console.warn('Unknown action type:', action.type);
     }
@@ -916,6 +981,21 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     if (node?.action) {
       handleDialogueAction(node.action);
     }
+
+    if (node?.id && currentNpcIdRef.current === 'musang_daoren') {
+      const flags = npcDialogueFlagsRef.current.musang_daoren || [];
+      const hasCompleted = flags.includes('quest:learned_go_basics') || flags.includes('quest:skipped_tutorial');
+      if (!hasCompleted && musangTutorialIndexMap.current.has(node.id)) {
+        const index = musangTutorialIndexMap.current.get(node.id) ?? -1;
+        if (index >= 0) {
+          const flag = `tutorial_progress:${index}:${node.id}`;
+          if (musangTutorialProgressRef.current !== flag) {
+            musangTutorialProgressRef.current = flag;
+            recordDialogueFlags([flag]);
+          }
+        }
+      }
+    }
     
     // 如果对话结束，自动关闭
     if (engine.isCompleted()) {
@@ -923,7 +1003,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         closeDialogue();
       }, 1000);
     }
-  }, [closeDialogue, handleDialogueAction]);
+  }, [closeDialogue, handleDialogueAction, recordDialogueFlags]);
 
   /**
    * 开始与NPC对话
@@ -991,6 +1071,17 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         npcDialogueFlags: npcDialogueFlagsRef.current,
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
+
+      if (npcId === 'musang_daoren') {
+        const flags = npcDialogueFlagsRef.current.musang_daoren || [];
+        const hasCompleted = flags.includes('quest:learned_go_basics') || flags.includes('quest:skipped_tutorial');
+        if (!hasCompleted) {
+          const progressNodeId = getMusangProgressNode(flags);
+          if (progressNodeId && dialogueTree.nodes.some((node) => node.id === progressNodeId)) {
+            engine.setCurrentNodeId(progressNodeId);
+          }
+        }
+      }
 
       setDialogueEngine(engine);
 
@@ -1666,6 +1757,18 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         npcId={goOpponentName === '洪七公' ? 'hong_qigong' : 
                goOpponentName === '令狐冲' ? 'linghu_chong' :
                goOpponentName === '郭靖' ? 'guo_jing' : undefined}
+      />
+
+      <TutorialBoardModal
+        isOpen={showTutorialBoard}
+        tutorial={tutorialBoard}
+        onClose={() => {
+          setShowTutorialBoard(false);
+          setTutorialBoard(null);
+          if (dialogueEngine) {
+            setIsDialogueVisible(true);
+          }
+        }}
       />
 
       {/* 传送门确认对话框 */}

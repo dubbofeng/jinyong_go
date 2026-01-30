@@ -9,7 +9,7 @@ export interface DialogueNodeFlow {
   nextNodeId?: string;
   options?: DialogueOptionFlow[];
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill';
+    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board';
     value: any;
   };
 }
@@ -18,7 +18,7 @@ export interface DialogueOptionFlow {
   optionId: string; // 对应对话文件中options数组的索引或标识
   nextNodeId: string;
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill';
+    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board';
     value: any;
   };
   condition?: {
@@ -86,11 +86,26 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'after_practice_1',
-            action: { type: 'battle', value: 'musang_daoren_tutorial_1' }
+            action: { type: 'tutorial_board', value: 'musang_liberties' }
           }
         ]
       },
-      { id: 'after_practice_1', nextNodeId: 'lesson_4' },
+      { id: 'after_practice_1', nextNodeId: 'lesson_alive_eyes' },
+      {
+        id: 'lesson_alive_eyes',
+        nextNodeId: 'lesson_true_eye',
+        action: { type: 'tutorial_board', value: 'musang_two_eyes' }
+      },
+      {
+        id: 'lesson_true_eye',
+        nextNodeId: 'lesson_false_eye',
+        action: { type: 'tutorial_board', value: 'musang_true_eye' }
+      },
+      {
+        id: 'lesson_false_eye',
+        nextNodeId: 'lesson_4',
+        action: { type: 'tutorial_board', value: 'musang_false_eye' }
+      },
       { id: 'lesson_4', nextNodeId: 'lesson_5' },
       { id: 'lesson_5', nextNodeId: 'practice_2' },
       {
@@ -99,7 +114,7 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'after_practice_2',
-            action: { type: 'battle', value: 'musang_daoren_tutorial_2' }
+            action: { type: 'tutorial_board', value: 'musang_ko' }
           }
         ]
       },
@@ -112,7 +127,7 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'after_final_test',
-            action: { type: 'battle', value: 'musang_daoren_final_test' }
+            action: { type: 'tutorial_board', value: 'musang_scoring' }
           }
         ]
       },
