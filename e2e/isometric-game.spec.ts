@@ -24,6 +24,36 @@ async function registerAndLogin(page: import('@playwright/test').Page) {
 }
 
 test.describe('Isometric game E2E', () => {
+  test('musang story plays once then dialogue opens', async ({ page }) => {
+    await registerAndLogin(page);
+
+    await page.goto('/zh/game?e2e=1&e2eStory=1');
+    await page.waitForFunction(() => Boolean(window.__e2e));
+
+    const opened = await page.evaluate(() => window.__e2e?.openDialogue('musang_daoren'));
+    expect(opened).toBe(true);
+
+    await expect(page.getByText('千变万劫')).toBeVisible();
+
+    const nextButton = page.getByRole('button', { name: /下一句|继续/ });
+    const rewardChoice = page.getByRole('button', { name: '收下棋谱与护符' });
+
+    for (let i = 0; i < 40; i += 1) {
+      if (await rewardChoice.isVisible()) break;
+      if (await nextButton.isVisible()) {
+        await nextButton.click();
+      }
+    }
+
+    await expect(rewardChoice).toBeVisible();
+    await rewardChoice.click();
+
+    await expect(page.getByTestId('dialogue-box')).toBeVisible();
+
+    await page.evaluate(() => window.__e2e?.openDialogue('musang_daoren'));
+    await expect(page.getByTestId('dialogue-box')).toBeVisible();
+    await expect(page.getByText('千变万劫')).toHaveCount(0);
+  });
   test('loads canvas and exposes E2E helpers', async ({ page }) => {
     await page.goto('/zh/isometric-test?e2e=1');
     await page.waitForFunction(() => {

@@ -8,42 +8,31 @@ import type {
 } from '../types/dialogue';
 import { getDialogueFlow } from '../data/dialogue-flows';
 
-// 预先导入所有对话文件
-import guoJingZh from '../data/dialogues/guo_jing.zh.json';
-import guoJingEn from '../data/dialogues/guo_jing.en.json';
-import hongQigongZh from '../data/dialogues/hong_qigong.zh.json';
-import hongQigongEn from '../data/dialogues/hong_qigong.en.json';
-import linghuChongZh from '../data/dialogues/linghu_chong.zh.json';
-import linghuChongEn from '../data/dialogues/linghu_chong.en.json';
-
-// 对话文件映射表
-const dialogueMap: Record<string, Record<string, DialogueTree>> = {
-  guo_jing: {
-    zh: guoJingZh as DialogueTree,
-    en: guoJingEn as DialogueTree,
-  },
-  hong_qigong: {
-    zh: hongQigongZh as DialogueTree,
-    en: hongQigongEn as DialogueTree,
-  },
-  linghu_chong: {
-    zh: linghuChongZh as DialogueTree,
-    en: linghuChongEn as DialogueTree,
-  },
-};
+async function fetchDialogueContent(npcId: string, locale: string): Promise<DialogueTree> {
+  const params = new URLSearchParams({ npcId, locale });
+  const response = await fetch(`/api/dialogues?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`NPC ${npcId} 的对话文件不存在`);
+  }
+  return (await response.json()) as DialogueTree;
+}
 
 // 加载对话树（支持多语言，并合并流程配置）
 export async function loadDialogueTree(
   npcId: string,
   locale: string = 'zh'
 ): Promise<DialogueTree> {
-  const npcDialogues = dialogueMap[npcId];
-  if (!npcDialogues) {
-    throw new Error(`NPC ${npcId} 的对话文件不存在`);
-  }
-  
   // 加载对话内容（文本）
-  const dialogueContent = npcDialogues[locale] || npcDialogues['zh'];
+  let dialogueContent: DialogueTree;
+  try {
+    dialogueContent = await fetchDialogueContent(npcId, locale);
+  } catch (error) {
+    if (locale !== 'zh') {
+      dialogueContent = await fetchDialogueContent(npcId, 'zh');
+    } else {
+      throw error;
+    }
+  }
   
   // 加载对话流程（逻辑）
   const dialogueFlow = getDialogueFlow(npcId);
@@ -120,9 +109,11 @@ export class DialogueEngine {
       let baseMet = true;
       
       switch (type) {
-        case 'level':
-          conditionMet = this.playerState.level >= value;
+        case 'level': {
+          const levelValue = typeof value === 'number' ? value : 0;
+          conditionMet = (this.playerState.level ?? 0) >= levelValue;
           break;
+        }
         case 'quest':
           conditionMet = this.playerState.completedQuests?.includes(value) || false;
           break;

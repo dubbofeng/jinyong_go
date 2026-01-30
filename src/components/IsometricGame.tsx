@@ -108,6 +108,11 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     return new URLSearchParams(window.location.search).has('e2e');
   }, []);
 
+  const isE2EStoryEnabled = useCallback((): boolean => {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).has('e2eStory');
+  }, []);
+
   const stories = storiesData as any[];
 
   const getStoryByNpcId = useCallback((npcId: string) => {
@@ -1001,7 +1006,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   }, [getNpcIdFromItem, isE2EEnabled, locale, showAlert, updateDialogueState]);
 
   const startDialogue = useCallback(async (item: any) => {
-    if (isE2EEnabled()) {
+    if (isE2EEnabled() && !isE2EStoryEnabled()) {
       await startDialogueInternal(item);
       return;
     }
@@ -1037,7 +1042,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
 
     pendingStoryNpcRef.current = item;
     await openStory(story, null);
-  }, [getNpcIdFromItem, getStoryByNpcId, isE2EEnabled, openStory, startDialogueInternal]);
+  }, [getNpcIdFromItem, getStoryByNpcId, isE2EEnabled, isE2EStoryEnabled, openStory, startDialogueInternal]);
 
   const handleStoryAdvance = useCallback(async () => {
     if (!activeStory) return;

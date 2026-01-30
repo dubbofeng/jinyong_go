@@ -60,31 +60,36 @@ export async function POST(request: NextRequest) {
 
     const now = new Date();
 
-    const [updated] = await db
-      .insert(storyProgress)
-      .values({
-        userId,
-        storyId,
-        sceneId: sceneId || null,
-        lineIndex: typeof lineIndex === 'number' ? lineIndex : 0,
-        backgroundId: backgroundId || null,
-        completed: Boolean(completed),
-        choiceId: choiceId || null,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .onConflictDoUpdate({
-        target: [storyProgress.userId, storyProgress.storyId],
-        set: {
-          sceneId: sceneId || null,
-          lineIndex: typeof lineIndex === 'number' ? lineIndex : 0,
-          backgroundId: backgroundId || null,
-          completed: Boolean(completed),
-          choiceId: choiceId || null,
-          updatedAt: now,
-        },
-      })
-      .returning();
+    const [existing] = await db
+      .select()
+      .from(storyProgress)
+      .where(and(eq(storyProgress.userId, userId), eq(storyProgress.storyId, storyId)))
+      .limit(1);
+
+    const payload = {
+      sceneId: sceneId || null,
+      lineIndex: typeof lineIndex === 'number' ? lineIndex : 0,
+      backgroundId: backgroundId || null,
+      completed: Boolean(completed),
+      choiceId: choiceId || null,
+      updatedAt: now,
+    };
+
+    const [updated] = existing
+      ? await db
+          .update(storyProgress)
+          .set(payload)
+          .where(and(eq(storyProgress.userId, userId), eq(storyProgress.storyId, storyId)))
+          .returning()
+      : await db
+          .insert(storyProgress)
+          .values({
+            userId,
+            storyId,
+            ...payload,
+            createdAt: now,
+          })
+          .returning();
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
