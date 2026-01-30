@@ -103,8 +103,88 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       },
       {
         id: 'lesson_false_eye',
-        nextNodeId: 'lesson_4',
+        nextNodeId: 'lesson_tiger_mouth',
         action: { type: 'tutorial_board', value: 'musang_false_eye' }
+      },
+      {
+        id: 'lesson_tiger_mouth',
+        nextNodeId: 'lesson_atari',
+        action: { type: 'tutorial_board', value: 'musang_tiger_mouth' }
+      },
+      {
+        id: 'lesson_atari',
+        nextNodeId: 'lesson_double_atari',
+        action: { type: 'tutorial_board', value: 'musang_atari' }
+      },
+      {
+        id: 'lesson_double_atari',
+        nextNodeId: 'lesson_ladder',
+        action: { type: 'tutorial_board', value: 'musang_double_atari' }
+      },
+      {
+        id: 'lesson_ladder',
+        nextNodeId: 'lesson_snapback',
+        action: { type: 'tutorial_board', value: 'musang_ladder' }
+      },
+      {
+        id: 'lesson_snapback',
+        nextNodeId: 'lesson_net',
+        action: { type: 'tutorial_board', value: 'musang_snapback' }
+      },
+      {
+        id: 'lesson_net',
+        nextNodeId: 'lesson_fly',
+        action: { type: 'tutorial_board', value: 'musang_net' }
+      },
+      {
+        id: 'lesson_fly',
+        nextNodeId: 'lesson_jump',
+        action: { type: 'tutorial_board', value: 'musang_fly' }
+      },
+      {
+        id: 'lesson_jump',
+        nextNodeId: 'lesson_wedge',
+        action: { type: 'tutorial_board', value: 'musang_jump' }
+      },
+      {
+        id: 'lesson_wedge',
+        nextNodeId: 'lesson_attach',
+        action: { type: 'tutorial_board', value: 'musang_wedge' }
+      },
+      {
+        id: 'lesson_attach',
+        nextNodeId: 'lesson_hane',
+        action: { type: 'tutorial_board', value: 'musang_attach' }
+      },
+      {
+        id: 'lesson_hane',
+        nextNodeId: 'lesson_connect',
+        action: { type: 'tutorial_board', value: 'musang_hane' }
+      },
+      {
+        id: 'lesson_connect',
+        nextNodeId: 'lesson_cut',
+        action: { type: 'tutorial_board', value: 'musang_connect' }
+      },
+      {
+        id: 'lesson_cut',
+        nextNodeId: 'lesson_extend',
+        action: { type: 'tutorial_board', value: 'musang_cut' }
+      },
+      {
+        id: 'lesson_extend',
+        nextNodeId: 'lesson_peep',
+        action: { type: 'tutorial_board', value: 'musang_extend' }
+      },
+      {
+        id: 'lesson_peep',
+        nextNodeId: 'lesson_double',
+        action: { type: 'tutorial_board', value: 'musang_peep' }
+      },
+      {
+        id: 'lesson_double',
+        nextNodeId: 'lesson_4',
+        action: { type: 'tutorial_board', value: 'musang_double' }
       },
       { id: 'lesson_4', nextNodeId: 'lesson_5' },
       { id: 'lesson_5', nextNodeId: 'practice_2' },

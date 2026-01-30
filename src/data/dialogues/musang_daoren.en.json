@@ -120,6 +120,102 @@
       "id": "lesson_false_eye",
       "speaker": "Taoist Musang",
       "text": "A false eye looks like an eye but can be broken. Learn to tell them apart to judge life and death.",
+      "nextNodeId": "lesson_tiger_mouth"
+    },
+    {
+      "id": "lesson_tiger_mouth",
+      "speaker": "Taoist Musang",
+      "text": "Now for capture terms. First, the tiger's mouth: three stones forming a mouth, controlling key points.",
+      "nextNodeId": "lesson_atari"
+    },
+    {
+      "id": "lesson_atari",
+      "speaker": "Taoist Musang",
+      "text": "Atari means putting a stone or group in atari with only one liberty left.",
+      "nextNodeId": "lesson_double_atari"
+    },
+    {
+      "id": "lesson_double_atari",
+      "speaker": "Taoist Musang",
+      "text": "Double atari attacks two groups at once. The opponent usually can save only one.",
+      "nextNodeId": "lesson_ladder"
+    },
+    {
+      "id": "lesson_ladder",
+      "speaker": "Taoist Musang",
+      "text": "A ladder is a chasing pattern. It works only if no friendly stones appear on the path.",
+      "nextNodeId": "lesson_snapback"
+    },
+    {
+      "id": "lesson_snapback",
+      "speaker": "Taoist Musang",
+      "text": "Snapback sacrifices a stone in the eye and captures immediately back. A classic tactic.",
+      "nextNodeId": "lesson_net"
+    },
+    {
+      "id": "lesson_net",
+      "speaker": "Taoist Musang",
+      "text": "A net surrounds the enemy so it cannot escape. Steady and reliable.",
+      "nextNodeId": "lesson_fly"
+    },
+    {
+      "id": "lesson_fly",
+      "speaker": "Taoist Musang",
+      "text": "Now for move terms. A diagonal one-space move is a knight's move (fly). Flexible and safe.",
+      "nextNodeId": "lesson_jump"
+    },
+    {
+      "id": "lesson_jump",
+      "speaker": "Taoist Musang",
+      "text": "A jump is a one-space straight extension. Fast, but leaves a gap.",
+      "nextNodeId": "lesson_wedge"
+    },
+    {
+      "id": "lesson_wedge",
+      "speaker": "Taoist Musang",
+      "text": "A wedge is inserting a stone to split the opponent's shape.",
+      "nextNodeId": "lesson_attach"
+    },
+    {
+      "id": "lesson_attach",
+      "speaker": "Taoist Musang",
+      "text": "An attachment plays directly next to the opponent to force replies.",
+      "nextNodeId": "lesson_hane"
+    },
+    {
+      "id": "lesson_hane",
+      "speaker": "Taoist Musang",
+      "text": "A hane bends around a corner, often to gain outside influence.",
+      "nextNodeId": "lesson_connect"
+    },
+    {
+      "id": "lesson_connect",
+      "speaker": "Taoist Musang",
+      "text": "Connecting links your stones so they cannot be cut.",
+      "nextNodeId": "lesson_cut"
+    },
+    {
+      "id": "lesson_cut",
+      "speaker": "Taoist Musang",
+      "text": "Cutting splits the opponent's stones and creates weaknesses.",
+      "nextNodeId": "lesson_extend"
+    },
+    {
+      "id": "lesson_extend",
+      "speaker": "Taoist Musang",
+      "text": "An extension strengthens your position and expands your area.",
+      "nextNodeId": "lesson_peep"
+    },
+    {
+      "id": "lesson_peep",
+      "speaker": "Taoist Musang",
+      "text": "A peep is a probing move at a weak point to force a response.",
+      "nextNodeId": "lesson_double"
+    },
+    {
+      "id": "lesson_double",
+      "speaker": "Taoist Musang",
+      "text": "A double creates two threats at once, stretching the opponent.",
       "nextNodeId": "lesson_4"
     },
     {

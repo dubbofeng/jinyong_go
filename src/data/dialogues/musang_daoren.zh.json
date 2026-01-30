@@ -120,6 +120,102 @@
       "id": "lesson_false_eye",
       "speaker": "木桑道长",
       "text": "「假眼」看似成眼，却能被对手破坏。你要学会分辨真假，免得误判生死。",
+      "nextNodeId": "lesson_tiger_mouth"
+    },
+    {
+      "id": "lesson_tiger_mouth",
+      "speaker": "木桑道长",
+      "text": "接下来讲几种吃子术语。先看「虎口」，三子相夹，形如虎口，常用于控制要点。",
+      "nextNodeId": "lesson_atari"
+    },
+    {
+      "id": "lesson_atari",
+      "speaker": "木桑道长",
+      "text": "「叫吃」就是把对方棋子逼到只剩一口气，对方必须应对。",
+      "nextNodeId": "lesson_double_atari"
+    },
+    {
+      "id": "lesson_double_atari",
+      "speaker": "木桑道长",
+      "text": "「双叫吃」一手同时叫吃两处，对手往往顾此失彼。",
+      "nextNodeId": "lesson_ladder"
+    },
+    {
+      "id": "lesson_ladder",
+      "speaker": "木桑道长",
+      "text": "「征子」是一路追杀的形，若路上有援兵，征子就会失败。",
+      "nextNodeId": "lesson_snapback"
+    },
+    {
+      "id": "lesson_snapback",
+      "speaker": "木桑道长",
+      "text": "「扑」是先把棋子送入对方眼里，再反手提子，妙处在于手筋。",
+      "nextNodeId": "lesson_net"
+    },
+    {
+      "id": "lesson_net",
+      "speaker": "木桑道长",
+      "text": "「枷」是用网状包围，让对方逃不出去，稳稳吃住。",
+      "nextNodeId": "lesson_fly"
+    },
+    {
+      "id": "lesson_fly",
+      "speaker": "木桑道长",
+      "text": "再讲走子术语。「飞」是隔一格斜飞，既稳又有弹性。",
+      "nextNodeId": "lesson_jump"
+    },
+    {
+      "id": "lesson_jump",
+      "speaker": "木桑道长",
+      "text": "「跳」是隔一格直跳，扩张速度快，但略有空隙。",
+      "nextNodeId": "lesson_wedge"
+    },
+    {
+      "id": "lesson_wedge",
+      "speaker": "木桑道长",
+      "text": "「挖」是在对方连络处插入一子，破坏对方的形。",
+      "nextNodeId": "lesson_attach"
+    },
+    {
+      "id": "lesson_attach",
+      "speaker": "木桑道长",
+      "text": "「粘」就是紧贴对方落子，常用于迫使对方应手。",
+      "nextNodeId": "lesson_hane"
+    },
+    {
+      "id": "lesson_hane",
+      "speaker": "木桑道长",
+      "text": "「扳」是转角处的拐子，往往用来争取外势或封锁。",
+      "nextNodeId": "lesson_connect"
+    },
+    {
+      "id": "lesson_connect",
+      "speaker": "木桑道长",
+      "text": "「接」是把己方棋子连接起来，确保不断。",
+      "nextNodeId": "lesson_cut"
+    },
+    {
+      "id": "lesson_cut",
+      "speaker": "木桑道长",
+      "text": "「断」是切断对方棋子的联系，制造弱点。",
+      "nextNodeId": "lesson_extend"
+    },
+    {
+      "id": "lesson_extend",
+      "speaker": "木桑道长",
+      "text": "「长」是顺势延伸一子，巩固阵地并扩张。",
+      "nextNodeId": "lesson_peep"
+    },
+    {
+      "id": "lesson_peep",
+      "speaker": "木桑道长",
+      "text": "「尖」是刺入对方薄弱处，逼对手补棋。",
+      "nextNodeId": "lesson_double"
+    },
+    {
+      "id": "lesson_double",
+      "speaker": "木桑道长",
+      "text": "「双」是一步形成双重威胁，往往能迫使对手分身乏术。",
       "nextNodeId": "lesson_4"
     },
     {
