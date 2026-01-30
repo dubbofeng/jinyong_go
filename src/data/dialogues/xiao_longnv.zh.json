@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "小龙女",
-      "text": "你是何人，为何来到古墓？这里已经多年无人踏足了。",
-      "nextNodeId": "first_meet"
+      "text": "你是何人，为何来到古墓？这里已经多年无人踏足了。"
     },
     {
       "id": "first_meet",
       "speaker": "小龙女",
-      "text": "我是小龙女，古墓派传人。师父留下的棋局机关，我一直在守护。你也是为了那个棋局而来？",
-      "nextNodeId": "check_status"
+      "text": "我是小龙女，古墓派传人。师父留下的棋局机关，我一直在守护。你也是为了那个棋局而来？"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "古墓派有一套「玉女心经」，其中蕴含的心法用在围棋上，能让你心如止水，不受外界干扰。",
       "options": [
         {
-          "text": "请姑娘指教！",
-          "condition": {"type": "quest", "value": "defeated_xiao_longnv", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请姑娘指教！"
         },
         {
-          "text": "我想学习「玉女心经」",
-          "condition": {"type": "quest", "value": "defeated_xiao_longnv"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「玉女心经」"
         },
         {
-          "text": "姑娘，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_xiao_longnv"},
-          "nextNodeId": "start_battle"
+          "text": "姑娘，我想再和你对弈一局"
         },
-        {"text": "玉女心经是什么？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "玉女心经是什么？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "小龙女",
-      "text": "「玉女心经」是古墓派至高心法，讲究心如止水，不为外物所动。在棋局中，能让你保持冷静，不受对手干扰。",
-      "nextNodeId": "explain_skill_2"
+      "text": "「玉女心经」是古墓派至高心法，讲究心如止水，不为外物所动。在棋局中，能让你保持冷静，不受对手干扰。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "小龙女",
       "text": "这招能让你在对局中完全集中精神，看穿对手的意图，并做出最佳应对。不过需要极高的心境修为。",
       "options": [
-        {"text": "精妙无比！请姑娘教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
+        {"text": "精妙无比！请姑娘教我"},
+        {"text": "我再参悟一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "小龙女",
-      "text": "好。不过这套心法不是谁都能学的。你要想学，得先和我对弈一局，证明你有这个资质。",
-      "nextNodeId": "challenge_condition"
+      "text": "好。不过这套心法不是谁都能学的。你要想学，得先和我对弈一局，证明你有这个资质。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "我在古墓中守护棋局多年，棋力已臻化境。你若能胜我，就说明你心境足够。",
       "options": [
         {
-          "text": "请姑娘赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请姑娘赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "小龙女",
-      "text": "你的棋力不俗，更难得的是心境澄明。既然如此，我就传你「玉女心经」的精要。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "你的棋力不俗，更难得的是心境澄明。既然如此，我就传你「玉女心经」的精要。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "小龙女",
-      "text": "这招的要领是：对局时保持心如止水，不为外物所动，从而看穿对手意图。每局可用一次，冷却35步。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：对局时保持心如止水，不为外物所动，从而看穿对手意图。每局可用一次，冷却35步。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "小龙女",
-      "text": "记住，「心若冰清，天塌不惊」。用此招时要抛开一切杂念，方能发挥最大威力。",
-      "nextNodeId": "teach_complete"
+      "text": "记住，「心若冰清，天塌不惊」。用此招时要抛开一切杂念，方能发挥最大威力。"
     },
     {
       "id": "teach_complete",
       "speaker": "小龙女",
       "text": "你既然学了这招，以后遇到强敌也能从容应对。过儿说得对，真正的高手，是心境的较量。",
       "options": [
-        {"text": "多谢姑娘！", "nextNodeId": "farewell"},
-        {"text": "我还想听听你的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {"text": "多谢姑娘！"},
+        {"text": "我还想听听你的见解"},
+        {"text": "我想再挑战一次"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "小龙女",
       "text": "你的心境还不够。在古墓中多修炼一段时间，或许能有所突破。",
       "options": [
-        {"text": "我会再来的", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "我会再来的"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "小龙女",
-      "text": "我在古墓中生活多年，远离红尘。师父说，清心寡欲才能修炼到至高境界。",
-      "nextNodeId": "daily_chat_2"
+      "text": "我在古墓中生活多年，远离红尘。师父说，清心寡欲才能修炼到至高境界。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "小龙女",
       "text": "不过自从遇到过儿，我才明白，有些东西比武功更重要。下棋也是一样，不能只追求胜负。",
       "options": [
-        {"text": "姑娘所言极是！", "nextNodeId": "farewell"}
+        {"text": "姑娘所言极是！"}
       ]
     },
     {

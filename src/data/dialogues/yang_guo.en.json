@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Yang Guo",
-      "text": "Greetings, my friend. I am Yang Guo, having roamed Jianghu for many years. Your bearing is extraordinary - surely you also have stories?",
-      "nextNodeId": "first_meet"
+      "text": "Greetings, my friend. I am Yang Guo, having roamed Jianghu for many years. Your bearing is extraordinary - surely you also have stories?"
     },
     {
       "id": "first_meet",
       "speaker": "Yang Guo",
-      "text": "Though I'm known for martial arts, I also have considerable insight into Go. I've heard you meet friends through Go - how about we exchange some moves?",
-      "nextNodeId": "check_status"
+      "text": "Though I'm known for martial arts, I also have considerable insight into Go. I've heard you meet friends through Go - how about we exchange some moves?"
     },
     {
       "id": "check_status",
@@ -21,24 +19,19 @@
       "text": "My Go style is adaptable, valuing softness to overcome hardness and feeling to guide position. If you're interested, let's play.",
       "options": [
         {
-          "text": "Please teach me, Hero Yang!",
-          "condition": {"type": "quest", "value": "defeated_yang_guo", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Hero Yang!"
         },
         {
-          "text": "Hero Yang, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_yang_guo"},
-          "nextNodeId": "start_battle"
+          "text": "Hero Yang, I'd like to play another game with you"
         },
-        {"text": "I'd like to hear your thoughts on Go", "nextNodeId": "daily_chat"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "I'd like to hear your thoughts on Go"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Yang Guo",
-      "text": "Good. If you want to see my true style, we must play a game first.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good. If you want to see my true style, we must play a game first."
     },
     {
       "id": "challenge_condition",
@@ -46,10 +39,9 @@
       "text": "I've roamed Jianghu for many years and exchanged moves with countless masters. If you can beat me, it proves you have the aptitude.",
       "options": [
         {
-          "text": "Please begin, Hero Yang!",
-          "nextNodeId": "start_battle"
+          "text": "Please begin, Hero Yang!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -62,22 +54,21 @@
       "speaker": "Yang Guo",
       "text": "No need to be disheartened. Go is like life - wins and losses are all practice. Keep learning, and you'll improve.",
       "options": [
-        {"text": "I take my leave", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I take my leave"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Yang Guo",
-      "text": "In Go, the hardest part is keeping your heart steady. Sometimes you attack, sometimes you yield - always follow the flow.",
-      "nextNodeId": "daily_chat_2"
+      "text": "In Go, the hardest part is keeping your heart steady. Sometimes you attack, sometimes you yield - always follow the flow."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Yang Guo",
       "text": "If you can use softness to restrain hardness, you can find life even in adverse positions.",
       "options": [
-        {"text": "Wise words, Hero Yang!", "nextNodeId": "farewell"}
+        {"text": "Wise words, Hero Yang!"}
       ]
     },
     {

@@ -6,8 +6,7 @@
     {
       "id": "greeting",
       "speaker": "洪七公",
-      "text": "哟！小娃娃，老叫花我看你骨骼精奇，是个下棋的料子。",
-      "nextNodeId": "check_status"
+      "text": "哟！小娃娃，老叫花我看你骨骼精奇，是个下棋的料子。"
     },
     {
       "id": "check_status",
@@ -15,29 +14,22 @@
       "text": "想不想学点围棋的本事？",
       "options": [
         {
-          "text": "请前辈指教！",
-          "condition": {"type": "quest", "value": "defeated_hong_qigong", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请前辈指教！"
         },
         {
-          "text": "前辈，我想学习「亢龙有悔」",
-          "condition": {"type": "quest", "value": "defeated_hong_qigong"},
-          "nextNodeId": "teach_skill"
+          "text": "前辈，我想学习「亢龙有悔」"
         },
         {
-          "text": "前辈，我想再跟您切磋一局",
-          "condition": {"type": "quest", "value": "defeated_hong_qigong"},
-          "nextNodeId": "start_battle"
+          "text": "前辈，我想再跟您切磋一局"
         },
-        {"text": "我想先了解一下围棋", "nextNodeId": "explain_go"},
-        {"text": "我还没准备好", "nextNodeId": "not_ready"}
+        {"text": "我想先了解一下围棋"},
+        {"text": "我还没准备好"}
       ]
     },
     {
       "id": "explain_go",
       "speaker": "洪七公",
-      "text": "围棋嘛，黑白两色，纵横十九道，看似简单，实则变化无穷。就如同江湖中的武功，讲究的是气势与布局。",
-      "nextNodeId": "explain_go_2"
+      "text": "围棋嘛，黑白两色，纵横十九道，看似简单，实则变化无穷。就如同江湖中的武功，讲究的是气势与布局。"
     },
     {
       "id": "explain_go_2",
@@ -51,8 +43,7 @@
     {
       "id": "challenge_intro",
       "speaker": "洪七公",
-      "text": "好！有志气！老叫花我这一身本事，棋道也是一绝。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！有志气！老叫花我这一身本事，棋道也是一绝。"
     },
     {
       "id": "challenge_condition",
@@ -60,10 +51,9 @@
       "text": "不过啊，老叫花我的规矩：要学艺，先比试！你若能在棋盘上赢我一局，我就传你「亢龙有悔」这一招。",
       "options": [
         {
-          "text": "好！请前辈指教！",
-          "nextNodeId": "start_battle"
+          "text": "好！请前辈指教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -74,23 +64,21 @@
     {
       "id": "teach_skill",
       "speaker": "洪七公",
-      "text": "哈哈！不错不错！老叫花我果然没看错人。我这就传你「亢龙有悔」这一招。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "哈哈！不错不错！老叫花我果然没看错人。我这就传你「亢龙有悔」这一招。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "洪七公",
-      "text": "下棋时难免失误，这招能让你有反悔一次的机会。不过记住，江湖规矩，每局只能用一次！",
-      "nextNodeId": "teach_complete"
+      "text": "下棋时难免失误，这招能让你有反悔一次的机会。不过记住，江湖规矩，每局只能用一次！"
     },
     {
       "id": "teach_complete",
       "speaker": "洪七公",
       "text": "去吧，去少林寺找令狐冲那小子切磋切磋，他的独孤九剑很有些门道。",
       "options": [
-        {"text": "多谢前辈！", "nextNodeId": "farewell"},
-        {"text": "我还想再挑战一次", "nextNodeId": "rematch_challenge"},
-        {"text": "我还想再听听您的教诲", "nextNodeId": "daily_chat"}
+        {"text": "多谢前辈！"},
+        {"text": "我还想再挑战一次"},
+        {"text": "我还想再听听您的教诲"}
       ]
     },
     {
@@ -99,10 +87,9 @@
       "text": "哈哈！有长进的感觉了？好，老叫花我陪你再来一局！",
       "options": [
         {
-          "text": "好！请前辈指教！",
-          "nextNodeId": "start_battle"
+          "text": "好！请前辈指教！"
         },
-        {"text": "我先休息一下", "nextNodeId": "daily_chat"}
+        {"text": "我先休息一下"}
       ]
     },
     {
@@ -110,23 +97,22 @@
       "speaker": "洪七公",
       "text": "哈哈，小娃娃还嫩了点！不过没关系，多练练就好了。围棋这玩意，就得多下、多想、多琢磨。",
       "options": [
-        {"text": "我再练练，稍后再来", "nextNodeId": "farewell"},
-        {"text": "我再来挑战一次", "nextNodeId": "challenge_condition"}
+        {"text": "我再练练，稍后再来"},
+        {"text": "我再来挑战一次"}
       ]
     },
     {
       "id": "after_shaolin",
       "speaker": "洪七公",
-      "text": "嗯？你小子进步不小啊！看来在少林寺学到了不少东西。令狐冲那小子的独孤九剑可不好对付，你能赢他，说明有两下子了！",
-      "nextNodeId": "encourage_continue"
+      "text": "嗯？你小子进步不小啊！看来在少林寺学到了不少东西。令狐冲那小子的独孤九剑可不好对付，你能赢他，说明有两下子了！"
     },
     {
       "id": "encourage_continue",
       "speaker": "洪七公",
       "text": "继续努力吧！武林之大，还有许多高手等着你去挑战。听说襄阳城有个郭靖，棋艺和武功都是一流，你可以去会会他。",
       "options": [
-        {"text": "多谢前辈指点！", "nextNodeId": "farewell"},
-        {"text": "再来一局？", "nextNodeId": "rematch_challenge"}
+        {"text": "多谢前辈指点！"},
+        {"text": "再来一局？"}
       ]
     },
     {
@@ -134,8 +120,8 @@
       "speaker": "洪七公",
       "text": "下棋如行军打仗，要知进退，懂虚实。记住：金角银边草肚皮，开局别急着去中间乱打。",
       "options": [
-        {"text": "受教了！", "nextNodeId": "farewell"},
-        {"text": "再来一局？", "nextNodeId": "rematch_challenge"}
+        {"text": "受教了！"},
+        {"text": "再来一局？"}
       ]
     },
     {

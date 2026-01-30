@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Huang Yaoshi",
-      "text": "Hehe, another youngster has come to Peach Blossom Island. Did you come for this old man's reputation, or did you stumble here by accident?",
-      "nextNodeId": "first_meet"
+      "text": "Hehe, another youngster has come to Peach Blossom Island. Did you come for this old man's reputation, or did you stumble here by accident?"
     },
     {
       "id": "first_meet",
       "speaker": "Huang Yaoshi",
-      "text": "I am Huang Yaoshi, known as the Eastern Heretic. Proficient in the Eight Trigrams, music, Go, calligraphy, and painting. I've heard you meet friends through Go - interesting.",
-      "nextNodeId": "check_status"
+      "text": "I am Huang Yaoshi, known as the Eastern Heretic. Proficient in the Eight Trigrams, music, Go, calligraphy, and painting. I've heard you meet friends through Go - interesting."
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "This old man's 'Eight Trigram Arts' are mastered thoroughly, and when applied to Go, the variations are endless. However, you must first prove you're qualified to learn.",
       "options": [
         {
-          "text": "Please teach me, Island Master Huang!",
-          "condition": {"type": "quest", "value": "defeated_huang_yaoshi", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Island Master Huang!"
         },
         {
-          "text": "I want to learn the 'Eight Trigram Arts'",
-          "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn the 'Eight Trigram Arts'"
         },
         {
-          "text": "Island Master Huang, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_huang_yaoshi"},
-          "nextNodeId": "start_battle"
+          "text": "Island Master Huang, I'd like to play another game with you"
         },
-        {"text": "How are the Eight Trigrams used in Go?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "How are the Eight Trigrams used in Go?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Huang Yaoshi",
-      "text": "The Eight Trigrams emphasize 'unpredictable changes, winning through surprise.' On the Go board, you can set up mysterious formations that trap opponents in a maze.",
-      "nextNodeId": "explain_skill_2"
+      "text": "The Eight Trigrams emphasize 'unpredictable changes, winning through surprise.' On the Go board, you can set up mysterious formations that trap opponents in a maze."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Huang Yaoshi",
       "text": "This technique allows you to change the game's pattern at crucial moments, creating unexpected variations. However, it requires extremely high insight to master.",
       "options": [
-        {"text": "Exquisite! Please teach me, Island Master Huang", "nextNodeId": "challenge_intro"},
-        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+        {"text": "Exquisite! Please teach me, Island Master Huang"},
+        {"text": "Let me contemplate this further"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Huang Yaoshi",
-      "text": "Good! You have courage! This old man hates pedantic people most - your boldness suits my taste.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! You have courage! This old man hates pedantic people most - your boldness suits my taste."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "Years ago at Mount Hua, this old man played against Hong Qigong and Ouyang Feng - each had their merits. If you can beat this old man on the Go board, I'll acknowledge your real skill.",
       "options": [
         {
-          "text": "Please bestow your teaching, Island Master Huang!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Island Master Huang!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "Huang Yaoshi",
-      "text": "Excellent, excellent! The younger generation is formidable! Your game is unbounded and imaginative, quite like this old man in his prime. Good, I'll teach you the 'Eight Trigram Arts.'",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Excellent, excellent! The younger generation is formidable! Your game is unbounded and imaginative, quite like this old man in his prime. Good, I'll teach you the 'Eight Trigram Arts.'"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Huang Yaoshi",
-      "text": "The key to this technique is: use the principles of the Eight Trigrams to set up mysterious formations on the Go board, trapping your opponent in difficulty. Can be used once per game with a 35-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: use the principles of the Eight Trigrams to set up mysterious formations on the Go board, trapping your opponent in difficulty. Can be used once per game with a 35-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Huang Yaoshi",
-      "text": "Remember, 'troops have no constant formation, water has no constant shape.' When using this technique, be flexible and don't be constrained by form. This old man has lived unconventionally - you must also learn to break conventions.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, 'troops have no constant formation, water has no constant shape.' When using this technique, be flexible and don't be constrained by form. This old man has lived unconventionally - you must also learn to break conventions."
     },
     {
       "id": "teach_complete",
       "speaker": "Huang Yaoshi",
       "text": "By the way, my daughter Rong'er is in Xiangyang. When you visit her, give her my regards. Her 'Mechanism Mastery' was also taught by this old man.",
       "options": [
-        {"text": "Thank you, Island Master Huang!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Island Master Huang!"},
+        {"text": "I'd like to hear more of your insights"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "Huang Yaoshi",
       "text": "Your Go skill still needs refinement. But not bad - practice more and don't disappoint this old man.",
       "options": [
-        {"text": "This junior takes his leave", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "This junior takes his leave"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Huang Yaoshi",
-      "text": "This old man has lived unconventionally, seeking only freedom and ease. Worldly conventions are all shackles to this old man. The same goes for Go - you must break through preconceptions.",
-      "nextNodeId": "daily_chat_2"
+      "text": "This old man has lived unconventionally, seeking only freedom and ease. Worldly conventions are all shackles to this old man. The same goes for Go - you must break through preconceptions."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Huang Yaoshi",
       "text": "However, though this old man is the 'Eastern Heretic,' I never do unconscionable things. Go reflects character - remember this.",
       "options": [
-        {"text": "Island Master Huang is noble and upright!", "nextNodeId": "farewell"}
+        {"text": "Island Master Huang is noble and upright!"}
       ]
     },
     {

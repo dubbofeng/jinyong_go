@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "一灯大师",
-      "text": "阿弥陀佛。施主远道而来，可是为了参悟棋道？",
-      "nextNodeId": "first_meet"
+      "text": "阿弥陀佛。施主远道而来，可是为了参悟棋道？"
     },
     {
       "id": "first_meet",
       "speaker": "一灯大师",
-      "text": "老衲法号一灯，曾为大理国主，如今遁入空门。这人生如棋，黑白之间，尽是因果。",
-      "nextNodeId": "check_status"
+      "text": "老衲法号一灯，曾为大理国主，如今遁入空门。这人生如棋，黑白之间，尽是因果。"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "老衲这「一阳指」天下闻名，其中蕴含的内力运用之法，用在围棋上也是精妙无比。",
       "options": [
         {
-          "text": "请大师指教！",
-          "condition": {"type": "quest", "value": "defeated_yideng_dashi", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请大师指教！"
         },
         {
-          "text": "我想学习「一阳指」",
-          "condition": {"type": "quest", "value": "defeated_yideng_dashi"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「一阳指」"
         },
         {
-          "text": "大师，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_yideng_dashi"},
-          "nextNodeId": "start_battle"
+          "text": "大师，我想再和你对弈一局"
         },
-        {"text": "一阳指如何用在围棋上？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "一阳指如何用在围棋上？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "一灯大师",
-      "text": "「一阳指」讲究以一点之力，化解千钧之势。在棋局中，关键的一子，胜过千百废子。",
-      "nextNodeId": "explain_skill_2"
+      "text": "「一阳指」讲究以一点之力，化解千钧之势。在棋局中，关键的一子，胜过千百废子。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "一灯大师",
       "text": "这招能让你在关键位置落下一子，产生「指破天机」的效果，瞬间扭转局势。不过需要极高的棋力才能施展。",
       "options": [
-        {"text": "妙啊！请大师教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
+        {"text": "妙啊！请大师教我"},
+        {"text": "我再参悟一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "一灯大师",
-      "text": "善哉善哉。老衲虽已出家，但棋道修为不减当年。你若想学这招，得先证明你有这个慧根。",
-      "nextNodeId": "challenge_condition"
+      "text": "善哉善哉。老衲虽已出家，但棋道修为不减当年。你若想学这招，得先证明你有这个慧根。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "老衲当年与东邪西毒对弈，深知棋道精妙。你若能胜老衲，说明你已悟得「一阳」之理。",
       "options": [
         {
-          "text": "请大师赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请大师赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "一灯大师",
-      "text": "施主棋力高超，心境清明，确有慧根。既然如此，老衲就传你「一阳指」精要。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "施主棋力高超，心境清明，确有慧根。既然如此，老衲就传你「一阳指」精要。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "一灯大师",
-      "text": "这招的要领是：在关键时刻，以「一阳」之力直指要害，一子定胜负。每局限用一次，冷却30步。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：在关键时刻，以「一阳」之力直指要害，一子定胜负。每局限用一次，冷却30步。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "一灯大师",
-      "text": "记住，「一阳来复，万象更新」。用此招要心无旁骛，全神贯注，方能发挥最大威力。",
-      "nextNodeId": "teach_complete"
+      "text": "记住，「一阳来复，万象更新」。用此招要心无旁骛，全神贯注，方能发挥最大威力。"
     },
     {
       "id": "teach_complete",
       "speaker": "一灯大师",
       "text": "施主既然学了此招，他日遇到强敌，当可从容应对。不过切记，「过刚易折」，凡事要留有余地。",
       "options": [
-        {"text": "多谢大师教诲！", "nextNodeId": "farewell"},
-        {"text": "我还想听听大师的开示", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {"text": "多谢大师教诲！"},
+        {"text": "我还想听听大师的开示"},
+        {"text": "我想再挑战一次"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "一灯大师",
       "text": "施主莫要气馁。老衲当年学艺，也是历经磨难方有所成。慢慢来，不必着急。",
       "options": [
-        {"text": "弟子明白了", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "弟子明白了"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "一灯大师",
-      "text": "老衲当年身为国主，后因情伤出家。这棋局人生，得失之间，又有何分别？",
-      "nextNodeId": "daily_chat_2"
+      "text": "老衲当年身为国主，后因情伤出家。这棋局人生，得失之间，又有何分别？"
     },
     {
       "id": "daily_chat_2",
       "speaker": "一灯大师",
       "text": "如今老衲参透了。人生如棋，落子无悔。无论输赢，只要问心无愧，便是好棋。",
       "options": [
-        {"text": "大师所言极是！", "nextNodeId": "farewell"}
+        {"text": "大师所言极是！"}
       ]
     },
     {

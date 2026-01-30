@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "慕容复",
-      "text": "哼，又是一个不知天高地厚的人。在下慕容复，姑苏慕容氏。你来此何事？",
-      "nextNodeId": "first_meet"
+      "text": "哼，又是一个不知天高地厚的人。在下慕容复，姑苏慕容氏。你来此何事？"
     },
     {
       "id": "first_meet",
       "speaker": "慕容复",
-      "text": "在下当年也曾挑战珍珑棋局，虽未能破解，但也有所收获。你也是为了那棋局而来？",
-      "nextNodeId": "check_status"
+      "text": "在下当年也曾挑战珍珑棋局，虽未能破解，但也有所收获。你也是为了那棋局而来？"
     },
     {
       "id": "check_status",
@@ -21,39 +19,33 @@
       "text": "在下慕容家有独到的棋道见解。你若有心，可与在下对弈一局。",
       "options": [
         {
-          "text": "请慕容公子指教！",
-          "condition": {"type": "quest", "value": "defeated_murong_fu", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请慕容公子指教！"
         },
         {
-          "text": "慕容公子，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_murong_fu"},
-          "nextNodeId": "start_battle"
+          "text": "慕容公子，我想再和你对弈一局"
         },
-        {"text": "慕容公子棋风如何？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "慕容公子棋风如何？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "慕容复",
-      "text": "在下对弈重在洞察对手意图，因势制宜，以其人之道制其人。",
-      "nextNodeId": "explain_skill_2"
+      "text": "在下对弈重在洞察对手意图，因势制宜，以其人之道制其人。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "慕容复",
       "text": "棋局之中，若能看清对手的路数，再以变应变，便可占得先机。",
       "options": [
-        {"text": "高明！请慕容公子教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
+        {"text": "高明！请慕容公子教我"},
+        {"text": "我再考虑考虑"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "慕容复",
-      "text": "好。不过在下这套绝学，不是谁都能学的。你要想学，得先证明自己有这个资格。",
-      "nextNodeId": "challenge_condition"
+      "text": "好。不过在下这套绝学，不是谁都能学的。你要想学，得先证明自己有这个资格。"
     },
     {
       "id": "challenge_condition",
@@ -61,10 +53,9 @@
       "text": "在下虽然未能破解珍珑，但棋力也不容小觑。你若能胜在下，就说明你有这个资质。",
       "options": [
         {
-          "text": "请慕容公子赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请慕容公子赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -77,22 +68,21 @@
       "speaker": "慕容复",
       "text": "哼，你的水平还不够。再去练练，别浪费在下的时间。",
       "options": [
-        {"text": "在下告退", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "在下告退"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "慕容复",
-      "text": "在下这一生只有一个目标，那就是复兴大燕。为了这个目标，在下可以付出一切。",
-      "nextNodeId": "daily_chat_2"
+      "text": "在下这一生只有一个目标，那就是复兴大燕。为了这个目标，在下可以付出一切。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "慕容复",
       "text": "下棋也是一样，要有明确的目标，然后全力以赴。没有目标的人，永远不会成功。",
       "options": [
-        {"text": "慕容公子志向远大！", "nextNodeId": "farewell"}
+        {"text": "慕容公子志向远大！"}
       ]
     },
     {

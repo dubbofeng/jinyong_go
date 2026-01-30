@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Xiao Longnv",
-      "text": "Who are you, and why have you come to the Ancient Tomb? No one has set foot here for many years.",
-      "nextNodeId": "first_meet"
+      "text": "Who are you, and why have you come to the Ancient Tomb? No one has set foot here for many years."
     },
     {
       "id": "first_meet",
       "speaker": "Xiao Longnv",
-      "text": "I am Xiao Longnv, successor of the Ancient Tomb Sect. I've been guarding the Go puzzle mechanism left by my master. Have you also come for that puzzle?",
-      "nextNodeId": "check_status"
+      "text": "I am Xiao Longnv, successor of the Ancient Tomb Sect. I've been guarding the Go puzzle mechanism left by my master. Have you also come for that puzzle?"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "The Ancient Tomb Sect has a technique called 'Jade Maiden Heart Manual.' The mental cultivation within, when applied to Go, allows you to maintain a mind like still water, undisturbed by external interference.",
       "options": [
         {
-          "text": "Please teach me, Miss!",
-          "condition": {"type": "quest", "value": "defeated_xiao_longnv", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Miss!"
         },
         {
-          "text": "I want to learn the 'Jade Maiden Heart Manual'",
-          "condition": {"type": "quest", "value": "defeated_xiao_longnv"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn the 'Jade Maiden Heart Manual'"
         },
         {
-          "text": "Miss, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_xiao_longnv"},
-          "nextNodeId": "start_battle"
+          "text": "Miss, I'd like to play another game with you"
         },
-        {"text": "What is the Jade Maiden Heart Manual?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "What is the Jade Maiden Heart Manual?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Xiao Longnv",
-      "text": "The 'Jade Maiden Heart Manual' is the Ancient Tomb Sect's supreme mental cultivation, emphasizing a mind like still water, unmoved by external things. In Go, it allows you to stay calm and unaffected by your opponent's interference.",
-      "nextNodeId": "explain_skill_2"
+      "text": "The 'Jade Maiden Heart Manual' is the Ancient Tomb Sect's supreme mental cultivation, emphasizing a mind like still water, unmoved by external things. In Go, it allows you to stay calm and unaffected by your opponent's interference."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Xiao Longnv",
       "text": "This technique allows you to concentrate completely during a game, see through your opponent's intentions, and make the best responses. However, it requires extremely high mental cultivation.",
       "options": [
-        {"text": "Exquisitely profound! Please teach me, Miss", "nextNodeId": "challenge_intro"},
-        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+        {"text": "Exquisitely profound! Please teach me, Miss"},
+        {"text": "Let me contemplate this further"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Xiao Longnv",
-      "text": "Very well. However, not everyone can learn this mental cultivation. If you want to learn, you must play a game with me first to prove you have the aptitude.",
-      "nextNodeId": "challenge_condition"
+      "text": "Very well. However, not everyone can learn this mental cultivation. If you want to learn, you must play a game with me first to prove you have the aptitude."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "I've guarded the Go puzzle in the Ancient Tomb for many years - my Go skill has reached a transcendent state. If you can beat me, it proves your mental state is sufficient.",
       "options": [
         {
-          "text": "Please bestow your teaching, Miss!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Miss!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "Xiao Longnv",
-      "text": "Your Go skill is impressive, and more rare is your clear mental state. In that case, I'll teach you the essence of the 'Jade Maiden Heart Manual.'",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Your Go skill is impressive, and more rare is your clear mental state. In that case, I'll teach you the essence of the 'Jade Maiden Heart Manual.'"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Xiao Longnv",
-      "text": "The key to this technique is: during a game, maintain a mind like still water, unmoved by external things, thus seeing through your opponent's intentions. Can be used once per game with a 35-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: during a game, maintain a mind like still water, unmoved by external things, thus seeing through your opponent's intentions. Can be used once per game with a 35-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Xiao Longnv",
-      "text": "Remember, 'if the heart is clear as ice, heaven's collapse won't startle.' When using this technique, cast aside all distracting thoughts to unleash its maximum power.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, 'if the heart is clear as ice, heaven's collapse won't startle.' When using this technique, cast aside all distracting thoughts to unleash its maximum power."
     },
     {
       "id": "teach_complete",
       "speaker": "Xiao Longnv",
       "text": "Now that you've learned this technique, you can calmly handle strong enemies in the future. Guo'er was right - for true masters, it's a contest of mental states.",
       "options": [
-        {"text": "Thank you, Miss!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Miss!"},
+        {"text": "I'd like to hear more of your insights"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "Xiao Longnv",
       "text": "Your mental state is not yet sufficient. Cultivate in the Ancient Tomb for a while longer - perhaps you'll have a breakthrough.",
       "options": [
-        {"text": "I'll return", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I'll return"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Xiao Longnv",
-      "text": "I've lived in the Ancient Tomb for many years, far from the mortal world. Master said that clearing the heart of desires is how one cultivates to the highest realm.",
-      "nextNodeId": "daily_chat_2"
+      "text": "I've lived in the Ancient Tomb for many years, far from the mortal world. Master said that clearing the heart of desires is how one cultivates to the highest realm."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Xiao Longnv",
       "text": "But since meeting Guo'er, I've come to understand that some things are more important than martial arts. The same goes for Go - you can't only pursue winning and losing.",
       "options": [
-        {"text": "Miss speaks truly!", "nextNodeId": "farewell"}
+        {"text": "Miss speaks truly!"}
       ]
     },
     {

@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Xu Zhu",
-      "text": "Amitabha. Greetings, benefactor. This poor monk is Xu Zhu, a disciple of Shaolin Temple. Have you come here for the Zhenlong Go puzzle?",
-      "nextNodeId": "first_meet"
+      "text": "Amitabha. Greetings, benefactor. This poor monk is Xu Zhu, a disciple of Shaolin Temple. Have you come here for the Zhenlong Go puzzle?"
     },
     {
       "id": "first_meet",
       "speaker": "Xu Zhu",
-      "text": "Years ago, this poor monk accidentally solved the Zhenlong Go puzzle, and my fate changed completely. The mysteries contained in that puzzle are truly unfathomable.",
-      "nextNodeId": "check_status"
+      "text": "Years ago, this poor monk accidentally solved the Zhenlong Go puzzle, and my fate changed completely. The mysteries contained in that puzzle are truly unfathomable."
     },
     {
       "id": "check_status",
@@ -21,39 +19,33 @@
       "text": "Though this poor monk is not talented, when solving the Zhenlong puzzle, I did comprehend some principles. If benefactor is interested, we may play and discuss.",
       "options": [
         {
-          "text": "Please teach me, Master!",
-          "condition": {"type": "quest", "value": "defeated_xu_zhu", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Master!"
         },
         {
-          "text": "Master, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_xu_zhu"},
-          "nextNodeId": "start_battle"
+          "text": "Master, I'd like to play another game with you"
         },
-        {"text": "What is Breaking Zhenlong?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "What is Breaking Zhenlong?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Xu Zhu",
-      "text": "The Zhenlong Go puzzle is the world's most extraordinary puzzle - countless masters tried to solve it and failed. This poor monk could solve it back then entirely through one character: 'Nothing.'",
-      "nextNodeId": "explain_skill_2"
+      "text": "The Zhenlong Go puzzle is the world's most extraordinary puzzle - countless masters tried to solve it and failed. This poor monk could solve it back then entirely through one character: 'Nothing.'"
     },
     {
       "id": "explain_skill_2",
       "speaker": "Xu Zhu",
       "text": "'Breaking Zhenlong' means not being constrained by conventions, using no-move to defeat all moves, finding life in seemingly unsolvable situations.",
       "options": [
-        {"text": "Profoundly mysterious! Please teach me, Master", "nextNodeId": "challenge_intro"},
-        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+        {"text": "Profoundly mysterious! Please teach me, Master"},
+        {"text": "Let me contemplate this further"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Xu Zhu",
-      "text": "Amitabha. Since benefactor has this intention, this poor monk will play a game with you to see your understanding.",
-      "nextNodeId": "challenge_condition"
+      "text": "Amitabha. Since benefactor has this intention, this poor monk will play a game with you to see your understanding."
     },
     {
       "id": "challenge_condition",
@@ -61,10 +53,9 @@
       "text": "Though this poor monk's Go skill is limited, after breaking Zhenlong, I gained some understanding of the Way of Go. If benefactor can beat this poor monk, it proves you have the aptitude.",
       "options": [
         {
-          "text": "Please bestow your teaching, Master!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Master!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -77,22 +68,21 @@
       "speaker": "Xu Zhu",
       "text": "Don't be discouraged, benefactor. This poor monk was also confused when breaking Zhenlong - everything follows fate.",
       "options": [
-        {"text": "This disciple understands", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "This disciple understands"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Xu Zhu",
-      "text": "This poor monk was just an unremarkable little monk at Shaolin Temple. After breaking Zhenlong, my fate changed completely.",
-      "nextNodeId": "daily_chat_2"
+      "text": "This poor monk was just an unremarkable little monk at Shaolin Temple. After breaking Zhenlong, my fate changed completely."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Xu Zhu",
       "text": "However, no matter the changes, this poor monk remembers Master's teaching: 'Keep goodness in your heart, have foundation in your actions.' The same goes for Go.",
       "options": [
-        {"text": "Master speaks truly!", "nextNodeId": "farewell"}
+        {"text": "Master speaks truly!"}
       ]
     },
     {

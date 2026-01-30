@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Taoist Musang",
-      "text": "Oh my! It's been a long time since we've had visitors here. Young friend, how did you come to this monastery?",
-      "nextNodeId": "player_explain"
+      "text": "Oh my! It's been a long time since we've had visitors here. Young friend, how did you come to this monastery?"
     },
     {
       "id": "player_explain",
       "speaker": "Taoist Musang",
-      "text": "Transmigration? Well... that's quite unusual. But since you're here, make yourself at home. I can see you have excellent bone structure - perfect for learning Go!",
-      "nextNodeId": "check_status"
+      "text": "Transmigration? Well... that's quite unusual. But since you're here, make yourself at home. I can see you have excellent bone structure - perfect for learning Go!"
     },
     {
       "id": "check_status",
@@ -21,70 +19,57 @@
       "text": "In this world, Go mastery determines martial arts prowess. Since you're here, shall I teach you the fundamentals of Go?",
       "options": [
         {
-          "text": "Please teach me, Master!",
-          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
-          "nextNodeId": "teach_intro"
+          "text": "Please teach me, Master!"
         },
         {
-          "text": "I already know how to play Go",
-          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
-          "nextNodeId": "skip_tutorial"
+          "text": "I already know how to play Go"
         },
         {
-          "text": "Master, what's the connection between Go and martial arts?",
-          "nextNodeId": "explain_world"
+          "text": "Master, what's the connection between Go and martial arts?"
         },
         {
-          "text": "I'd like to hear more of your wisdom",
-          "condition": {"type": "quest", "value": "learned_go_basics"},
-          "nextNodeId": "daily_wisdom"
+          "text": "I'd like to hear more of your wisdom"
         }
       ]
     },
     {
       "id": "explain_world",
       "speaker": "Taoist Musang",
-      "text": "Ah, you don't understand yet! In this world, Go isn't just a pastime - it's the foundation of martial arts. The stronger your Go skills, the deeper your inner power.",
-      "nextNodeId": "explain_world_2"
+      "text": "Ah, you don't understand yet! In this world, Go isn't just a pastime - it's the foundation of martial arts. The stronger your Go skills, the deeper your inner power."
     },
     {
       "id": "explain_world_2",
       "speaker": "Taoist Musang",
       "text": "All the masters in the martial world are Go masters as well. If you want to venture into the martial world, you must first master Go!",
       "options": [
-        {"text": "I see! Please teach me, Master", "nextNodeId": "teach_intro"},
-        {"text": "I already know Go", "nextNodeId": "skip_tutorial"}
+        {"text": "I see! Please teach me, Master"},
+        {"text": "I already know Go"}
       ]
     },
     {
       "id": "teach_intro",
       "speaker": "Taoist Musang",
-      "text": "Excellent! Excellent! Go requires great intuition. There's a saying: 'If you haven't become a master by 20, you never will.' Since you're here by fate, I'll teach you the mysteries of Go.",
-      "nextNodeId": "teach_basics"
+      "text": "Excellent! Excellent! Go requires great intuition. There's a saying: 'If you haven't become a master by 20, you never will.' Since you're here by fate, I'll teach you the mysteries of Go."
     },
     {
       "id": "teach_basics",
       "speaker": "Taoist Musang",
-      "text": "Go is easy to learn but hard to master. The rules are simple - you'll understand in no time. Come, I'll explain as we play.",
-      "nextNodeId": "lesson_1"
+      "text": "Go is easy to learn but hard to master. The rules are simple - you'll understand in no time. Come, I'll explain as we play."
     },
     {
       "id": "lesson_1",
       "speaker": "Taoist Musang",
-      "text": "First, Go uses black and white stones on a board with 19 vertical and horizontal lines. Black moves first, and players alternate placing stones.",
-      "nextNodeId": "lesson_2"
+      "text": "First, Go uses black and white stones on a board with 19 vertical and horizontal lines. Black moves first, and players alternate placing stones."
     },
     {
       "id": "lesson_2",
       "speaker": "Taoist Musang",
-      "text": "Stones are placed on the intersections of the board. Once placed, they cannot be moved - only captured. This is 'no taking back moves' - like life itself, each step must be carefully considered!",
-      "nextNodeId": "lesson_3"
+      "text": "Stones are placed on the intersections of the board. Once placed, they cannot be moved - only captured. This is 'no taking back moves' - like life itself, each step must be carefully considered!"
     },
     {
       "id": "lesson_3",
       "speaker": "Taoist Musang",
-      "text": "Each stone has 'liberties' - empty adjacent intersections. When a group of stones loses all its liberties, it's dead and must be captured.",
-      "nextNodeId": "practice_1"
+      "text": "Each stone has 'liberties' - empty adjacent intersections. When a group of stones loses all its liberties, it's dead and must be captured."
     },
     {
       "id": "practice_1",
@@ -92,142 +77,119 @@
       "text": "Come, let's set up a small 9x9 shape and see how liberties and captures work.",
       "options": [
         {
-          "text": "Yes, please teach me!",
-          "nextNodeId": "after_practice_1"
+          "text": "Yes, please teach me!"
         }
       ]
     },
     {
       "id": "after_practice_1",
       "speaker": "Taoist Musang",
-      "text": "Excellent. Once you can see the last liberty, capturing becomes straightforward.",
-      "nextNodeId": "lesson_alive_eyes"
+      "text": "Excellent. Once you can see the last liberty, capturing becomes straightforward."
     },
     {
       "id": "lesson_alive_eyes",
       "speaker": "Taoist Musang",
-      "text": "Next is the idea of two eyes. A group with two eyes lives and cannot be captured.",
-      "nextNodeId": "lesson_true_eye"
+      "text": "Next is the idea of two eyes. A group with two eyes lives and cannot be captured."
     },
     {
       "id": "lesson_true_eye",
       "speaker": "Taoist Musang",
-      "text": "A true eye is a point the opponent cannot play in. Even on their turn, they cannot place a stone there.",
-      "nextNodeId": "lesson_false_eye"
+      "text": "A true eye is a point the opponent cannot play in. Even on their turn, they cannot place a stone there."
     },
     {
       "id": "lesson_false_eye",
       "speaker": "Taoist Musang",
-      "text": "A false eye looks like an eye but can be broken. Learn to tell them apart to judge life and death.",
-      "nextNodeId": "lesson_tiger_mouth"
+      "text": "A false eye looks like an eye but can be broken. Learn to tell them apart to judge life and death."
     },
     {
       "id": "lesson_tiger_mouth",
       "speaker": "Taoist Musang",
-      "text": "Now for capture terms. First, the tiger's mouth: three stones forming a mouth, controlling key points.",
-      "nextNodeId": "lesson_atari"
+      "text": "Now for capture terms. First, the tiger's mouth: three stones forming a mouth, controlling key points."
     },
     {
       "id": "lesson_atari",
       "speaker": "Taoist Musang",
-      "text": "Atari means putting a stone or group in atari with only one liberty left.",
-      "nextNodeId": "lesson_double_atari"
+      "text": "Atari means putting a stone or group in atari with only one liberty left."
     },
     {
       "id": "lesson_double_atari",
       "speaker": "Taoist Musang",
-      "text": "Double atari attacks two groups at once. The opponent usually can save only one.",
-      "nextNodeId": "lesson_ladder"
+      "text": "Double atari attacks two groups at once. The opponent usually can save only one."
     },
     {
       "id": "lesson_ladder",
       "speaker": "Taoist Musang",
-      "text": "A ladder is a chasing pattern. It works only if no friendly stones appear on the path.",
-      "nextNodeId": "lesson_snapback"
+      "text": "A ladder is a chasing pattern. It works only if no friendly stones appear on the path."
     },
     {
       "id": "lesson_snapback",
       "speaker": "Taoist Musang",
-      "text": "Snapback sacrifices a stone in the eye and captures immediately back. A classic tactic.",
-      "nextNodeId": "lesson_net"
+      "text": "Snapback sacrifices a stone in the eye and captures immediately back. A classic tactic."
     },
     {
       "id": "lesson_net",
       "speaker": "Taoist Musang",
-      "text": "A net surrounds the enemy so it cannot escape. Steady and reliable.",
-      "nextNodeId": "lesson_fly"
+      "text": "A net surrounds the enemy so it cannot escape. Steady and reliable."
     },
     {
       "id": "lesson_fly",
       "speaker": "Taoist Musang",
-      "text": "Now for move terms. A diagonal one-space move is a knight's move (fly). Flexible and safe.",
-      "nextNodeId": "lesson_jump"
+      "text": "Now for move terms. A diagonal one-space move is a knight's move (fly). Flexible and safe."
     },
     {
       "id": "lesson_jump",
       "speaker": "Taoist Musang",
-      "text": "A jump is a one-space straight extension. Fast, but leaves a gap.",
-      "nextNodeId": "lesson_wedge"
+      "text": "A jump is a one-space straight extension. Fast, but leaves a gap."
     },
     {
       "id": "lesson_wedge",
       "speaker": "Taoist Musang",
-      "text": "A wedge is inserting a stone to split the opponent's shape.",
-      "nextNodeId": "lesson_attach"
+      "text": "A wedge is inserting a stone to split the opponent's shape."
     },
     {
       "id": "lesson_attach",
       "speaker": "Taoist Musang",
-      "text": "An attachment plays directly next to the opponent to force replies.",
-      "nextNodeId": "lesson_hane"
+      "text": "An attachment plays directly next to the opponent to force replies."
     },
     {
       "id": "lesson_hane",
       "speaker": "Taoist Musang",
-      "text": "A hane bends around a corner, often to gain outside influence.",
-      "nextNodeId": "lesson_connect"
+      "text": "A hane bends around a corner, often to gain outside influence."
     },
     {
       "id": "lesson_connect",
       "speaker": "Taoist Musang",
-      "text": "Connecting links your stones so they cannot be cut.",
-      "nextNodeId": "lesson_cut"
+      "text": "Connecting links your stones so they cannot be cut."
     },
     {
       "id": "lesson_cut",
       "speaker": "Taoist Musang",
-      "text": "Cutting splits the opponent's stones and creates weaknesses.",
-      "nextNodeId": "lesson_extend"
+      "text": "Cutting splits the opponent's stones and creates weaknesses."
     },
     {
       "id": "lesson_extend",
       "speaker": "Taoist Musang",
-      "text": "An extension strengthens your position and expands your area.",
-      "nextNodeId": "lesson_peep"
+      "text": "An extension strengthens your position and expands your area."
     },
     {
       "id": "lesson_peep",
       "speaker": "Taoist Musang",
-      "text": "A peep is a probing move at a weak point to force a response.",
-      "nextNodeId": "lesson_double"
+      "text": "A peep is a probing move at a weak point to force a response."
     },
     {
       "id": "lesson_double",
       "speaker": "Taoist Musang",
-      "text": "A double creates two threats at once, stretching the opponent.",
-      "nextNodeId": "lesson_4"
+      "text": "A double creates two threats at once, stretching the opponent."
     },
     {
       "id": "lesson_4",
       "speaker": "Taoist Musang",
-      "text": "Next, I'll teach you about 'ko'. Sometimes both sides can capture each other, forming a cycle - this is ko fighting. The rule is you can't immediately recapture - you must play elsewhere first.",
-      "nextNodeId": "lesson_5"
+      "text": "Next, I'll teach you about 'ko'. Sometimes both sides can capture each other, forming a cycle - this is ko fighting. The rule is you can't immediately recapture - you must play elsewhere first."
     },
     {
       "id": "lesson_5",
       "speaker": "Taoist Musang",
-      "text": "Ko fighting is the most exquisite part of Go, often determining the outcome of a game. The proverb says: 'Seize ko threats first' - this is exactly what it means.",
-      "nextNodeId": "practice_2"
+      "text": "Ko fighting is the most exquisite part of Go, often determining the outcome of a game. The proverb says: 'Seize ko threats first' - this is exactly what it means."
     },
     {
       "id": "practice_2",
@@ -235,28 +197,24 @@
       "text": "Now look at a ko shape. The rule must be remembered.",
       "options": [
         {
-          "text": "Alright!",
-          "nextNodeId": "after_practice_2"
+          "text": "Alright!"
         }
       ]
     },
     {
       "id": "after_practice_2",
       "speaker": "Taoist Musang",
-      "text": "Haha, you've already understood the power of ko fighting! When I was young, I lost many games because I didn't understand ko threats.",
-      "nextNodeId": "lesson_6"
+      "text": "Haha, you've already understood the power of ko fighting! When I was young, I lost many games because I didn't understand ko threats."
     },
     {
       "id": "lesson_6",
       "speaker": "Taoist Musang",
-      "text": "Finally, let's discuss how to determine victory. Go is scored by 'points' - the larger your territory, the more points you have. At the end, count the points, and whoever has more wins.",
-      "nextNodeId": "lesson_7"
+      "text": "Finally, let's discuss how to determine victory. Go is scored by 'points' - the larger your territory, the more points you have. At the end, count the points, and whoever has more wins."
     },
     {
       "id": "lesson_7",
       "speaker": "Taoist Musang",
-      "text": "When both sides don't want to play anymore, you can count territory. Remember: only living groups count as points - dead groups are captured and don't count.",
-      "nextNodeId": "final_test"
+      "text": "When both sides don't want to play anymore, you can count territory. Remember: only living groups count as points - dead groups are captured and don't count."
     },
     {
       "id": "final_test",
@@ -264,49 +222,44 @@
       "text": "Finally, let's see how to count territory. Once you know the points, you know the outcome.",
       "options": [
         {
-          "text": "Yes! Please teach me!",
-          "nextNodeId": "after_final_test"
+          "text": "Yes! Please teach me!"
         }
       ]
     },
     {
       "id": "after_final_test",
       "speaker": "Taoist Musang",
-      "text": "Good! Excellent! Though you're a beginner, your intuition is outstanding. In this world, Go mastery determines martial prowess. Go out and explore, make friends through Go, and you'll understand the true essence.",
-      "nextNodeId": "graduation"
+      "text": "Good! Excellent! Though you're a beginner, your intuition is outstanding. In this world, Go mastery determines martial prowess. Go out and explore, make friends through Go, and you'll understand the true essence."
     },
     {
       "id": "graduation",
       "speaker": "Taoist Musang",
-      "text": "Remember: Go requires great intuition! There are many masters in the martial world - Hong Qigong, Linghu Chong, Guo Jing, Huang Rong... they're all first-class Go players.",
-      "nextNodeId": "graduation_2"
+      "text": "Remember: Go requires great intuition! There are many masters in the martial world - Hong Qigong, Linghu Chong, Guo Jing, Huang Rong... they're all first-class Go players."
     },
     {
       "id": "graduation_2",
       "speaker": "Taoist Musang",
       "text": "Go to Mount Hua and find Hong Qigong. His 'Mighty Dragon Repents' has its mysteries. Well, I need to continue studying Go records. Off you go!",
       "options": [
-        {"text": "Thank you for your teachings, Master!", "nextNodeId": "farewell"}
+        {"text": "Thank you for your teachings, Master!"}
       ]
     },
     {
       "id": "skip_tutorial",
       "speaker": "Taoist Musang",
-      "text": "Oh? You already know Go? Good, then I won't be long-winded. Go to Mount Hua and find Hong Qigong - he has the way of true masters.",
-      "nextNodeId": "farewell"
+      "text": "Oh? You already know Go? Good, then I won't be long-winded. Go to Mount Hua and find Hong Qigong - he has the way of true masters."
     },
     {
       "id": "daily_wisdom",
       "speaker": "Taoist Musang",
-      "text": "Over the years, though my Go skills aren't brilliant, I've learned one thing: Go is like life - every move affects the overall situation, so don't act rashly.",
-      "nextNodeId": "daily_wisdom_2"
+      "text": "Over the years, though my Go skills aren't brilliant, I've learned one thing: Go is like life - every move affects the overall situation, so don't act rashly."
     },
     {
       "id": "daily_wisdom_2",
       "speaker": "Taoist Musang",
       "text": "Also, keep a calm mind when playing. Don't be arrogant when winning, don't be discouraged when losing. I always brag about my Go skills, so I always lose, hahaha!",
       "options": [
-        {"text": "Thank you for your guidance, Master!", "nextNodeId": "farewell"}
+        {"text": "Thank you for your guidance, Master!"}
       ]
     },
     {

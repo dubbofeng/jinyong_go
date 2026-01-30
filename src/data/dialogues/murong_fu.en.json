@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Murong Fu",
-      "text": "Hmph, another person who doesn't know their place. I am Murong Fu of the Gusu Murong family. What brings you here?",
-      "nextNodeId": "first_meet"
+      "text": "Hmph, another person who doesn't know their place. I am Murong Fu of the Gusu Murong family. What brings you here?"
     },
     {
       "id": "first_meet",
       "speaker": "Murong Fu",
-      "text": "Years ago, I also challenged the Zhenlong Go puzzle. Though I couldn't solve it, I still gained something. Have you also come for that puzzle?",
-      "nextNodeId": "check_status"
+      "text": "Years ago, I also challenged the Zhenlong Go puzzle. Though I couldn't solve it, I still gained something. Have you also come for that puzzle?"
     },
     {
       "id": "check_status",
@@ -21,39 +19,33 @@
       "text": "The Murong family has its own insights into Go. If you wish, we may play a game.",
       "options": [
         {
-          "text": "Please teach me, Young Master Murong!",
-          "condition": {"type": "quest", "value": "defeated_murong_fu", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Young Master Murong!"
         },
         {
-          "text": "Young Master Murong, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_murong_fu"},
-          "nextNodeId": "start_battle"
+          "text": "Young Master Murong, I'd like to play another game with you"
         },
-        {"text": "How is your Go style?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "How is your Go style?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Murong Fu",
-      "text": "In Go, I emphasize reading intent and responding with the right countermeasure.",
-      "nextNodeId": "explain_skill_2"
+      "text": "In Go, I emphasize reading intent and responding with the right countermeasure."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Murong Fu",
       "text": "When you see through a plan, you can shift and counter to seize the initiative.",
       "options": [
-        {"text": "Brilliant! Please teach me, Young Master Murong", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+        {"text": "Brilliant! Please teach me, Young Master Murong"},
+        {"text": "Let me think about it"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Murong Fu",
-      "text": "Very well. However, this supreme technique of mine isn't for just anyone. If you want to learn, you must first prove you're qualified.",
-      "nextNodeId": "challenge_condition"
+      "text": "Very well. However, this supreme technique of mine isn't for just anyone. If you want to learn, you must first prove you're qualified."
     },
     {
       "id": "challenge_condition",
@@ -61,10 +53,9 @@
       "text": "Though I couldn't solve Zhenlong, my Go skill is not to be underestimated. If you can beat me, it proves you have the aptitude.",
       "options": [
         {
-          "text": "Please bestow your teaching, Young Master Murong!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Young Master Murong!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -77,22 +68,21 @@
       "speaker": "Murong Fu",
       "text": "Hmph, your level isn't enough. Go practice more and don't waste my time.",
       "options": [
-        {"text": "I take my leave", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I take my leave"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Murong Fu",
-      "text": "I have only one goal in this life - to restore Great Yan. For this goal, I can sacrifice everything.",
-      "nextNodeId": "daily_chat_2"
+      "text": "I have only one goal in this life - to restore Great Yan. For this goal, I can sacrifice everything."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Murong Fu",
       "text": "The same goes for Go - have a clear goal, then give it your all. People without goals will never succeed.",
       "options": [
-        {"text": "Young Master Murong has lofty ambitions!", "nextNodeId": "farewell"}
+        {"text": "Young Master Murong has lofty ambitions!"}
       ]
     },
     {

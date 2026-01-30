@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Huang Rong",
-      "text": "Oh? You look unfamiliar, young friend. Are you new to Xiangyang?",
-      "nextNodeId": "first_meet"
+      "text": "Oh? You look unfamiliar, young friend. Are you new to Xiangyang?"
     },
     {
       "id": "first_meet",
       "speaker": "Huang Rong",
-      "text": "I'm Huang Rong, and this is my husband Guo Jing. I've heard you meet friends through Go. How's your skill?",
-      "nextNodeId": "check_status"
+      "text": "I'm Huang Rong, and this is my husband Guo Jing. I've heard you meet friends through Go. How's your skill?"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "My father Huang Yaoshi is well-versed in the Eight Trigrams. I've learned much from him about Go strategies and mechanisms. Would you like to learn something?",
       "options": [
         {
-          "text": "Please teach me, Miss Huang!",
-          "condition": {"type": "quest", "value": "defeated_huang_rong", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Miss Huang!"
         },
         {
-          "text": "I want to learn 'Mechanism Mastery'",
-          "condition": {"type": "quest", "value": "defeated_huang_rong"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn 'Mechanism Mastery'"
         },
         {
-          "text": "Miss Huang, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_huang_rong"},
-          "nextNodeId": "start_battle"
+          "text": "Miss Huang, I'd like to play another game with you"
         },
-        {"text": "What is Mechanism Mastery?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "What is Mechanism Mastery?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Huang Rong",
-      "text": "Hehe, 'Mechanism Mastery' is a Go technique I created. When playing, I calculate multiple variations in my mind, like trying different paths to see which is best.",
-      "nextNodeId": "explain_skill_2"
+      "text": "Hehe, 'Mechanism Mastery' is a Go technique I created. When playing, I calculate multiple variations in my mind, like trying different paths to see which is best."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Huang Rong",
       "text": "The beauty of this technique is that you can establish multiple variation branches and repeatedly deduce until you find the optimal move. As Father always says, 'Proper planning brings success,' and it's the same with Go.",
       "options": [
-        {"text": "Sounds impressive! Please teach me, Miss Huang", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+        {"text": "Sounds impressive! Please teach me, Miss Huang"},
+        {"text": "Let me think about it"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Huang Rong",
-      "text": "Alright! But I don't teach this technique to just anyone. You must play a game with me first so I can assess your level.",
-      "nextNodeId": "challenge_condition"
+      "text": "Alright! But I don't teach this technique to just anyone. You must play a game with me first so I can assess your level."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "When Father taught me Go, he said, 'Go is like battle formation, every stone conceals mystery.' If you can beat me, it proves you're qualified to learn this technique.",
       "options": [
         {
-          "text": "Alright! Please guide me, Miss Huang!",
-          "nextNodeId": "start_battle"
+          "text": "Alright! Please guide me, Miss Huang!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "Huang Rong",
-      "text": "Excellent! Your Go game is very methodical. In that case, I'll teach you 'Mechanism Mastery.'",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Excellent! Your Go game is very methodical. In that case, I'll teach you 'Mechanism Mastery.'"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Huang Rong",
-      "text": "The key to this technique is: during a game, you can establish multiple variation diagrams in your mind, exploring different moves to find the optimal solution. Limited to twice per game, or available again after a 10-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: during a game, you can establish multiple variation diagrams in your mind, exploring different moves to find the optimal solution. Limited to twice per game, or available again after a 10-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Huang Rong",
-      "text": "Remember, when using this technique, be 'meticulous and flawless.' Father always says, 'Too clever by half,' but on the Go board, cleverness wins games!",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, when using this technique, be 'meticulous and flawless.' Father always says, 'Too clever by half,' but on the Go board, cleverness wins games!"
     },
     {
       "id": "teach_complete",
       "speaker": "Huang Rong",
       "text": "By the way, since you've learned Brother Jing's and Seventh Master's techniques, why not go to Dali to find Duan Yu? His 'Beiming Divine Art' can also be applied to Go!",
       "options": [
-        {"text": "Thank you, Miss Huang!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Miss Huang!"},
+        {"text": "I'd like to hear more of your insights"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "Huang Rong",
       "text": "Hehe, it's alright. Father says, 'Failure is the mother of success.' Practice more and come back later!",
       "options": [
-        {"text": "I'll return", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I'll return"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Huang Rong",
-      "text": "In Go, the most important thing is 'strategizing to win decisively from afar.' Look at Father - proficient in music, Go, calligraphy, and painting - all because he's good at thinking.",
-      "nextNodeId": "daily_chat_2"
+      "text": "In Go, the most important thing is 'strategizing to win decisively from afar.' Look at Father - proficient in music, Go, calligraphy, and painting - all because he's good at thinking."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Huang Rong",
       "text": "Also, when girls play Go, they should 'overcome hardness with softness.' Brother Jing always says I play Go with too many tricks, but he's just too honest, haha!",
       "options": [
-        {"text": "I've learned much!", "nextNodeId": "farewell"}
+        {"text": "I've learned much!"}
       ]
     },
     {

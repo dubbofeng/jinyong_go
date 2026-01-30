@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "虚竹",
-      "text": "阿弥陀佛。施主，你好。贫僧虚竹，少林寺出家弟子。你来此地，可是为了那珍珑棋局？",
-      "nextNodeId": "first_meet"
+      "text": "阿弥陀佛。施主，你好。贫僧虚竹，少林寺出家弟子。你来此地，可是为了那珍珑棋局？"
     },
     {
       "id": "first_meet",
       "speaker": "虚竹",
-      "text": "贫僧当年误打误撞破解了珍珑棋局，从此命运大变。这棋局中蕴含的玄机，实在是深不可测。",
-      "nextNodeId": "check_status"
+      "text": "贫僧当年误打误撞破解了珍珑棋局，从此命运大变。这棋局中蕴含的玄机，实在是深不可测。"
     },
     {
       "id": "check_status",
@@ -21,39 +19,33 @@
       "text": "贫僧虽然不才，但破解珍珑棋局时，倒是悟出了一些道理。若施主有兴趣，可与贫僧对弈交流。",
       "options": [
         {
-          "text": "请大师指教！",
-          "condition": {"type": "quest", "value": "defeated_xu_zhu", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请大师指教！"
         },
         {
-          "text": "大师，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_xu_zhu"},
-          "nextNodeId": "start_battle"
+          "text": "大师，我想再和你对弈一局"
         },
-        {"text": "什么是破解珍珑？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "什么是破解珍珑？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "虚竹",
-      "text": "珍珑棋局是天下第一奇局，无数高手尝试破解都失败了。贫僧当年能破解，全凭一个「无」字。",
-      "nextNodeId": "explain_skill_2"
+      "text": "珍珑棋局是天下第一奇局，无数高手尝试破解都失败了。贫僧当年能破解，全凭一个「无」字。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "虚竹",
       "text": "「破解珍珑」就是不拘泥于常规，以无招胜有招，在看似无解的局面中找到生机。",
       "options": [
-        {"text": "玄妙无比！请大师教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
+        {"text": "玄妙无比！请大师教我"},
+        {"text": "我再参悟一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "虚竹",
-      "text": "阿弥陀佛。施主既然有此心，那贫僧就与你对弈一局，看看你的慧根如何。",
-      "nextNodeId": "challenge_condition"
+      "text": "阿弥陀佛。施主既然有此心，那贫僧就与你对弈一局，看看你的慧根如何。"
     },
     {
       "id": "challenge_condition",
@@ -61,10 +53,9 @@
       "text": "贫僧虽然棋力有限，但破解珍珑之后，对棋道也有了些许领悟。施主若能胜贫僧，说明你有这个资质。",
       "options": [
         {
-          "text": "请大师赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请大师赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -77,22 +68,21 @@
       "speaker": "虚竹",
       "text": "施主莫要气馁。贫僧当年也是懵懵懂懂才破解了珍珑，一切随缘。",
       "options": [
-        {"text": "弟子明白了", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "弟子明白了"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "虚竹",
-      "text": "贫僧本是少林寺一个不起眼的小和尚，破解珍珑之后，命运完全改变了。",
-      "nextNodeId": "daily_chat_2"
+      "text": "贫僧本是少林寺一个不起眼的小和尚，破解珍珑之后，命运完全改变了。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "虚竹",
       "text": "不过，无论如何变化，贫僧都记得师父的教诲：「心存善念，行有所依」。下棋也是一样。",
       "options": [
-        {"text": "大师所言极是！", "nextNodeId": "farewell"}
+        {"text": "大师所言极是！"}
       ]
     },
     {

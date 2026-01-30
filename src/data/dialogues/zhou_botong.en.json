@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Zhou Botong",
-      "text": "Hahaha! Someone's come to play with the Old Urchin! Who are you? Have you come to play Go with the Old Urchin?",
-      "nextNodeId": "first_meet"
+      "text": "Hahaha! Someone's come to play with the Old Urchin! Who are you? Have you come to play Go with the Old Urchin?"
     },
     {
       "id": "first_meet",
       "speaker": "Zhou Botong",
-      "text": "The Old Urchin loves playing with people! Can you play Go? I have a special technique called 'Ambidextrous Fighting' - it's so fun!",
-      "nextNodeId": "check_status"
+      "text": "The Old Urchin loves playing with people! Can you play Go? I have a special technique called 'Ambidextrous Fighting' - it's so fun!"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "'Ambidextrous Fighting' is amazing - it lets you split your mind and play two moves at once! Hehe, want to learn?",
       "options": [
         {
-          "text": "Please teach me, Old Senior!",
-          "condition": {"type": "quest", "value": "defeated_zhou_botong", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Old Senior!"
         },
         {
-          "text": "I want to learn 'Ambidextrous Fighting'",
-          "condition": {"type": "quest", "value": "defeated_zhou_botong"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn 'Ambidextrous Fighting'"
         },
         {
-          "text": "Old Senior, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_zhou_botong"},
-          "nextNodeId": "start_battle"
+          "text": "Old Senior, I'd like to play another game with you"
         },
-        {"text": "What is Ambidextrous Fighting?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "What is Ambidextrous Fighting?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Zhou Botong",
-      "text": "Haha! You don't know? 'Ambidextrous Fighting' means your left hand and right hand do different things at the same time - amazing, right?",
-      "nextNodeId": "explain_skill_2"
+      "text": "Haha! You don't know? 'Ambidextrous Fighting' means your left hand and right hand do different things at the same time - amazing, right?"
     },
     {
       "id": "explain_skill_2",
       "speaker": "Zhou Botong",
       "text": "When playing Go, you can think about two paths and play two moves at once! Your opponent thinks you can only play one move, but you play two - hehe!",
       "options": [
-        {"text": "That's amazing! Please teach me, Old Senior", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+        {"text": "That's amazing! Please teach me, Old Senior"},
+        {"text": "Let me think about it"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Zhou Botong",
-      "text": "Good good good! But you have to play a game with the Old Urchin first, let me see if you have the talent.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good good good! But you have to play a game with the Old Urchin first, let me see if you have the talent."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "The Old Urchin may love to play, but I'm serious about Go! If you can beat me, I'll teach you 'Ambidextrous Fighting'!",
       "options": [
         {
-          "text": "Alright! Please guide me, Old Senior!",
-          "nextNodeId": "start_battle"
+          "text": "Alright! Please guide me, Old Senior!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "Zhou Botong",
-      "text": "Wow! You're so good! You actually beat the Old Urchin! Good good good, I'll teach you 'Ambidextrous Fighting'!",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Wow! You're so good! You actually beat the Old Urchin! Good good good, I'll teach you 'Ambidextrous Fighting'!"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Zhou Botong",
-      "text": "The key to this technique is: split your mind, think about two paths, play two moves at once! Can be used once per game with a 30-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: split your mind, think about two paths, play two moves at once! Can be used once per game with a 30-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Zhou Botong",
-      "text": "Remember, when using this technique, 'left hand draws circle, right hand draws square' - don't mix them up! The Old Urchin practiced for a long time to learn it!",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, when using this technique, 'left hand draws circle, right hand draws square' - don't mix them up! The Old Urchin practiced for a long time to learn it!"
     },
     {
       "id": "teach_complete",
       "speaker": "Zhou Botong",
       "text": "Hahaha! You learned it! When you meet strong opponents in the future, use this technique and you'll definitely win!",
       "options": [
-        {"text": "Thank you, Old Senior!", "nextNodeId": "farewell"},
-        {"text": "I'd like to chat with you more", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Old Senior!"},
+        {"text": "I'd like to chat with you more"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "Zhou Botong",
       "text": "Aiya, it's okay! The Old Urchin has practiced for so many years, of course I'm good! Practice more and come back next time!",
       "options": [
-        {"text": "I'll return", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I'll return"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Zhou Botong",
-      "text": "The Old Urchin loves playing the most! Playing Go, catching crickets, climbing trees - everything is fun!",
-      "nextNodeId": "daily_chat_2"
+      "text": "The Old Urchin loves playing the most! Playing Go, catching crickets, climbing trees - everything is fun!"
     },
     {
       "id": "daily_chat_2",
       "speaker": "Zhou Botong",
       "text": "In life, being happy is most important! Those people with stern faces all the time are so boring! Don't you agree?",
       "options": [
-        {"text": "Old Senior is right!", "nextNodeId": "farewell"}
+        {"text": "Old Senior is right!"}
       ]
     },
     {

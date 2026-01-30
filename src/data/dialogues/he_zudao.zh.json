@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "何足道",
-      "text": "哦？有朋自远方来，不亦乐乎。贫道何足道，昆仑派掌门，人称「琴棋剑三圣」。",
-      "nextNodeId": "first_meet"
+      "text": "哦？有朋自远方来，不亦乐乎。贫道何足道，昆仑派掌门，人称「琴棋剑三圣」。"
     },
     {
       "id": "first_meet",
       "speaker": "何足道",
-      "text": "贫道平生醉心于琴棋剑三道，尤其是围棋，已达化境。看施主气度不凡，想必也是棋道中人？",
-      "nextNodeId": "check_status"
+      "text": "贫道平生醉心于琴棋剑三道，尤其是围棋，已达化境。看施主气度不凡，想必也是棋道中人？"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "贫道有一招「三圣合一」，将琴棋剑三道精要融于一炉，用在围棋上威力无穷。",
       "options": [
         {
-          "text": "请前辈指教！",
-          "condition": {"type": "quest", "value": "defeated_he_zudao", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请前辈指教！"
         },
         {
-          "text": "我想学习「三圣合一」",
-          "condition": {"type": "quest", "value": "defeated_he_zudao"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「三圣合一」"
         },
         {
-          "text": "前辈，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_he_zudao"},
-          "nextNodeId": "start_battle"
+          "text": "前辈，我想再和你对弈一局"
         },
-        {"text": "三圣合一是什么？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "三圣合一是什么？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "何足道",
-      "text": "贫道修炼琴棋剑数十载，终于悟出三者相通之理。琴之韵律、棋之变化、剑之锋芒，本是一体。",
-      "nextNodeId": "explain_skill_2"
+      "text": "贫道修炼琴棋剑数十载，终于悟出三者相通之理。琴之韵律、棋之变化、剑之锋芒，本是一体。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "何足道",
       "text": "「三圣合一」能让你在对局中同时施展三种变化，如同琴声、棋路、剑气交织，让对手无法招架。",
       "options": [
-        {"text": "玄妙无比！请前辈教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
+        {"text": "玄妙无比！请前辈教我"},
+        {"text": "我再参悟一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "何足道",
-      "text": "好！不过这招的精髓，非有极高的悟性不能领会。你要想学，得先与贫道对弈一局。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！不过这招的精髓，非有极高的悟性不能领会。你要想学，得先与贫道对弈一局。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "贫道当年游历天下，与各路高手切磋，少有对手。你若能胜贫道，说明你有这个慧根。",
       "options": [
         {
-          "text": "请前辈赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请前辈赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "何足道",
-      "text": "妙哉！妙哉！施主这棋下得行云流水，已有「三圣」之姿。贫道就传你这招。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "妙哉！妙哉！施主这棋下得行云流水，已有「三圣」之姿。贫道就传你这招。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "何足道",
-      "text": "这招的要领是：在关键时刻，将琴、棋、剑三道精要融合，产生三重变化。每局限用一次，冷却45步。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：在关键时刻，将琴、棋、剑三道精要融合，产生三重变化。每局限用一次，冷却45步。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "何足道",
-      "text": "记住，「琴有琴韵，棋有棋理，剑有剑意」。三者合一，方能发挥最大威力。",
-      "nextNodeId": "teach_complete"
+      "text": "记住，「琴有琴韵，棋有棋理，剑有剑意」。三者合一，方能发挥最大威力。"
     },
     {
       "id": "teach_complete",
       "speaker": "何足道",
       "text": "施主既然学会了此招，他日必成大器。不过切记，武功再高，也要心怀善念。",
       "options": [
-        {"text": "多谢前辈教诲！", "nextNodeId": "farewell"},
-        {"text": "我还想听听前辈的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {"text": "多谢前辈教诲！"},
+        {"text": "我还想听听前辈的见解"},
+        {"text": "我想再挑战一次"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "何足道",
       "text": "施主莫要气馁。贫道当年修炼，也是历经磨难。慢慢来，不必着急。",
       "options": [
-        {"text": "晚辈明白了", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "晚辈明白了"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "何足道",
-      "text": "贫道一生修炼琴棋剑三道，深知天地间万物相通之理。这围棋，也是一样。",
-      "nextNodeId": "daily_chat_2"
+      "text": "贫道一生修炼琴棋剑三道，深知天地间万物相通之理。这围棋，也是一样。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "何足道",
       "text": "黑白之间，蕴含阴阳之理；纵横交错，暗合天地之势。若能悟透其中奥妙，便可得道。",
       "options": [
-        {"text": "前辈所言极是！", "nextNodeId": "farewell"}
+        {"text": "前辈所言极是！"}
       ]
     },
     {

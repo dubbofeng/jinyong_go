@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "He Zudao",
-      "text": "Oh? When friends come from afar, is it not delightful? This poor Taoist is He Zudao, Master of the Kunlun Sect, known as the 'Three Saints of Qin, Go, and Sword.'",
-      "nextNodeId": "first_meet"
+      "text": "Oh? When friends come from afar, is it not delightful? This poor Taoist is He Zudao, Master of the Kunlun Sect, known as the 'Three Saints of Qin, Go, and Sword.'"
     },
     {
       "id": "first_meet",
       "speaker": "He Zudao",
-      "text": "This poor Taoist has devoted his life to the three Ways of Qin, Go, and Sword, especially Go, reaching a transcendent state. Seeing your extraordinary bearing, you must also be a person of the Go Way?",
-      "nextNodeId": "check_status"
+      "text": "This poor Taoist has devoted his life to the three Ways of Qin, Go, and Sword, especially Go, reaching a transcendent state. Seeing your extraordinary bearing, you must also be a person of the Go Way?"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "This poor Taoist has a technique called 'Three Saints Unity' that fuses the essence of Qin, Go, and Sword into one, with infinite power when applied to Go.",
       "options": [
         {
-          "text": "Please teach me, Senior!",
-          "condition": {"type": "quest", "value": "defeated_he_zudao", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Senior!"
         },
         {
-          "text": "I want to learn 'Three Saints Unity'",
-          "condition": {"type": "quest", "value": "defeated_he_zudao"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn 'Three Saints Unity'"
         },
         {
-          "text": "Senior, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_he_zudao"},
-          "nextNodeId": "start_battle"
+          "text": "Senior, I'd like to play another game with you"
         },
-        {"text": "What is Three Saints Unity?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "What is Three Saints Unity?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "He Zudao",
-      "text": "This poor Taoist has cultivated Qin, Go, and Sword for decades and finally comprehended their interconnected principle. The rhythm of Qin, the variations of Go, the sharpness of Sword - they are one.",
-      "nextNodeId": "explain_skill_2"
+      "text": "This poor Taoist has cultivated Qin, Go, and Sword for decades and finally comprehended their interconnected principle. The rhythm of Qin, the variations of Go, the sharpness of Sword - they are one."
     },
     {
       "id": "explain_skill_2",
       "speaker": "He Zudao",
       "text": "'Three Saints Unity' allows you to simultaneously deploy three variations during a game, like the interweaving of Qin music, Go patterns, and sword energy, leaving opponents unable to resist.",
       "options": [
-        {"text": "Profoundly mysterious! Please teach me, Senior", "nextNodeId": "challenge_intro"},
-        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+        {"text": "Profoundly mysterious! Please teach me, Senior"},
+        {"text": "Let me contemplate this further"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "He Zudao",
-      "text": "Good! However, the essence of this technique cannot be grasped without extremely high understanding. If you want to learn, you must play a game with this poor Taoist first.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! However, the essence of this technique cannot be grasped without extremely high understanding. If you want to learn, you must play a game with this poor Taoist first."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "Years ago, this poor Taoist traveled the world and exchanged moves with masters from all paths - few were worthy opponents. If you can beat this poor Taoist, it proves you have the understanding.",
       "options": [
         {
-          "text": "Please bestow your teaching, Senior!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Senior!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "He Zudao",
-      "text": "Marvelous! Marvelous! Benefactor, your game flows like clouds and water, already possessing the bearing of 'Three Saints.' This poor Taoist will teach you this technique.",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Marvelous! Marvelous! Benefactor, your game flows like clouds and water, already possessing the bearing of 'Three Saints.' This poor Taoist will teach you this technique."
     },
     {
       "id": "teach_skill_detail",
       "speaker": "He Zudao",
-      "text": "The key to this technique is: at crucial moments, fuse the essence of Qin, Go, and Sword, producing triple variations. Limited to once per game with a 45-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: at crucial moments, fuse the essence of Qin, Go, and Sword, producing triple variations. Limited to once per game with a 45-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "He Zudao",
-      "text": "Remember, 'Qin has its rhythm, Go has its principles, Sword has its intent.' Only when the three unite can you unleash maximum power.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, 'Qin has its rhythm, Go has its principles, Sword has its intent.' Only when the three unite can you unleash maximum power."
     },
     {
       "id": "teach_complete",
       "speaker": "He Zudao",
       "text": "Now that benefactor has learned this technique, you'll surely achieve great things in the future. But remember, no matter how high your martial arts, maintain a benevolent heart.",
       "options": [
-        {"text": "Thank you for your teaching, Senior!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you for your teaching, Senior!"},
+        {"text": "I'd like to hear more of your insights"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "He Zudao",
       "text": "Don't be discouraged, benefactor. When this poor Taoist was cultivating, I also endured many hardships. Take your time, no need to rush.",
       "options": [
-        {"text": "This junior understands", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "This junior understands"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "He Zudao",
-      "text": "This poor Taoist has cultivated the three Ways of Qin, Go, and Sword all his life, deeply understanding the principle that all things in heaven and earth are interconnected. Go is the same.",
-      "nextNodeId": "daily_chat_2"
+      "text": "This poor Taoist has cultivated the three Ways of Qin, Go, and Sword all his life, deeply understanding the principle that all things in heaven and earth are interconnected. Go is the same."
     },
     {
       "id": "daily_chat_2",
       "speaker": "He Zudao",
       "text": "Between black and white lies the principle of Yin and Yang; the crisscrossing secretly matches the power of heaven and earth. If you can penetrate these mysteries, you can attain the Way.",
       "options": [
-        {"text": "Senior speaks truly!", "nextNodeId": "farewell"}
+        {"text": "Senior speaks truly!"}
       ]
     },
     {

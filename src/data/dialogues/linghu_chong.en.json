@@ -6,8 +6,7 @@
     {
       "id": "greeting",
       "speaker": "Linghu Chong",
-      "text": "My friend, you look unfamiliar. Is this your first time at Shaolin Temple?",
-      "nextNodeId": "check_status"
+      "text": "My friend, you look unfamiliar. Is this your first time at Shaolin Temple?"
     },
     {
       "id": "check_status",
@@ -15,22 +14,16 @@
       "text": "How may I help you?",
       "options": [
         {
-          "text": "Brother Linghu! Please teach me Go",
-          "condition": {"type": "quest", "value": "unlock_skill_dugu", "inverse": true},
-          "nextNodeId": "teach_request"
+          "text": "Brother Linghu! Please teach me Go"
         },
         {
-          "text": "I'd like to hear about swordplay and Go",
-          "condition": {"type": "quest", "value": "unlock_skill_dugu"},
-          "nextNodeId": "after_learn_chat"
+          "text": "I'd like to hear about swordplay and Go"
         },
         {
-          "text": "What's the connection between Dugu Nine Swords and Go?",
-          "nextNodeId": "explain_connection"
+          "text": "What's the connection between Dugu Nine Swords and Go?"
         },
         {
-          "text": "Just passing by, farewell",
-          "nextNodeId": "farewell_early"
+          "text": "Just passing by, farewell"
         }
       ]
     },
@@ -40,24 +33,20 @@
       "text": "I'm Linghu Chong, contemplating the relationship between swordsmanship and Go. My master says both are about breaking through techniques.",
       "options": [
         {
-          "text": "Brother Linghu! Please teach me Go",
-          "nextNodeId": "teach_request"
+          "text": "Brother Linghu! Please teach me Go"
         },
         {
-          "text": "What's the connection between Dugu Nine Swords and Go?",
-          "nextNodeId": "explain_connection"
+          "text": "What's the connection between Dugu Nine Swords and Go?"
         },
         {
-          "text": "Just passing by, farewell",
-          "nextNodeId": "farewell_early"
+          "text": "Just passing by, farewell"
         }
       ]
     },
     {
       "id": "explain_connection",
       "speaker": "Linghu Chong",
-      "text": "The Dugu Nine Swords emphasizes anticipating the opponent's moves - no technique beats all techniques. Go is the same! See through your opponent's intent, understand the board situation, and strike first.",
-      "nextNodeId": "explain_skill"
+      "text": "The Dugu Nine Swords emphasizes anticipating the opponent's moves - no technique beats all techniques. Go is the same! See through your opponent's intent, understand the board situation, and strike first."
     },
     {
       "id": "explain_skill",
@@ -65,20 +54,17 @@
       "text": "I have a technique called 'Dugu Nine Swords: Assessment Chapter' that lets you see the board situation clearly and judge the advantage.",
       "options": [
         {
-          "text": "Please teach me!",
-          "nextNodeId": "teach_skill"
+          "text": "Please teach me!"
         },
         {
-          "text": "Let me think about it",
-          "nextNodeId": "think_again"
+          "text": "Let me think about it"
         }
       ]
     },
     {
       "id": "teach_request",
       "speaker": "Linghu Chong",
-      "text": "Haha, you flatter me. I'm no match for Senior Hong Qigong. But my Dugu Nine Swords can connect with Go.",
-      "nextNodeId": "explain_skill"
+      "text": "Haha, you flatter me. I'm no match for Senior Hong Qigong. But my Dugu Nine Swords can connect with Go."
     },
     {
       "id": "teach_skill",
@@ -87,8 +73,7 @@
       "action": {
         "type": "quest",
         "value": "unlock_skill_dugu"
-      },
-      "nextNodeId": "after_teach"
+      }
     },
     {
       "id": "after_teach",
@@ -96,12 +81,10 @@
       "text": "There's a Hero Guo in Xiangyang City whose Go skills are unfathomable. If you've learned well, go find him for a match.",
       "options": [
         {
-          "text": "Thank you, Brother Linghu!",
-          "nextNodeId": "farewell"
+          "text": "Thank you, Brother Linghu!"
         },
         {
-          "text": "Can you tell me more about the Dugu Nine Swords?",
-          "nextNodeId": "talk_sword"
+          "text": "Can you tell me more about the Dugu Nine Swords?"
         }
       ]
     },
@@ -111,12 +94,10 @@
       "text": "You've learned the essence of the Dugu Nine Swords. Now you should go to Xiangyang to find Hero Guo. His Go and martial arts have reached perfection - you'll surely gain insights.",
       "options": [
         {
-          "text": "Thank you for your guidance!",
-          "nextNodeId": "farewell"
+          "text": "Thank you for your guidance!"
         },
         {
-          "text": "I'd like to hear more about swordplay",
-          "nextNodeId": "talk_sword"
+          "text": "I'd like to hear more about swordplay"
         }
       ]
     },
@@ -126,12 +107,10 @@
       "text": "You've been to Xiangyang? How are Hero Guo's martial arts? He's truly a top master in the world.",
       "options": [
         {
-          "text": "Hero Guo's martial arts are superb, I learned a lot",
-          "nextNodeId": "praise_response"
+          "text": "Hero Guo's martial arts are superb, I learned a lot"
         },
         {
-          "text": "I'd like to hear more about your swordplay insights",
-          "nextNodeId": "talk_sword"
+          "text": "I'd like to hear more about your swordplay insights"
         }
       ]
     },
@@ -141,16 +120,14 @@
       "text": "Haha, receiving guidance from Hero Guo makes you a fortunate person. The essence of the Dugu Nine Swords is 'no technique beats all techniques' - I hope you continue to contemplate this.",
       "options": [
         {
-          "text": "I'll keep it in mind!",
-          "nextNodeId": "farewell"
+          "text": "I'll keep it in mind!"
         }
       ]
     },
     {
       "id": "talk_sword",
       "speaker": "Linghu Chong",
-      "text": "The Dugu Nine Swords has nine forms: General Formula, Breaking Sword Form, Breaking Saber Form, and so on. Its essence is 'no technique' - using no technique to break all techniques, adapting to all changes.",
-      "nextNodeId": "talk_sword_2"
+      "text": "The Dugu Nine Swords has nine forms: General Formula, Breaking Sword Form, Breaking Saber Form, and so on. Its essence is 'no technique' - using no technique to break all techniques, adapting to all changes."
     },
     {
       "id": "talk_sword_2",
@@ -158,8 +135,7 @@
       "text": "Go is the same - don't be constrained by set patterns, adapt to changes, that's the highest level.",
       "options": [
         {
-          "text": "I've learned so much!",
-          "nextNodeId": "farewell"
+          "text": "I've learned so much!"
         }
       ]
     },
@@ -169,8 +145,7 @@
       "text": "No worries, learning martial arts and Go must be gradual, can't rush.",
       "options": [
         {
-          "text": "Thank you for understanding",
-          "nextNodeId": "farewell"
+          "text": "Thank you for understanding"
         }
       ]
     },
@@ -180,8 +155,7 @@
       "text": "Since we've met by fate, let's talk another time. I must continue contemplating swordplay.",
       "options": [
         {
-          "text": "Until we meet again",
-          "nextNodeId": "end"
+          "text": "Until we meet again"
         }
       ]
     },

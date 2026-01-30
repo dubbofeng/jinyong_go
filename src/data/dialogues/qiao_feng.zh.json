@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "乔峰",
-      "text": "这位兄弟，你好！在下乔峰，丐帮帮主。看你一身正气，想必是江湖中的好汉？",
-      "nextNodeId": "first_meet"
+      "text": "这位兄弟，你好！在下乔峰，丐帮帮主。看你一身正气，想必是江湖中的好汉？"
     },
     {
       "id": "first_meet",
       "speaker": "乔峰",
-      "text": "在下虽以武功闻名，但对围棋也颇有研究。听说你在江湖上以棋会友，不如来比试一局？",
-      "nextNodeId": "check_status"
+      "text": "在下虽以武功闻名，但对围棋也颇有研究。听说你在江湖上以棋会友，不如来比试一局？"
     },
     {
       "id": "check_status",
@@ -21,23 +19,18 @@
       "text": "在下棋风刚猛凌厉，讲究以势压人。若你有胆色，不妨与我一局。",
       "options": [
         {
-          "text": "请乔帮主指教！",
-          "condition": {"type": "quest", "value": "defeated_qiao_feng", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请乔帮主指教！"
         },
         {
-          "text": "乔帮主，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_qiao_feng"},
-          "nextNodeId": "start_battle"
+          "text": "乔帮主，我想再和你对弈一局"
         },
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "乔峰",
-      "text": "好！有胆色！你要想见识我的棋势，就先与在下对弈一局。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！有胆色！你要想见识我的棋势，就先与在下对弈一局。"
     },
     {
       "id": "challenge_condition",
@@ -45,10 +38,9 @@
       "text": "在下行走江湖多年，从未遇到真正的对手。你若能胜在下，就说明你有这个资格。",
       "options": [
         {
-          "text": "请乔帮主赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请乔帮主赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -61,22 +53,21 @@
       "speaker": "乔峰",
       "text": "不必气馁。在下当年学武，也是历经磨难。你再多练习，必有所成。",
       "options": [
-        {"text": "在下告退", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "在下告退"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "乔峰",
-      "text": "在下这一生行侠仗义，但也因身世之谜饱受煎熬。有时候想想，人生如棋，每一步都要深思熟虑。",
-      "nextNodeId": "daily_chat_2"
+      "text": "在下这一生行侠仗义，但也因身世之谜饱受煎熬。有时候想想，人生如棋，每一步都要深思熟虑。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "乔峰",
       "text": "不过无论如何，在下都会坚守心中的信念。大丈夫当顶天立地，无愧于心！",
       "options": [
-        {"text": "乔帮主豪气干云！", "nextNodeId": "farewell"}
+        {"text": "乔帮主豪气干云！"}
       ]
     },
     {

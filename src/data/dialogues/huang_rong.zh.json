@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "黄蓉",
-      "text": "咦？这位小兄弟面生得很呐。你是新来襄阳的？",
-      "nextNodeId": "first_meet"
+      "text": "咦？这位小兄弟面生得很呐。你是新来襄阳的？"
     },
     {
       "id": "first_meet",
       "speaker": "黄蓉",
-      "text": "小女子黄蓉，这位是我夫君郭靖。听说你在江湖上以棋会友，不知棋力如何？",
-      "nextNodeId": "check_status"
+      "text": "小女子黄蓉，这位是我夫君郭靖。听说你在江湖上以棋会友，不知棋力如何？"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "我家父亲黄药师精通奇门遁甲，我自小耳濡目染，对棋局机关颇有研究。你想学点本事吗？",
       "options": [
         {
-          "text": "请黄女侠指教！",
-          "condition": {"type": "quest", "value": "defeated_huang_rong", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请黄女侠指教！"
         },
         {
-          "text": "我想学习「机关算尽」",
-          "condition": {"type": "quest", "value": "defeated_huang_rong"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「机关算尽」"
         },
         {
-          "text": "黄女侠，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_huang_rong"},
-          "nextNodeId": "start_battle"
+          "text": "黄女侠，我想再和你对弈一局"
         },
-        {"text": "什么是机关算尽？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "什么是机关算尽？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "黄蓉",
-      "text": "嘻嘻，「机关算尽」是我独创的棋法。下棋时，我会在心中演算多种变化，就像试着走不同的路，看看哪条最好。",
-      "nextNodeId": "explain_skill_2"
+      "text": "嘻嘻，「机关算尽」是我独创的棋法。下棋时，我会在心中演算多种变化，就像试着走不同的路，看看哪条最好。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "黄蓉",
       "text": "这招的妙处在于，你可以建立多个变化分支，反复推演，直到找到最佳着法。我爹爹常说，「凡事预则立」，下棋也是一样。",
       "options": [
-        {"text": "听起来很厉害！请黄女侠教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再考虑考虑", "nextNodeId": "not_ready"}
+        {"text": "听起来很厉害！请黄女侠教我"},
+        {"text": "我再考虑考虑"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "黄蓉",
-      "text": "好呀！不过呢，我这招可不是随便教人的。你得先和我下一局，让我看看你的水平。",
-      "nextNodeId": "challenge_condition"
+      "text": "好呀！不过呢，我这招可不是随便教人的。你得先和我下一局，让我看看你的水平。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "我爹爹教我下棋时说，「棋如布阵，每一子都暗藏玄机」。你要是能赢我，就说明你有资格学这一招。",
       "options": [
         {
-          "text": "好！请黄女侠指教！",
-          "nextNodeId": "start_battle"
+          "text": "好！请黄女侠指教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "黄蓉",
-      "text": "不错不错！你这棋下得很有章法。既然如此，我就传你「机关算尽」这一招。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "不错不错！你这棋下得很有章法。既然如此，我就传你「机关算尽」这一招。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "黄蓉",
-      "text": "这招的要领是：对局时，你可以在心中建立多个变化图，试探不同的走法，找出最优解。每局限用两次，或者冷却10步后可再用。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：对局时，你可以在心中建立多个变化图，试探不同的走法，找出最优解。每局限用两次，或者冷却10步后可再用。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "黄蓉",
-      "text": "记住，用这招时要「心思缜密，滴水不漏」。我爹爹常说，「机关算尽太聪明」，但在棋盘上，聪明才能赢棋嘛！",
-      "nextNodeId": "teach_complete"
+      "text": "记住，用这招时要「心思缜密，滴水不漏」。我爹爹常说，「机关算尽太聪明」，但在棋盘上，聪明才能赢棋嘛！"
     },
     {
       "id": "teach_complete",
       "speaker": "黄蓉",
       "text": "对了，你既然都学会了靖哥哥和七公的招式，不如去大理找找段誉。他的「北冥神功」也能用在围棋上呢！",
       "options": [
-        {"text": "多谢黄女侠！", "nextNodeId": "farewell"},
-        {"text": "我还想听听你的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {"text": "多谢黄女侠！"},
+        {"text": "我还想听听你的见解"},
+        {"text": "我想再挑战一次"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "黄蓉",
       "text": "嘻嘻，不要紧的。我爹爹说过，「失败是成功之母」。你再练练，待会儿再来吧！",
       "options": [
-        {"text": "我会再来的", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "我会再来的"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "黄蓉",
-      "text": "下棋啊，最重要的是「运筹帷幄，决胜千里」。你看我爹爹，琴棋书画样样精通，就是因为他善于思考。",
-      "nextNodeId": "daily_chat_2"
+      "text": "下棋啊，最重要的是「运筹帷幄，决胜千里」。你看我爹爹，琴棋书画样样精通，就是因为他善于思考。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "黄蓉",
       "text": "还有啊，女孩子下棋要「以柔克刚」。靖哥哥总说我下棋诡计多端，其实是他太老实了，哈哈！",
       "options": [
-        {"text": "受教了！", "nextNodeId": "farewell"}
+        {"text": "受教了！"}
       ]
     },
     {

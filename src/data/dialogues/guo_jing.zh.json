@@ -6,8 +6,7 @@
     {
       "id": "greeting",
       "speaker": "郭靖",
-      "text": "这位朋友，你好。在下郭靖，正在此处钻研兵法与棋道。",
-      "nextNodeId": "check_status"
+      "text": "这位朋友，你好。在下郭靖，正在此处钻研兵法与棋道。"
     },
     {
       "id": "check_status",
@@ -15,23 +14,16 @@
       "text": "看你风尘仆仆，有何贵干？",
       "options": [
         {
-          "text": "正是！久仰郭大侠威名",
-          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
-          "nextNodeId": "respect_response"
+          "text": "正是！久仰郭大侠威名"
         },
         {
-          "text": "想向郭大侠学习围棋",
-          "condition": {"type": "quest", "value": "unlock_skill_fuyu", "inverse": true},
-          "nextNodeId": "learn_request"
+          "text": "想向郭大侠学习围棋"
         },
         {
-          "text": "郭大侠，我想再听听您的教诲",
-          "condition": {"type": "quest", "value": "unlock_skill_fuyu"},
-          "nextNodeId": "after_learn_chat"
+          "text": "郭大侠，我想再听听您的教诲"
         },
         {
-          "text": "只是路过看看",
-          "nextNodeId": "just_visit"
+          "text": "只是路过看看"
         }
       ]
     },
@@ -41,24 +33,20 @@
       "text": "看你风尘仆仆，莫非是来襄阳寻高手切磋棋艺的？",
       "options": [
         {
-          "text": "正是！久仰郭大侠威名",
-          "nextNodeId": "respect_response"
+          "text": "正是！久仰郭大侠威名"
         },
         {
-          "text": "想向郭大侠学习围棋",
-          "nextNodeId": "learn_request"
+          "text": "想向郭大侠学习围棋"
         },
         {
-          "text": "只是路过看看",
-          "nextNodeId": "just_visit"
+          "text": "只是路过看看"
         }
       ]
     },
     {
       "id": "respect_response",
       "speaker": "郭靖",
-      "text": "不敢当，不敢当。靖哥哥武功虽有些根基，但论起围棋，还是蓉儿更胜一筹。",
-      "nextNodeId": "talk_rong"
+      "text": "不敢当，不敢当。靖哥哥武功虽有些根基，但论起围棋，还是蓉儿更胜一筹。"
     },
     {
       "id": "talk_rong",
@@ -66,20 +54,17 @@
       "text": "蓉儿常说，围棋如用兵，需懂得虚实相生，攻守兼备。这些年守卫襄阳，我对此倒是有些体会。",
       "options": [
         {
-          "text": "愿闻其详",
-          "nextNodeId": "teach_wisdom"
+          "text": "愿闻其详"
         },
         {
-          "text": "想挑战郭大侠的棋艺",
-          "nextNodeId": "challenge"
+          "text": "想挑战郭大侠的棋艺"
         }
       ]
     },
     {
       "id": "learn_request",
       "speaker": "郭靖",
-      "text": "靖哥哥资质愚钝，多亏恩师和蓉儿教导，才学得一些本事。既然你诚心求教，我便倾囊相授。",
-      "nextNodeId": "eye_intro"
+      "text": "靖哥哥资质愚钝，多亏恩师和蓉儿教导，才学得一些本事。既然你诚心求教，我便倾囊相授。"
     },
     {
       "id": "eye_intro",
@@ -87,74 +72,62 @@
       "text": "先从常见眼型讲起。你也可跳过，直接听兵法心得。",
       "options": [
         {
-          "text": "请郭大侠指点眼型",
-          "nextNodeId": "eye_straight_three"
+          "text": "请郭大侠指点眼型"
         },
         {
-          "text": "先跳过，改日再学",
-          "nextNodeId": "teach_wisdom"
+          "text": "先跳过，改日再学"
         }
       ]
     },
     {
       "id": "eye_straight_three",
       "speaker": "郭靖",
-      "text": "「直三」：三个点呈一线。此形通常需补一手，否则被占要点即死。",
-      "nextNodeId": "eye_bent_three"
+      "text": "「直三」：三个点呈一线。此形通常需补一手，否则被占要点即死。"
     },
     {
       "id": "eye_bent_three",
       "speaker": "郭靖",
-      "text": "「弯三」：三个点弯成折角。此形也往往要补一手。",
-      "nextNodeId": "eye_t_four"
+      "text": "「弯三」：三个点弯成折角。此形也往往要补一手。"
     },
     {
       "id": "eye_t_four",
       "speaker": "郭靖",
-      "text": "「丁四」：四点呈丁字形。看似宽阔，其实要点被占即可死。",
-      "nextNodeId": "eye_knife_five"
+      "text": "「丁四」：四点呈丁字形。看似宽阔，其实要点被占即可死。"
     },
     {
       "id": "eye_knife_five",
       "speaker": "郭靖",
-      "text": "「刀把五」：形如菜刀。通常为死形，需先手补棋方能做活。",
-      "nextNodeId": "eye_plum_five"
+      "text": "「刀把五」：形如菜刀。通常为死形，需先手补棋方能做活。"
     },
     {
       "id": "eye_plum_five",
       "speaker": "郭靖",
-      "text": "「梅花五」：五点呈梅花状。多为死形，须先手补棋。",
-      "nextNodeId": "eye_straight_four"
+      "text": "「梅花五」：五点呈梅花状。多为死形，须先手补棋。"
     },
     {
       "id": "eye_straight_four",
       "speaker": "郭靖",
-      "text": "「直四」：四点成一直线。此形为经典活棋眼形，无需补棋。",
-      "nextNodeId": "eye_bent_four"
+      "text": "「直四」：四点成一直线。此形为经典活棋眼形，无需补棋。"
     },
     {
       "id": "eye_bent_four",
       "speaker": "郭靖",
-      "text": "「曲四」：四点弯曲排列。也是活棋眼形，一般不必补棋。",
-      "nextNodeId": "eye_grape_six"
+      "text": "「曲四」：四点弯曲排列。也是活棋眼形，一般不必补棋。"
     },
     {
       "id": "eye_grape_six",
       "speaker": "郭靖",
-      "text": "「葡萄六」：六点成特殊形。死活视局面而定，需判断要点。",
-      "nextNodeId": "teach_wisdom"
+      "text": "「葡萄六」：六点成特殊形。死活视局面而定，需判断要点。"
     },
     {
       "id": "teach_wisdom",
       "speaker": "郭靖",
-      "text": "守城如守棋，要知道何处当固守，何处可舍弃。棋道在于心法，不在旁门捷径。",
-      "nextNodeId": "teach_skill"
+      "text": "守城如守棋，要知道何处当固守，何处可舍弃。棋道在于心法，不在旁门捷径。"
     },
     {
       "id": "teach_skill",
       "speaker": "郭靖",
-      "text": "至于「腹语传音」，那是段延庆的绝技，不在我这里传授。你若有心，可去向他求教。",
-      "nextNodeId": "after_teach"
+      "text": "至于「腹语传音」，那是段延庆的绝技，不在我这里传授。你若有心，可去向他求教。"
     },
     {
       "id": "after_teach",
@@ -162,20 +135,17 @@
       "text": "棋道漫漫，需要日积月累。你可以多和各地高手切磋，必有所获。",
       "options": [
         {
-          "text": "多谢郭大侠指点！",
-          "nextNodeId": "thank_you"
+          "text": "多谢郭大侠指点！"
         },
         {
-          "text": "想和郭大侠下一局",
-          "nextNodeId": "challenge"
+          "text": "想和郭大侠下一局"
         }
       ]
     },
     {
       "id": "challenge",
       "speaker": "郭靖",
-      "text": "好！有志气！不过靖哥哥最近公务繁忙，要等襄阳城防布置妥当才有空闲。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！有志气！不过靖哥哥最近公务繁忙，要等襄阳城防布置妥当才有空闲。"
     },
     {
       "id": "challenge_condition",
@@ -183,30 +153,22 @@
       "text": "你先去多加练习，等你棋力提升到一定程度，咱们再来一局如何？",
       "options": [
         {
-          "text": "好的，我会努力的！",
-          "nextNodeId": "accept_challenge"
+          "text": "好的，我会努力的！"
         },
         {
-          "text": "我已经准备好了！",
-          "nextNodeId": "ready_challenge",
-          "condition": {
-            "type": "level",
-            "value": 5
-          }
+          "text": "我已经准备好了！"
         }
       ]
     },
     {
       "id": "accept_challenge",
       "speaker": "郭靖",
-      "text": "嗯，年轻人就该有这股冲劲！去吧，待你有所长进，随时来找我。",
-      "nextNodeId": "farewell"
+      "text": "嗯，年轻人就该有这股冲劲！去吧，待你有所长进，随时来找我。"
     },
     {
       "id": "ready_challenge",
       "speaker": "郭靖",
-      "text": "哦？看你气度不凡，想必棋力已有根基。好，那咱们就来战上一局！",
-      "nextNodeId": "farewell"
+      "text": "哦？看你气度不凡，想必棋力已有根基。好，那咱们就来战上一局！"
     },
     {
       "id": "just_visit",
@@ -214,20 +176,17 @@
       "text": "襄阳城地处要冲，近年来蒙古兵犯边，局势紧张。你若只是游历，还请多加小心。",
       "options": [
         {
-          "text": "多谢提醒，告辞",
-          "nextNodeId": "farewell"
+          "text": "多谢提醒，告辞"
         },
         {
-          "text": "其实我是想学围棋的",
-          "nextNodeId": "learn_request"
+          "text": "其实我是想学围棋的"
         }
       ]
     },
     {
       "id": "thank_you",
       "speaker": "郭靖",
-      "text": "不必客气。为国为民，侠之大者。学棋亦是如此，不可只为个人胜负，要有更高的追求。",
-      "nextNodeId": "farewell"
+      "text": "不必客气。为国为民，侠之大者。学棋亦是如此，不可只为个人胜负，要有更高的追求。"
     },
     {
       "id": "after_learn_chat",
@@ -235,12 +194,10 @@
       "text": "你已经学会了「腹语传音」，那是段延庆的手段。但记住，真正的高手要靠自己的判断，不能总依赖他人。",
       "options": [
         {
-          "text": "受教了！",
-          "nextNodeId": "farewell"
+          "text": "受教了！"
         },
         {
-          "text": "想听听郭大侠的兵法心得",
-          "nextNodeId": "talk_strategy"
+          "text": "想听听郭大侠的兵法心得"
         }
       ]
     },
@@ -250,8 +207,7 @@
       "text": "兵法云：知己知彼，百战不殆。围棋亦是如此。你要清楚自己的优势在哪，对手的弱点在哪，才能制定出最佳策略。",
       "options": [
         {
-          "text": "多谢指点！",
-          "nextNodeId": "farewell"
+          "text": "多谢指点！"
         }
       ]
     },
@@ -261,12 +217,10 @@
       "text": "你已经完成了所有任务，武艺和棋艺都有很大进步。襄阳城需要你这样的年轻人！但记住，武学棋道永无止境，还需继续努力。",
       "options": [
         {
-          "text": "多谢郭大侠栽培！",
-          "nextNodeId": "farewell"
+          "text": "多谢郭大侠栽培！"
         },
         {
-          "text": "还想听听郭大侠的经验",
-          "nextNodeId": "talk_strategy"
+          "text": "还想听听郭大侠的经验"
         }
       ]
     },

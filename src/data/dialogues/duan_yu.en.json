@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Duan Yu",
-      "text": "Hello, my friend! I'm Duan Yu of the Dali Duan family. You look travel-worn - have you come from afar?",
-      "nextNodeId": "first_meet"
+      "text": "Hello, my friend! I'm Duan Yu of the Dali Duan family. You look travel-worn - have you come from afar?"
     },
     {
       "id": "first_meet",
       "speaker": "Duan Yu",
-      "text": "Though I don't care much for martial arts, I'm quite interested in music, Go, calligraphy, and painting. I've heard you meet friends through Go. Would you like to play a game with me?",
-      "nextNodeId": "check_status"
+      "text": "Though I don't care much for martial arts, I'm quite interested in music, Go, calligraphy, and painting. I've heard you meet friends through Go. Would you like to play a game with me?"
     },
     {
       "id": "check_status",
@@ -21,44 +19,44 @@
       "text": "My family's 'Beiming Divine Art' is a martial arts masterpiece, and its inner-energy flow can also be excellently applied to Go.",
       "options": [
         {
-          "text": "Please teach me, Young Master Duan!",
-          "condition": {"type": "quest", "value": "defeated_duan_yu", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Young Master Duan!"
         },
         {
-           "text": "I want to learn the 'Beiming Divine Art'",
-          "condition": {"type": "quest", "value": "defeated_duan_yu"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn the 'Beiming Divine Art'"
         },
         {
-          "text": "Young Master Duan, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_duan_yu"},
-          "nextNodeId": "start_battle"
+          "text": "Young Master Duan, I'd like to play another game with you"
         },
-        {"text": "Beiming Divine Art in Go?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {
+          "text": "Beiming Divine Art in Go?"
+        },
+        {
+          "text": "Let me prepare first"
+        }
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Duan Yu",
-      "text": "Haha, you misunderstand, my friend. The 'Beiming Divine Art' I speak of is the art of cycling inner energy, letting you recover qi and dispel cooldowns in the game.",
-      "nextNodeId": "explain_skill_2"
+      "text": "Haha, you misunderstand, my friend. The 'Beiming Divine Art' I speak of is the art of cycling inner energy, letting you recover qi and dispel cooldowns in the game."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Duan Yu",
-       "text": "The beauty of this technique is that you can restore inner energy at crucial moments and clear all skill cooldowns, letting the game flow again.",
+      "text": "The beauty of this technique is that you can restore inner energy at crucial moments and clear all skill cooldowns, letting the game flow again.",
       "options": [
-        {"text": "Miraculous! Please teach me, Young Master Duan", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+        {
+          "text": "Miraculous! Please teach me, Young Master Duan"
+        },
+        {
+          "text": "Let me think about it"
+        }
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Duan Yu",
-      "text": "Very well! Though I dislike conflict, I'm serious about Go. If you want to learn this technique, you must play a game with me first.",
-      "nextNodeId": "challenge_condition"
+      "text": "Very well! Though I dislike conflict, I'm serious about Go. If you want to learn this technique, you must play a game with me first."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +64,11 @@
       "text": "My uncle, Master Yideng, often says, 'Go is like life - every move requires deep thought.' If you can beat me, it proves you have the understanding.",
       "options": [
         {
-          "text": "Alright! Please guide me, Young Master Duan!",
-          "nextNodeId": "start_battle"
+          "text": "Alright! Please guide me, Young Master Duan!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {
+          "text": "Let me prepare first"
+        }
       ]
     },
     {
@@ -80,29 +79,32 @@
     {
       "id": "teach_skill",
       "speaker": "Duan Yu",
-      "text": "Excellent game! Your play is brilliant - free-spirited yet rigorous. In that case, I'll teach you the 'Beiming Divine Art'.",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Excellent game! Your play is brilliant - free-spirited yet rigorous. In that case, I'll teach you the 'Beiming Divine Art'."
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Duan Yu",
-      "text": "The key to this technique is: restore your inner energy and clear all skill cooldowns at crucial moments. Use it sparingly.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: restore your inner energy and clear all skill cooldowns at crucial moments. Use it sparingly."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Duan Yu",
-      "text": "Remember, when using it, be 'flowing like clouds and water, in one breath.' My uncle says a true master reveals their skill with one move.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, when using it, be 'flowing like clouds and water, in one breath.' My uncle says a true master reveals their skill with one move."
     },
     {
       "id": "teach_complete",
       "speaker": "Duan Yu",
       "text": "By the way, if you have the chance, visit my uncle at Dali's Tianlong Temple. His 'Solar Finger' mastery is truly unfathomable.",
       "options": [
-        {"text": "Thank you, Young Master Duan!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {
+          "text": "Thank you, Young Master Duan!"
+        },
+        {
+          "text": "I'd like to hear more of your insights"
+        },
+        {
+          "text": "I want to challenge you again"
+        }
       ]
     },
     {
@@ -110,22 +112,27 @@
       "speaker": "Duan Yu",
       "text": "Don't be discouraged, my friend. The path of Go is long - what matters is cultivating your mind. Practice more and you'll surely succeed.",
       "options": [
-        {"text": "I'll return", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {
+          "text": "I'll return"
+        },
+        {
+          "text": "Let me challenge you again!"
+        }
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Duan Yu",
-      "text": "Though I'm the Crown Prince of Dali, what I love most is traveling and making friends. Go is also a way to make friends.",
-      "nextNodeId": "daily_chat_2"
+      "text": "Though I'm the Crown Prince of Dali, what I love most is traveling and making friends. Go is also a way to make friends."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Duan Yu",
       "text": "Father often says I'm not attending to proper duties, but I think the most important thing in life is happiness. Don't you agree, my friend?",
       "options": [
-        {"text": "Young Master Duan speaks wisely!", "nextNodeId": "farewell"}
+        {
+          "text": "Young Master Duan speaks wisely!"
+        }
       ]
     },
     {

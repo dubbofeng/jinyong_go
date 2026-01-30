@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "木桑道长",
-      "text": "哎呀！老道这里很久没来过客人了。小友，你怎么来到这道观的？",
-      "nextNodeId": "player_explain"
+      "text": "哎呀！老道这里很久没来过客人了。小友，你怎么来到这道观的？"
     },
     {
       "id": "player_explain",
       "speaker": "木桑道长",
-      "text": "穿越？这……倒也稀奇。不过既来之则安之，老道我看你骨骼清奇，倒是个学棋的好苗子。",
-      "nextNodeId": "check_status"
+      "text": "穿越？这……倒也稀奇。不过既来之则安之，老道我看你骨骼清奇，倒是个学棋的好苗子。"
     },
     {
       "id": "check_status",
@@ -21,70 +19,57 @@
       "text": "这江湖中啊，围棋修为决定武功高低。你既然来了，老道就传你些棋道入门之法如何？",
       "options": [
         {
-          "text": "请道长教我！",
-          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
-          "nextNodeId": "teach_intro"
+          "text": "请道长教我！"
         },
         {
-          "text": "我已经会下围棋了",
-          "condition": {"type": "quest", "value": "learned_go_basics", "inverse": true},
-          "nextNodeId": "skip_tutorial"
+          "text": "我已经会下围棋了"
         },
         {
-          "text": "道长，围棋和武功有什么关系？",
-          "nextNodeId": "explain_world"
+          "text": "道长，围棋和武功有什么关系？"
         },
         {
-          "text": "我想再听听您的教诲",
-          "condition": {"type": "quest", "value": "learned_go_basics"},
-          "nextNodeId": "daily_wisdom"
+          "text": "我想再听听您的教诲"
         }
       ]
     },
     {
       "id": "explain_world",
       "speaker": "木桑道长",
-      "text": "这你就不懂了！在这个世界，围棋可不只是消遣，而是真正的武学根基。棋力越高，内功越深。",
-      "nextNodeId": "explain_world_2"
+      "text": "这你就不懂了！在这个世界，围棋可不只是消遣，而是真正的武学根基。棋力越高，内功越深。"
     },
     {
       "id": "explain_world_2",
       "speaker": "木桑道长",
       "text": "江湖中的高手们，个个都是围棋大师。你想要闯荡江湖，必须先把棋艺练好才行！",
       "options": [
-        {"text": "原来如此！请道长教我", "nextNodeId": "teach_intro"},
-        {"text": "我已经懂围棋了", "nextNodeId": "skip_tutorial"}
+        {"text": "原来如此！请道长教我"},
+        {"text": "我已经懂围棋了"}
       ]
     },
     {
       "id": "teach_intro",
       "speaker": "木桑道长",
-      "text": "好好好！下围棋最讲究悟性，常言道「二十岁不成国手，终身无望」。你既是有缘人，老道便教你这棋中妙法。",
-      "nextNodeId": "teach_basics"
+      "text": "好好好！下围棋最讲究悟性，常言道「二十岁不成国手，终身无望」。你既是有缘人，老道便教你这棋中妙法。"
     },
     {
       "id": "teach_basics",
       "speaker": "木桑道长",
-      "text": "围棋是易学难精之事，下法规矩，一点就会。来，老道一面下，一面给你解释。",
-      "nextNodeId": "lesson_1"
+      "text": "围棋是易学难精之事，下法规矩，一点就会。来，老道一面下，一面给你解释。"
     },
     {
       "id": "lesson_1",
       "speaker": "木桑道长",
-      "text": "首先，围棋有黑白两色棋子，在纵横十九道的棋盘上对弈。黑棋先行，双方轮流落子。",
-      "nextNodeId": "lesson_2"
+      "text": "首先，围棋有黑白两色棋子，在纵横十九道的棋盘上对弈。黑棋先行，双方轮流落子。"
     },
     {
       "id": "lesson_2",
       "speaker": "木桑道长",
-      "text": "棋子落在棋盘的交叉点上，一旦落子就不能移动，只能提掉对方的棋子。这叫「落子无悔」，如同人生，每一步都要慎重！",
-      "nextNodeId": "lesson_3"
+      "text": "棋子落在棋盘的交叉点上，一旦落子就不能移动，只能提掉对方的棋子。这叫「落子无悔」，如同人生，每一步都要慎重！"
     },
     {
       "id": "lesson_3",
       "speaker": "木桑道长",
-      "text": "每颗棋子都有「气」，就是紧邻的空交叉点。当一块棋的气被全部堵住，这块棋就死了，要被提走。",
-      "nextNodeId": "practice_1"
+      "text": "每颗棋子都有「气」，就是紧邻的空交叉点。当一块棋的气被全部堵住，这块棋就死了，要被提走。"
     },
     {
       "id": "practice_1",
@@ -92,142 +77,119 @@
       "text": "来，咱们用九路棋摆个小型棋形，看看气与提子的关系。",
       "options": [
         {
-          "text": "好的，请道长指教！",
-          "nextNodeId": "after_practice_1"
+          "text": "好的，请道长指教！"
         }
       ]
     },
     {
       "id": "after_practice_1",
       "speaker": "木桑道长",
-      "text": "不错不错！一眼看出哪里是气口，提子也就顺理成章了。",
-      "nextNodeId": "lesson_alive_eyes"
+      "text": "不错不错！一眼看出哪里是气口，提子也就顺理成章了。"
     },
     {
       "id": "lesson_alive_eyes",
       "speaker": "木桑道长",
-      "text": "再讲「两眼活棋」。一块棋若能做出两眼，便不会被提走，称为活棋。",
-      "nextNodeId": "lesson_true_eye"
+      "text": "再讲「两眼活棋」。一块棋若能做出两眼，便不会被提走，称为活棋。"
     },
     {
       "id": "lesson_true_eye",
       "speaker": "木桑道长",
-      "text": "所谓「真眼」，是对手无法落子的眼位。即使轮到他，也不能在此落子。",
-      "nextNodeId": "lesson_false_eye"
+      "text": "所谓「真眼」，是对手无法落子的眼位。即使轮到他，也不能在此落子。"
     },
     {
       "id": "lesson_false_eye",
       "speaker": "木桑道长",
-      "text": "「假眼」看似成眼，却能被对手破坏。你要学会分辨真假，免得误判生死。",
-      "nextNodeId": "lesson_tiger_mouth"
+      "text": "「假眼」看似成眼，却能被对手破坏。你要学会分辨真假，免得误判生死。"
     },
     {
       "id": "lesson_tiger_mouth",
       "speaker": "木桑道长",
-      "text": "接下来讲几种吃子术语。先看「虎口」，三子相夹，形如虎口，常用于控制要点。",
-      "nextNodeId": "lesson_atari"
+      "text": "接下来讲几种吃子术语。先看「虎口」，三子相夹，形如虎口，常用于控制要点。"
     },
     {
       "id": "lesson_atari",
       "speaker": "木桑道长",
-      "text": "「叫吃」就是把对方棋子逼到只剩一口气，对方必须应对。",
-      "nextNodeId": "lesson_double_atari"
+      "text": "「叫吃」就是把对方棋子逼到只剩一口气，对方必须应对。"
     },
     {
       "id": "lesson_double_atari",
       "speaker": "木桑道长",
-      "text": "「双叫吃」一手同时叫吃两处，对手往往顾此失彼。",
-      "nextNodeId": "lesson_ladder"
+      "text": "「双叫吃」一手同时叫吃两处，对手往往顾此失彼。"
     },
     {
       "id": "lesson_ladder",
       "speaker": "木桑道长",
-      "text": "「征子」是一路追杀的形，若路上有援兵，征子就会失败。",
-      "nextNodeId": "lesson_snapback"
+      "text": "「征子」是一路追杀的形，若路上有援兵，征子就会失败。"
     },
     {
       "id": "lesson_snapback",
       "speaker": "木桑道长",
-      "text": "「扑」是先把棋子送入对方眼里，再反手提子，妙处在于手筋。",
-      "nextNodeId": "lesson_net"
+      "text": "「扑」是先把棋子送入对方眼里，再反手提子，妙处在于手筋。"
     },
     {
       "id": "lesson_net",
       "speaker": "木桑道长",
-      "text": "「枷」是用网状包围，让对方逃不出去，稳稳吃住。",
-      "nextNodeId": "lesson_fly"
+      "text": "「枷」是用网状包围，让对方逃不出去，稳稳吃住。"
     },
     {
       "id": "lesson_fly",
       "speaker": "木桑道长",
-      "text": "再讲走子术语。「飞」是隔一格斜飞，既稳又有弹性。",
-      "nextNodeId": "lesson_jump"
+      "text": "再讲走子术语。「飞」是隔一格斜飞，既稳又有弹性。"
     },
     {
       "id": "lesson_jump",
       "speaker": "木桑道长",
-      "text": "「跳」是隔一格直跳，扩张速度快，但略有空隙。",
-      "nextNodeId": "lesson_wedge"
+      "text": "「跳」是隔一格直跳，扩张速度快，但略有空隙。"
     },
     {
       "id": "lesson_wedge",
       "speaker": "木桑道长",
-      "text": "「挖」是在对方连络处插入一子，破坏对方的形。",
-      "nextNodeId": "lesson_attach"
+      "text": "「挖」是在对方连络处插入一子，破坏对方的形。"
     },
     {
       "id": "lesson_attach",
       "speaker": "木桑道长",
-      "text": "「粘」就是紧贴对方落子，常用于迫使对方应手。",
-      "nextNodeId": "lesson_hane"
+      "text": "「粘」就是紧贴对方落子，常用于迫使对方应手。"
     },
     {
       "id": "lesson_hane",
       "speaker": "木桑道长",
-      "text": "「扳」是转角处的拐子，往往用来争取外势或封锁。",
-      "nextNodeId": "lesson_connect"
+      "text": "「扳」是转角处的拐子，往往用来争取外势或封锁。"
     },
     {
       "id": "lesson_connect",
       "speaker": "木桑道长",
-      "text": "「接」是把己方棋子连接起来，确保不断。",
-      "nextNodeId": "lesson_cut"
+      "text": "「接」是把己方棋子连接起来，确保不断。"
     },
     {
       "id": "lesson_cut",
       "speaker": "木桑道长",
-      "text": "「断」是切断对方棋子的联系，制造弱点。",
-      "nextNodeId": "lesson_extend"
+      "text": "「断」是切断对方棋子的联系，制造弱点。"
     },
     {
       "id": "lesson_extend",
       "speaker": "木桑道长",
-      "text": "「长」是顺势延伸一子，巩固阵地并扩张。",
-      "nextNodeId": "lesson_peep"
+      "text": "「长」是顺势延伸一子，巩固阵地并扩张。"
     },
     {
       "id": "lesson_peep",
       "speaker": "木桑道长",
-      "text": "「尖」是刺入对方薄弱处，逼对手补棋。",
-      "nextNodeId": "lesson_double"
+      "text": "「尖」是刺入对方薄弱处，逼对手补棋。"
     },
     {
       "id": "lesson_double",
       "speaker": "木桑道长",
-      "text": "「双」是一步形成双重威胁，往往能迫使对手分身乏术。",
-      "nextNodeId": "lesson_4"
+      "text": "「双」是一步形成双重威胁，往往能迫使对手分身乏术。"
     },
     {
       "id": "lesson_4",
       "speaker": "木桑道长",
-      "text": "接下来要讲的是「劫」。有时双方可以互相提子，形成循环，这就是劫争。规矩是不能立即提回，要先在别处落一子。",
-      "nextNodeId": "lesson_5"
+      "text": "接下来要讲的是「劫」。有时双方可以互相提子，形成循环，这就是劫争。规矩是不能立即提回，要先在别处落一子。"
     },
     {
       "id": "lesson_5",
       "speaker": "木桑道长",
-      "text": "劫争是围棋中最精妙的地方，往往决定一局棋的胜负。棋谚云：「劫材要争先」，说的就是这个道理。",
-      "nextNodeId": "practice_2"
+      "text": "劫争是围棋中最精妙的地方，往往决定一局棋的胜负。棋谚云：「劫材要争先」，说的就是这个道理。"
     },
     {
       "id": "practice_2",
@@ -235,28 +197,24 @@
       "text": "再看一处劫形，劫争的规矩可要记牢。",
       "options": [
         {
-          "text": "好！",
-          "nextNodeId": "after_practice_2"
+          "text": "好！"
         }
       ]
     },
     {
       "id": "after_practice_2",
       "speaker": "木桑道长",
-      "text": "哈哈，看来你已经明白劫争的厉害了！老道我年轻时也是因为不懂劫材，输了不少棋。",
-      "nextNodeId": "lesson_6"
+      "text": "哈哈，看来你已经明白劫争的厉害了！老道我年轻时也是因为不懂劫材，输了不少棋。"
     },
     {
       "id": "lesson_6",
       "speaker": "木桑道长",
-      "text": "最后说说如何判断胜负。围棋以「目」计算，你围的地盘越大，目数就越多。最后数目，多的一方获胜。",
-      "nextNodeId": "lesson_7"
+      "text": "最后说说如何判断胜负。围棋以「目」计算，你围的地盘越大，目数就越多。最后数目，多的一方获胜。"
     },
     {
       "id": "lesson_7",
       "speaker": "木桑道长",
-      "text": "当双方都不想再下，就可以数目了。记住：活棋才能算目，死棋要被提走，不算目。",
-      "nextNodeId": "final_test"
+      "text": "当双方都不想再下，就可以数目了。记住：活棋才能算目，死棋要被提走，不算目。"
     },
     {
       "id": "final_test",
@@ -264,49 +222,44 @@
       "text": "好了，最后看看如何数目，明白目数就知胜负。",
       "options": [
         {
-          "text": "是！请道长指教！",
-          "nextNodeId": "after_final_test"
+          "text": "是！请道长指教！"
         }
       ]
     },
     {
       "id": "after_final_test",
       "speaker": "木桑道长",
-      "text": "好！好极了！你虽初学，但悟性甚高。这江湖中，围棋修为决定武功高低。你且下山闯荡，以棋会友，自能领悟真谛。",
-      "nextNodeId": "graduation"
+      "text": "好！好极了！你虽初学，但悟性甚高。这江湖中，围棋修为决定武功高低。你且下山闯荡，以棋会友，自能领悟真谛。"
     },
     {
       "id": "graduation",
       "speaker": "木桑道长",
-      "text": "记住：下围棋最讲究悟性！江湖中有许多高手等着你，洪七公、令狐冲、郭靖、黄蓉……他们都是一等一的棋手。",
-      "nextNodeId": "graduation_2"
+      "text": "记住：下围棋最讲究悟性！江湖中有许多高手等着你，洪七公、令狐冲、郭靖、黄蓉……他们都是一等一的棋手。"
     },
     {
       "id": "graduation_2",
       "speaker": "木桑道长",
       "text": "你去华山找洪七公，他的「亢龙有悔」很有些门道。好了，老道我要继续研究棋谱了，你去吧！",
       "options": [
-        {"text": "多谢道长教诲！", "nextNodeId": "farewell"}
+        {"text": "多谢道长教诲！"}
       ]
     },
     {
       "id": "skip_tutorial",
       "speaker": "木桑道长",
-      "text": "哦？你已经懂围棋了？那好，老道就不啰嗦了。你去华山找洪七公吧，他那里有真正的高手之道。",
-      "nextNodeId": "farewell"
+      "text": "哦？你已经懂围棋了？那好，老道就不啰嗦了。你去华山找洪七公吧，他那里有真正的高手之道。"
     },
     {
       "id": "daily_wisdom",
       "speaker": "木桑道长",
-      "text": "老道我这些年来，虽然棋艺不算高明，但有一点心得：围棋如人生，每一子都关乎大局，切不可轻举妄动。",
-      "nextNodeId": "daily_wisdom_2"
+      "text": "老道我这些年来，虽然棋艺不算高明，但有一点心得：围棋如人生，每一子都关乎大局，切不可轻举妄动。"
     },
     {
       "id": "daily_wisdom_2",
       "speaker": "木桑道长",
       "text": "还有啊，下棋要心平气和。赢了不要骄傲，输了也不要气馁。老道我就是太爱吹嘘自己的棋艺，所以总是输棋，哈哈哈！",
       "options": [
-        {"text": "多谢道长指点！", "nextNodeId": "farewell"}
+        {"text": "多谢道长指点！"}
       ]
     },
     {

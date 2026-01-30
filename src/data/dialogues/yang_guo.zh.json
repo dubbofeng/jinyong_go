@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "杨过",
-      "text": "这位朋友，你好。在下杨过，行走江湖多年。看你气度不凡，想必也是有故事的人？",
-      "nextNodeId": "first_meet"
+      "text": "这位朋友，你好。在下杨过，行走江湖多年。看你气度不凡，想必也是有故事的人？"
     },
     {
       "id": "first_meet",
       "speaker": "杨过",
-      "text": "在下虽以武功闻名，但对围棋也颇有心得。听说你在江湖上以棋会友，不如来切磋一局？",
-      "nextNodeId": "check_status"
+      "text": "在下虽以武功闻名，但对围棋也颇有心得。听说你在江湖上以棋会友，不如来切磋一局？"
     },
     {
       "id": "check_status",
@@ -21,24 +19,19 @@
       "text": "在下棋风多变，讲究以情驭势、以柔克刚。若你有兴趣，不妨与我对弈。",
       "options": [
         {
-          "text": "请杨大侠指教！",
-          "condition": {"type": "quest", "value": "defeated_yang_guo", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请杨大侠指教！"
         },
         {
-          "text": "杨大侠，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_yang_guo"},
-          "nextNodeId": "start_battle"
+          "text": "杨大侠，我想再和你对弈一局"
         },
-        {"text": "我想听听你的棋道心得", "nextNodeId": "daily_chat"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "我想听听你的棋道心得"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "杨过",
-      "text": "好！不过要想真正见识我的棋风，还需先与我对弈一局。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！不过要想真正见识我的棋风，还需先与我对弈一局。"
     },
     {
       "id": "challenge_condition",
@@ -46,10 +39,9 @@
       "text": "在下纵横江湖多年，与各路高手切磋无数。你若能胜在下，就说明你有这个资质。",
       "options": [
         {
-          "text": "请杨大侠赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请杨大侠赐教！"
         },
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "我还想准备一下"}
       ]
     },
     {
@@ -62,22 +54,21 @@
       "speaker": "杨过",
       "text": "不必气馁。棋如人生，胜败都是修行。多练多悟，自有所得。",
       "options": [
-        {"text": "在下告退", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "在下告退"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "杨过",
-      "text": "棋局之中，最难的是守住本心。时而攻，时而退，皆需随势而动。",
-      "nextNodeId": "daily_chat_2"
+      "text": "棋局之中，最难的是守住本心。时而攻，时而退，皆需随势而动。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "杨过",
       "text": "若能以柔制刚、以静制动，便可在逆势中觅得生机。",
       "options": [
-        {"text": "杨大侠高见！", "nextNodeId": "farewell"}
+        {"text": "杨大侠高见！"}
       ]
     },
     {

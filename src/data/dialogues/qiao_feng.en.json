@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Qiao Feng",
-      "text": "Greetings, brother! I am Qiao Feng, Chief of the Beggar's Sect. Seeing your righteous bearing, you must be a hero of Jianghu?",
-      "nextNodeId": "first_meet"
+      "text": "Greetings, brother! I am Qiao Feng, Chief of the Beggar's Sect. Seeing your righteous bearing, you must be a hero of Jianghu?"
     },
     {
       "id": "first_meet",
       "speaker": "Qiao Feng",
-      "text": "Though I'm known for martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - how about we compete in a game?",
-      "nextNodeId": "check_status"
+      "text": "Though I'm known for martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - how about we compete in a game?"
     },
     {
       "id": "check_status",
@@ -21,23 +19,18 @@
       "text": "My Go style is fierce and forceful, relying on momentum to overwhelm. If you have the courage, face me in a game.",
       "options": [
         {
-          "text": "Please teach me, Chief Qiao!",
-          "condition": {"type": "quest", "value": "defeated_qiao_feng", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Chief Qiao!"
         },
         {
-          "text": "Chief Qiao, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_qiao_feng"},
-          "nextNodeId": "start_battle"
+          "text": "Chief Qiao, I'd like to play another game with you"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Qiao Feng",
-      "text": "Good! You have courage! If you want to see my style, you must play a game with me first.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! You have courage! If you want to see my style, you must play a game with me first."
     },
     {
       "id": "challenge_condition",
@@ -45,10 +38,9 @@
       "text": "I've roamed Jianghu for many years and never met a true opponent. If you can beat me, it proves you're qualified.",
       "options": [
         {
-          "text": "Please bestow your teaching, Chief Qiao!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Chief Qiao!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -61,22 +53,21 @@
       "speaker": "Qiao Feng",
       "text": "Don't be discouraged. When I was learning martial arts, I also endured many hardships. Practice more and you'll surely succeed.",
       "options": [
-        {"text": "I take my leave", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I take my leave"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Qiao Feng",
-      "text": "I've acted with righteousness all my life, but also suffered greatly from the mystery of my origins. Sometimes I think, life is like Go - every move requires deep thought.",
-      "nextNodeId": "daily_chat_2"
+      "text": "I've acted with righteousness all my life, but also suffered greatly from the mystery of my origins. Sometimes I think, life is like Go - every move requires deep thought."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Qiao Feng",
       "text": "But no matter what, I'll hold fast to my beliefs. A true man stands tall between heaven and earth, with a clear conscience!",
       "options": [
-        {"text": "Chief Qiao's heroic spirit soars!", "nextNodeId": "farewell"}
+        {"text": "Chief Qiao's heroic spirit soars!"}
       ]
     },
     {

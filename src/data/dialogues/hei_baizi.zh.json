@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "黑白子",
-      "text": "嗯？你是何人，竟敢擅闯梅庄？不过...看你一身棋道气息，倒是个有趣的人。",
-      "nextNodeId": "first_meet"
+      "text": "嗯？你是何人，竟敢擅闯梅庄？不过...看你一身棋道气息，倒是个有趣的人。"
     },
     {
       "id": "first_meet",
       "speaker": "黑白子",
-      "text": "在下黑白子，梅庄二庄主，平生最爱研究棋谱。这《呕血谱》是天下第一棋谱，我已研究多年。",
-      "nextNodeId": "check_status"
+      "text": "在下黑白子，梅庄二庄主，平生最爱研究棋谱。这《呕血谱》是天下第一棋谱，我已研究多年。"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "看你也是爱棋之人，不如来和我研究研究这《呕血谱》？若能破解其中玄机，我便传你一招独门棋法。",
       "options": [
         {
-          "text": "请前辈指教！",
-          "condition": {"type": "quest", "value": "defeated_hei_baizi", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请前辈指教！"
         },
         {
-          "text": "我想学习「呕血破局」",
-          "condition": {"type": "quest", "value": "defeated_hei_baizi"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「呕血破局」"
         },
         {
-          "text": "前辈，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_hei_baizi"},
-          "nextNodeId": "start_battle"
+          "text": "前辈，我想再和你对弈一局"
         },
-        {"text": "什么是呕血破局？", "nextNodeId": "explain_skill"},
-        {"text": "我还想准备一下", "nextNodeId": "not_ready"}
+        {"text": "什么是呕血破局？"},
+        {"text": "我还想准备一下"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "黑白子",
-      "text": "当年有一位高手，为了破解一道生死棋局，殚精竭虑，最后呕血而亡。但他留下的破局之法，却惊世骇俗。",
-      "nextNodeId": "explain_skill_2"
+      "text": "当年有一位高手，为了破解一道生死棋局，殚精竭虑，最后呕血而亡。但他留下的破局之法，却惊世骇俗。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "黑白子",
       "text": "「呕血破局」就是从那棋谱中领悟而来，能在绝境中找到一线生机，化死为生。不过，需要极高的棋力和悟性。",
       "options": [
-        {"text": "神乎其技！请前辈教我", "nextNodeId": "challenge_intro"},
-        {"text": "我再参悟一下", "nextNodeId": "not_ready"}
+        {"text": "神乎其技！请前辈教我"},
+        {"text": "我再参悟一下"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "黑白子",
-      "text": "好！有胆识！不过在下的棋力可不是浪得虚名。你想学这招，得先和在下对弈一局。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！有胆识！不过在下的棋力可不是浪得虚名。你想学这招，得先和在下对弈一局。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "在下研究《呕血谱》多年，深知其中凶险。你若能胜我，说明你有这个慧根去领悟此谱精髓。",
       "options": [
         {
-          "text": "请前辈赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请前辈赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {"text": "我先准备一下"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "黑白子",
-      "text": "精彩！实在精彩！你这棋下得出神入化，已有破解《呕血谱》的资质。在下就传你「呕血破局」。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "精彩！实在精彩！你这棋下得出神入化，已有破解《呕血谱》的资质。在下就传你「呕血破局」。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "黑白子",
-      "text": "这招的要领是：在绝境中寻找破局之法，以一子之力扭转乾坤。每局限用一次，冷却40步。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：在绝境中寻找破局之法，以一子之力扭转乾坤。每局限用一次，冷却40步。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "黑白子",
-      "text": "记住，「置之死地而后生」。用此招时要有破釜沉舟的决心，方能发挥最大威力。",
-      "nextNodeId": "teach_complete"
+      "text": "记住，「置之死地而后生」。用此招时要有破釜沉舟的决心，方能发挥最大威力。"
     },
     {
       "id": "teach_complete",
       "speaker": "黑白子",
       "text": "你既然学会了这招，以后遇到困局也能从容应对。不过切记，这招伤身费神，不可滥用。",
       "options": [
-        {"text": "多谢前辈！", "nextNodeId": "farewell"},
-        {"text": "我还想听听前辈的见解", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {"text": "多谢前辈！"},
+        {"text": "我还想听听前辈的见解"},
+        {"text": "我想再挑战一次"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "黑白子",
       "text": "你的棋力还不够。《呕血谱》的精髓不是一朝一夕能领悟的，再多磨练磨练吧。",
       "options": [
-        {"text": "晚辈告退", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {"text": "晚辈告退"},
+        {"text": "我再挑战一次！"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "黑白子",
-      "text": "在下这一生都在研究棋谱，可以说是痴迷成魔。但正是这份痴迷，让在下领悟到了棋道的真谛。",
-      "nextNodeId": "daily_chat_2"
+      "text": "在下这一生都在研究棋谱，可以说是痴迷成魔。但正是这份痴迷，让在下领悟到了棋道的真谛。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "黑白子",
       "text": "下棋如悟道，需要全身心投入。《呕血谱》虽凶险，但其中蕴含的智慧，却是无价之宝。",
       "options": [
-        {"text": "前辈所言极是！", "nextNodeId": "farewell"}
+        {"text": "前辈所言极是！"}
       ]
     },
     {

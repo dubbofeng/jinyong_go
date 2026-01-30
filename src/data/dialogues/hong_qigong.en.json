@@ -6,8 +6,7 @@
     {
       "id": "greeting",
       "speaker": "Hong Qigong",
-      "text": "Haha! Young friend, I see you have the makings of a Go player.",
-      "nextNodeId": "check_status"
+      "text": "Haha! Young friend, I see you have the makings of a Go player."
     },
     {
       "id": "check_status",
@@ -15,29 +14,22 @@
       "text": "Would you like to learn some Go skills from me?",
       "options": [
         {
-          "text": "Please teach me, Senior!",
-          "condition": {"type": "quest", "value": "defeated_hong_qigong", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Senior!"
         },
         {
-          "text": "Senior, I want to learn 'Mighty Dragon Repents'",
-          "condition": {"type": "quest", "value": "defeated_hong_qigong"},
-          "nextNodeId": "teach_skill"
+          "text": "Senior, I want to learn 'Mighty Dragon Repents'"
         },
         {
-          "text": "Senior, I'd like to challenge you again",
-          "condition": {"type": "quest", "value": "defeated_hong_qigong"},
-          "nextNodeId": "start_battle"
+          "text": "Senior, I'd like to challenge you again"
         },
-        {"text": "I want to learn about Go first", "nextNodeId": "explain_go"},
-        {"text": "I'm not ready yet", "nextNodeId": "not_ready"}
+        {"text": "I want to learn about Go first"},
+        {"text": "I'm not ready yet"}
       ]
     },
     {
       "id": "explain_go",
       "speaker": "Hong Qigong",
-      "text": "Go, black and white stones, 19 lines crisscrossing. It looks simple but the variations are endless. Just like martial arts, it's all about momentum and strategy.",
-      "nextNodeId": "explain_go_2"
+      "text": "Go, black and white stones, 19 lines crisscrossing. It looks simple but the variations are endless. Just like martial arts, it's all about momentum and strategy."
     },
     {
       "id": "explain_go_2",
@@ -51,8 +43,7 @@
     {
       "id": "challenge_intro",
       "speaker": "Hong Qigong",
-      "text": "Good! I like your spirit! Go is what I do best.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! I like your spirit! Go is what I do best."
     },
     {
       "id": "challenge_condition",
@@ -60,10 +51,9 @@
       "text": "But here's my rule: if you want to learn, you must prove yourself first! Beat me in a game, and I'll teach you 'Mighty Dragon Repents'.",
       "options": [
         {
-          "text": "Alright! Please teach me, Senior!",
-          "nextNodeId": "start_battle"
+          "text": "Alright! Please teach me, Senior!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -74,23 +64,21 @@
     {
       "id": "teach_skill",
       "speaker": "Hong Qigong",
-      "text": "Haha! Excellent! I knew I wasn't wrong about you. Let me teach you 'Mighty Dragon Repents'.",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Haha! Excellent! I knew I wasn't wrong about you. Let me teach you 'Mighty Dragon Repents'."
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Hong Qigong",
-      "text": "Everyone makes mistakes in Go. This move gives you a chance to take back one move. But remember the rules: only once per game!",
-      "nextNodeId": "teach_complete"
+      "text": "Everyone makes mistakes in Go. This move gives you a chance to take back one move. But remember the rules: only once per game!"
     },
     {
       "id": "teach_complete",
       "speaker": "Hong Qigong",
       "text": "Now go find Linghu Chong at Shaolin Temple. His Dugu Nine Swords technique is quite something.",
       "options": [
-        {"text": "Thank you, Senior!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
-        {"text": "Senior, may I challenge you again?", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Senior!"},
+        {"text": "I'd like to hear more of your teachings"},
+        {"text": "Senior, may I challenge you again?"}
       ]
     },
     {
@@ -98,8 +86,8 @@
       "speaker": "Hong Qigong",
       "text": "Haha! Losing is no big deal. It's all about improving your skills. Want to try again?",
       "options": [
-        {"text": "Yes! Please let me try again, Senior!", "nextNodeId": "start_battle"},
-        {"text": "Let me practice more first", "nextNodeId": "not_ready"}
+        {"text": "Yes! Please let me try again, Senior!"},
+        {"text": "Let me practice more first"}
       ]
     },
     {
@@ -107,8 +95,8 @@
       "speaker": "Hong Qigong",
       "text": "So you learned the Dugu Nine Swords? Linghu Chong's swordsmanship is extraordinary. The martial arts world needs more people like you.",
       "options": [
-        {"text": "Thank you for your guidance, Senior!", "nextNodeId": "farewell"},
-        {"text": "May I ask about your Go style?", "nextNodeId": "daily_chat"}
+        {"text": "Thank you for your guidance, Senior!"},
+        {"text": "May I ask about your Go style?"}
       ]
     },
     {
@@ -116,8 +104,8 @@
       "speaker": "Hong Qigong",
       "text": "You've completed all the main quests! Xiangyang needs someone like you. But there's always more to learn in the martial arts world. Want to compete with me again?",
       "options": [
-        {"text": "Yes! Please teach me, Senior!", "nextNodeId": "start_battle"},
-        {"text": "I need to consolidate what I've learned", "nextNodeId": "farewell"}
+        {"text": "Yes! Please teach me, Senior!"},
+        {"text": "I need to consolidate what I've learned"}
       ]
     },
     {
@@ -125,8 +113,8 @@
       "speaker": "Hong Qigong",
       "text": "Ready for another game? Playing more will improve your skills!",
       "options": [
-        {"text": "Yes! Let's start!", "nextNodeId": "start_battle"},
-        {"text": "Next time", "nextNodeId": "farewell"}
+        {"text": "Yes! Let's start!"},
+        {"text": "Next time"}
       ]
     },
     {
@@ -134,8 +122,8 @@
       "speaker": "Hong Qigong",
       "text": "Playing Go is like commanding an army - you must know when to advance and retreat, understand what's real and what's feint. Remember: corners are gold, edges are silver, center is grass. Don't rush to the middle at the start.",
       "options": [
-        {"text": "I've learned so much!", "nextNodeId": "farewell"},
-        {"text": "May I challenge you again?", "nextNodeId": "start_battle"}
+        {"text": "I've learned so much!"},
+        {"text": "May I challenge you again?"}
       ]
     },
     {

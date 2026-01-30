@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "段延庆",
-      "text": "哼...又是一个不怕死的？竟敢来找老夫下棋？",
-      "nextNodeId": "first_meet"
+      "text": "哼...又是一个不怕死的？竟敢来找老夫下棋？"
     },
     {
       "id": "first_meet",
       "speaker": "段延庆",
-      "text": "老夫段延庆，江湖人称「天下第一恶人」。你若想和老夫下棋，先问问自己有几分本事。",
-      "nextNodeId": "check_status"
+      "text": "老夫段延庆，江湖人称「天下第一恶人」。你若想和老夫下棋，先问问自己有几分本事。"
     },
     {
       "id": "check_status",
@@ -21,44 +19,44 @@
       "text": "老夫虽身残志坚，但「腹语传音」之术天下无双。这招用在棋盘上，能让对手心神不宁。",
       "options": [
         {
-          "text": "请前辈指教！",
-          "condition": {"type": "quest", "value": "defeated_duan_yanqing", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "请前辈指教！"
         },
         {
-          "text": "我想学习「腹语传音」",
-          "condition": {"type": "quest", "value": "defeated_duan_yanqing"},
-          "nextNodeId": "teach_skill"
+          "text": "我想学习「腹语传音」"
         },
         {
-          "text": "前辈，我想再和你对弈一局",
-          "condition": {"type": "quest", "value": "defeated_duan_yanqing"},
-          "nextNodeId": "start_battle"
+          "text": "前辈，我想再和你对弈一局"
         },
-        {"text": "腹语传音如何用在围棋上？", "nextNodeId": "explain_skill"},
-        {"text": "我...我还是先走了", "nextNodeId": "not_ready"}
+        {
+          "text": "腹语传音如何用在围棋上？"
+        },
+        {
+          "text": "我...我还是先走了"
+        }
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "段延庆",
-      "text": "哼，你这后生倒是有点见识。腹语传音能在对弈时无声无息地扰乱对手心神，让他自乱阵脚。",
-      "nextNodeId": "explain_skill_2"
+      "text": "哼，你这后生倒是有点见识。腹语传音能在对弈时无声无息地扰乱对手心神，让他自乱阵脚。"
     },
     {
       "id": "explain_skill_2",
       "speaker": "段延庆",
       "text": "老夫这招能让对手思考时间大减，下出错棋。不过，你若想学，得先赢过老夫才行。",
       "options": [
-        {"text": "晚辈愿意领教！", "nextNodeId": "challenge_intro"},
-        {"text": "我...我再准备一下", "nextNodeId": "not_ready"}
+        {
+          "text": "晚辈愿意领教！"
+        },
+        {
+          "text": "我...我再准备一下"
+        }
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "段延庆",
-      "text": "好！有胆色！老夫纵横江湖数十年，见过的高手无数，但像你这样不怕死的，倒是少见。",
-      "nextNodeId": "challenge_condition"
+      "text": "好！有胆色！老夫纵横江湖数十年，见过的高手无数，但像你这样不怕死的，倒是少见。"
     },
     {
       "id": "challenge_condition",
@@ -66,10 +64,11 @@
       "text": "当年老夫与那黄眉僧对弈三日三夜，不分胜负。你若能赢老夫，说明你有这个资格学我的绝技。",
       "options": [
         {
-          "text": "请前辈赐教！",
-          "nextNodeId": "start_battle"
+          "text": "请前辈赐教！"
         },
-        {"text": "我先准备一下", "nextNodeId": "not_ready"}
+        {
+          "text": "我先准备一下"
+        }
       ]
     },
     {
@@ -80,29 +79,32 @@
     {
       "id": "teach_skill",
       "speaker": "段延庆",
-      "text": "好...好棋！想不到你这后生竟有如此棋力。也罢，老夫就传你「腹语传音」。",
-      "nextNodeId": "teach_skill_detail"
+      "text": "好...好棋！想不到你这后生竟有如此棋力。也罢，老夫就传你「腹语传音」。"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "段延庆",
-      "text": "这招的要领是：在对局中，以腹语扰乱对手心神，让他思考时间减少30%。每局可用一次，冷却25步。",
-      "nextNodeId": "teach_skill_practice"
+      "text": "这招的要领是：在对局中，以腹语扰乱对手心神，让他思考时间减少30%。每局可用一次，冷却25步。"
     },
     {
       "id": "teach_skill_practice",
       "speaker": "段延庆",
-      "text": "记住，使用时要「无声无息，防不胜防」。江湖险恶，学会这招，将来遇到强敌也能有所倚仗。",
-      "nextNodeId": "teach_complete"
+      "text": "记住，使用时要「无声无息，防不胜防」。江湖险恶，学会这招，将来遇到强敌也能有所倚仗。"
     },
     {
       "id": "teach_complete",
       "speaker": "段延庆",
       "text": "老夫虽是恶人，但也佩服有本事的人。你既然学了这招，以后行走江湖要多加小心。",
       "options": [
-        {"text": "多谢前辈！", "nextNodeId": "farewell"},
-        {"text": "我还想听听前辈的经历", "nextNodeId": "daily_chat"},
-        {"text": "我想再挑战一次", "nextNodeId": "start_battle"}
+        {
+          "text": "多谢前辈！"
+        },
+        {
+          "text": "我还想听听前辈的经历"
+        },
+        {
+          "text": "我想再挑战一次"
+        }
       ]
     },
     {
@@ -110,22 +112,27 @@
       "speaker": "段延庆",
       "text": "哼，你还差得远。再去练练，别在老夫面前丢人现眼。",
       "options": [
-        {"text": "晚辈告退", "nextNodeId": "farewell"},
-        {"text": "我再挑战一次！", "nextNodeId": "challenge_condition"}
+        {
+          "text": "晚辈告退"
+        },
+        {
+          "text": "我再挑战一次！"
+        }
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "段延庆",
-      "text": "老夫当年也是大理皇子，却落得如此下场。江湖险恶，人心叵测，你要记住这一点。",
-      "nextNodeId": "daily_chat_2"
+      "text": "老夫当年也是大理皇子，却落得如此下场。江湖险恶，人心叵测，你要记住这一点。"
     },
     {
       "id": "daily_chat_2",
       "speaker": "段延庆",
       "text": "不过，棋如人生，总有翻盘的机会。老夫虽是恶人，但在棋道上从不作弊。这是老夫最后的骄傲。",
       "options": [
-        {"text": "前辈高风亮节！", "nextNodeId": "farewell"}
+        {
+          "text": "前辈高风亮节！"
+        }
       ]
     },
     {

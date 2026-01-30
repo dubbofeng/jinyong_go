@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Zhang Wuji",
-      "text": "Greetings, my friend. I am Zhang Wuji, Leader of the Ming Cult. You look unfamiliar - have you come from afar?",
-      "nextNodeId": "first_meet"
+      "text": "Greetings, my friend. I am Zhang Wuji, Leader of the Ming Cult. You look unfamiliar - have you come from afar?"
     },
     {
       "id": "first_meet",
       "speaker": "Zhang Wuji",
-      "text": "Though I've established myself through martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - would you care to play a game with me?",
-      "nextNodeId": "check_status"
+      "text": "Though I've established myself through martial arts, I'm also quite knowledgeable about Go. I've heard you meet friends through Go - would you care to play a game with me?"
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "I've cultivated 'Great Universe Shift' for many years. In Go, it can swap the last Black stone and the last White stone, if both placements are legal.",
       "options": [
         {
-          "text": "Please teach me, Leader Zhang!",
-          "condition": {"type": "quest", "value": "defeated_zhang_wuji", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Leader Zhang!"
         },
         {
-          "text": "I want to learn 'Great Universe Shift'",
-          "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn 'Great Universe Shift'"
         },
         {
-          "text": "Leader Zhang, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_zhang_wuji"},
-          "nextNodeId": "start_battle"
+          "text": "Leader Zhang, I'd like to play another game with you"
         },
-        {"text": "How is Great Universe Shift used in Go?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "How is Great Universe Shift used in Go?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Zhang Wuji",
-      "text": "'Great Universe Shift' is the Ming Cult's supreme martial art. In Go, it lets you swap the last Black stone and the last White stone, like undoing one move each and replaying them.",
-      "nextNodeId": "explain_skill_2"
+      "text": "'Great Universe Shift' is the Ming Cult's supreme martial art. In Go, it lets you swap the last Black stone and the last White stone, like undoing one move each and replaying them."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Zhang Wuji",
       "text": "This technique can flip a situation at a crucial moment. Both new placements must be legal, or the swap cannot be used. It demands exceptional internal force and understanding.",
       "options": [
-        {"text": "Miraculous! Please teach me, Leader Zhang", "nextNodeId": "challenge_intro"},
-        {"text": "Let me think about it", "nextNodeId": "not_ready"}
+        {"text": "Miraculous! Please teach me, Leader Zhang"},
+        {"text": "Let me think about it"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Zhang Wuji",
-      "text": "Good! However, this technique is exquisitely marvelous - not just anyone can learn it. You must play a game with me first so I can assess your level.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! However, this technique is exquisitely marvelous - not just anyone can learn it. You must play a game with me first so I can assess your level."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "Though I'm young, I've also witnessed quite a few masters. If you can beat me, it proves you're qualified to learn this technique.",
       "options": [
         {
-          "text": "Please bestow your teaching, Leader Zhang!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Leader Zhang!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "Zhang Wuji",
-      "text": "Brilliant! Your game is flexible and varied, quite capturing the spirit of 'Great Universe Shift.' In that case, I'll teach you this technique.",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Brilliant! Your game is flexible and varied, quite capturing the spirit of 'Great Universe Shift.' In that case, I'll teach you this technique."
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Zhang Wuji",
-      "text": "The key to this technique is: at a crucial moment, swap the last Black stone and the last White stone. It is like undoing one move each and replaying them, and both placements must be legal. Limited to once per game with a 50-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: at a crucial moment, swap the last Black stone and the last White stone. It is like undoing one move each and replaying them, and both placements must be legal. Limited to once per game with a 50-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Zhang Wuji",
-      "text": "Remember, 'combine hard and soft, complement Yin and Yang.' When using this technique, go with the flow and don't force it. Great-uncle taught me that mental cultivation is more important than moves.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, 'combine hard and soft, complement Yin and Yang.' When using this technique, go with the flow and don't force it. Great-uncle taught me that mental cultivation is more important than moves."
     },
     {
       "id": "teach_complete",
       "speaker": "Zhang Wuji",
       "text": "Now that you've learned this technique, you can calmly handle strong enemies in the future. But remember, no matter how high your martial arts, you must have a kind heart.",
       "options": [
-        {"text": "Thank you, Leader Zhang!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your insights", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Leader Zhang!"},
+        {"text": "I'd like to hear more of your insights"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "Zhang Wuji",
       "text": "It's alright. When I was learning martial arts, I also endured many hardships. Practice more and you'll surely succeed.",
       "options": [
-        {"text": "I take my leave", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I take my leave"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Zhang Wuji",
-      "text": "Though I'm the Leader of the Ming Cult, my greatest wish is world peace and people living in peace and contentment. Life's game is the same.",
-      "nextNodeId": "daily_chat_2"
+      "text": "Though I'm the Leader of the Ming Cult, my greatest wish is world peace and people living in peace and contentment. Life's game is the same."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Zhang Wuji",
       "text": "My godfather often said, 'The greatest heroes act for their country and people.' Though I may not achieve such greatness, I hope to do my part.",
       "options": [
-        {"text": "Leader Zhang has a chivalrous heart!", "nextNodeId": "farewell"}
+        {"text": "Leader Zhang has a chivalrous heart!"}
       ]
     },
     {

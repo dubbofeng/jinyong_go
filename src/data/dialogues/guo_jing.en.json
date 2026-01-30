@@ -6,13 +6,11 @@
     {
       "id": "greeting",
       "speaker": "Guo Jing",
-      "text": "My friend, hello. I am Guo Jing, currently studying military strategy and Go here.",
-      "nextNodeId": "check_status"
+      "text": "My friend, hello. I am Guo Jing, currently studying military strategy and Go here."
     },
     {
       "id": "check_status",
-      "speaker": "Guo Jing",
-      "nextNodeId": "eye_intro"
+      "speaker": "Guo Jing"
     },
     {
       "id": "eye_intro",
@@ -20,62 +18,52 @@
       "text": "Let's start with common eye shapes. You may also skip and hear my strategy notes instead.",
       "options": [
         {
-          "text": "Please teach the eye shapes",
-          "nextNodeId": "eye_straight_three"
+          "text": "Please teach the eye shapes"
         },
         {
-          "text": "Skip for now",
-          "nextNodeId": "teach_wisdom"
+          "text": "Skip for now"
         }
       ]
     },
     {
       "id": "eye_straight_three",
       "speaker": "Guo Jing",
-      "text": "Straight three: three points in a line. It usually needs a move; the vital point taken means death.",
-      "nextNodeId": "eye_bent_three"
+      "text": "Straight three: three points in a line. It usually needs a move; the vital point taken means death."
     },
     {
       "id": "eye_bent_three",
       "speaker": "Guo Jing",
-      "text": "Bent three: three points in an L-shape. It also typically needs a move to live.",
-      "nextNodeId": "eye_t_four"
+      "text": "Bent three: three points in an L-shape. It also typically needs a move to live."
     },
     {
       "id": "eye_t_four",
       "speaker": "Guo Jing",
-      "text": "T-four: four points in a T shape. It looks large but dies if the vital point is taken.",
-      "nextNodeId": "eye_knife_five"
+      "text": "T-four: four points in a T shape. It looks large but dies if the vital point is taken."
     },
     {
       "id": "eye_knife_five",
       "speaker": "Guo Jing",
-      "text": "Knife-handle five: shaped like a cleaver. Usually dead unless you play first to fix it.",
-      "nextNodeId": "eye_plum_five"
+      "text": "Knife-handle five: shaped like a cleaver. Usually dead unless you play first to fix it."
     },
     {
       "id": "eye_plum_five",
       "speaker": "Guo Jing",
-      "text": "Plum blossom five: five points in a flower shape. Often dead without a timely move.",
-      "nextNodeId": "eye_straight_four"
+      "text": "Plum blossom five: five points in a flower shape. Often dead without a timely move."
     },
     {
       "id": "eye_straight_four",
       "speaker": "Guo Jing",
-      "text": "Straight four: four points in a line. A classic living shape that needs no extra move.",
-      "nextNodeId": "eye_bent_four"
+      "text": "Straight four: four points in a line. A classic living shape that needs no extra move."
     },
     {
       "id": "eye_bent_four",
       "speaker": "Guo Jing",
-      "text": "Bent four: four points in a curved shape. Also a living eye shape.",
-      "nextNodeId": "eye_grape_six"
+      "text": "Bent four: four points in a curved shape. Also a living eye shape."
     },
     {
       "id": "eye_grape_six",
       "speaker": "Guo Jing",
-      "text": "Grapes six: a special six-point shape. Life and death depend on the surrounding position.",
-      "nextNodeId": "teach_wisdom"
+      "text": "Grapes six: a special six-point shape. Life and death depend on the surrounding position."
     },
     {
       "id": "ask_purpose",
@@ -83,16 +71,13 @@
       "text": "You look travel-worn. Have you come to Xiangyang to challenge masters in Go?",
       "options": [
         {
-          "text": "Exactly! I've long admired Hero Guo",
-          "nextNodeId": "respect_response"
+          "text": "Exactly! I've long admired Hero Guo"
         },
         {
-          "text": "I'd like to learn Go from Hero Guo",
-          "nextNodeId": "learn_request"
+          "text": "I'd like to learn Go from Hero Guo"
         },
         {
-          "text": "Just passing by",
-          "nextNodeId": "just_visit"
+          "text": "Just passing by"
         }
       ]
     },
@@ -102,20 +87,17 @@
       "text": "Good! I have a skill called 'Ventriloquism Transmission' - it allows silent communication during Go matches, which can confuse your opponent!",
       "options": [
         {
-          "text": "Sounds amazing! Please teach me!",
-          "nextNodeId": "teach_skill"
+          "text": "Sounds amazing! Please teach me!"
         },
         {
-          "text": "How does this help in Go?",
-          "nextNodeId": "explain_skill_use"
+          "text": "How does this help in Go?"
         }
       ]
     },
     {
       "id": "explain_skill_use",
       "speaker": "Guo Jing",
-      "text": "In Go matches, you can use this skill to silently transmit your intent, making your opponent unable to predict your next move. It reduces their analysis time by 20%!",
-      "nextNodeId": "teach_skill"
+      "text": "In Go matches, you can use this skill to silently transmit your intent, making your opponent unable to predict your next move. It reduces their analysis time by 20%!"
     },
     {
       "id": "teach_skill",
@@ -123,16 +105,10 @@
       "text": "This skill requires reaching level 3 to master. Come back when you're ready!",
       "options": [
         {
-          "text": "I'm already level 3!",
-          "nextNodeId": "check_level",
-          "condition": {
-            "type": "level",
-            "value": 3
-          }
+          "text": "I'm already level 3!"
         },
         {
-          "text": "I'll work hard to level up!",
-          "nextNodeId": "encourage"
+          "text": "I'll work hard to level up!"
         }
       ]
     },
@@ -143,8 +119,7 @@
       "action": {
         "type": "reward",
         "skill": "ventriloquism"
-      },
-      "nextNodeId": "skill_learned"
+      }
     },
     {
       "id": "skill_learned",
@@ -152,16 +127,14 @@
       "text": "You've learned 'Ventriloquism Transmission'! Use it well. When you reach level 5, I'll teach you more advanced techniques!",
       "options": [
         {
-          "text": "Thank you, Hero Guo!",
-          "nextNodeId": "thanks"
+          "text": "Thank you, Hero Guo!"
         }
       ]
     },
     {
       "id": "encourage",
       "speaker": "Guo Jing",
-      "text": "Good! As the saying goes, 'Iron pestle ground into a needle' - with diligent practice, you'll surely succeed!",
-      "nextNodeId": null
+      "text": "Good! As the saying goes, 'Iron pestle ground into a needle' - with diligent practice, you'll surely succeed!"
     },
     {
       "id": "explain_skills",
@@ -169,32 +142,27 @@
       "text": "I can teach you some military strategy and special Go techniques. But you must have sufficient foundation - at least level 3!",
       "options": [
         {
-          "text": "I'm ready to learn!",
-          "nextNodeId": "willing_to_learn"
+          "text": "I'm ready to learn!"
         },
         {
-          "text": "What other skills do you have?",
-          "nextNodeId": "more_skills"
+          "text": "What other skills do you have?"
         }
       ]
     },
     {
       "id": "more_skills",
       "speaker": "Guo Jing",
-      "text": "Besides 'Ventriloquism Transmission', I also know the 'Eighteen Palms of Subduing Dragons' and strategic techniques for defending cities. But those require higher levels to learn!",
-      "nextNodeId": "willing_to_learn"
+      "text": "Besides 'Ventriloquism Transmission', I also know the 'Eighteen Palms of Subduing Dragons' and strategic techniques for defending cities. But those require higher levels to learn!"
     },
     {
       "id": "thanks",
       "speaker": "Guo Jing",
-      "text": "Defending the country is everyone's duty. Practice your skills well - one day, you might help defend Xiangyang too!",
-      "nextNodeId": null
+      "text": "Defending the country is everyone's duty. Practice your skills well - one day, you might help defend Xiangyang too!"
     },
     {
       "id": "farewell",
       "speaker": "Guo Jing",
-      "text": "Feel free to walk around. Xiangyang welcomes all righteous heroes!",
-      "nextNodeId": null
+      "text": "Feel free to walk around. Xiangyang welcomes all righteous heroes!"
     },
     {
       "id": "battle_invitation",
@@ -202,16 +170,10 @@
       "text": "I see you've reached level 5! How about a Go match to test your skills?",
       "options": [
         {
-          "text": "I'd be honored to learn from you, Hero Guo!",
-          "nextNodeId": "accept_battle",
-          "condition": {
-            "type": "level",
-            "value": 5
-          }
+          "text": "I'd be honored to learn from you, Hero Guo!"
         },
         {
-          "text": "Let me prepare more first.",
-          "nextNodeId": "decline_battle"
+          "text": "Let me prepare more first."
         }
       ]
     },
@@ -223,14 +185,12 @@
         "type": "battle",
         "npcId": "guo_jing",
         "difficulty": "medium"
-      },
-      "nextNodeId": null
+      }
     },
     {
       "id": "decline_battle",
       "speaker": "Guo Jing",
-      "text": "No problem. Come challenge me anytime when you're ready!",
-      "nextNodeId": null
+      "text": "No problem. Come challenge me anytime when you're ready!"
     },
     {
       "id": "after_battle_win",
@@ -239,14 +199,12 @@
       "action": {
         "type": "reward",
         "item": "strategy_manual"
-      },
-      "nextNodeId": null
+      }
     },
     {
       "id": "respect_response",
       "speaker": "Guo Jing",
-      "text": "You're too kind. Though I have some martial arts foundation, when it comes to Go, Rong'er is far superior.",
-      "nextNodeId": "talk_rong"
+      "text": "You're too kind. Though I have some martial arts foundation, when it comes to Go, Rong'er is far superior."
     },
     {
       "id": "talk_rong",
@@ -254,32 +212,27 @@
       "text": "Rong'er often says Go is like commanding troops - you must understand when reality and illusion interweave, balance offense and defense. These years defending Xiangyang, I've gained some insights on this.",
       "options": [
         {
-          "text": "Please share your wisdom",
-          "nextNodeId": "teach_wisdom"
+          "text": "Please share your wisdom"
         },
         {
-          "text": "I'd like to challenge Hero Guo's Go skills",
-          "nextNodeId": "challenge"
+          "text": "I'd like to challenge Hero Guo's Go skills"
         }
       ]
     },
     {
       "id": "learn_request",
       "speaker": "Guo Jing",
-      "text": "I may be slow-witted, but thanks to my teachers and Rong'er, I've learned some skills. Since you sincerely seek knowledge, I'll teach you everything I know.",
-      "nextNodeId": "teach_wisdom"
+      "text": "I may be slow-witted, but thanks to my teachers and Rong'er, I've learned some skills. Since you sincerely seek knowledge, I'll teach you everything I know."
     },
     {
       "id": "teach_wisdom",
       "speaker": "Guo Jing",
-      "text": "Defending a city is like defending in Go - you must know where to hold firm and where to concede. True skill lies in judgment, not shortcuts.",
-      "nextNodeId": "teach_skill"
+      "text": "Defending a city is like defending in Go - you must know where to hold firm and where to concede. True skill lies in judgment, not shortcuts."
     },
     {
       "id": "teach_skill",
       "speaker": "Guo Jing",
-      "text": "As for 'Ventriloquism Transmission', that's Duan Yanqing's art. I don't teach it here. Seek him if you wish to learn.",
-      "nextNodeId": "after_teach"
+      "text": "As for 'Ventriloquism Transmission', that's Duan Yanqing's art. I don't teach it here. Seek him if you wish to learn."
     },
     {
       "id": "after_teach",
@@ -287,20 +240,17 @@
       "text": "The path of Go is long and requires daily accumulation. You can exchange pointers with masters from various places - you'll surely benefit.",
       "options": [
         {
-          "text": "Thank you for your guidance, Hero Guo!",
-          "nextNodeId": "thank_you"
+          "text": "Thank you for your guidance, Hero Guo!"
         },
         {
-          "text": "I'd like to play a game with Hero Guo",
-          "nextNodeId": "challenge"
+          "text": "I'd like to play a game with Hero Guo"
         }
       ]
     },
     {
       "id": "challenge",
       "speaker": "Guo Jing",
-      "text": "Good! You have ambition! But I've been busy with official duties lately - I'll have time once Xiangyang's defenses are properly arranged.",
-      "nextNodeId": "challenge_condition"
+      "text": "Good! You have ambition! But I've been busy with official duties lately - I'll have time once Xiangyang's defenses are properly arranged."
     },
     {
       "id": "challenge_condition",
@@ -308,30 +258,22 @@
       "text": "You should practice more first. When your Go skills improve to a certain level, we'll play a game, how about that?",
       "options": [
         {
-          "text": "Alright, I'll work hard!",
-          "nextNodeId": "accept_challenge"
+          "text": "Alright, I'll work hard!"
         },
         {
-          "text": "I'm ready now!",
-          "nextNodeId": "ready_challenge",
-          "condition": {
-            "type": "level",
-            "value": 5
-          }
+          "text": "I'm ready now!"
         }
       ]
     },
     {
       "id": "accept_challenge",
       "speaker": "Guo Jing",
-      "text": "Yes, young people should have this drive! Go ahead, when you've made progress, come find me anytime.",
-      "nextNodeId": "farewell"
+      "text": "Yes, young people should have this drive! Go ahead, when you've made progress, come find me anytime."
     },
     {
       "id": "ready_challenge",
       "speaker": "Guo Jing",
-      "text": "Oh? You carry yourself well - your Go skills must have a solid foundation. Good, let's play a game!",
-      "nextNodeId": "farewell"
+      "text": "Oh? You carry yourself well - your Go skills must have a solid foundation. Good, let's play a game!"
     },
     {
       "id": "just_visit",
@@ -339,20 +281,17 @@
       "text": "Xiangyang City is strategically important. In recent years, Mongol soldiers have invaded - the situation is tense. If you're just traveling, please be careful.",
       "options": [
         {
-          "text": "Thank you for the warning, farewell",
-          "nextNodeId": "farewell"
+          "text": "Thank you for the warning, farewell"
         },
         {
-          "text": "Actually, I'd like to learn Go",
-          "nextNodeId": "learn_request"
+          "text": "Actually, I'd like to learn Go"
         }
       ]
     },
     {
       "id": "thank_you",
       "speaker": "Guo Jing",
-      "text": "No need for courtesy. For country and people - that's the great chivalry. Learning Go is the same - it can't be just for personal victory, you must have higher pursuits.",
-      "nextNodeId": "farewell"
+      "text": "No need for courtesy. For country and people - that's the great chivalry. Learning Go is the same - it can't be just for personal victory, you must have higher pursuits."
     },
     {
       "id": "after_learn_chat",
@@ -360,12 +299,10 @@
       "text": "You've learned 'Ventriloquism Transmission' - this is a technique Rong'er taught me. But remember, true masters must rely on their own judgment, can't always depend on others.",
       "options": [
         {
-          "text": "I've learned so much!",
-          "nextNodeId": "farewell"
+          "text": "I've learned so much!"
         },
         {
-          "text": "I'd like to hear Hero Guo's strategic insights",
-          "nextNodeId": "talk_strategy"
+          "text": "I'd like to hear Hero Guo's strategic insights"
         }
       ]
     },
@@ -375,8 +312,7 @@
       "text": "Military strategy says: Know yourself and your enemy, and you'll never lose. Go is the same. You must be clear about your advantages and your opponent's weaknesses to formulate the best strategy.",
       "options": [
         {
-          "text": "Thank you for your guidance!",
-          "nextNodeId": "farewell"
+          "text": "Thank you for your guidance!"
         }
       ]
     },
@@ -386,12 +322,10 @@
       "text": "You've completed all quests - your martial arts and Go skills have improved greatly. Xiangyang City needs young people like you! But remember, martial arts and Go have no end - you must continue working hard.",
       "options": [
         {
-          "text": "Thank you for your cultivation, Hero Guo!",
-          "nextNodeId": "farewell"
+          "text": "Thank you for your cultivation, Hero Guo!"
         },
         {
-          "text": "I'd like to hear more of Hero Guo's experience",
-          "nextNodeId": "talk_strategy"
+          "text": "I'd like to hear more of Hero Guo's experience"
         }
       ]
     },

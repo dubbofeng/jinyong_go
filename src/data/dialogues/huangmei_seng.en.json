@@ -6,14 +6,12 @@
     {
       "id": "greeting",
       "speaker": "Monk Huangmei",
-      "text": "Amitabha. Benefactor, have you come here for that legendary Go game?",
-      "nextNodeId": "first_meet"
+      "text": "Amitabha. Benefactor, have you come here for that legendary Go game?"
     },
     {
       "id": "first_meet",
       "speaker": "Monk Huangmei",
-      "text": "This humble monk has guarded this place for many years and seen countless masters challenge the game. You carry the aura of Go mastery - surely you've come prepared.",
-      "nextNodeId": "check_status"
+      "text": "This humble monk has guarded this place for many years and seen countless masters challenge the game. You carry the aura of Go mastery - surely you've come prepared."
     },
     {
       "id": "check_status",
@@ -21,44 +19,36 @@
       "text": "Years ago, I played against Duan Yanqing. Though we reached no conclusion, I gained some insights into the Way of Go. If you're interested, this humble monk can offer some guidance.",
       "options": [
         {
-          "text": "Please teach me, Master!",
-          "condition": {"type": "quest", "value": "defeated_huangmei_seng", "inverse": true},
-          "nextNodeId": "challenge_intro"
+          "text": "Please teach me, Master!"
         },
         {
-          "text": "I want to learn 'Zen Enlightenment of Go Mind'",
-          "condition": {"type": "quest", "value": "defeated_huangmei_seng"},
-          "nextNodeId": "teach_skill"
+          "text": "I want to learn 'Zen Enlightenment of Go Mind'"
         },
         {
-          "text": "Master, I'd like to play another game with you",
-          "condition": {"type": "quest", "value": "defeated_huangmei_seng"},
-          "nextNodeId": "start_battle"
+          "text": "Master, I'd like to play another game with you"
         },
-        {"text": "What is Zen Enlightenment of Go Mind?", "nextNodeId": "explain_skill"},
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "What is Zen Enlightenment of Go Mind?"},
+        {"text": "Let me prepare first"}
       ]
     },
     {
       "id": "explain_skill",
       "speaker": "Monk Huangmei",
-      "text": "Zen Buddhism emphasizes 'sudden enlightenment.' In Go, sometimes you must let go of attachments and view the game with a clear mind to see the true opportunity.",
-      "nextNodeId": "explain_skill_2"
+      "text": "Zen Buddhism emphasizes 'sudden enlightenment.' In Go, sometimes you must let go of attachments and view the game with a clear mind to see the true opportunity."
     },
     {
       "id": "explain_skill_2",
       "speaker": "Monk Huangmei",
       "text": "'Zen Enlightenment of Go Mind' allows you to gain a moment of clarity during the game, see through your opponent's next intention, and find the counter-strategy.",
       "options": [
-        {"text": "I'm enlightened! Please teach me, Master", "nextNodeId": "challenge_intro"},
-        {"text": "Let me contemplate this further", "nextNodeId": "not_ready"}
+        {"text": "I'm enlightened! Please teach me, Master"},
+        {"text": "Let me contemplate this further"}
       ]
     },
     {
       "id": "challenge_intro",
       "speaker": "Monk Huangmei",
-      "text": "Amitabha. Buddhism speaks of cause and effect. Our meeting here is fate. Let this humble monk see your Go skill.",
-      "nextNodeId": "challenge_condition"
+      "text": "Amitabha. Buddhism speaks of cause and effect. Our meeting here is fate. Let this humble monk see your Go skill."
     },
     {
       "id": "challenge_condition",
@@ -66,10 +56,9 @@
       "text": "Go is like cultivation - playing Go is cultivating the mind. If you can beat this humble monk, it shows you have gained understanding.",
       "options": [
         {
-          "text": "Please bestow your teaching, Master!",
-          "nextNodeId": "start_battle"
+          "text": "Please bestow your teaching, Master!"
         },
-        {"text": "Let me prepare first", "nextNodeId": "not_ready"}
+        {"text": "Let me prepare first"}
       ]
     },
     {
@@ -80,29 +69,26 @@
     {
       "id": "teach_skill",
       "speaker": "Monk Huangmei",
-      "text": "Benefactor, your Go skill is impressive, and more rare is your clear state of mind. In that case, this humble monk will teach you 'Zen Enlightenment of Go Mind.'",
-      "nextNodeId": "teach_skill_detail"
+      "text": "Benefactor, your Go skill is impressive, and more rare is your clear state of mind. In that case, this humble monk will teach you 'Zen Enlightenment of Go Mind.'"
     },
     {
       "id": "teach_skill_detail",
       "speaker": "Monk Huangmei",
-      "text": "The key to this technique is: at crucial moments, empty your mind, observe the game with a meditative heart, and you'll perceive your opponent's intent. Can be used once per game with a 20-move cooldown.",
-      "nextNodeId": "teach_skill_practice"
+      "text": "The key to this technique is: at crucial moments, empty your mind, observe the game with a meditative heart, and you'll perceive your opponent's intent. Can be used once per game with a 20-move cooldown."
     },
     {
       "id": "teach_skill_practice",
       "speaker": "Monk Huangmei",
-      "text": "Remember, 'Form is emptiness, emptiness is form.' Sometimes, what seems like a useless move is actually the key to victory.",
-      "nextNodeId": "teach_complete"
+      "text": "Remember, 'Form is emptiness, emptiness is form.' Sometimes, what seems like a useless move is actually the key to victory."
     },
     {
       "id": "teach_complete",
       "speaker": "Monk Huangmei",
       "text": "If fate allows, benefactor, you should visit Master Yideng. His 'Solar Finger' is exquisitely masterful, and even more wondrous when applied to Go.",
       "options": [
-        {"text": "Thank you, Master!", "nextNodeId": "farewell"},
-        {"text": "I'd like to hear more of your teachings", "nextNodeId": "daily_chat"},
-        {"text": "I want to challenge you again", "nextNodeId": "start_battle"}
+        {"text": "Thank you, Master!"},
+        {"text": "I'd like to hear more of your teachings"},
+        {"text": "I want to challenge you again"}
       ]
     },
     {
@@ -110,22 +96,21 @@
       "speaker": "Monk Huangmei",
       "text": "Don't be discouraged, benefactor. Winning and losing are common matters - what's important is gaining understanding.",
       "options": [
-        {"text": "I'll return", "nextNodeId": "farewell"},
-        {"text": "Let me challenge you again!", "nextNodeId": "challenge_condition"}
+        {"text": "I'll return"},
+        {"text": "Let me challenge you again!"}
       ]
     },
     {
       "id": "daily_chat",
       "speaker": "Monk Huangmei",
-      "text": "Years ago, I played against Duan Yanqing. Though he was the leader of the 'Four Great Villains,' his Go skill was so superb that this humble monk was in awe.",
-      "nextNodeId": "daily_chat_2"
+      "text": "Years ago, I played against Duan Yanqing. Though he was the leader of the 'Four Great Villains,' his Go skill was so superb that this humble monk was in awe."
     },
     {
       "id": "daily_chat_2",
       "speaker": "Monk Huangmei",
       "text": "Buddha said, 'Lay down the butcher's knife and become Buddha immediately.' Even villains have hearts that can turn to good. Go is like life - between black and white lies all karma.",
       "options": [
-        {"text": "Master speaks truly!", "nextNodeId": "farewell"}
+        {"text": "Master speaks truly!"}
       ]
     },
     {
