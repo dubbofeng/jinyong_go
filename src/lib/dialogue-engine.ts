@@ -56,17 +56,32 @@ export async function loadDialogueTree(
     };
     
     // 合并选项（如果有）
-    if (contentNode.options && flowNode.options) {
-      mergedNode.options = contentNode.options.map((contentOption, index) => {
-        const flowOption = flowNode.options?.find((o) => o.optionId === index.toString());
-        
-        return {
-          text: contentOption.text,
-          nextNodeId: flowOption?.nextNodeId || '',
-          condition: flowOption?.condition,
-          action: flowOption?.action,
-        };
-      });
+    if (flowNode.options) {
+      if (contentNode.options) {
+        mergedNode.options = contentNode.options.map((contentOption, index) => {
+          const flowOption = flowNode.options?.find((o) => o.optionId === index.toString());
+          
+          return {
+            text: contentOption.text,
+            nextNodeId: flowOption?.nextNodeId || '',
+            condition: flowOption?.condition,
+            action: flowOption?.action,
+          };
+        });
+      } else if (flowNode.action?.type === 'battle') {
+        const sortedFlowOptions = [...flowNode.options].sort((a, b) => {
+          const aId = Number(a.optionId);
+          const bId = Number(b.optionId);
+          if (Number.isNaN(aId) || Number.isNaN(bId)) return a.optionId.localeCompare(b.optionId);
+          return aId - bId;
+        });
+        mergedNode.options = sortedFlowOptions.map((flowOption) => ({
+          text: '',
+          nextNodeId: flowOption.nextNodeId,
+          condition: flowOption.condition,
+          action: flowOption.action,
+        }));
+      }
     }
     
     return mergedNode;
@@ -119,6 +134,12 @@ export class DialogueEngine {
           break;
         case 'item':
           conditionMet = this.playerState.inventory?.includes(value) || false;
+          break;
+        case 'playerWon':
+          conditionMet = this.playerState.battleResult === 'win';
+          break;
+        case 'playerLost':
+          conditionMet = this.playerState.battleResult === 'lose';
           break;
         case 'first_time': {
           const npcId = option.condition?.npcId || this.tree.npcId;

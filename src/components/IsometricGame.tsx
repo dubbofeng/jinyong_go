@@ -104,6 +104,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     character: string;
     description: string;
   } | null>(null);
+  const skillToastTimerRef = useRef<number | null>(null);
   
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
@@ -118,6 +119,23 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     if (typeof window === 'undefined') return false;
     return new URLSearchParams(window.location.search).has('e2eStory');
   }, []);
+
+  useEffect(() => {
+    if (!skillUnlockToast) return;
+    if (skillToastTimerRef.current) {
+      window.clearTimeout(skillToastTimerRef.current);
+    }
+    skillToastTimerRef.current = window.setTimeout(() => {
+      setSkillUnlockToast(null);
+    }, 6000);
+
+    return () => {
+      if (skillToastTimerRef.current) {
+        window.clearTimeout(skillToastTimerRef.current);
+        skillToastTimerRef.current = null;
+      }
+    };
+  }, [skillUnlockToast]);
 
   const stories = storiesData as any[];
 
@@ -820,6 +838,10 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     switch (action.type) {
       case 'battle':
         // 触发对战
+        setBattleResult(null);
+        if (dialogueEngine) {
+          dialogueEngine.updatePlayerState({ battleResult: null });
+        }
         const opponentId = action.value;
         const npcName = opponentId === 'hong_qigong' ? '洪七公' :
                         opponentId === 'linghu_chong' ? '令狐冲' :
@@ -948,7 +970,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       default:
         console.warn('Unknown action type:', action.type);
     }
-  }, [recordDialogueFlags]);
+  }, [dialogueEngine, recordDialogueFlags]);
 
   /**
    * 更新对话状态
@@ -956,6 +978,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const updateDialogueState = useCallback((engine: DialogueEngine) => {
     const node = engine.getCurrentNode();
     const options = engine.getAvailableOptions();
+
+    if (node?.action?.type === 'battle' && battleResult && options.length === 1) {
+      const moved = engine.selectOption(0);
+      if (moved) {
+        updateDialogueState(engine);
+        return;
+      }
+    }
     
     setCurrentDialogueNode(node);
     setDialogueOptions(options);
@@ -984,7 +1014,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         closeDialogue();
       }, 1000);
     }
-  }, [closeDialogue, handleDialogueAction, recordDialogueFlags]);
+  }, [battleResult, closeDialogue, handleDialogueAction, recordDialogueFlags]);
 
   /**
    * 开始与NPC对话
@@ -1279,7 +1309,12 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     
     // 如果选项有 action，先处理 action
     if (selectedOption?.action) {
-      handleDialogueAction(selectedOption.action);
+      const shouldSkipBattleAction =
+        selectedOption.action.type === 'battle' && selectedOption.nextNodeId === 'start_battle';
+
+      if (!shouldSkipBattleAction) {
+        handleDialogueAction(selectedOption.action);
+      }
     }
     
     const success = dialogueEngine.selectOption(optionIndex);
@@ -1293,7 +1328,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    */
   const handleContinueDialogue = useCallback(() => {
     if (!dialogueEngine) return;
-    
+    const currentNode = dialogueEngine.getCurrentNode();
+    if (currentNode?.action?.type === 'battle') return;
+
     const success = dialogueEngine.continue();
     if (success) {
       updateDialogueState(dialogueEngine);
@@ -1420,36 +1457,31 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
     console.log('🎯 Go opponent name:', goOpponentName);
     
     // 记录对战结果
-    setBattleResult(result.playerWon ? 'win' : 'lose');
+    const battleOutcome = result.playerWon ? 'win' : 'lose';
+    setBattleResult(battleOutcome);
     
     // 关闭对战界面
     setShowGoGame(false);
     
     // 如果玩家胜利且有对话引擎在运行，记录胜利状态并恢复对话
-    if (result.playerWon && dialogueEngine && pendingGoOpponent) {
-      // 更新对话引擎的玩家状态，标记已打败NPC
-      const npcId = pendingGoOpponent === '洪七公' ? 'defeated_hong_qigong' :
-                    pendingGoOpponent === '令狐冲' ? 'defeated_linghu_chong' :
-                    pendingGoOpponent === '郭靖' ? 'defeated_guo_jing' : null;
-      
-      if (npcId) {
+    if (dialogueEngine) {
+      dialogueEngine.updatePlayerState({ battleResult: battleOutcome });
+    }
+
+    if (result.playerWon && dialogueEngine) {
+      const defeatedNpcId = currentNpcIdRef.current ? `defeated_${currentNpcIdRef.current}` : null;
+
+      if (defeatedNpcId) {
         setCompletedQuests((prev) => {
-          const next = prev.includes(npcId) ? prev : [...prev, npcId];
+          const next = prev.includes(defeatedNpcId) ? prev : [...prev, defeatedNpcId];
           completedQuestsRef.current = next;
           dialogueEngine.updatePlayerState({
             completedQuests: next,
           });
           return next;
         });
-        
-        console.log(`✅ Player defeated ${pendingGoOpponent}, updated dialogue state`);
-        
-        // 前进到胜利后的对话节点
-        const currentNode = dialogueEngine.getCurrentNode();
-        if (currentNode?.id === 'start_battle') {
-          // 如果当前在 start_battle 节点，手动前进到 teach_skill 节点
-          dialogueEngine.setCurrentNodeId('teach_skill');
-        }
+
+        console.log(`✅ Player defeated ${defeatedNpcId}, updated dialogue state`);
       }
       
       // 更新对话状态以显示新节点
@@ -1462,6 +1494,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       // 如果失败，可以选择恢复对话或关闭
       setPendingGoOpponent(null);
       if (dialogueEngine) {
+        updateDialogueState(dialogueEngine);
         setIsDialogueVisible(true);
       }
     }

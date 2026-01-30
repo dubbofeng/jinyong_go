@@ -91,24 +91,6 @@
       ]
     },
     {
-      "id": "after_shaolin",
-      "speaker": "Hong Qigong",
-      "text": "So you learned the Dugu Nine Swords? Linghu Chong's swordsmanship is extraordinary. The martial arts world needs more people like you.",
-      "options": [
-        {"text": "Thank you for your guidance, Senior!"},
-        {"text": "May I ask about your Go style?"}
-      ]
-    },
-    {
-      "id": "encourage_continue",
-      "speaker": "Hong Qigong",
-      "text": "You've completed all the main quests! Xiangyang needs someone like you. But there's always more to learn in the martial arts world. Want to compete with me again?",
-      "options": [
-        {"text": "Yes! Please teach me, Senior!"},
-        {"text": "I need to consolidate what I've learned"}
-      ]
-    },
-    {
       "id": "rematch_challenge",
       "speaker": "Hong Qigong",
       "text": "Ready for another game? Playing more will improve your skills!",

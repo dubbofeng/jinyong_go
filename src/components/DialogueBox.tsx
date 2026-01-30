@@ -67,6 +67,7 @@ export default function DialogueBox({
   if (!isVisible || !node) return null;
 
   const hasOptions = options.length > 0;
+  const hideContinue = node.action?.type === 'battle';
 
   return (
     <div 
@@ -185,7 +186,7 @@ export default function DialogueBox({
                     </div>
                   );
                 })
-              ) : (
+              ) : hideContinue ? null : (
                 // 继续按钮
                 <button
                   onClick={onContinue}
