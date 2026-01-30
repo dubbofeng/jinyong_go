@@ -330,7 +330,7 @@ const npcData = [
     nameEn: 'Qiao Feng',
     description: '丐帮前帮主，英雄盖世，棋艺与武学相通。',
     descriptionEn: 'Former leader of Beggar Sect, greatest hero with a bold Go style.',
-    mapId: 'leigu_scene',
+    mapId: 'shaolin_scene',
     positionX: 16,
     positionY: 16,
     npcType: 'teacher',
