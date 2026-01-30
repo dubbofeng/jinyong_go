@@ -67,7 +67,7 @@ const npcData = [
     nameEn: 'Linghu Chong',
     description: '华山派大弟子，剑术高超，性格洒脱不羁。独孤九剑的传人。',
     descriptionEn: 'Senior disciple of Huashan Sect, exceptional swordsmanship, free-spirited personality.',
-    mapId: 'huashan_scene',
+    mapId: 'shaolin_scene',
     positionX: 12,
     positionY: 14,
     npcType: 'teacher',
