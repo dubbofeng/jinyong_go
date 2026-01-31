@@ -31,6 +31,7 @@
     "e2e:install": "playwright install --with-deps"
   },
   "dependencies": {
+    "@sabaki/sgf": "^3.4.7",
     "@google/generative-ai": "^0.24.1",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",

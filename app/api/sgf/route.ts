@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { sgfLessonsById } from '@/src/data/sgf-lessons';
+import { parseSgfRoot } from '@/src/lib/sgf-server';
 
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get('id');
@@ -19,6 +20,7 @@ export async function GET(request: NextRequest) {
     const filePath = path.join(process.cwd(), lesson.filePath);
     const sgf = await fs.readFile(filePath, 'utf8');
 
+    const parsed = parseSgfRoot(sgf);
     return NextResponse.json({
       success: true,
       data: {
@@ -26,6 +28,7 @@ export async function GET(request: NextRequest) {
         title: lesson.title,
         npcId: lesson.npcId,
         sgf,
+        parsed,
       },
     });
   } catch (error) {

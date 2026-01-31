@@ -3,7 +3,7 @@
  * 支持9路、13路、19路棋盘
  */
 
-export type BoardSize = 9 | 13 | 19;
+export type BoardSize = 3 | 5 | 9 | 13 | 19;
 export type StoneColor = 'black' | 'white' | null;
 
 export interface BoardPosition {
@@ -63,6 +63,10 @@ export class GoBoard {
    * 计算渲染参数（根据Canvas大小和棋盘路数）
    */
   private calculateRenderParams(): void {
+    const canvasSize = Math.min(this.canvas.width, this.canvas.height);
+    const paddingRatio = this.size <= 3 ? 0.22 : this.size <= 5 ? 0.18 : 0.08;
+    this.padding = Math.round(canvasSize * paddingRatio);
+
     const availableWidth = this.canvas.width - this.padding * 2;
     const availableHeight = this.canvas.height - this.padding * 2;
     
@@ -515,6 +519,93 @@ export class GoBoard {
     this.lastMove = position;
     this.render();
     return true;
+  }
+
+  /**
+   * 按照基本规则落子（提子 + 禁止自杀）
+   */
+  placeStoneWithRules(position: BoardPosition, color: 'black' | 'white'): boolean {
+    if (!this.isValidPosition(position)) return false;
+    if (this.board[position.row][position.col] !== null) return false;
+
+    const opponent: 'black' | 'white' = color === 'black' ? 'white' : 'black';
+    const captured: { row: number; col: number; color: 'black' | 'white' }[] = [];
+
+    this.board[position.row][position.col] = color;
+
+    const neighbors = this.getNeighbors(position);
+    neighbors
+      .filter((pos) => this.board[pos.row][pos.col] === opponent)
+      .forEach((pos) => {
+        const group = this.getGroup(pos);
+        if (this.countLiberties(group) === 0) {
+          group.forEach((stone) => {
+            captured.push({ ...stone, color: opponent });
+            this.board[stone.row][stone.col] = null;
+          });
+        }
+      });
+
+    const selfGroup = this.getGroup(position);
+    if (this.countLiberties(selfGroup) === 0) {
+      // 自杀，回滚
+      this.board[position.row][position.col] = null;
+      captured.forEach((stone) => {
+        this.board[stone.row][stone.col] = stone.color;
+      });
+      return false;
+    }
+
+    this.lastMove = position;
+    this.render();
+    return true;
+  }
+
+  private getNeighbors(position: BoardPosition): BoardPosition[] {
+    const candidates = [
+      { row: position.row - 1, col: position.col },
+      { row: position.row + 1, col: position.col },
+      { row: position.row, col: position.col - 1 },
+      { row: position.row, col: position.col + 1 },
+    ];
+    return candidates.filter((pos) => this.isValidPosition(pos));
+  }
+
+  private getGroup(start: BoardPosition): BoardPosition[] {
+    const color = this.board[start.row][start.col];
+    if (!color) return [];
+
+    const visited = new Set<string>();
+    const stack = [start];
+    const group: BoardPosition[] = [];
+
+    while (stack.length) {
+      const current = stack.pop()!;
+      const key = `${current.row},${current.col}`;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      group.push(current);
+
+      this.getNeighbors(current).forEach((neighbor) => {
+        if (this.board[neighbor.row][neighbor.col] === color) {
+          stack.push(neighbor);
+        }
+      });
+    }
+
+    return group;
+  }
+
+  private countLiberties(group: BoardPosition[]): number {
+    const liberties = new Set<string>();
+    group.forEach((stone) => {
+      this.getNeighbors(stone).forEach((neighbor) => {
+        if (this.board[neighbor.row][neighbor.col] === null) {
+          liberties.add(`${neighbor.row},${neighbor.col}`);
+        }
+      });
+    });
+    return liberties.size;
   }
   
   /**

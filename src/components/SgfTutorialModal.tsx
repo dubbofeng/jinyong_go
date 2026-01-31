@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import SgfTestClient from '@/src/components/SgfTestClient';
-import { parseSgfRoot } from '@/src/lib/sgf';
+import type { ParsedSgf } from '@/src/lib/sgf';
 
 interface SgfTutorialModalProps {
   isOpen: boolean;
@@ -16,6 +16,7 @@ interface SgfLessonPayload {
   title: string;
   npcId: string;
   sgf: string;
+  parsed?: ParsedSgf;
 }
 
 export default function SgfTutorialModal({ isOpen, lessonId, onClose, onComplete }: SgfTutorialModalProps) {
@@ -82,7 +83,7 @@ export default function SgfTutorialModal({ isOpen, lessonId, onClose, onComplete
 
   if (!isOpen && !isVisible) return null;
 
-  const parsed = lesson ? parseSgfRoot(lesson.sgf) : null;
+  const parsed = lesson?.parsed ?? null;
 
   return (
     <div
@@ -120,6 +121,7 @@ export default function SgfTutorialModal({ isOpen, lessonId, onClose, onComplete
               blackStones={parsed.blackStones}
               whiteStones={parsed.whiteStones}
               moves={parsed.moves}
+              rootComment={parsed.rootComment}
             />
           )}
 

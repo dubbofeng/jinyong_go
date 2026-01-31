@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { GoBoard } from '@/src/lib/go-board';
+import { GoBoard, type BoardSize } from '@/src/lib/go-board';
 
-type SgfMove = { color: 'black' | 'white'; sgf: string };
+type SgfMove = { color: 'black' | 'white'; sgf: string; comment?: string };
 
 interface SgfPreviewProps {
   boardSize: number;
@@ -48,6 +48,11 @@ const sgfToPosition = (coord: string, size: number): { row: number; col: number 
   return { row, col };
 };
 
+const normalizeBoardSize = (size: number): BoardSize => {
+  if (size === 3 || size === 5 || size === 9 || size === 13 || size === 19) return size;
+  return 19;
+};
+
 export default function SgfPreview({ boardSize, blackStones, whiteStones, moves, moveIndex }: SgfPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -59,7 +64,7 @@ export default function SgfPreview({ boardSize, blackStones, whiteStones, moves,
     canvas.width = size;
     canvas.height = size;
 
-    const board = new GoBoard(canvas, boardSize);
+    const board = new GoBoard(canvas, normalizeBoardSize(boardSize));
 
     blackStones.forEach((sgf) => {
       const pos = sgfToPosition(sgf, boardSize);
