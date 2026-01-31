@@ -312,6 +312,25 @@ export default function TutorialBoardsEditor({ locale }: TutorialBoardsEditorPro
                   <canvas ref={canvasRef} className="rounded-lg shadow-lg" style={{ maxWidth: '100%', height: 'auto' }} />
                 </div>
 
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-200">描述</label>
+                  <textarea
+                    value={selectedBoard.description}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setBoards((prev) =>
+                        prev.map((boardItem) =>
+                          boardItem.id === selectedBoard.id
+                            ? { ...boardItem, description: value }
+                            : boardItem
+                        )
+                      );
+                    }}
+                    rows={3}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+
                 <div className="text-sm text-gray-300">
                   当前大小：{selectedBoard.boardSize} 路 · 棋子数量：{selectedBoard.stones.length} · 标记数量：
                   {selectedBoard.highlights?.length ?? 0}

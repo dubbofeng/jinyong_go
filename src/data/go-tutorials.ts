@@ -487,13 +487,63 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 5,
         "col": 4,
         "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 4,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 1,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "color": "white"
       }
     ],
     "highlights": [
       {
-        "row": 5,
-        "col": 5,
+        "row": 1,
+        "col": 1,
         "label": 1
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "label": 2
       }
     ]
   },
