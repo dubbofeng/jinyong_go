@@ -28,7 +28,8 @@
           "text": "黄岛主，我想再和你对弈一局"
         },
         {"text": "奇门遁甲如何用在围棋上？"},
-        {"text": "我还想准备一下"}
+        {"text": "我还想准备一下"},
+        {"text": "请黄岛主讲讲布局"}
       ]
     },
     {
@@ -43,6 +44,257 @@
       "options": [
         {"text": "精妙！请黄岛主教我"},
         {"text": "我再参悟一下"}
+      ]
+    },
+    {
+      "id": "sgf_teach_intro",
+      "speaker": "黄药师",
+      "text": "布局乃棋道之根基，先从经典布局讲起。",
+      "options": [
+        {"text": "请讲"},
+        {"text": "改日再学"}
+      ]
+    },
+    {
+      "id": "sgf_route_01",
+      "speaker": "黄药师",
+      "text": "第一讲：三连星布局 I。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "我已学过，继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_01",
+      "speaker": "黄药师",
+      "text": "看棋谱，感受三连星的气势。"
+    },
+    {
+      "id": "sgf_route_02",
+      "speaker": "黄药师",
+      "text": "第二讲：三连星布局 II。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_02",
+      "speaker": "黄药师",
+      "text": "第二讲棋谱。"
+    },
+    {
+      "id": "sgf_route_03",
+      "speaker": "黄药师",
+      "text": "第三讲：中国流 I。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_03",
+      "speaker": "黄药师",
+      "text": "中国流的基本构型。"
+    },
+    {
+      "id": "sgf_route_04",
+      "speaker": "黄药师",
+      "text": "第四讲：中国流 II。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_04",
+      "speaker": "黄药师",
+      "text": "进一步变化。"
+    },
+    {
+      "id": "sgf_route_05",
+      "speaker": "黄药师",
+      "text": "第五讲：中国流 III。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_05",
+      "speaker": "黄药师",
+      "text": "连贯的推进。"
+    },
+    {
+      "id": "sgf_route_06",
+      "speaker": "黄药师",
+      "text": "第六讲：中国流内挂。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_06",
+      "speaker": "黄药师",
+      "text": "内挂处理。"
+    },
+    {
+      "id": "sgf_route_07",
+      "speaker": "黄药师",
+      "text": "第七讲：中国流定式 I。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_07",
+      "speaker": "黄药师",
+      "text": "定式基础。"
+    },
+    {
+      "id": "sgf_route_08",
+      "speaker": "黄药师",
+      "text": "第八讲：小林流 I。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_08",
+      "speaker": "黄药师",
+      "text": "小林流布局。"
+    },
+    {
+      "id": "sgf_route_09",
+      "speaker": "黄药师",
+      "text": "第九讲：迷你中国流 I。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_09",
+      "speaker": "黄药师",
+      "text": "紧凑布局。"
+    },
+    {
+      "id": "sgf_route_10",
+      "speaker": "黄药师",
+      "text": "第十讲：高中国流 I。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_10",
+      "speaker": "黄药师",
+      "text": "高位展开。"
+    },
+    {
+      "id": "sgf_pattern_intro",
+      "speaker": "黄药师",
+      "text": "布局之后，再看常型。",
+      "options": [
+        {"text": "请讲"},
+        {"text": "先到这里"}
+      ]
+    },
+    {
+      "id": "sgf_route_11",
+      "speaker": "黄药师",
+      "text": "常型一：星大飞尖。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_11",
+      "speaker": "黄药师",
+      "text": "星大飞尖棋谱。"
+    },
+    {
+      "id": "sgf_route_12",
+      "speaker": "黄药师",
+      "text": "常型二：星大飞拖。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_12",
+      "speaker": "黄药师",
+      "text": "星大飞拖棋谱。"
+    },
+    {
+      "id": "sgf_route_13",
+      "speaker": "黄药师",
+      "text": "常型三：星大飞点三三。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_13",
+      "speaker": "黄药师",
+      "text": "点三三变化。"
+    },
+    {
+      "id": "sgf_route_14",
+      "speaker": "黄药师",
+      "text": "常型四：星大飞玉柱。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_14",
+      "speaker": "黄药师",
+      "text": "玉柱手筋。"
+    },
+    {
+      "id": "sgf_route_15",
+      "speaker": "黄药师",
+      "text": "常型五：星小飞漏拖。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_15",
+      "speaker": "黄药师",
+      "text": "小飞相关变化。"
+    },
+    {
+      "id": "sgf_route_16",
+      "speaker": "黄药师",
+      "text": "常型六：星小飞点三三或拆边。",
+      "options": [
+        {"text": "开始这一讲"},
+        {"text": "继续下一讲"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_16",
+      "speaker": "黄药师",
+      "text": "点三三或拆边的取舍。"
+    },
+    {
+      "id": "sgf_all_done",
+      "speaker": "黄药师",
+      "text": "这些棋谱都看过了，剩下的就要靠你多下多悟。",
+      "options": [
+        {"text": "多谢黄岛主！"},
+        {"text": "我还想听听您的见解"}
       ]
     },
     {

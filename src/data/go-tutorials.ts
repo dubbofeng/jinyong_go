@@ -2,13 +2,13 @@ import type { BoardSize, StoneColor } from '@/src/lib/go-board';
 
 export interface TutorialBoardStone {
   row: number;
-  col: number;
+  col: number | string;
   color: Exclude<StoneColor, null>;
 }
 
 export interface TutorialBoardHighlight {
   row: number;
-  col: number;
+  col: number | string;
   label: number;
 }
 
@@ -76,16 +76,20 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
       { row: 3, col: 3, color: 'black' },
       { row: 3, col: 4, color: 'black' },
       { row: 3, col: 5, color: 'black' },
-      { row: 4, col: 2, color: 'black' },
-      { row: 4, col: 4, color: 'black' },
-      { row: 4, col: 6, color: 'black' },
+      { row: 3, col: 6, color: 'black' },
+      { row: 3, col: 7, color: 'black' },
+      { row: 4, col: 3, color: 'black' },
+      { row: 4, col: 5, color: 'black' },
+      { row: 4, col: 7, color: 'black' },
       { row: 5, col: 3, color: 'black' },
       { row: 5, col: 4, color: 'black' },
-      { row: 5, col: 5, color: 'black' }
+      { row: 5, col: 5, color: 'black' },
+      { row: 5, col: 6, color: 'black' },
+      { row: 5, col: 7, color: 'black' }
     ],
     highlights: [
-      { row: 4, col: 3, label: 1 },
-      { row: 4, col: 5, label: 2 }
+      { row: 4, col: 4, label: 1 },
+      { row: 4, col: 6, label: 2 }
     ]
   },
   musang_true_eye: {
@@ -115,11 +119,8 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
       { row: 4, col: 3, color: 'black' },
       { row: 4, col: 5, color: 'black' },
       { row: 5, col: 4, color: 'black' },
-      { row: 3, col: 3, color: 'black' },
-      { row: 3, col: 5, color: 'black' },
-      { row: 5, col: 3, color: 'black' },
       { row: 5, col: 5, color: 'black' },
-      { row: 4, col: 6, color: 'white' }
+      { row: 3, col: 3, color: 'white' }
     ],
     highlights: [{ row: 4, col: 4, label: 1 }]
   },
@@ -129,11 +130,11 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
     description: '三子相夹形成虎口，1位是要点。',
     boardSize: 9,
     stones: [
-      { row: 3, col: 3, color: 'black' },
-      { row: 3, col: 4, color: 'black' },
-      { row: 4, col: 3, color: 'black' }
+      { row: 4, col: 4, color: 'black' },
+      { row: 5, col: 3, color: 'black' },
+      { row: 5, col: 5, color: 'black' }
     ],
-    highlights: [{ row: 4, col: 4, label: 1 }]
+    highlights: [{ row: 4, col: "E", label: 1 }]
   },
   musang_atari: {
     id: 'musang_atari',

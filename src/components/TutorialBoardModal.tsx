@@ -36,12 +36,23 @@ export default function TutorialBoardModal({ isOpen, tutorial, onClose }: Tutori
     const board = new GoBoard(canvas, tutorial.boardSize);
     boardRef.current = board;
 
+    const toIndex = (row: number, col: number | string) => {
+      if (typeof col === 'string') {
+        const letter = col.trim().toUpperCase();
+        const colIndex = letter.charCodeAt(0) - 65;
+        return { row: 9 -row, col: colIndex };
+      }
+      return { row, col };
+    };
+
     tutorial.stones.forEach((stone) => {
-      board.placeStone({ row: stone.row, col: stone.col }, stone.color);
+      const pos = toIndex(stone.row, stone.col);
+      board.placeStone({ row: pos.row, col: pos.col }, stone.color);
     });
 
     tutorial.highlights?.forEach((highlight) => {
-      board.highlightPosition({ row: highlight.row, col: highlight.col }, highlight.label);
+      const pos = toIndex(highlight.row, highlight.col);
+      board.highlightPosition({ row: pos.row, col: pos.col }, highlight.label);
     });
 
     board.render();

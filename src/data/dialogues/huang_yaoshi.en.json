@@ -28,7 +28,8 @@
           "text": "Island Master Huang, I'd like to play another game with you"
         },
         {"text": "How are the Eight Trigrams used in Go?"},
-        {"text": "Let me prepare first"}
+        {"text": "Let me prepare first"},
+        {"text": "Please teach me opening layouts"}
       ]
     },
     {
@@ -43,6 +44,257 @@
       "options": [
         {"text": "Exquisite! Please teach me, Island Master Huang"},
         {"text": "Let me contemplate this further"}
+      ]
+    },
+    {
+      "id": "sgf_teach_intro",
+      "speaker": "Huang Yaoshi",
+      "text": "Openings are the foundation of Go. Let us start with classic layouts.",
+      "options": [
+        {"text": "Please teach me"},
+        {"text": "Another day"}
+      ]
+    },
+    {
+      "id": "sgf_route_01",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 1: Three-Star Opening I.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "I've learned it, continue"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_01",
+      "speaker": "Huang Yaoshi",
+      "text": "Study the three-star framework."
+    },
+    {
+      "id": "sgf_route_02",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 2: Three-Star Opening II.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_02",
+      "speaker": "Huang Yaoshi",
+      "text": "Second lesson game record."
+    },
+    {
+      "id": "sgf_route_03",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 3: Chinese Opening I.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_03",
+      "speaker": "Huang Yaoshi",
+      "text": "The basic Chinese opening structure."
+    },
+    {
+      "id": "sgf_route_04",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 4: Chinese Opening II.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_04",
+      "speaker": "Huang Yaoshi",
+      "text": "Further variations."
+    },
+    {
+      "id": "sgf_route_05",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 5: Chinese Opening III.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_05",
+      "speaker": "Huang Yaoshi",
+      "text": "A coherent extension."
+    },
+    {
+      "id": "sgf_route_06",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 6: Chinese Opening - Inside Attachment.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_06",
+      "speaker": "Huang Yaoshi",
+      "text": "Inside attachment handling."
+    },
+    {
+      "id": "sgf_route_07",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 7: Chinese Opening Joseki I.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_07",
+      "speaker": "Huang Yaoshi",
+      "text": "Joseki basics."
+    },
+    {
+      "id": "sgf_route_08",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 8: Kobayashi Opening I.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_08",
+      "speaker": "Huang Yaoshi",
+      "text": "Kobayashi opening layout."
+    },
+    {
+      "id": "sgf_route_09",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 9: Mini Chinese Opening I.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_09",
+      "speaker": "Huang Yaoshi",
+      "text": "A compact layout."
+    },
+    {
+      "id": "sgf_route_10",
+      "speaker": "Huang Yaoshi",
+      "text": "Lesson 10: High Chinese Opening I.",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_10",
+      "speaker": "Huang Yaoshi",
+      "text": "High framework expansion."
+    },
+    {
+      "id": "sgf_pattern_intro",
+      "speaker": "Huang Yaoshi",
+      "text": "After openings, we study common patterns.",
+      "options": [
+        {"text": "Please continue"},
+        {"text": "Let's stop here"}
+      ]
+    },
+    {
+      "id": "sgf_route_11",
+      "speaker": "Huang Yaoshi",
+      "text": "Pattern 1: Large Knight, Pointed. ",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_11",
+      "speaker": "Huang Yaoshi",
+      "text": "Study the large knight pointed variation."
+    },
+    {
+      "id": "sgf_route_12",
+      "speaker": "Huang Yaoshi",
+      "text": "Pattern 2: Large Knight, Crawl. ",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_12",
+      "speaker": "Huang Yaoshi",
+      "text": "Large knight crawl sequence."
+    },
+    {
+      "id": "sgf_route_13",
+      "speaker": "Huang Yaoshi",
+      "text": "Pattern 3: Large Knight, 3-3 Invasion. ",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_13",
+      "speaker": "Huang Yaoshi",
+      "text": "3-3 invasion variations."
+    },
+    {
+      "id": "sgf_route_14",
+      "speaker": "Huang Yaoshi",
+      "text": "Pattern 4: Large Knight, Jade Pillar. ",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_14",
+      "speaker": "Huang Yaoshi",
+      "text": "Jade pillar technique."
+    },
+    {
+      "id": "sgf_route_15",
+      "speaker": "Huang Yaoshi",
+      "text": "Pattern 5: Small Knight, Missed Crawl. ",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_15",
+      "speaker": "Huang Yaoshi",
+      "text": "Small knight variations."
+    },
+    {
+      "id": "sgf_route_16",
+      "speaker": "Huang Yaoshi",
+      "text": "Pattern 6: Small Knight, 3-3 or Extension. ",
+      "options": [
+        {"text": "Start this lesson"},
+        {"text": "Continue to the next lesson"}
+      ]
+    },
+    {
+      "id": "sgf_lesson_16",
+      "speaker": "Huang Yaoshi",
+      "text": "Choosing between 3-3 or extension."
+    },
+    {
+      "id": "sgf_all_done",
+      "speaker": "Huang Yaoshi",
+      "text": "You have reviewed these game records. The rest depends on playing and insight.",
+      "options": [
+        {"text": "Thank you, Island Master Huang!"},
+        {"text": "I'd like to hear more of your insights"}
       ]
     },
     {

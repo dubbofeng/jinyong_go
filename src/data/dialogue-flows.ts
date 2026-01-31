@@ -9,7 +9,7 @@ export interface DialogueNodeFlow {
   nextNodeId?: string;
   options?: DialogueOptionFlow[];
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board';
+    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf';
     value: any;
   };
 }
@@ -18,11 +18,11 @@ export interface DialogueOptionFlow {
   optionId: string; // 对应对话文件中options数组的索引或标识
   nextNodeId: string;
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board';
+    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf';
     value: any;
   };
   condition?: {
-    type: 'level' | 'quest' | 'item' | 'playerWon' | 'playerLost' | 'repeatable' | 'first_time';
+    type: 'level' | 'quest' | 'item' | 'playerWon' | 'playerLost' | 'repeatable' | 'first_time' | 'dialogue_flag';
     value?: string | number;
     npcId?: string;
     inverse?: boolean;
@@ -1018,7 +1018,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
             action: { type: 'battle', value: 'huang_yaoshi' }
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '4', nextNodeId: 'not_ready' },
+          {
+            optionId: '5',
+            nextNodeId: 'sgf_teach_intro',
+            condition: { type: 'quest', value: 'defeated_huang_yaoshi' }
+          }
         ]
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
@@ -1027,6 +1032,395 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
           { optionId: '1', nextNodeId: 'not_ready' }
+        ]
+      },
+      {
+        id: 'sgf_teach_intro',
+        options: [
+          { optionId: '0', nextNodeId: 'sgf_route_01' },
+          { optionId: '1', nextNodeId: 'farewell' }
+        ]
+      },
+      {
+        id: 'sgf_route_01',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_01',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_01', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_02',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_01' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_01',
+        nextNodeId: 'sgf_route_02',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_01', progressFlag: 'sgf_lesson:hy_layout_01' }
+        }
+      },
+      {
+        id: 'sgf_route_02',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_02',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_02', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_03',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_02' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_02',
+        nextNodeId: 'sgf_route_03',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_02', progressFlag: 'sgf_lesson:hy_layout_02' }
+        }
+      },
+      {
+        id: 'sgf_route_03',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_03',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_03', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_04',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_03' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_03',
+        nextNodeId: 'sgf_route_04',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_03', progressFlag: 'sgf_lesson:hy_layout_03' }
+        }
+      },
+      {
+        id: 'sgf_route_04',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_04',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_04', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_05',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_04' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_04',
+        nextNodeId: 'sgf_route_05',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_04', progressFlag: 'sgf_lesson:hy_layout_04' }
+        }
+      },
+      {
+        id: 'sgf_route_05',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_05',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_05', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_06',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_05' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_05',
+        nextNodeId: 'sgf_route_06',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_05', progressFlag: 'sgf_lesson:hy_layout_05' }
+        }
+      },
+      {
+        id: 'sgf_route_06',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_06',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_06', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_07',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_06' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_06',
+        nextNodeId: 'sgf_route_07',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_06', progressFlag: 'sgf_lesson:hy_layout_06' }
+        }
+      },
+      {
+        id: 'sgf_route_07',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_07',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_07', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_08',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_07' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_07',
+        nextNodeId: 'sgf_route_08',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_07', progressFlag: 'sgf_lesson:hy_layout_07' }
+        }
+      },
+      {
+        id: 'sgf_route_08',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_08',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_08', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_09',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_08' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_08',
+        nextNodeId: 'sgf_route_09',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_08', progressFlag: 'sgf_lesson:hy_layout_08' }
+        }
+      },
+      {
+        id: 'sgf_route_09',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_09',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_09', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_10',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_09' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_09',
+        nextNodeId: 'sgf_route_10',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_09', progressFlag: 'sgf_lesson:hy_layout_09' }
+        }
+      },
+      {
+        id: 'sgf_route_10',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_10',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_10', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_pattern_intro',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_10' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_10',
+        nextNodeId: 'sgf_pattern_intro',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_layout_10', progressFlag: 'sgf_lesson:hy_layout_10' }
+        }
+      },
+      {
+        id: 'sgf_pattern_intro',
+        options: [
+          { optionId: '0', nextNodeId: 'sgf_route_11' },
+          { optionId: '1', nextNodeId: 'sgf_all_done' }
+        ]
+      },
+      {
+        id: 'sgf_route_11',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_11',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_01', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_12',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_01' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_11',
+        nextNodeId: 'sgf_route_12',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_pattern_01', progressFlag: 'sgf_lesson:hy_pattern_01' }
+        }
+      },
+      {
+        id: 'sgf_route_12',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_12',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_02', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_13',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_02' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_12',
+        nextNodeId: 'sgf_route_13',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_pattern_02', progressFlag: 'sgf_lesson:hy_pattern_02' }
+        }
+      },
+      {
+        id: 'sgf_route_13',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_13',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_03', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_14',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_03' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_13',
+        nextNodeId: 'sgf_route_14',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_pattern_03', progressFlag: 'sgf_lesson:hy_pattern_03' }
+        }
+      },
+      {
+        id: 'sgf_route_14',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_14',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_04', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_15',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_04' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_14',
+        nextNodeId: 'sgf_route_15',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_pattern_04', progressFlag: 'sgf_lesson:hy_pattern_04' }
+        }
+      },
+      {
+        id: 'sgf_route_15',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_15',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_05', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_route_16',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_05' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_15',
+        nextNodeId: 'sgf_route_16',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_pattern_05', progressFlag: 'sgf_lesson:hy_pattern_05' }
+        }
+      },
+      {
+        id: 'sgf_route_16',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'sgf_lesson_16',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_06', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'sgf_all_done',
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_06' }
+          }
+        ]
+      },
+      {
+        id: 'sgf_lesson_16',
+        nextNodeId: 'sgf_all_done',
+        action: {
+          type: 'tutorial_sgf',
+          value: { lessonId: 'hy_pattern_06', progressFlag: 'sgf_lesson:hy_pattern_06' }
+        }
+      },
+      {
+        id: 'sgf_all_done',
+        options: [
+          { optionId: '0', nextNodeId: 'farewell' },
+          { optionId: '1', nextNodeId: 'daily_chat' }
         ]
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },

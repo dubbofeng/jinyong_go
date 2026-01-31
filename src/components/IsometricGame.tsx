@@ -10,6 +10,7 @@ import storiesData from '@/src/data/stories.json';
 import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
 import TutorialBoardModal from '@/src/components/TutorialBoardModal';
+import SgfTutorialModal from '@/src/components/SgfTutorialModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
@@ -62,6 +63,9 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
   const [showTutorialBoard, setShowTutorialBoard] = useState(false);
   const [tutorialBoard, setTutorialBoard] = useState<TutorialBoardConfig | null>(null);
+  const [showSgfTutorial, setShowSgfTutorial] = useState(false);
+  const [sgfLessonId, setSgfLessonId] = useState<string | null>(null);
+  const [sgfProgressFlag, setSgfProgressFlag] = useState<string | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
   const completedQuestsRef = useRef<string[]>([]);
   const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
@@ -966,6 +970,20 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         }
         break;
       }
+
+      case 'tutorial_sgf': {
+        const lessonId = typeof action.value === 'string' ? action.value : action.value?.lessonId;
+        const progressFlag = action.value?.progressFlag || (lessonId ? `sgf_lesson:${lessonId}` : null);
+        if (lessonId) {
+          setSgfLessonId(lessonId);
+          setSgfProgressFlag(progressFlag);
+          setShowSgfTutorial(true);
+          setIsDialogueVisible(false);
+        } else {
+          console.warn('Unknown SGF lesson:', action.value);
+        }
+        break;
+      }
       
       default:
         console.warn('Unknown action type:', action.type);
@@ -995,7 +1013,7 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
       handleDialogueAction(node.action);
     }
 
-    if (node?.id && node.action?.type === 'tutorial_board') {
+    if (node?.id && (node.action?.type === 'tutorial_board' || node.action?.type === 'tutorial_sgf')) {
       const npcId = currentNpcIdRef.current;
       if (npcId) {
         const lastNode = tutorialNodeCacheRef.current[npcId];
@@ -1776,6 +1794,26 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           setTutorialBoard(null);
           if (dialogueEngine) {
             setIsDialogueVisible(true);
+          }
+        }}
+      />
+
+      <SgfTutorialModal
+        isOpen={showSgfTutorial}
+        lessonId={sgfLessonId}
+        onClose={() => {
+          setShowSgfTutorial(false);
+          setSgfLessonId(null);
+          setSgfProgressFlag(null);
+          if (dialogueEngine) {
+            setIsDialogueVisible(true);
+          }
+        }}
+        onComplete={(lessonId) => {
+          if (sgfProgressFlag) {
+            recordDialogueFlags([sgfProgressFlag]);
+          } else if (lessonId) {
+            recordDialogueFlags([`sgf_lesson:${lessonId}`]);
           }
         }}
       />
