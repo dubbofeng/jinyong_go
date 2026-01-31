@@ -239,6 +239,8 @@
       "questsDesc": "Create and manage game quests",
       "users": "User Management",
       "usersDesc": "View and manage player data",
+      "tutorialBoards": "Tutorial Boards",
+      "tutorialBoardsDesc": "Edit Go tutorial board configurations",
       "settings": "System Settings",
       "settingsDesc": "Game configuration and parameters"
     },
@@ -258,6 +260,7 @@
       "dialogues": "Dialogues",
       "quests": "Quests",
       "users": "Users",
+      "tutorialBoards": "Tutorial Boards",
       "backToGame": "Back to Game"
     },
     "maps": {

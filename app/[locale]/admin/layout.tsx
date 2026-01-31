@@ -85,6 +85,12 @@ export default async function AdminLayout({
                 >
                   {t('nav.users')}
                 </Link>
+                <Link
+                  href={`/${locale}/admin/tutorials`}
+                  className="px-3 py-2 rounded-lg text-sm text-gray-200 hover:text-white hover:bg-gray-700 transition-colors"
+                >
+                  {t('nav.tutorialBoards')}
+                </Link>
               </div>
             </div>
 

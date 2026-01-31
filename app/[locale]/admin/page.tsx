@@ -51,6 +51,14 @@ export default async function AdminDashboard({
       status: 'active'
     },
     {
+      id: 'tutorialBoards',
+      name: t('modules.tutorialBoards'),
+      description: t('modules.tutorialBoardsDesc'),
+      icon: '♟️',
+      href: `/${locale}/admin/tutorials`,
+      status: 'active'
+    },
+    {
       id: 'settings',
       name: t('modules.settings'),
       description: t('modules.settingsDesc'),
