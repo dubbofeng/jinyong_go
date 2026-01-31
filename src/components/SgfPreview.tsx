@@ -84,7 +84,7 @@ export default function SgfPreview({ boardSize, blackStones, whiteStones, moves,
     movesToApply.forEach((move) => {
       const pos = sgfToPosition(move.sgf, boardSize);
       if (pos) {
-        board.placeStone(pos, move.color);
+        board.placeStoneWithRules(pos, move.color);
       }
     });
 

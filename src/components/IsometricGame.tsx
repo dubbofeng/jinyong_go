@@ -11,6 +11,7 @@ import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
 import TutorialBoardModal from '@/src/components/TutorialBoardModal';
 import SgfTutorialModal from '@/src/components/SgfTutorialModal';
+import SgfPracticeModal from '@/src/components/SgfPracticeModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
@@ -66,6 +67,8 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const [showSgfTutorial, setShowSgfTutorial] = useState(false);
   const [sgfLessonId, setSgfLessonId] = useState<string | null>(null);
   const [sgfProgressFlag, setSgfProgressFlag] = useState<string | null>(null);
+  const [showSgfPractice, setShowSgfPractice] = useState(false);
+  const [sgfPracticeSet, setSgfPracticeSet] = useState<string | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
   const completedQuestsRef = useRef<string[]>([]);
   const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
@@ -264,13 +267,38 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
   const handleTreeCollision = async () => {
     // 显示挑战提示
     const shouldChallenge = await showConfirm(
-      '从树后跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"',
+      '从树后跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"\n\n要死要活。',
       '⚔️ 遭遇挑战'
     );
     
     if (shouldChallenge) {
-      // 树挑战使用 beginner 难度
-      triggerTsumegoEncounter(mapData?.id, 'beginner');
+      // 根据玩家等级自动匹配难度
+      triggerTsumegoEncounter(mapData?.id);
+      return;
+    }
+
+    try {
+      let level = 1;
+      try {
+        const statsResponse = await fetch('/api/player/stats');
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          level = Math.max(1, Math.min(36, Number(statsData?.data?.level || 1)));
+        }
+      } catch (error) {
+        console.warn('获取玩家等级失败:', error);
+      }
+
+      const silverPenalty = Math.min(300, 10 + level * 5);
+      const staminaPenalty = Math.min(60, 5 + Math.floor(level / 2));
+
+      await fetch('/api/player/stats/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ silverDelta: -silverPenalty, staminaDelta: -staminaPenalty }),
+      });
+    } catch (error) {
+      console.warn('逃跑扣除体力/金钱失败:', error);
     }
   };
   
@@ -279,24 +307,14 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
    * @param mapId 地图ID
    * @param forceDifficulty 强制指定难度（用于建筑等特殊场景）
    */
-  const triggerTsumegoEncounter = async (mapId?: string, forceDifficulty?: string) => {
+  const triggerTsumegoEncounter = async (mapId?: string, forceDifficulty?: number | string) => {
     try {
-      // 如果有强制难度，使用强制难度；否则根据地图确定难度
-      let difficulty = forceDifficulty || 'beginner';
-      
-      if (!forceDifficulty) {
-        const currentMapId = mapId || mapData?.id;
-        if (currentMapId === 'shaolin_scene') {
-          difficulty = 'intermediate';
-        } else if (currentMapId === 'wudang_scene' || currentMapId === 'taohua_scene') {
-          difficulty = 'advanced';
-        }
-      }
-      
-      console.log('🎯 Triggering tsumego encounter with difficulty:', difficulty);
+      const difficulty = forceDifficulty ?? null;
+      console.log('🎯 Triggering tsumego encounter with difficulty:', difficulty ?? 'auto');
       
       // 获取随机题目
-      const response = await fetch(`/api/tsumego/random?difficulty=${difficulty}`);
+      const query = difficulty != null ? `?difficulty=${encodeURIComponent(String(difficulty))}` : '';
+      const response = await fetch(`/api/tsumego/random${query}`);
       if (!response.ok) {
         console.error('❌ Failed to fetch tsumego problem, status:', response.status);
         return;
@@ -694,18 +712,29 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         return;
       }
       
-      // 处理建筑点击 - 触发死活题挑战
+      // 处理建筑点击 - 仅棋馆触发死活题挑战
       if (item.itemType === 'building') {
         console.log(`🏛️ Clicked building:`, item);
-        // 显示挑战确认对话框
-        const shouldChallenge = await showConfirm(
-          t('tsumego.hallChallenge', { name: item.itemName || t('tsumego.defaultHall') }),
-          t('tsumego.hallTitle')
-        );
-        
-        if (shouldChallenge) {
-          // 触发死活题挑战（棋馆难度：intermediate）
-          await triggerTsumegoEncounter(mapData?.id, 'intermediate');
+        if (item.itemId === 'go_hall') {
+          const shouldChallenge = await showConfirm(
+            t('tsumego.hallChallenge', { name: item.itemName || t('tsumego.defaultHall') }),
+            t('tsumego.hallTitle')
+          );
+
+          if (shouldChallenge) {
+            await triggerTsumegoEncounter(mapData?.id);
+          }
+        }
+        if (item.itemId === 'go_pavilion') {
+          const currentMapId = mapData?.id;
+          const practiceSet =
+            currentMapId === 'daoguan_scene'
+              ? 'daoguan'
+              : currentMapId === 'huashan_scene'
+                ? 'huashan'
+                : 'gop';
+          setSgfPracticeSet(practiceSet);
+          setShowSgfPractice(true);
         }
         return;
       }
@@ -1815,6 +1844,15 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
           } else if (lessonId) {
             recordDialogueFlags([`sgf_lesson:${lessonId}`]);
           }
+        }}
+      />
+
+      <SgfPracticeModal
+        isOpen={showSgfPractice}
+        practiceSet={sgfPracticeSet}
+        onClose={() => {
+          setShowSgfPractice(false);
+          setSgfPracticeSet(null);
         }}
       />
 

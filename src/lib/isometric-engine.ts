@@ -36,6 +36,7 @@ export interface TileData {
 
 export interface MapItem {
   id: number;
+  itemId?: string;
   itemName: string;
   itemPath: string;      // 精灵图路径
   x: number;

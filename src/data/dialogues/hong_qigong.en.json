@@ -23,8 +23,14 @@
           "text": "Senior, I'd like to challenge you again"
         },
         {"text": "I want to learn about Go first"},
-        {"text": "I'm not ready yet"}
+        {"text": "I'm not ready yet"},
+        {"text": "Senior, what are the Go Hall and Go Pavilion?"}
       ]
+    },
+    {
+      "id": "explain_venues",
+      "speaker": "Hong Qigong",
+      "text": "The Go Hall is for life-and-death problems to sharpen your killing instincts and survival skills. The Go Pavilion is for studying SGF records—Daoist Temple and Huashan have their own sets, and other pavilions draw random drills."
     },
     {
       "id": "explain_go",

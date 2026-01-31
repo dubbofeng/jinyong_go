@@ -168,7 +168,7 @@
         "sceneId": "chen_01",
         "backgroundId": "story_haining_wall_board",
         "lines": [
-          { "type": "narration", "text": "梅庄后院，一面墙竟刻成棋盘，棋子嵌入石道。" },
+          { "type": "narration", "text": "后院，一面墙竟刻成棋盘，棋子嵌入石道。" },
           { "type": "dialogue", "speaker": "陈家洛", "speakerId": "chen_jialuo", "text": "此局不用手落子，用腕与劲。" },
           { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "把棋子当暗器？" },
           { "type": "dialogue", "speaker": "陈家洛", "speakerId": "chen_jialuo", "text": "棋为器，心为势。若势先到，子自会中。" },

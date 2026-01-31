@@ -64,9 +64,11 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
             optionId: '3',
             nextNodeId: 'daily_wisdom',
             condition: { type: 'quest', value: 'learned_go_basics' }
-          }
+          },
+          { optionId: '4', nextNodeId: 'explain_venues' }
         ]
       },
+      { id: 'explain_venues', nextNodeId: 'check_status' },
       { id: 'explain_world', nextNodeId: 'explain_world_2' },
       {
         id: 'explain_world_2',
@@ -261,9 +263,11 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
             action: { type: 'battle', value: 'hong_qigong' }
           },
           { optionId: '3', nextNodeId: 'explain_go' },
-          { optionId: '4', nextNodeId: 'not_ready' }
+          { optionId: '4', nextNodeId: 'not_ready' },
+          { optionId: '5', nextNodeId: 'explain_venues' }
         ]
       },
+      { id: 'explain_venues', nextNodeId: 'check_status' },
       { id: 'explain_go', nextNodeId: 'explain_go_2' },
       {
         id: 'explain_go_2',

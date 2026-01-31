@@ -29,8 +29,16 @@
         },
         {
           "text": "I'd like to hear more of your wisdom"
+        },
+        {
+          "text": "What are the Go Hall and Go Pavilion for?"
         }
       ]
+    },
+    {
+      "id": "explain_venues",
+      "speaker": "Taoist Musang",
+      "text": "The Go Hall is for solving life-and-death problems to sharpen your fighting instincts. The Go Pavilion lets you study SGF records and practice—Daoist Temple and Huashan have their own sets, and other places offer random drills."
     },
     {
       "id": "explain_world",
