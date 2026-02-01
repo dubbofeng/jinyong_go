@@ -101,7 +101,7 @@ Background: Solid pure white (#FFFFFF), no patterns, no gradients, just solid wh
  * 使用Gemini API生成图片
  */
 async function generateWithGemini(prompt: string, aspectRatio: '1:1' | '16:9' | '9:16' = '1:1'): Promise<Buffer> {
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent`;
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent`;
   
   console.log('\n🎨 Generating with prompt:');
   console.log(prompt.substring(0, 200) + '...\n');

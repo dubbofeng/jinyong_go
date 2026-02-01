@@ -48,7 +48,7 @@ const extractReferenceFromPrompt = (prompt: string): { cleanedPrompt: string; re
   return { cleanedPrompt, referencePath: match[1] };
 };
 
-// Gemini 2.5 Flash Image API调用
+// Gemini 3 Pro Image Preview API调用
 async function generateWithGemini(
   prompt: string,
   width: number,
@@ -56,7 +56,7 @@ async function generateWithGemini(
   category: string,
   referenceImage?: ReferenceImage
 ): Promise<Buffer> {
-  // 使用 Gemini 2.5 Flash Image 模型 (Nano Banana)
+  // 使用 Gemini 3 Pro Image Preview 模型
   // 文档: https://ai.google.dev/gemini-api/docs/image-generation
   
   // 为游戏素材添加特定的优化提示词
@@ -94,7 +94,7 @@ IMPORTANT: This is a game asset that needs:
   
   const aspectRatio = width > height ? '16:9' : height > width ? '9:16' : '1:1';
   
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent`;
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent`;
   
   const parts: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [
     { text: enhancedPrompt }

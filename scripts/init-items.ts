@@ -683,7 +683,7 @@ async function initItems() {
     {
       itemId: 'bamboo01',
       name: '竹子',
-      description: '可以制作棋盘的竹子',
+      description: '可以制作棋罐的竹子',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -696,7 +696,7 @@ async function initItems() {
     {
       itemId: 'bamboo02',
       name: '竹子',
-      description: '可以制作棋盘的竹子',
+      description: '可以制作棋罐的竹子',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -709,7 +709,7 @@ async function initItems() {
     {
       itemId: 'bamboo03',
       name: '竹子',
-      description: '可以制作棋盘的竹子',
+      description: '可以制作棋罐的竹子',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -722,7 +722,7 @@ async function initItems() {
     {
       itemId: 'bamboo04',
       name: '竹子',
-      description: '可以制作棋盘的竹子',
+      description: '可以制作棋罐的竹子',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -735,7 +735,7 @@ async function initItems() {
     {
       itemId: 'bigtree01',
       name: '大树',
-      description: '可以制作棋盘和棋子的大树',
+      description: '可以制作棋盘的大树',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -748,7 +748,7 @@ async function initItems() {
     {
       itemId: 'bigtree02',
       name: '大树',
-      description: '可以制作棋盘和棋子的大树',
+      description: '可以制作棋盘的大树',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -865,7 +865,7 @@ async function initItems() {
     {
       itemId: 'palm01',
       name: '棕榈树',
-      description: '热带植物，可以制作棋盘和棋子',
+      description: '热带植物，可以制作棋盘',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -878,7 +878,7 @@ async function initItems() {
     {
       itemId: 'palm02',
       name: '棕榈树',
-      description: '热带植物，可以制作棋盘和棋子',
+      description: '热带植物，可以制作棋盘',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -891,7 +891,7 @@ async function initItems() {
     {
       itemId: 'pine_full01',
       name: '松树',
-      description: '可以制作棋盘和棋子的松树',
+      description: '可以制作棋盘的松树',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -904,7 +904,7 @@ async function initItems() {
     {
       itemId: 'pine_full02',
       name: '松树',
-      description: '可以制作棋盘和棋子的松树',
+      description: '可以制作棋盘的松树',
       itemType: 'plant',
       category: 'plants',
       rarity: 'common',
@@ -1214,7 +1214,7 @@ async function initItems() {
       category: 'chinese_buildings',
       rarity: 'uncommon',
       imagePath: '/game/isometric/chinese_buildings/go_hall.png',
-      prompt: 'Ancient Chinese Go hall, wooden building with hanging signboard, scholars playing Go inside, stone tables and Go boards, traditional tiled roof, elegant atmosphere, isometric view, game asset, clean edges, standalone building on neutral background',
+      prompt: 'Ancient Chinese Go hall, wooden building with hanging signboard, scholars playing Go inside, stone tables and Go boards, traditional tiled roof, elegant atmosphere, isometric view, game asset, plaque should say "奕馆", clean edges, standalone building on neutral background',
       negativePrompt: 'modern, western, vehicles, people close-up, text, watermark, logo, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,

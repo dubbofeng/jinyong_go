@@ -6,7 +6,7 @@ import { and, eq, sql } from 'drizzle-orm';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { mapItemId: string } }
+  { params }: { params: { itemId: string } }
 ) {
   try {
     const session = await auth();
@@ -14,7 +14,7 @@ export async function POST(
       return NextResponse.json({ error: '未登录' }, { status: 401 });
     }
 
-    const mapItemId = Number(params?.mapItemId);
+    const mapItemId = Number(params?.itemId);
     if (!mapItemId) {
       return NextResponse.json({ error: '无效的物品ID' }, { status: 400 });
     }
@@ -26,6 +26,7 @@ export async function POST(
         itemType: items.itemType,
         plantType: items.plantType,
         harvestable: items.harvestable,
+        itemName: items.name,
       })
       .from(mapItems)
       .leftJoin(items, eq(mapItems.itemId, items.id))
@@ -39,8 +40,10 @@ export async function POST(
       return NextResponse.json({ error: '该草药已采摘' }, { status: 400 });
     }
 
-    const isHerb = mapItem.itemType === 'plant' && mapItem.plantType === 'herb';
-    if (!isHerb || !mapItem.harvestable) {
+    const isHerb = mapItem.itemType === 'plant'
+      && (mapItem.plantType === 'herb' || mapItem.itemName?.includes('草'));
+    const harvestable = mapItem.harvestable !== false;
+    if (!isHerb || !harvestable) {
       return NextResponse.json({ error: '无法采摘该物品' }, { status: 400 });
     }
 

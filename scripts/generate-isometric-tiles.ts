@@ -159,7 +159,7 @@ Style: Pixel art or clean low-poly, isometric, smooth gold-to-blue gradient.`,
 async function generateWithGemini(prompt: string, width: number, height: number): Promise<Buffer> {
   const aspectRatio = width > height ? '16:9' : height > width ? '9:16' : '1:1';
   
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent`;
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent`;
   
   const response = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
     method: 'POST',
