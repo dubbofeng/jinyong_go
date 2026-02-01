@@ -33,9 +33,10 @@ declare global {
 interface IsometricGameProps {
   mapId?: string;
   initialMap?: MapData;
+  userId?: string;
 }
 
-export default function IsometricGame({ mapId, initialMap }: IsometricGameProps) {
+export default function IsometricGame({ mapId, initialMap, userId }: IsometricGameProps) {
   const locale = useLocale(); // 获取当前语言环境
   const t = useTranslations('game'); // 获取游戏翻译
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1625,6 +1626,23 @@ export default function IsometricGame({ mapId, initialMap }: IsometricGameProps)
         await engineRef.current.spawnPlayer(targetX, targetY);
         
         console.log(`✅ Teleported to ${pendingPortal.targetMapId} at (${targetX}, ${targetY})`);
+
+        if (userId) {
+          try {
+            await fetch('/api/player/progress/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId,
+                currentMap: pendingPortal.targetMapId,
+                currentX: targetX,
+                currentY: targetY,
+              }),
+            });
+          } catch (error) {
+            console.warn('保存传送后地图进度失败:', error);
+          }
+        }
       } else {
         console.error('❌ Failed to load map or engine not ready');
       }

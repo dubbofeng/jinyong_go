@@ -450,7 +450,7 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
   "musang_ladder": {
     "id": "musang_ladder",
     "title": "征子",
-    "description": "黑沿着斜线追杀白子，形成征子之形。",
+    "description": "黑沿着斜线追杀白子，形成征子之形。10或11都可以杀死白棋。",
     "boardSize": 9,
     "stones": [
       {
@@ -536,74 +536,139 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
     ],
     "highlights": [
       {
-        "row": 1,
-        "col": 1,
+        "row": 3,
+        "col": 4,
         "label": 1
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "label": 2
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "label": 3
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "label": 4
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "label": 5
+      },
+      {
+        "row": 1,
+        "col": 3,
+        "label": 6
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "label": 7
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "label": 8
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "label": 9
       },
       {
         "row": 0,
         "col": 2,
-        "label": 2
+        "label": 10
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "label": 11
       }
     ]
   },
   "musang_snapback": {
     "id": "musang_snapback",
     "title": "扑",
-    "description": "先在1位扑入眼内，再反手提子，是典型扑的手筋。",
+    "description": "先在1位扑入眼内，白子2吃掉黑子，黑子再走1反手提子，是典型扑的手筋。",
     "boardSize": 9,
     "stones": [
       {
-        "row": 3,
-        "col": 4,
-        "color": "black"
-      },
-      {
         "row": 4,
         "col": 3,
         "color": "black"
       },
       {
+        "row": 3,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "color": "black"
+      },
+      {
         "row": 4,
-        "col": 5,
-        "color": "black"
-      },
-      {
-        "row": 5,
-        "col": 4,
-        "color": "black"
-      },
-      {
-        "row": 3,
-        "col": 3,
-        "color": "black"
-      },
-      {
-        "row": 3,
-        "col": 5,
-        "color": "black"
-      },
-      {
-        "row": 5,
-        "col": 3,
-        "color": "black"
-      },
-      {
-        "row": 5,
-        "col": 5,
+        "col": 6,
         "color": "black"
       },
       {
         "row": 4,
         "col": 4,
         "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "white"
       }
     ],
     "highlights": [
       {
-        "row": 4,
-        "col": 4,
+        "row": 5,
+        "col": 5,
         "label": 1
+      },
+      {
+        "row": 4,
+        "col": 5,
+        "label": 2
       }
     ]
   },
@@ -614,11 +679,6 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
     "boardSize": 9,
     "stones": [
       {
-        "row": 3,
-        "col": 4,
-        "color": "white"
-      },
-      {
         "row": 2,
         "col": 4,
         "color": "black"
@@ -629,29 +689,24 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "color": "black"
       },
       {
-        "row": 3,
-        "col": 5,
-        "color": "black"
-      },
-      {
-        "row": 4,
-        "col": 4,
-        "color": "black"
-      },
-      {
         "row": 4,
         "col": 3,
         "color": "black"
       },
       {
-        "row": 4,
+        "row": 2,
         "col": 5,
         "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "color": "white"
       }
     ],
     "highlights": [
       {
-        "row": 2,
+        "row": 4,
         "col": 5,
         "label": 1
       }
@@ -676,8 +731,43 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "label": 1
       },
       {
-        "row": 3,
+        "row": 2,
         "col": 5,
+        "label": 2
+      },
+      {
+        "row": 3,
+        "col": 6,
+        "label": 2
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "label": 2
+      },
+      {
+        "row": 6,
+        "col": 5,
+        "label": 2
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "label": 2
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "label": 2
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "label": 2
+      },
+      {
+        "row": 2,
+        "col": 3,
         "label": 2
       }
     ]
@@ -742,6 +832,31 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 4,
         "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 4,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "color": "black"
       }
     ],
     "highlights": [
@@ -809,19 +924,34 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
     "boardSize": 9,
     "stones": [
       {
+        "row": 3,
+        "col": 4,
+        "color": "black"
+      },
+      {
         "row": 4,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 3,
         "col": 3,
         "color": "white"
       },
       {
-        "row": 4,
-        "col": 5,
-        "color": "white"
-      },
-      {
         "row": 3,
-        "col": 4,
-        "color": "black"
+        "col": 2,
+        "color": "white"
       }
     ],
     "highlights": [
@@ -842,6 +972,26 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 4,
         "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "color": "white"
       }
     ],
     "highlights": [
@@ -860,7 +1010,7 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
   "musang_peep": {
     "id": "musang_peep",
     "title": "尖",
-    "description": "1位是尖，刺入对方要点，逼对手补棋。",
+    "description": "1位是尖，走在对手子的斜上方，逼对手补棋。",
     "boardSize": 9,
     "stones": [
       {
@@ -869,14 +1019,19 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "color": "white"
       },
       {
-        "row": 4,
-        "col": 5,
+        "row": 2,
+        "col": 3,
         "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 4,
+        "color": "black"
       }
     ],
     "highlights": [
       {
-        "row": 4,
+        "row": 5,
         "col": 4,
         "label": 1
       }
@@ -885,21 +1040,26 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
   "musang_double": {
     "id": "musang_double",
     "title": "双",
-    "description": "1位一落形成双重威胁。",
+    "description": "1位一落形成双，黑子走2则白子走3，黑子走3则白子走2。",
     "boardSize": 9,
     "stones": [
       {
-        "row": 3,
-        "col": 3,
+        "row": 4,
+        "col": 2,
         "color": "white"
       },
       {
         "row": 5,
-        "col": 5,
+        "col": 2,
         "color": "white"
       },
       {
-        "row": 2,
+        "row": 5,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 3,
         "col": 3,
         "color": "black"
       },
@@ -909,24 +1069,39 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "color": "black"
       },
       {
+        "row": 3,
+        "col": 1,
+        "color": "black"
+      },
+      {
         "row": 4,
-        "col": 3,
+        "col": 1,
         "color": "black"
       },
       {
         "row": 5,
-        "col": 4,
-        "color": "black"
-      },
-      {
-        "row": 5,
-        "col": 6,
+        "col": 1,
         "color": "black"
       },
       {
         "row": 6,
-        "col": 5,
+        "col": 1,
         "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 4,
+        "col": 4,
+        "color": "white"
       }
     ],
     "highlights": [
@@ -934,13 +1109,23 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 4,
         "label": 1
+      },
+      {
+        "row": 4,
+        "col": 3,
+        "label": 2
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "label": 3
       }
     ]
   },
   "guo_jing_eye_straight_three": {
     "id": "guo_jing_eye_straight_three",
     "title": "直三",
-    "description": "三点成一直线，通常需要补一手。",
+    "description": "三点成一直线，通常需要补一手。白子走在1处，可以杀死黑棋。",
     "boardSize": 9,
     "stones": [
       {
@@ -982,30 +1167,130 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 6,
         "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "color": "white"
       }
     ],
     "highlights": [
       {
         "row": 4,
-        "col": 3,
-        "label": 1
-      },
-      {
-        "row": 4,
         "col": 4,
-        "label": 2
-      },
-      {
-        "row": 4,
-        "col": 5,
-        "label": 3
+        "label": 1
       }
     ]
   },
   "guo_jing_eye_bent_three": {
     "id": "guo_jing_eye_bent_three",
     "title": "弯三",
-    "description": "三点成折角，通常需要补一手。",
+    "description": "三点成折角，通常需要补一手。白子走在1处可杀死黑棋",
     "boardSize": 9,
     "stones": [
       {
@@ -1047,6 +1332,101 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 5,
         "col": 6,
         "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 5,
+        "color": "black"
       }
     ],
     "highlights": [
@@ -1054,23 +1434,13 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 4,
         "label": 1
-      },
-      {
-        "row": 4,
-        "col": 5,
-        "label": 2
-      },
-      {
-        "row": 5,
-        "col": 4,
-        "label": 3
       }
     ]
   },
   "guo_jing_eye_t_four": {
     "id": "guo_jing_eye_t_four",
     "title": "丁四",
-    "description": "四点呈丁字形，常需补一手。",
+    "description": "四点呈丁字形，常需补一手。白子走在1处可杀死黑棋",
     "boardSize": 9,
     "stones": [
       {
@@ -1109,38 +1479,143 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "color": "black"
       },
       {
+        "row": 3,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "color": "black"
+      },
+      {
         "row": 4,
         "col": 7,
         "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "white"
       }
     ],
     "highlights": [
       {
         "row": 4,
-        "col": 4,
+        "col": 5,
         "label": 1
-      },
-      {
-        "row": 4,
-        "col": 5,
-        "label": 2
-      },
-      {
-        "row": 4,
-        "col": 6,
-        "label": 3
-      },
-      {
-        "row": 5,
-        "col": 5,
-        "label": 4
       }
     ]
   },
   "guo_jing_eye_knife_five": {
     "id": "guo_jing_eye_knife_five",
     "title": "刀把五",
-    "description": "形如菜刀，多为死形。",
+    "description": "形如菜刀，多为死形。白棋走在1刀把处，可杀死黑棋。",
     "boardSize": 9,
     "stones": [
       {
@@ -1166,16 +1641,6 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
       {
         "row": 5,
         "col": 3,
-        "color": "black"
-      },
-      {
-        "row": 5,
-        "col": 4,
-        "color": "black"
-      },
-      {
-        "row": 5,
-        "col": 5,
         "color": "black"
       },
       {
@@ -1190,47 +1655,157 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
       },
       {
         "row": 4,
-        "col": 7,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 5,
         "color": "black"
       },
       {
         "row": 5,
-        "col": 7,
+        "col": 6,
         "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
       }
     ],
     "highlights": [
       {
         "row": 4,
-        "col": 3,
-        "label": 1
-      },
-      {
-        "row": 4,
         "col": 4,
-        "label": 2
-      },
-      {
-        "row": 4,
-        "col": 5,
-        "label": 3
-      },
-      {
-        "row": 4,
-        "col": 6,
-        "label": 4
-      },
-      {
-        "row": 5,
-        "col": 6,
-        "label": 5
+        "label": 1
       }
     ]
   },
   "guo_jing_eye_plum_five": {
     "id": "guo_jing_eye_plum_five",
     "title": "梅花五",
-    "description": "五点呈梅花状，多为死形。",
+    "description": "五点呈梅花状，多为死形。白棋走在1处可杀死黑棋。",
     "boardSize": 9,
     "stones": [
       {
@@ -1272,6 +1847,151 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 6,
         "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "color": "white"
       }
     ],
     "highlights": [
@@ -1279,33 +1999,13 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 4,
         "label": 1
-      },
-      {
-        "row": 4,
-        "col": 3,
-        "label": 2
-      },
-      {
-        "row": 4,
-        "col": 5,
-        "label": 3
-      },
-      {
-        "row": 3,
-        "col": 4,
-        "label": 4
-      },
-      {
-        "row": 5,
-        "col": 4,
-        "label": 5
       }
     ]
   },
   "guo_jing_eye_straight_four": {
     "id": "guo_jing_eye_straight_four",
     "title": "直四",
-    "description": "四点成一直线，为经典活形。",
+    "description": "四点成一直线，为经典活形。1，2必得其一。",
     "boardSize": 9,
     "stones": [
       {
@@ -1357,35 +2057,140 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 7,
         "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 7,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 8,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "color": "white"
       }
     ],
     "highlights": [
       {
         "row": 4,
-        "col": 3,
+        "col": 4,
         "label": 1
       },
       {
         "row": 4,
-        "col": 4,
-        "label": 2
-      },
-      {
-        "row": 4,
         "col": 5,
-        "label": 3
-      },
-      {
-        "row": 4,
-        "col": 6,
-        "label": 4
+        "label": 2
       }
     ]
   },
   "guo_jing_eye_bent_four": {
     "id": "guo_jing_eye_bent_four",
     "title": "曲四",
-    "description": "四点弯曲排列，为活形。",
+    "description": "四点弯曲排列，为活形。1，2必得其一。",
     "boardSize": 9,
     "stones": [
       {
@@ -1409,11 +2214,6 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "color": "black"
       },
       {
-        "row": 6,
-        "col": 4,
-        "color": "black"
-      },
-      {
         "row": 5,
         "col": 5,
         "color": "black"
@@ -1427,44 +2227,169 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 6,
         "color": "black"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 7,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 8,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 8,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 8,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 8,
+        "col": 6,
+        "color": "white"
       }
     ],
     "highlights": [
       {
-        "row": 4,
+        "row": 5,
         "col": 4,
-        "label": 1
-      },
-      {
-        "row": 4,
-        "col": 5,
         "label": 2
       },
       {
-        "row": 5,
+        "row": 4,
         "col": 4,
-        "label": 3
-      },
-      {
-        "row": 6,
-        "col": 4,
-        "label": 4
+        "label": 1
       }
     ]
   },
   "guo_jing_eye_grape_six": {
     "id": "guo_jing_eye_grape_six",
     "title": "葡萄六",
-    "description": "六点成特殊形，死活视情况而定。",
+    "description": "六点成特殊形，死活视情况而定。1是死活要点，如果白棋先手，可以在1处点死黑棋。",
     "boardSize": 9,
     "stones": [
       {
-        "row": 3,
+        "row": 2,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 2,
         "col": 4,
         "color": "black"
       },
       {
-        "row": 3,
+        "row": 2,
         "col": 5,
         "color": "black"
       },
@@ -1474,8 +2399,18 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "color": "black"
       },
       {
-        "row": 6,
-        "col": 4,
+        "row": 4,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 6,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 5,
         "color": "black"
       },
       {
@@ -1485,28 +2420,153 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
       },
       {
         "row": 6,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "color": "black"
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "color": "black"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 1,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 2,
         "col": 6,
-        "color": "black"
+        "color": "white"
       },
       {
-        "row": 4,
-        "col": 3,
-        "color": "black"
+        "row": 3,
+        "col": 7,
+        "color": "white"
       },
       {
-        "row": 5,
-        "col": 3,
-        "color": "black"
+        "row": 2,
+        "col": 7,
+        "color": "white"
       },
       {
         "row": 4,
         "col": 7,
-        "color": "black"
+        "color": "white"
       },
       {
         "row": 5,
         "col": 7,
-        "color": "black"
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 7,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 3,
+        "color": "white"
+      },
+      {
+        "row": 7,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 2,
+        "color": "white"
+      },
+      {
+        "row": 6,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 5,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "color": "white"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "color": "white"
       }
     ],
     "highlights": [
@@ -1514,31 +2574,6 @@ export const tutorialBoards: Record<string, TutorialBoardConfig> = {
         "row": 4,
         "col": 4,
         "label": 1
-      },
-      {
-        "row": 4,
-        "col": 5,
-        "label": 2
-      },
-      {
-        "row": 4,
-        "col": 6,
-        "label": 3
-      },
-      {
-        "row": 5,
-        "col": 4,
-        "label": 4
-      },
-      {
-        "row": 5,
-        "col": 5,
-        "label": 5
-      },
-      {
-        "row": 5,
-        "col": 6,
-        "label": 6
       }
     ]
   }

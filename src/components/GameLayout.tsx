@@ -48,7 +48,7 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
     <div className="flex flex-1">
       {/* 左侧游戏区域 */}
       <div className="flex-1">
-        <IsometricGame mapId={mapId} />
+        <IsometricGame mapId={mapId} userId={userId} />
       </div>
       
       {/* 右侧信息面板 */}
