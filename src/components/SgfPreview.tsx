@@ -11,6 +11,7 @@ interface SgfPreviewProps {
   whiteStones: string[];
   moves: SgfMove[];
   moveIndex: number;
+  highlightPosition?: { row: number; col: number; label?: number } | null;
 }
 
 const SGF_COORD_REGEX = /^[a-z]{2}$/;
@@ -53,7 +54,14 @@ const normalizeBoardSize = (size: number): BoardSize => {
   return 19;
 };
 
-export default function SgfPreview({ boardSize, blackStones, whiteStones, moves, moveIndex }: SgfPreviewProps) {
+export default function SgfPreview({
+  boardSize,
+  blackStones,
+  whiteStones,
+  moves,
+  moveIndex,
+  highlightPosition,
+}: SgfPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -88,12 +96,19 @@ export default function SgfPreview({ boardSize, blackStones, whiteStones, moves,
       }
     });
 
+    if (highlightPosition) {
+      board.highlightPosition(
+        { row: highlightPosition.row, col: highlightPosition.col },
+        highlightPosition.label ?? 1
+      );
+    }
+
     board.render();
 
     return () => {
       board.destroy();
     };
-  }, [boardSize, blackStones, whiteStones, moves, moveIndex]);
+  }, [boardSize, blackStones, whiteStones, moves, moveIndex, highlightPosition]);
 
   return (
     <div className="flex justify-center">

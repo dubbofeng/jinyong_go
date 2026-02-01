@@ -1,8 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SgfTestClient from '@/src/components/SgfTestClient';
 import type { ParsedSgf } from '@/src/lib/sgf';
+import { GoEngine } from '@/src/lib/go-engine';
+import { useKataGoBrowser } from '@/hooks/useKataGoBrowser';
+import type { KataGoBrowserEngineV2 } from '@/lib/katago-browser-engine-v2';
 
 interface ChessReplayModalProps {
   isOpen: boolean;
@@ -34,6 +37,14 @@ interface RecordDetailResponse {
   };
 }
 
+interface ReplayAnalysisEntry {
+  winrate: number;
+  bestMove: { row: number; col: number } | null;
+  scoreLead?: number;
+  scoreStdev?: number;
+  visits?: number;
+}
+
 const formatResult = (result: string) => {
   if (result === 'win') return '胜';
   if (result === 'loss') return '负';
@@ -41,14 +52,42 @@ const formatResult = (result: string) => {
   return result;
 };
 
+const WESTERN_LETTERS = 'ABCDEFGHJKLMNOPQRSTUVWX';
+
+const positionToWestern = (row: number, col: number, size: number) => {
+  const letters = WESTERN_LETTERS.slice(0, size);
+  const letter = letters[col] || '?';
+  const rowNumber = size - row;
+  return `${letter}${rowNumber}`;
+};
+
+const sgfToPosition = (coord: string, size: number): { row: number; col: number } | null => {
+  if (!coord || coord.length < 2) return null;
+  const col = coord.charCodeAt(0) - 97;
+  const row = coord.charCodeAt(1) - 97;
+  if (row < 0 || col < 0 || row >= size || col >= size) return null;
+  return { row, col };
+};
+
 export default function ChessReplayModal({ isOpen, userId, onClose }: ChessReplayModalProps) {
   const [records, setRecords] = useState<ChessRecordSummary[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedOpponent, setSelectedOpponent] = useState<string>('all');
   const [parsed, setParsed] = useState<ParsedSgf | null>(null);
+  const [moveIndex, setMoveIndex] = useState(0);
+  const [analysis, setAnalysis] = useState<ReplayAnalysisEntry[] | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRecord, setIsLoadingRecord] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { engine, isReady, isLoading: isKataGoLoading, initialize, error: kataGoError } = useKataGoBrowser();
+  const katagoRef = useRef<KataGoBrowserEngineV2 | null>(null);
+
+  useEffect(() => {
+    katagoRef.current = engine;
+  }, [engine]);
 
   const selectedRecord = useMemo(
     () => records.find((record) => record.id === selectedId) ?? null,
@@ -118,6 +157,141 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     if (selectedId == null) return;
     void loadRecordDetail(selectedId);
   }, [selectedId, loadRecordDetail]);
+
+  useEffect(() => {
+    setMoveIndex(0);
+    setAnalysis(null);
+    setAnalysisProgress(0);
+    setIsAnalyzing(false);
+    setAnalysisError(null);
+  }, [parsed?.boardSize, parsed?.moves.length, parsed?.rootComment]);
+
+  const getAnalysisLabel = (index: number) => {
+    if (!analysis || index <= 0 || !parsed?.moves.length) return null;
+    const prev = analysis[index - 1];
+    const current = analysis[index];
+    if (!prev || !current) return null;
+    const move = parsed.moves[index - 1];
+    if (!move) return null;
+    const delta = move.color === 'black'
+      ? current.winrate - prev.winrate
+      : prev.winrate - current.winrate;
+
+    if (delta >= 0.08) return { label: '妙手', delta };
+    if (delta <= -0.08) return { label: '俗手', delta };
+    return { label: '稳健', delta };
+  };
+
+  const buildStonesFromBoard = (state: Array<Array<'black' | 'white' | null>>) => {
+    const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
+    for (let row = 0; row < state.length; row++) {
+      for (let col = 0; col < state[row].length; col++) {
+        const color = state[row][col];
+        if (color) {
+          stones.push({ row, col, color });
+        }
+      }
+    }
+    return stones;
+  };
+
+  const ensureKatagoEngine = useCallback(async () => {
+    if (!isReady) {
+      await initialize();
+    }
+    const engineReady = katagoRef.current;
+    if (!engineReady) {
+      throw new Error('KataGo 引擎未就绪');
+    }
+    return engineReady;
+  }, [initialize, isReady]);
+
+  const runReplayAnalysis = useCallback(async () => {
+    if (!parsed) return;
+    setAnalysisError(null);
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+
+    try {
+      const costResponse = await fetch('/api/player/inventory/deduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: [
+            { itemId: 'go_stone_black', quantity: 10 },
+            { itemId: 'go_stone_white', quantity: 10 },
+          ],
+        }),
+      });
+      if (!costResponse.ok) {
+        const costData = await costResponse.json();
+        throw new Error(costData?.error || '棋子数量不足');
+      }
+
+      const katagoEngine = await ensureKatagoEngine();
+      await katagoEngine.setDifficulty(5);
+
+      const engine = new GoEngine(parsed.boardSize);
+
+      parsed.blackStones.forEach((sgf) => {
+        const pos = sgfToPosition(sgf, parsed.boardSize);
+        if (pos) {
+          engine.placeStone(pos, 'black');
+        }
+      });
+
+      parsed.whiteStones.forEach((sgf) => {
+        const pos = sgfToPosition(sgf, parsed.boardSize);
+        if (pos) {
+          engine.placeStone(pos, 'white');
+        }
+      });
+
+      const results: ReplayAnalysisEntry[] = [];
+      const totalSteps = parsed.moves.length + 1;
+
+      for (let i = 0; i < totalSteps; i++) {
+        if (i > 0) {
+          const move = parsed.moves[i - 1];
+          const pos = sgfToPosition(move.sgf, parsed.boardSize);
+          if (pos) {
+            engine.placeStone(pos, move.color);
+          }
+        }
+
+        const state = engine.getBoardState();
+        const stones = buildStonesFromBoard(state);
+        const nextColor = i === 0
+          ? 'black'
+          : parsed.moves[i - 1].color === 'black'
+            ? 'white'
+            : 'black';
+
+        const analysisResult = await katagoEngine.analyzePosition(
+          parsed.boardSize,
+          stones,
+          nextColor,
+          true
+        );
+
+        results.push({
+          winrate: analysisResult.winrate ?? 0.5,
+          bestMove: analysisResult.bestMove ?? null,
+          scoreLead: analysisResult.scoreLead,
+          scoreStdev: analysisResult.scoreStdev,
+          visits: analysisResult.visits,
+        });
+
+        setAnalysisProgress((i + 1) / totalSteps);
+      }
+
+      setAnalysis(results);
+    } catch (err) {
+      setAnalysisError(err instanceof Error ? err.message : 'KataGo 复盘失败');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [ensureKatagoEngine, parsed]);
 
   if (!isOpen) return null;
 
@@ -202,16 +376,90 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
               </p>
             </div>
 
+            {parsed && (
+              <div className="flex flex-col gap-3 border border-slate-700 rounded-lg p-4 bg-slate-900/60">
+                <div className="text-sm text-slate-200 font-semibold">KataGo 复盘</div>
+                <p className="text-xs text-slate-400">每次复盘消耗 10 玄铁棋子（黑）+ 10 白玉棋子（白）。</p>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <button
+                    onClick={runReplayAnalysis}
+                    disabled={isAnalyzing || isKataGoLoading}
+                    className={
+                      isAnalyzing || isKataGoLoading
+                        ? 'bg-slate-700/50 text-white/50 py-2 px-4 rounded-lg font-semibold cursor-not-allowed'
+                        : 'bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg font-semibold'
+                    }
+                  >
+                    {isAnalyzing ? '分析中...' : '开始复盘分析'}
+                  </button>
+                  {isKataGoLoading && (
+                    <span className="text-xs text-slate-400">KataGo 加载中...</span>
+                  )}
+                  {kataGoError && (
+                    <span className="text-xs text-red-300">{kataGoError}</span>
+                  )}
+                </div>
+                {analysisError && (
+                  <div className="text-xs text-red-300">{analysisError}</div>
+                )}
+                {isAnalyzing && (
+                  <div className="w-full h-2 bg-slate-800 rounded">
+                    <div
+                      className="h-2 bg-emerald-500 rounded"
+                      style={{ width: `${Math.round(analysisProgress * 100)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             {isLoadingRecord && <div className="text-slate-300">正在加载 SGF...</div>}
             {!isLoadingRecord && parsed && (
-              <SgfTestClient
-                boardSize={parsed.boardSize}
-                blackStones={parsed.blackStones}
-                whiteStones={parsed.whiteStones}
-                moves={parsed.moves}
-                rootComment={parsed.rootComment}
-                interactive={false}
-              />
+              <>
+                <SgfTestClient
+                  boardSize={parsed.boardSize}
+                  blackStones={parsed.blackStones}
+                  whiteStones={parsed.whiteStones}
+                  moves={parsed.moves}
+                  rootComment={parsed.rootComment}
+                  interactive={false}
+                  moveIndex={moveIndex}
+                  onMoveIndexChange={setMoveIndex}
+                  highlightPosition={analysis?.[moveIndex]?.bestMove ?? null}
+                />
+
+                {analysis?.[moveIndex] && (
+                  <div className="border border-slate-700 rounded-lg p-4 bg-slate-900/60 text-sm text-slate-200">
+                    <div className="flex flex-wrap gap-4">
+                      <div>
+                        胜率（黑）：{(analysis[moveIndex].winrate * 100).toFixed(1)}%
+                      </div>
+                      <div>
+                        胜率（白）：{((1 - analysis[moveIndex].winrate) * 100).toFixed(1)}%
+                      </div>
+                      {analysis[moveIndex].bestMove && (
+                        <div>
+                          最佳落子：
+                          {positionToWestern(
+                            analysis[moveIndex].bestMove.row,
+                            analysis[moveIndex].bestMove.col,
+                            parsed.boardSize
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {moveIndex > 0 && (() => {
+                      const labelInfo = getAnalysisLabel(moveIndex);
+                      if (!labelInfo) return null;
+                      return (
+                        <div className="mt-2 text-xs text-slate-400">
+                          第 {moveIndex} 手：{labelInfo.label}（胜率变化 {(labelInfo.delta * 100).toFixed(1)}%）
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </>
             )}
             {!isLoadingRecord && !parsed && selectedRecord && !error && (
               <div className="text-slate-400">暂无棋谱数据。</div>

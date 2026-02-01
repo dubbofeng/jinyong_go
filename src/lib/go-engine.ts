@@ -426,6 +426,13 @@ export class GoEngine {
   }
 
   /**
+   * 获取棋盘状态的副本
+   */
+  getBoardState(): StoneColor[][] {
+    return this.board.map(row => [...row]);
+  }
+
+  /**
    * 检查是否可以悔棋
    */
   canUndo(): boolean {

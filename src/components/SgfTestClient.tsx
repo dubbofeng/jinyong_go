@@ -13,6 +13,9 @@ interface SgfTestClientProps {
   moves: SgfMove[];
   rootComment?: string;
   interactive?: boolean;
+  moveIndex?: number;
+  onMoveIndexChange?: (index: number) => void;
+  highlightPosition?: { row: number; col: number; label?: number } | null;
 }
 
 const normalizeBoardSize = (size: number): BoardSize => {
@@ -106,17 +109,33 @@ export default function SgfTestClient({
   moves,
   rootComment,
   interactive,
+  moveIndex,
+  onMoveIndexChange,
+  highlightPosition,
 }: SgfTestClientProps) {
-  const [moveIndex, setMoveIndex] = useState(0);
+  const [internalMoveIndex, setInternalMoveIndex] = useState(0);
   const defaultInteractive = useMemo(() => (interactive ?? boardSize <= 5), [interactive, boardSize]);
   const [isInteractive, setIsInteractive] = useState(defaultInteractive);
 
+  const currentMoveIndex = moveIndex ?? internalMoveIndex;
+  const setMoveIndex = (nextIndex: number) => {
+    if (onMoveIndexChange) {
+      onMoveIndexChange(nextIndex);
+    }
+    if (moveIndex === undefined) {
+      setInternalMoveIndex(nextIndex);
+    }
+  };
+
   useEffect(() => {
     setIsInteractive(defaultInteractive);
-    setMoveIndex(0);
-  }, [defaultInteractive, boardSize, blackStones, whiteStones, moves]);
-  const currentMove = moveIndex > 0 ? moves[Math.min(moveIndex - 1, moves.length - 1)] : null;
-  const comment = currentMove?.comment || (moveIndex === 0 ? rootComment : undefined);
+    if (moveIndex === undefined) {
+      setInternalMoveIndex(0);
+    }
+  }, [defaultInteractive, boardSize, blackStones, whiteStones, moves, moveIndex]);
+
+  const currentMove = currentMoveIndex > 0 ? moves[Math.min(currentMoveIndex - 1, moves.length - 1)] : null;
+  const comment = currentMove?.comment || (currentMoveIndex === 0 ? rootComment : undefined);
 
   return (
     <div className="space-y-6">
@@ -133,7 +152,8 @@ export default function SgfTestClient({
           blackStones={blackStones}
           whiteStones={whiteStones}
           moves={moves}
-          moveIndex={moveIndex}
+          moveIndex={currentMoveIndex}
+          highlightPosition={highlightPosition || undefined}
         />
       )}
 
@@ -147,13 +167,13 @@ export default function SgfTestClient({
         {!isInteractive && (
           <>
             <button
-              onClick={() => setMoveIndex((prev) => Math.min(prev + 1, moves.length))}
+              onClick={() => setMoveIndex(Math.min(currentMoveIndex + 1, moves.length))}
               className="bg-amber-600 hover:bg-amber-500 text-white py-2 px-6 rounded-lg font-bold transition-colors"
             >
               下一步
             </button>
             <span className="text-slate-300 text-sm">
-              步数：{Math.min(moveIndex, moves.length)} / {moves.length}
+              步数：{Math.min(currentMoveIndex, moves.length)} / {moves.length}
             </span>
           </>
         )}
