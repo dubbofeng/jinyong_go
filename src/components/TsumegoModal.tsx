@@ -11,9 +11,10 @@ interface TsumegoModalProps {
   problem: TsumegoProblem | null;
   onClose: () => void;
   onComplete: (success: boolean) => void;
+  rewardSource?: 'resource';
 }
 
-export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: TsumegoModalProps) {
+export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rewardSource }: TsumegoModalProps) {
   const t = useTranslations();
   const [isVisible, setIsVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -122,6 +123,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
         success: true,
         attempts: actualAttempts,
         timeSpent,
+        source: rewardSource,
       }),
     })
       .then(res => res.json())
@@ -136,7 +138,16 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete }: T
           ];
           
           if (data.rewards.items && data.rewards.items.length > 0) {
-            rewardText.push(`🎁 获得物品：${data.rewards.items.join('、')}`);
+            const itemText = data.rewards.items
+              .map((item: any) => {
+                if (!item) return null;
+                if (typeof item === 'string') return item;
+                const qty = item.quantity != null ? ` x${item.quantity}` : '';
+                return `${item.name || item.itemId}${qty}`;
+              })
+              .filter(Boolean)
+              .join('、');
+            rewardText.push(`🎁 获得物品：${itemText}`);
           }
           
           await showAlert(rewardText.join('\n'), 'success', '挑战成功');

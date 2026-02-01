@@ -82,6 +82,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [npcDialogueFlags, setNpcDialogueFlags] = useState<Record<string, string[]>>({});
   const npcDialogueFlagsRef = useRef<Record<string, string[]>>({});
   const currentNpcIdRef = useRef<string | null>(null);
+  const lastReportedMapRef = useRef<string | null>(null);
   const tutorialProgressCacheRef = useRef<Record<string, string>>({});
   const tutorialNodeCacheRef = useRef<Record<string, string>>({});
   const pendingStoryNpcRef = useRef<any>(null);
@@ -98,6 +99,15 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   // 死活题系统
   const [showTsumegoEncounter, setShowTsumegoEncounter] = useState(false);
   const [currentTsumegoProblem, setCurrentTsumegoProblem] = useState<any>(null);
+  const [tsumegoRewardSource, setTsumegoRewardSource] = useState<'resource' | null>(null);
+  const [showWorkshop, setShowWorkshop] = useState(false);
+  const [workshopBusy, setWorkshopBusy] = useState(false);
+  const [workshopError, setWorkshopError] = useState<string | null>(null);
+  const [workshopInventory, setWorkshopInventory] = useState({ bamboo: 0, wood: 0, stone: 0 });
+  const [showPharmacy, setShowPharmacy] = useState(false);
+  const [pharmacyBusy, setPharmacyBusy] = useState(false);
+  const [pharmacyError, setPharmacyError] = useState<string | null>(null);
+  const [pharmacyInventory, setPharmacyInventory] = useState({ herb: 0 });
   
   // 自定义Alert/Confirm系统
   const [alertState, setAlertState] = useState<{
@@ -271,18 +281,21 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   /**
    * 处理树木碰撞 - 触发死活题挑战
    */
-  const handleTreeCollision = async () => {
+  const handleTreeCollision = async (resourceName?: string) => {
     // 显示挑战提示
     const shouldChallenge = await showConfirm(
-      '从树后跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"\n\n要死要活。',
+      `从${resourceName || '树后'}跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"\n\n要死要活。`,
       '⚔️ 遭遇挑战'
     );
     
     if (shouldChallenge) {
+      setTsumegoRewardSource('resource');
       // 根据玩家等级自动匹配难度
       triggerTsumegoEncounter(mapData?.id);
       return;
     }
+
+    setTsumegoRewardSource(null);
 
     try {
       let level = 1;
@@ -341,6 +354,100 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       console.error('❌ Error triggering tsumego encounter:', error);
     }
   };
+
+  const isResourceItem = (item: any) => {
+    const name = item.itemName || '';
+    const itemId = item.itemId || '';
+    const plantType = item.plantType || item.properties?.plantType;
+    const isTree = item.itemType === 'plant' && (plantType === 'tree' || name.includes('树'));
+    const isBamboo = item.itemType === 'plant' && (plantType === 'bamboo' || name.includes('竹'));
+    const isRock = item.itemType === 'decoration'
+      && (name.includes('岩') || name.includes('石') || itemId.includes('rock') || itemId.includes('rocks'));
+    const isHerb = item.itemType === 'plant' && (plantType === 'herb' || name.includes('草药') || name.includes('草'));
+    return { isTree, isBamboo, isRock, isHerb };
+  };
+
+  const loadWorkshopInventory = useCallback(async () => {
+    try {
+      const response = await fetch('/api/player/inventory');
+      const data = await response.json();
+      if (response.ok && data?.success && Array.isArray(data.data)) {
+        const counts = { bamboo: 0, wood: 0, stone: 0 };
+        for (const entry of data.data) {
+          if (entry?.itemId === 'bamboo') counts.bamboo = entry.quantity || 0;
+          if (entry?.itemId === 'wood') counts.wood = entry.quantity || 0;
+          if (entry?.itemId === 'stone') counts.stone = entry.quantity || 0;
+        }
+        setWorkshopInventory(counts);
+      }
+    } catch (error) {
+      console.warn('读取工坊材料失败:', error);
+    }
+  }, []);
+
+  const loadPharmacyInventory = useCallback(async () => {
+    try {
+      const response = await fetch('/api/player/inventory');
+      const data = await response.json();
+      if (response.ok && data?.success && Array.isArray(data.data)) {
+        let herb = 0;
+        for (const entry of data.data) {
+          if (entry?.itemId === 'herb') herb = entry.quantity || 0;
+        }
+        setPharmacyInventory({ herb });
+      }
+    } catch (error) {
+      console.warn('读取药铺材料失败:', error);
+    }
+  }, []);
+
+  const handleCraft = useCallback(async (recipeId: 'go_bowl_1' | 'go_bowl_2' | 'go_bowl_3' | 'go_bowl_4' | 'go_bowl_5' | 'go_board_1' | 'go_board_2' | 'go_board_3' | 'go_board_4' | 'go_board_5' | 'go_stones') => {
+    if (workshopBusy) return;
+    setWorkshopBusy(true);
+    setWorkshopError(null);
+    try {
+      const response = await fetch('/api/player/inventory/craft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipeId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || '制作失败');
+      }
+      await showAlert(data?.message || '制作成功！', 'success', '工坊制作');
+      await loadWorkshopInventory();
+      window.dispatchEvent(new Event('player-inventory-update'));
+    } catch (error) {
+      setWorkshopError(error instanceof Error ? error.message : '制作失败');
+    } finally {
+      setWorkshopBusy(false);
+    }
+  }, [loadWorkshopInventory, showAlert, workshopBusy]);
+
+  const handlePharmacyCraft = useCallback(async (recipeId: 'herb_stamina_small' | 'herb_stamina_medium' | 'herb_stamina_large' | 'herb_qi_small' | 'herb_qi_large') => {
+    if (pharmacyBusy) return;
+    setPharmacyBusy(true);
+    setPharmacyError(null);
+    try {
+      const response = await fetch('/api/player/inventory/craft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipeId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || '炼制失败');
+      }
+      await showAlert(data?.message || '炼制成功！', 'success', '药铺制药');
+      await loadPharmacyInventory();
+      window.dispatchEvent(new Event('player-inventory-update'));
+    } catch (error) {
+      setPharmacyError(error instanceof Error ? error.message : '炼制失败');
+    } finally {
+      setPharmacyBusy(false);
+    }
+  }, [loadPharmacyInventory, pharmacyBusy, showAlert]);
 
   // ==================== 地图加载 ====================
 
@@ -597,6 +704,23 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     };
   }, [isLoading]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const currentMapId = mapData?.id;
+    if (!currentMapId || !playerPosition) return;
+    if (lastReportedMapRef.current === currentMapId) return;
+    lastReportedMapRef.current = currentMapId;
+    window.dispatchEvent(
+      new CustomEvent('game-state-update', {
+        detail: {
+          currentMap: currentMapId,
+          playerX: playerPosition.x,
+          playerY: playerPosition.y,
+        },
+      })
+    );
+  }, [mapData?.id, playerPosition]);
+
   /**
    * 更新游戏状态
    */
@@ -729,8 +853,17 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           );
 
           if (shouldChallenge) {
+            setTsumegoRewardSource(null);
             await triggerTsumegoEncounter(mapData?.id);
           }
+        }
+        if (item.itemId === 'mechanic' || item.itemName?.includes('工坊')) {
+          setShowWorkshop(true);
+          await loadWorkshopInventory();
+        }
+        if (item.itemId === 'pharmacy' || item.itemName?.includes('药') || item.itemName?.includes('药铺')) {
+          setShowPharmacy(true);
+          await loadPharmacyInventory();
         }
         if (item.itemId === 'go_pavilion') {
           const currentMapId = mapData?.id;
@@ -849,12 +982,54 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         return;
       }
       
-      // 处理树木点击（decoration 或 plant 类型）
-      if ((item.itemType === 'decoration' || item.itemType === 'plant') && 
-          (item.itemPath?.includes('tree') || item.itemName?.includes('树'))) {
-        console.log(`🌳 点击树木: ${item.itemName}，触发死活题挑战！`);
-        handleTreeCollision();
-        return;
+      if (item.itemType === 'plant' && !item.collected) {
+        const resource = isResourceItem(item);
+        if (resource.isHerb) {
+          try {
+            const response = await fetch(`/api/map-items/${item.id}/harvest`, { method: 'POST' });
+            const result = await response.json();
+            if (!response.ok || !result?.success) {
+              await showAlert(result?.error || '采摘失败', 'error');
+              return;
+            }
+
+            await engineRef.current?.updateItemState(item.id, {
+              itemPath: '',
+              blocking: false,
+              interactable: false,
+              collected: true,
+            });
+
+            setMapData((prev) => {
+              if (!prev) return prev;
+              const nextItems = prev.items.map((entry) =>
+                entry.id === item.id
+                  ? { ...entry, itemPath: '', blocking: false, interactable: false, collected: true }
+                  : entry
+              );
+              return { ...prev, items: nextItems };
+            });
+
+            window.dispatchEvent(new Event('player-inventory-update'));
+            await loadPharmacyInventory();
+            await showAlert('🌿 采摘成功：获得草药 x1', 'success');
+          } catch (error) {
+            console.error('采摘草药失败:', error);
+            await showAlert('采摘失败', 'error');
+          }
+          return;
+        }
+      }
+
+      // 处理树木/竹子/岩石点击（decoration 或 plant 类型）
+      if (item.itemType === 'decoration' || item.itemType === 'plant') {
+        const resource = isResourceItem(item);
+        if (resource.isTree || resource.isBamboo || resource.isRock) {
+          const label = resource.isBamboo ? '竹林' : resource.isRock ? '岩石' : '树后';
+          console.log(`🌿 点击资源: ${item.itemName}，触发死活题挑战！`);
+          handleTreeCollision(label);
+          return;
+        }
       }
       
       // 点击到其他物品后不继续执行移动逻辑
@@ -1094,9 +1269,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   /**
    * 更新对话状态
    */
-  const updateDialogueState = useCallback((engine: DialogueEngine) => {
+  const updateDialogueState = useCallback((engine: DialogueEngine, battleResultOverride?: 'win' | 'lose' | null) => {
     const node = engine.getCurrentNode();
     const options = engine.getAvailableOptions();
+    const effectiveBattleResult = battleResultOverride ?? battleResult;
 
     const npcId = currentNpcIdRef.current;
     const defeatedFlag = npcId ? `defeated_${npcId}` : '';
@@ -1123,10 +1299,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       }
     }
 
-    if (node?.action?.type === 'battle' && battleResult && options.length === 1) {
+    if (node?.action?.type === 'battle' && effectiveBattleResult && options.length === 1) {
       const moved = engine.selectOption(0);
       if (moved) {
-        updateDialogueState(engine);
+        updateDialogueState(engine, battleResultOverride);
         return;
       }
     }
@@ -1236,12 +1412,28 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         }
       }
 
+      let learnedSkills: string[] = [];
+      if (!isE2EEnabled()) {
+        try {
+          const skillResponse = await fetch('/api/player/skills');
+          if (skillResponse.ok) {
+            const skillData = await skillResponse.json();
+            learnedSkills = Array.isArray(skillData?.data)
+              ? skillData.data.filter((skill: any) => skill?.unlocked).map((skill: any) => String(skill.skillId))
+              : [];
+          }
+        } catch (error) {
+          console.warn('获取玩家技能失败:', error);
+        }
+      }
+
       const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
 
       const playerState = {
         completedQuests: completedQuestsRef.current,
         npcDialoguesCount: npcDialogueCountsRef.current,
         npcDialogueFlags: npcDialogueFlagsRef.current,
+        learnedSkills,
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
 
@@ -1613,6 +1805,12 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     setPendingGoOpponent(null);
     // 如果在对话中拒绝挑战，恢复对话
     if (dialogueEngine) {
+      const fallbackNodeId = ['not_ready', 'farewell', 'daily_chat', 'daily_chat_2']
+        .find((nodeId) => dialogueEngine.getCurrentNode()?.id !== nodeId && dialogueEngine.hasNode(nodeId));
+      if (fallbackNodeId) {
+        dialogueEngine.setCurrentNodeId(fallbackNodeId);
+        updateDialogueState(dialogueEngine);
+      }
       setIsDialogueVisible(true);
     }
   };
@@ -1664,7 +1862,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       // 如果失败，可以选择恢复对话或关闭
       setPendingGoOpponent(null);
       if (dialogueEngine) {
-        updateDialogueState(dialogueEngine);
+        updateDialogueState(dialogueEngine, battleOutcome);
         setIsDialogueVisible(true);
       }
     }
@@ -2064,9 +2262,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       <TsumegoModal
         isOpen={showTsumegoEncounter}
         problem={currentTsumegoProblem}
+        rewardSource={tsumegoRewardSource ?? undefined}
         onClose={() => {
           setShowTsumegoEncounter(false);
           setCurrentTsumegoProblem(null);
+          setTsumegoRewardSource(null);
         }}
         onComplete={(success) => {
           if (success) {
@@ -2077,8 +2277,311 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           }
           setShowTsumegoEncounter(false);
           setCurrentTsumegoProblem(null);
+          setTsumegoRewardSource(null);
         }}
       />
+
+      {showWorkshop && (
+        <div
+          className="fixed inset-0 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 60 }}
+          onClick={() => setShowWorkshop(false)}
+        >
+          <div
+            className="bg-gradient-to-br from-slate-900 to-slate-800 border-4 border-amber-500 rounded-xl shadow-2xl p-6 max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🛠️</div>
+              <h3 className="text-xl font-bold text-white">工坊制作</h3>
+              <p className="text-xs text-slate-300">使用材料制作棋具。</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-1">
+              <div className="space-y-3">
+                <div className="text-xs text-slate-400">棋罐升级</div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">竹编棋罐</div>
+                    <div className="text-xs text-slate-400">竹子 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_bowl_1')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    制作
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">青竹棋罐</div>
+                    <div className="text-xs text-slate-400">竹编棋罐 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_bowl_2')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">云纹棋罐</div>
+                    <div className="text-xs text-slate-400">青竹棋罐 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_bowl_3')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">玄玉棋罐</div>
+                    <div className="text-xs text-slate-400">云纹棋罐 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_bowl_4')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">天工棋罐</div>
+                    <div className="text-xs text-slate-400">玄玉棋罐 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_bowl_5')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-xs text-slate-400">棋盘升级</div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">松木棋盘</div>
+                    <div className="text-xs text-slate-400">木材 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_board_1')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    制作
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">竹纹棋盘</div>
+                    <div className="text-xs text-slate-400">松木棋盘 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_board_2')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">云纹棋盘</div>
+                    <div className="text-xs text-slate-400">竹纹棋盘 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_board_3')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">金丝棋盘</div>
+                    <div className="text-xs text-slate-400">云纹棋盘 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_board_4')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">天元棋盘</div>
+                    <div className="text-xs text-slate-400">金丝棋盘 x5</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_board_5')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    合成
+                  </button>
+                </div>
+
+                <div className="text-xs text-slate-400 pt-2">棋子制作</div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">棋子</div>
+                    <div className="text-xs text-slate-400">石子 x20 → 黑棋子 x10 + 白棋子 x10</div>
+                  </div>
+                  <button
+                    onClick={() => handleCraft('go_stones')}
+                    disabled={workshopBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    制作
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-xs text-slate-400">
+              当前材料：竹子 {workshopInventory.bamboo} · 木材 {workshopInventory.wood} · 石子 {workshopInventory.stone}
+            </div>
+
+            {workshopError && (
+              <div className="mt-3 text-xs text-red-300">{workshopError}</div>
+            )}
+
+            <div className="mt-5 flex justify-end">
+              <button
+                onClick={() => setShowWorkshop(false)}
+                className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                关闭
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPharmacy && (
+        <div
+          className="fixed inset-0 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 60 }}
+          onClick={() => setShowPharmacy(false)}
+        >
+          <div
+            className="bg-gradient-to-br from-slate-900 to-slate-800 border-4 border-emerald-500 rounded-xl shadow-2xl p-6 max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🧪</div>
+              <h3 className="text-xl font-bold text-white">药铺制药</h3>
+              <p className="text-xs text-slate-300">使用草药炼制丹药。</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-1">
+              <div className="space-y-3">
+                <div className="text-xs text-slate-400">体力丹药</div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">小体力丸</div>
+                    <div className="text-xs text-slate-400">草药 x3</div>
+                  </div>
+                  <button
+                    onClick={() => handlePharmacyCraft('herb_stamina_small')}
+                    disabled={pharmacyBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    炼制
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">中体力丸</div>
+                    <div className="text-xs text-slate-400">草药 x6</div>
+                  </div>
+                  <button
+                    onClick={() => handlePharmacyCraft('herb_stamina_medium')}
+                    disabled={pharmacyBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    炼制
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">大体力丸</div>
+                    <div className="text-xs text-slate-400">草药 x8</div>
+                  </div>
+                  <button
+                    onClick={() => handlePharmacyCraft('herb_stamina_large')}
+                    disabled={pharmacyBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    炼制
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-xs text-slate-400">内力丹药</div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">小内力丸</div>
+                    <div className="text-xs text-slate-400">草药 x4</div>
+                  </div>
+                  <button
+                    onClick={() => handlePharmacyCraft('herb_qi_small')}
+                    disabled={pharmacyBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    炼制
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-900/60 border border-slate-700 rounded-lg px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">大内力丸</div>
+                    <div className="text-xs text-slate-400">草药 x8</div>
+                  </div>
+                  <button
+                    onClick={() => handlePharmacyCraft('herb_qi_large')}
+                    disabled={pharmacyBusy}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-3 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    炼制
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-xs text-slate-400">
+              当前草药：{pharmacyInventory.herb}
+            </div>
+
+            {pharmacyError && (
+              <div className="mt-3 text-xs text-red-300">{pharmacyError}</div>
+            )}
+
+            <div className="mt-5 flex justify-end">
+              <button
+                onClick={() => setShowPharmacy(false)}
+                className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                关闭
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 围棋挑战确认对话框 */}
       {showGoChallenge && pendingGoOpponent && (

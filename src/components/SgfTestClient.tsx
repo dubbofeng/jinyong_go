@@ -167,6 +167,12 @@ export default function SgfTestClient({
         {!isInteractive && (
           <>
             <button
+              onClick={() => setMoveIndex(Math.max(currentMoveIndex - 1, 0))}
+              className="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded-lg font-bold transition-colors"
+            >
+              上一步
+            </button>
+            <button
               onClick={() => setMoveIndex(Math.min(currentMoveIndex + 1, moves.length))}
               className="bg-amber-600 hover:bg-amber-500 text-white py-2 px-6 rounded-lg font-bold transition-colors"
             >

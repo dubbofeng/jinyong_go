@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import IsometricGame from './IsometricGame';
 import { PlayerStatsPanel } from './PlayerStatsPanel';
@@ -24,6 +24,19 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>('overview');
   const [gameState, setGameState] = useState<any>(null); // 游戏状态（由IsometricGame更新）
+
+  useEffect(() => {
+    const handleGameStateUpdate = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (!detail) return;
+      setGameState((prev: any) => ({ ...prev, ...detail }));
+    };
+
+    window.addEventListener('game-state-update', handleGameStateUpdate as EventListener);
+    return () => {
+      window.removeEventListener('game-state-update', handleGameStateUpdate as EventListener);
+    };
+  }, []);
 
   // 获取当前游戏进度数据
   const getProgressData = useCallback((): GameProgressData => {

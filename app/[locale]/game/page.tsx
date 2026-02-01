@@ -2,12 +2,15 @@ import { Metadata } from 'next';
 import { auth } from '../../auth';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import { db } from '@/src/db';
 import { gameProgress } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
 
-const GameLayout = dynamic(() => import('../../../src/components/GameLayout'), {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+const GameLayout = dynamicImport(() => import('../../../src/components/GameLayout'), {
   ssr: false,
 });
 

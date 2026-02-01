@@ -53,6 +53,8 @@ export async function GET(
         itemName: items.name,
         itemPath: items.imagePath,
         itemType: items.itemType,
+        plantType: items.plantType,
+        harvestable: items.harvestable,
         blocking: items.blocking,
         interactable: items.interactable,
         size: items.size,
@@ -102,7 +104,9 @@ export async function GET(
       width: map.width,
       height: map.height,
       tiles: tilesArray,
-      items: itemsData.map(item => ({
+      items: itemsData
+        .filter((item) => !(item.itemType === 'plant' && item.collected))
+        .map(item => ({
         id: item.id,
         itemId: item.itemId,
         itemName: item.itemName,
@@ -111,6 +115,8 @@ export async function GET(
             ? chestOpenMap[item.itemId]
             : item.itemPath,
         itemType: item.itemType,
+        plantType: item.plantType,
+        harvestable: item.harvestable,
         x: item.x,
         y: item.y,
         blocking: item.blocking || false,

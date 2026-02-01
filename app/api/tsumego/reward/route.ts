@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/app/auth';
 import { db } from '@/app/db';
-import { playerStats, playerTsumegoRecords, tsumegoProblems } from '@/src/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { playerInventory, playerStats, playerTsumegoRecords, tsumegoProblems } from '@/src/db/schema';
+import { eq, and, sql } from 'drizzle-orm';
 
 /**
  * POST /api/tsumego/reward
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { problemId, success, attempts, timeSpent } = await request.json();
+    const { problemId, success, attempts, timeSpent, source } = await request.json();
 
     if (!problemId || typeof success !== 'boolean') {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
@@ -42,7 +42,34 @@ export async function POST(request: Request) {
     let rewards = {
       experience: 0,
       silver: 0,
-      items: [] as string[],
+      items: [] as Array<string | { itemId: string; name: string; quantity: number }>,
+    };
+
+    const addInventoryItems = async (entries: Array<{ itemId: string; quantity: number }>) => {
+      for (const entry of entries) {
+        if (!entry.itemId || entry.quantity <= 0) continue;
+        const existing = await db
+          .select({ id: playerInventory.id })
+          .from(playerInventory)
+          .where(and(eq(playerInventory.userId, session.user.id), eq(playerInventory.itemId, entry.itemId)))
+          .limit(1);
+
+        if (existing.length > 0) {
+          await db
+            .update(playerInventory)
+            .set({
+              quantity: sql`${playerInventory.quantity} + ${entry.quantity}`,
+              updatedAt: new Date(),
+            })
+            .where(eq(playerInventory.id, existing[0].id));
+        } else {
+          await db.insert(playerInventory).values({
+            userId: session.user.id,
+            itemId: entry.itemId,
+            quantity: entry.quantity,
+          });
+        }
+      }
     };
 
     if (success) {
@@ -71,6 +98,18 @@ export async function POST(request: Request) {
         if (Math.random() < 0.5) {
           rewards.items.push('初级丹药');
         }
+      }
+
+      // 资源遭遇奖励（竹子/木材/石子）
+      if (source === 'resource') {
+        const stoneCount = Math.floor(Math.random() * 91) + 10; // 10-100
+        const resourceRewards = [
+          { itemId: 'bamboo', name: '竹子', quantity: 1 },
+          { itemId: 'wood', name: '木材', quantity: 1 },
+          { itemId: 'stone', name: '石子', quantity: stoneCount },
+        ];
+        rewards.items.push(...resourceRewards);
+        await addInventoryItems(resourceRewards.map(({ itemId, quantity }) => ({ itemId, quantity })));
       }
 
       // 更新玩家经验和银两

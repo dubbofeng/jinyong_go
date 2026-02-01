@@ -54,6 +54,18 @@ const formatResult = (result: string) => {
 
 const WESTERN_LETTERS = 'ABCDEFGHJKLMNOPQRSTUVWX';
 
+const ANALYSIS_DIFFICULTY = 3;
+const ANALYSIS_INTERVAL = 2; // 每隔几手分析一次，其余复用最近结果
+
+const normalizeWinrate = (value?: number) => {
+  if (value == null || Number.isNaN(value)) return 0.5;
+  let normalized = value;
+  if (normalized > 1) normalized = normalized / 100;
+  if (normalized < 0) normalized = 0;
+  if (normalized > 1) normalized = 1;
+  return normalized;
+};
+
 const positionToWestern = (row: number, col: number, size: number) => {
   const letters = WESTERN_LETTERS.slice(0, size);
   const letter = letters[col] || '?';
@@ -213,13 +225,13 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     setAnalysisProgress(0);
 
     try {
-      const costResponse = await fetch('/api/player/inventory/deduct', {
+        const costResponse = await fetch('/api/player/inventory/deduct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: [
-            { itemId: 'go_stone_black', quantity: 10 },
-            { itemId: 'go_stone_white', quantity: 10 },
+            { itemId: 'black_go_stone', quantity: 10 },
+            { itemId: 'white_go_stone', quantity: 10 },
           ],
         }),
       });
@@ -229,7 +241,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
       }
 
       const katagoEngine = await ensureKatagoEngine();
-      await katagoEngine.setDifficulty(5);
+      await katagoEngine.setDifficulty(ANALYSIS_DIFFICULTY);
 
       const engine = new GoEngine(parsed.boardSize);
 
@@ -250,6 +262,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
       const results: ReplayAnalysisEntry[] = [];
       const totalSteps = parsed.moves.length + 1;
 
+      let lastResult: ReplayAnalysisEntry | null = null;
       for (let i = 0; i < totalSteps; i++) {
         if (i > 0) {
           const move = parsed.moves[i - 1];
@@ -267,20 +280,25 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
             ? 'white'
             : 'black';
 
-        const analysisResult = await katagoEngine.analyzePosition(
-          parsed.boardSize,
-          stones,
-          nextColor,
-          true
-        );
+        const shouldAnalyze = i % ANALYSIS_INTERVAL === 0 || i === totalSteps - 1 || !lastResult;
+        if (shouldAnalyze) {
+          const analysisResult = await katagoEngine.analyzePosition(
+            parsed.boardSize,
+            stones,
+            nextColor,
+            true
+          );
 
-        results.push({
-          winrate: analysisResult.winrate ?? 0.5,
-          bestMove: analysisResult.bestMove ?? null,
-          scoreLead: analysisResult.scoreLead,
-          scoreStdev: analysisResult.scoreStdev,
-          visits: analysisResult.visits,
-        });
+          lastResult = {
+            winrate: normalizeWinrate(analysisResult.winrate),
+            bestMove: analysisResult.bestMove ?? null,
+            scoreLead: analysisResult.scoreLead,
+            scoreStdev: analysisResult.scoreStdev,
+            visits: analysisResult.visits,
+          };
+        }
+
+        results.push(lastResult ?? { winrate: 0.5, bestMove: null });
 
         setAnalysisProgress((i + 1) / totalSteps);
       }
@@ -457,6 +475,54 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                         </div>
                       );
                     })()}
+                  </div>
+                )}
+                {analysis && analysis.length > 1 && (
+                  <div className="border border-slate-700 rounded-lg p-4 bg-slate-900/60">
+                    <div className="text-xs text-slate-400 mb-2">胜率走势（黑）</div>
+                    <div className="w-full overflow-x-auto">
+                      <svg
+                        viewBox="0 0 560 120"
+                        className="w-full h-28"
+                        preserveAspectRatio="none"
+                      >
+                        <defs>
+                          <linearGradient id="winrateLine" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#34d399" />
+                            <stop offset="100%" stopColor="#60a5fa" />
+                          </linearGradient>
+                        </defs>
+                        <rect x="0" y="0" width="560" height="120" fill="none" />
+                        <line x1="16" y1="60" x2="544" y2="60" stroke="#475569" strokeDasharray="4 4" />
+                        {(() => {
+                          const width = 560;
+                          const height = 120;
+                          const padding = 16;
+                          const usableWidth = width - padding * 2;
+                          const usableHeight = height - padding * 2;
+                          const maxIndex = Math.max(analysis.length - 1, 1);
+                          const points = analysis.map((entry, index) => {
+                            const x = padding + (usableWidth * index) / maxIndex;
+                            const y = padding + usableHeight * (1 - entry.winrate);
+                            return `${x},${y}`;
+                          });
+                          const currentIndex = Math.min(moveIndex, analysis.length - 1);
+                          const currentX = padding + (usableWidth * currentIndex) / maxIndex;
+                          const currentY = padding + usableHeight * (1 - analysis[currentIndex].winrate);
+                          return (
+                            <>
+                              <polyline
+                                points={points.join(' ')}
+                                fill="none"
+                                stroke="url(#winrateLine)"
+                                strokeWidth="2"
+                              />
+                              <circle cx={currentX} cy={currentY} r="4" fill="#fbbf24" />
+                            </>
+                          );
+                        })()}
+                      </svg>
+                    </div>
                   </div>
                 )}
               </>

@@ -120,7 +120,7 @@ export class DialogueEngine {
 
     const npcId = this.tree.npcId;
     const flagsMap = this.playerState.npcDialogueFlags || {};
-    const visitedFlags = new Set(flagsMap[npcId] || []);
+    const visitedFlags = new Set<string>((flagsMap[npcId] || []) as string[]);
     const isNodeVisited = (nodeId?: string) =>
       nodeId ? visitedFlags.has(`dialogue_node:${nodeId}`) : false;
     const defeatedFlag = npcId ? `defeated_${npcId}` : '';
@@ -239,6 +239,9 @@ export class DialogueEngine {
       if (action?.type === 'skill') {
         const skillId = action.value?.skillId;
         if (skillId && flags.has(`skill:${skillId}`)) return false;
+        if (skillId && Array.isArray(this.playerState.learnedSkills)) {
+          if (this.playerState.learnedSkills.includes(skillId)) return false;
+        }
       }
       if (action?.type === 'quest') {
         const questId = typeof action.value === 'string' ? action.value : action.value?.questId;
@@ -315,6 +318,11 @@ export class DialogueEngine {
   // 获取对话历史
   getHistory(): string[] {
     return this.state.history;
+  }
+
+  // 检查是否存在节点
+  hasNode(nodeId: string): boolean {
+    return this.tree.nodes.some((node) => node.id === nodeId);
   }
 
   // 强制设置当前节点（用于对话流程纠正）

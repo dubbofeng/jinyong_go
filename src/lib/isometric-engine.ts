@@ -933,11 +933,16 @@ export class IsometricEngine {
         const opaque = this.isPixelOpaque(img, pixelX, pixelY);
         
         if (opaque) {
-          // 检查是否是树
-          if (item.itemType === 'plant' && (item.properties?.plantType === 'tree' || item.itemName?.includes('树'))) {
-            this.lastBlockingTree = item; // 记录被阻挡的树
+          const isTree = item.itemType === 'plant' && (item.properties?.plantType === 'tree' || item.itemName?.includes('树'));
+          const isBamboo = item.itemType === 'plant' && (item.properties?.plantType === 'bamboo' || item.itemName?.includes('竹'));
+          const isRock = item.itemType === 'decoration'
+            && (item.itemName?.includes('岩') || item.itemName?.includes('石')
+              || item.itemId?.includes('rock') || item.itemId?.includes('rocks'));
+
+          if (isTree || isBamboo || isRock) {
+            this.lastBlockingTree = item; // 记录被阻挡的资源物体
           } else {
-            this.lastBlockingTree = undefined; // 不是树，清除记录
+            this.lastBlockingTree = undefined; // 不是资源物体，清除记录
           }
           return false;
         }
