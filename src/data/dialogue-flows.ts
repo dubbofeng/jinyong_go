@@ -49,16 +49,54 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       {
         id: 'check_status',
         options: [
-          { optionId: '0', nextNodeId: 'daily_chat' },
-          { optionId: '1', nextNodeId: 'not_ready' },
-          { optionId: '2', nextNodeId: 'proverb_intro' }
+          {
+            optionId: '0',
+            nextNodeId: 'teach_intro',
+            condition: { type: 'quest', value: 'learned_go_basics', inverse: true }
+          },
+          {
             optionId: '1',
             nextNodeId: 'skip_tutorial',
             condition: { type: 'quest', value: 'learned_go_basics', inverse: true }
           },
           { optionId: '2', nextNodeId: 'explain_world' },
+          { optionId: '3', nextNodeId: 'daily_wisdom' },
+          { optionId: '4', nextNodeId: 'explain_venues' }
+        ]
+      },
+      { id: 'explain_venues', nextNodeId: 'check_status' },
+      { id: 'explain_world', nextNodeId: 'explain_world_2' },
+      {
+        id: 'explain_world_2',
+        options: [
+          { optionId: '0', nextNodeId: 'teach_intro' },
           {
-            optionId: '3',
+            optionId: '1',
+            nextNodeId: 'skip_tutorial',
+            condition: { type: 'quest', value: 'learned_go_basics', inverse: true }
+          }
+        ]
+      },
+      { id: 'teach_intro', nextNodeId: 'teach_basics' },
+      { id: 'teach_basics', nextNodeId: 'lesson_1' },
+      { id: 'lesson_1', nextNodeId: 'lesson_2' },
+      { id: 'lesson_2', nextNodeId: 'lesson_3' },
+      { id: 'lesson_3', nextNodeId: 'practice_1' },
+      {
+        id: 'practice_1',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'after_practice_1',
+            action: { type: 'tutorial_board', value: 'musang_liberties' }
+          }
+        ]
+      },
+      { id: 'after_practice_1', nextNodeId: 'lesson_alive_eyes' },
+      {
+        id: 'lesson_alive_eyes',
+        nextNodeId: 'lesson_true_eye',
+        action: { type: 'tutorial_board', value: 'musang_two_eyes' }
       },
       {
         id: 'lesson_true_eye',

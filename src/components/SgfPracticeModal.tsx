@@ -10,6 +10,7 @@ interface SgfPracticeModalProps {
   isOpen: boolean;
   practiceSet: string | null;
   onClose: () => void;
+  onReplay?: () => void;
 }
 
 interface PracticePayload {
@@ -26,7 +27,7 @@ interface ProverbPayload {
   tutorialId?: string;
 }
 
-export default function SgfPracticeModal({ isOpen, practiceSet, onClose }: SgfPracticeModalProps) {
+export default function SgfPracticeModal({ isOpen, practiceSet, onClose, onReplay }: SgfPracticeModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -251,16 +252,8 @@ export default function SgfPracticeModal({ isOpen, practiceSet, onClose }: SgfPr
             {showProverb ? (
               <>
                 <div>
-                  <h3 className="text-2xl font-bold text-emerald-300 mb-2">围棋谚语</h3>
-                  <p className="text-sm text-slate-300">先记一句，再开始练习。</p>
-                </div>
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-4">
-                  <div className="text-xl font-semibold text-emerald-200 mb-2">
-                    {proverb?.text || '围棋谚语'}
-                  </div>
-                  {proverb?.explanation && (
-                    <div className="text-sm text-slate-300 leading-relaxed">{proverb.explanation}</div>
-                  )}
+                  <h3 className="text-2xl font-bold text-emerald-300 mb-2">准备开始练习</h3>
+                  <p className="text-sm text-slate-300">记好谚语后即可开始。</p>
                 </div>
                 <div className="flex flex-col gap-3">
                   <button
@@ -268,6 +261,17 @@ export default function SgfPracticeModal({ isOpen, practiceSet, onClose }: SgfPr
                     className="bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-6 rounded-lg font-bold transition-colors"
                   >
                     开始练习
+                  </button>
+                  <button
+                    onClick={onReplay}
+                    disabled={!onReplay}
+                    className={
+                      onReplay
+                        ? 'bg-slate-800 hover:bg-slate-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors'
+                        : 'bg-slate-800/40 text-white/40 py-3 px-6 rounded-lg font-semibold cursor-not-allowed'
+                    }
+                  >
+                    复盘
                   </button>
                   <button
                     onClick={handleClose}

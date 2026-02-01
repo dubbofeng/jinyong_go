@@ -69,6 +69,7 @@ export const chessRecords = pgTable('chess_records', {
   
   // 棋谱数据
   moves: json('moves').$type<Array<{ x: number; y: number; color: string }>>().notNull(),
+  sgf: text('sgf'),
   finalScore: json('final_score').$type<{ black: number; white: number }>(),
   
   // 技能使用记录

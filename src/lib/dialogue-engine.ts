@@ -138,7 +138,46 @@ export class DialogueEngine {
       return false;
     };
 
-    return currentNode.options.filter((option) => {
+    const parseLatestTutorialProgress = (flags: Set<string>, npcId: string): string | null => {
+      let bestValue = -1;
+      let bestNodeId: string | null = null;
+      flags.forEach((flag) => {
+        const match = /^tutorial_progress:(?:([^:]+):)?(\d+):(.+)$/.exec(flag);
+        if (!match) return;
+        const flagNpcId = match[1] || npcId;
+        if (flagNpcId !== npcId) return;
+        const value = Number(match[2]);
+        const nodeId = match[3];
+        if (Number.isNaN(value)) return;
+        if (value > bestValue) {
+          bestValue = value;
+          bestNodeId = nodeId;
+        }
+      });
+      return bestNodeId;
+    };
+
+    const completedQuests = new Set(this.playerState.completedQuests || []);
+    const completionFlags = new Set([
+      'dialogue_node:sgf_all_done',
+      'dialogue_node:graduation',
+      'dialogue_node:graduation_2',
+      'quest:learned_go_basics',
+      'quest:skipped_tutorial',
+      `tutorial_complete:${npcId}`,
+    ]);
+
+    const hasCompletion = Array.from(completionFlags).some((flag) => visitedFlags.has(flag));
+
+    const latestTutorialNodeId = parseLatestTutorialProgress(visitedFlags, npcId);
+    const hasTutorialProgress = !!latestTutorialNodeId;
+    const isTutorialIncomplete =
+      hasTutorialProgress &&
+      !hasCompletion &&
+      !completedQuests.has('learned_go_basics') &&
+      !completedQuests.has('skipped_tutorial');
+
+    const availableOptions = currentNode.options.filter((option) => {
       const { type, value, inverse } = option.condition || {};
       let conditionMet = false;
       let baseMet = true;
@@ -214,6 +253,18 @@ export class DialogueEngine {
 
       return true;
     });
+
+    if (isTutorialIncomplete && latestTutorialNodeId && currentNode.id === 'check_status') {
+      const alreadyHasResume = availableOptions.some((option) => option.nextNodeId === latestTutorialNodeId || option.text === '继续教程');
+      if (!alreadyHasResume) {
+        availableOptions.unshift({
+          text: '继续教程',
+          nextNodeId: latestTutorialNodeId,
+        });
+      }
+    }
+
+    return availableOptions;
   }
 
   // 选择对话选项

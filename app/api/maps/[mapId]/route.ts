@@ -80,7 +80,8 @@ export async function GET(
 
     for (const tile of tiles) {
       if (tile.y >= 0 && tile.y < map.height && tile.x >= 0 && tile.x < map.width) {
-        const tileTypeStr = terrainTypeMap[tile.tileType as number] || 'wood';
+        const tileTypeKey = typeof tile.tileType === 'number' ? tile.tileType : Number(tile.tileType);
+        const tileTypeStr = terrainTypeMap[Number.isNaN(tileTypeKey) ? 1 : tileTypeKey] || 'wood';
         tilesArray[tile.y][tile.x] = {
           x: tile.x,
           y: tile.y,

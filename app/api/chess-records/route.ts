@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
       blackScore,
       whiteScore,
       moves, // 棋谱数组
+      sgf, // SGF 字符串（可选）
       duration, // 对局时长（秒）
       playerColor, // 'black' | 'white'
       skillsUsed, // 技能使用记录（可选）
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
       result: playerWon ? 'win' : (winner === 'draw' ? 'draw' : 'loss'),
       playerColor,
       moves: moves || [],
+      sgf: sgf || null,
       finalScore: { black: blackScore, white: whiteScore },
       duration,
       skillsUsed: skillsUsed || [],

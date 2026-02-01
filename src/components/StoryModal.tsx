@@ -66,6 +66,7 @@ export default function StoryModal({
   onClose,
 }: StoryModalProps) {
   const locale = useLocale();
+  const isEnglish = locale === 'en';
 
   useEffect(() => {
     if (isOpen) {
@@ -78,8 +79,6 @@ export default function StoryModal({
   }, [isOpen]);
 
   if (!isOpen || !story) return null;
-
-  const isEnglish = locale === 'en';
 
   const scene = story.scenes[sceneIndex];
   const line = scene.lines[Math.min(lineIndex, scene.lines.length - 1)];

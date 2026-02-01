@@ -12,6 +12,7 @@ import TsumegoModal from '@/src/components/TsumegoModal';
 import TutorialBoardModal from '@/src/components/TutorialBoardModal';
 import SgfTutorialModal from '@/src/components/SgfTutorialModal';
 import SgfPracticeModal from '@/src/components/SgfPracticeModal';
+import ChessReplayModal from '@/src/components/ChessReplayModal';
 import GoProverbModal from '@/src/components/GoProverbModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
@@ -71,7 +72,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [sgfProgressFlag, setSgfProgressFlag] = useState<string | null>(null);
   const [showSgfPractice, setShowSgfPractice] = useState(false);
   const [sgfPracticeSet, setSgfPracticeSet] = useState<string | null>(null);
+  const [showChessReplay, setShowChessReplay] = useState(false);
   const [showGoProverb, setShowGoProverb] = useState(false);
+  const [actionConsumedNodeId, setActionConsumedNodeId] = useState<string | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
   const completedQuestsRef = useRef<string[]>([]);
   const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
@@ -169,6 +172,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
     return bestNodeId;
   };
+
 
   const getStoryByNpcId = useCallback((npcId: string) => {
     return stories.find((story) => Array.isArray(story.npcIds) && story.npcIds.includes(npcId)) || null;
@@ -894,6 +898,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     setCurrentDialogueNode(null);
     setDialogueOptions([]);
     setCurrentNpcAvatar(null);
+    setActionConsumedNodeId(null);
   }, []);
 
   const recordDialogueFlags = useCallback(async (flags: string[]): Promise<void> => {
@@ -1107,7 +1112,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       return false;
     };
 
-    if (node?.id && !isRepeatableNode(node.id)) {
+    if (node?.id && !isRepeatableNode(node.id) && (!node.options || node.options.length === 0)) {
       const flags = npcId ? new Set(npcDialogueFlagsRef.current[npcId] || []) : new Set<string>();
       if (flags.has(`dialogue_node:${node.id}`)) {
         const advanced = engine.continue();
@@ -1128,10 +1133,20 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     
     setCurrentDialogueNode(node);
     setDialogueOptions(options);
+
+    if (actionConsumedNodeId && node?.id && node.id !== actionConsumedNodeId) {
+      setActionConsumedNodeId(null);
+    }
     
     // 处理节点的 action
     if (node?.action) {
-      handleDialogueAction(node.action);
+      const shouldDelayAction =
+        node.action.type === 'tutorial_board' ||
+        node.action.type === 'tutorial_sgf' ||
+        node.action.type === 'go_proverb';
+      if (!shouldDelayAction) {
+        handleDialogueAction(node.action);
+      }
     }
 
     if (node?.id) {
@@ -1161,7 +1176,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         closeDialogue();
       }, 1000);
     }
-  }, [battleResult, closeDialogue, handleDialogueAction, recordDialogueFlags]);
+  }, [actionConsumedNodeId, battleResult, closeDialogue, handleDialogueAction, recordDialogueFlags]);
 
   /**
    * 开始与NPC对话
@@ -1230,12 +1245,6 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       };
       const engine = new DialogueEngine(dialogueTree, playerState);
 
-      const flags = npcDialogueFlagsRef.current[npcId] || [];
-      const progressNodeId = getLatestTutorialProgressNode(flags, npcId);
-      if (progressNodeId && dialogueTree.nodes.some((node) => node.id === progressNodeId)) {
-        engine.setCurrentNodeId(progressNodeId);
-      }
-
       setDialogueEngine(engine);
 
       const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
@@ -1287,6 +1296,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     pendingStoryNpcRef.current = item;
     await openStory(story, null);
   }, [getNpcIdFromItem, getStoryByNpcId, isE2EEnabled, isE2EStoryEnabled, openStory, startDialogueInternal]);
+
 
   const handleStoryAdvance = useCallback(async () => {
     if (!activeStory) return;
@@ -1478,13 +1488,26 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     const currentNode = dialogueEngine.getCurrentNode();
     if (currentNode?.action?.type === 'battle') return;
 
+    if (
+      currentNode?.action &&
+      (currentNode.action.type === 'tutorial_board' ||
+        currentNode.action.type === 'tutorial_sgf' ||
+        currentNode.action.type === 'go_proverb')
+    ) {
+      if (actionConsumedNodeId !== currentNode.id) {
+        setActionConsumedNodeId(currentNode.id);
+        handleDialogueAction(currentNode.action);
+        return;
+      }
+    }
+
     const success = dialogueEngine.continue();
     if (success) {
       updateDialogueState(dialogueEngine);
     } else {
       closeDialogue();
     }
-  }, [closeDialogue, dialogueEngine, updateDialogueState]);
+  }, [actionConsumedNodeId, closeDialogue, dialogueEngine, handleDialogueAction, updateDialogueState]);
 
   /**
    * 处理键盘事件（WASD移动 + 空格交互 + ESC关闭对话）
@@ -1940,6 +1963,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setTutorialBoard(null);
           if (dialogueEngine) {
             setIsDialogueVisible(true);
+            handleContinueDialogue();
           }
         }}
       />
@@ -1953,6 +1977,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setSgfProgressFlag(null);
           if (dialogueEngine) {
             setIsDialogueVisible(true);
+            handleContinueDialogue();
           }
         }}
         onComplete={(lessonId) => {
@@ -1967,10 +1992,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       <SgfPracticeModal
         isOpen={showSgfPractice}
         practiceSet={sgfPracticeSet}
+        onReplay={() => {
+          setShowChessReplay(true);
+        }}
         onClose={() => {
           setShowSgfPractice(false);
           setSgfPracticeSet(null);
         }}
+      />
+
+      <ChessReplayModal
+        isOpen={showChessReplay}
+        userId={userId}
+        onClose={() => setShowChessReplay(false)}
       />
 
       <GoProverbModal
@@ -1979,6 +2013,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setShowGoProverb(false);
           if (dialogueEngine) {
             setIsDialogueVisible(true);
+            handleContinueDialogue();
           }
         }}
       />

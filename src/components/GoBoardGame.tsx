@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { GoBoard, type BoardSize, type BoardPosition } from '../lib/go-board';
 import { GoEngine } from '../lib/go-engine';
 import { getQuestByNpc } from '../lib/quest-manager';
+import { buildSgfFromMoves, toSgfResult } from '../lib/sgf-utils';
 import { 
   SkillManager,
   type TerritoryEvaluation,
@@ -670,6 +671,19 @@ export default function GoBoardGame({
         color: move.color
       }));
 
+      const opponentDisplayName = npcId ? (npcNameMap[npcId] ?? npcId) : 'AI';
+      const playerName = session?.user?.name || session?.user?.email || '玩家';
+      const blackPlayer = playerColor === 'black' ? playerName : opponentDisplayName;
+      const whitePlayer = playerColor === 'white' ? playerName : opponentDisplayName;
+      const sgf = buildSgfFromMoves({
+        moves,
+        boardSize: size,
+        blackPlayer,
+        whitePlayer,
+        result: toSgfResult(winner),
+        komi: 7.5,
+      });
+
       const recordResponse = await fetch('/api/chess-records', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -683,6 +697,7 @@ export default function GoBoardGame({
           blackScore: Math.round(blackScore),
           whiteScore: Math.round(whiteScore),
           moves,
+          sgf,
           duration,
           playerColor,
           skillsUsed: [],
