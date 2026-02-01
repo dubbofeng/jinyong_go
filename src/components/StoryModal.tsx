@@ -1,17 +1,21 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useLocale } from 'next-intl';
 
 interface StoryChoiceRewardItem {
   itemId: string;
   name: string;
+  nameEn?: string;
   description?: string;
+  descriptionEn?: string;
   quantity?: number;
 }
 
 interface StoryChoice {
   choiceId: string;
   text: string;
+  textEn?: string;
   rewards?: {
     exp?: number;
     silver?: number;
@@ -22,7 +26,9 @@ interface StoryChoice {
 interface StoryLine {
   type: 'narration' | 'dialogue';
   text: string;
+  textEn?: string;
   speaker?: string;
+  speakerEn?: string;
   speakerId?: string;
 }
 
@@ -59,6 +65,8 @@ export default function StoryModal({
   onChoose,
   onClose,
 }: StoryModalProps) {
+  const locale = useLocale();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -71,12 +79,18 @@ export default function StoryModal({
 
   if (!isOpen || !story) return null;
 
+  const isEnglish = locale === 'en';
+
   const scene = story.scenes[sceneIndex];
   const line = scene.lines[Math.min(lineIndex, scene.lines.length - 1)];
   const isLastLine = lineIndex >= scene.lines.length - 1;
   const hasChoices = Boolean(scene.choices && scene.choices.length > 0);
   const showChoices = isLastLine && hasChoices;
   const backgroundUrl = `/generated/story/${scene.backgroundId}.png`;
+
+  const resolveText = (text?: string, textEn?: string) => (isEnglish ? textEn || text : text || textEn);
+  const resolveSpeaker = (speaker?: string, speakerEn?: string) =>
+    isEnglish ? speakerEn || speaker : speaker || speakerEn;
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80">
@@ -89,8 +103,8 @@ export default function StoryModal({
 
         <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-white z-10">
           <div>
-            <div className="text-2xl font-bold">{story.title}</div>
-            {story.titleEn && <div className="text-sm text-white/70">{story.titleEn}</div>}
+            <div className="text-2xl font-bold">{resolveText(story.title, story.titleEn)}</div>
+            {story.titleEn && <div className="text-sm text-white/70">{resolveText(story.titleEn, story.title)}</div>}
           </div>
           <button
             onClick={onClose}
@@ -104,11 +118,11 @@ export default function StoryModal({
           <div className="max-w-3xl mx-auto bg-black/70 text-white rounded-xl p-6 shadow-2xl">
             {line.type === 'dialogue' && (
               <div className="text-sm text-yellow-300 mb-2">
-                {line.speaker || '旁白'}
+                {resolveSpeaker(line.speaker || '旁白', line.speakerEn || 'Narrator')}
               </div>
             )}
             <div className={line.type === 'narration' ? 'italic text-base' : 'text-base'}>
-              {line.text}
+              {resolveText(line.text, line.textEn)}
             </div>
 
             {showChoices ? (
@@ -119,13 +133,19 @@ export default function StoryModal({
                     onClick={() => onChoose(choice)}
                     className="w-full text-left bg-amber-700/80 hover:bg-amber-600 transition-colors px-4 py-3 rounded-lg"
                   >
-                    <div className="font-semibold">{choice.text}</div>
+                    <div className="font-semibold">{resolveText(choice.text, choice.textEn)}</div>
                     {choice.rewards && (
                       <div className="mt-1 text-xs text-amber-100">
                         {choice.rewards.exp ? `经验 +${choice.rewards.exp} ` : ''}
                         {choice.rewards.silver ? `银两 +${choice.rewards.silver}` : ''}
                         {choice.rewards.items && choice.rewards.items.length > 0 && (
-                          <span> · 物品 {choice.rewards.items.map((i) => i.name).join('、')}</span>
+                          <span>
+                            {' '}
+                            · 物品{' '}
+                            {choice.rewards.items
+                              .map((i) => (isEnglish ? i.nameEn || i.name : i.name || i.nameEn))
+                              .join('、')}
+                          </span>
                         )}
                       </div>
                     )}
