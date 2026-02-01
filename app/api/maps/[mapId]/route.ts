@@ -47,6 +47,7 @@ export async function GET(
         sceneLinkY: mapItems.sceneLinkY,
         enabled: mapItems.enabled,
         collected: mapItems.collected,
+        metadata: mapItems.metadata,
         // Item details from items table
         itemId: items.itemId,
         itemName: items.name,
@@ -89,6 +90,11 @@ export async function GET(
       }
     }
 
+    const chestOpenMap: Record<string, string> = {
+      chest01: '/game/isometric/items/chest05.png',
+      chest02: '/game/isometric/items/chest06.png',
+    };
+
     return NextResponse.json({
       id: map.mapId,
       name: map.name,
@@ -99,7 +105,10 @@ export async function GET(
         id: item.id,
         itemId: item.itemId,
         itemName: item.itemName,
-        itemPath: item.itemPath,
+        itemPath:
+          (item.collected || item.metadata?.state === 'opened') && item.itemId && chestOpenMap[item.itemId]
+            ? chestOpenMap[item.itemId]
+            : item.itemPath,
         itemType: item.itemType,
         x: item.x,
         y: item.y,
@@ -108,6 +117,8 @@ export async function GET(
         size: item.size || 1,
         dialogueId: item.dialogueId,
         questId: item.questId,
+        collected: item.collected || false,
+        properties: item.metadata || {},
         // Portal/scene transition support (兼容旧的targetMapId命名)
         targetMapId: item.sceneLinkMapId,
         targetX: item.sceneLinkX,

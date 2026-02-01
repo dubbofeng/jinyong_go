@@ -741,6 +741,64 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         }
         return;
       }
+
+      // 处理宝箱点击
+      if (item.itemId === 'chest01' || item.itemId === 'chest02') {
+        const isOpened = item.collected || item.properties?.state === 'opened';
+        if (isOpened) {
+          await showAlert('宝箱已经打开过了。', 'info');
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/map-items/${item.id}/open`, { method: 'POST' });
+          const result = await response.json();
+
+          if (!response.ok || !result?.success) {
+            await showAlert(result?.error || '打开宝箱失败', 'error');
+            return;
+          }
+
+          const openImagePath = result?.data?.imagePath as string | undefined;
+          const reward = result?.data?.reward as { itemId: string; name?: string } | null;
+
+          if (openImagePath) {
+            setMapData((prev) => {
+              if (!prev) return prev;
+              const nextItems = prev.items.map((entry) =>
+                entry.id === item.id
+                  ? {
+                      ...entry,
+                      itemPath: openImagePath,
+                      collected: true,
+                      properties: {
+                        ...(entry.properties || {}),
+                        state: 'opened',
+                      },
+                    }
+                  : entry
+              );
+              return { ...prev, items: nextItems };
+            });
+
+            await engineRef.current?.updateItemState(item.id, {
+              itemPath: openImagePath,
+              collected: true,
+              properties: { ...(item.properties || {}), state: 'opened' },
+            });
+          }
+
+          if (reward?.name) {
+            await showAlert(`宝箱打开：获得「${reward.name}」！`, 'success');
+          } else {
+            await showAlert('宝箱打开：获得宝物！', 'success');
+          }
+        } catch (error) {
+          console.error('打开宝箱失败:', error);
+          await showAlert('打开宝箱失败', 'error');
+        }
+        return;
+      }
       
       // 处理传送门点击
       if (item.itemType === 'portal') {

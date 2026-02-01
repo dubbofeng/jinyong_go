@@ -43,6 +43,7 @@ export interface MapItem {
   y: number;
   itemType: 'building' | 'npc' | 'portal' | 'decoration' | 'plant';
   properties?: Record<string, any>;
+  collected?: boolean;
   blocking?: boolean;    // 是否阻挡移动
   size?: number;         // 物品尺寸（占据size x size格子，默认1）
   // 传送门相关
@@ -386,6 +387,25 @@ export class IsometricEngine {
     
     // 使用数据库中的itemPath
     return item.itemPath;
+  }
+
+  /**
+   * 更新单个物品状态（如切换图片）
+   */
+  async updateItemState(itemId: number, updates: Partial<MapItem>): Promise<void> {
+    if (!this.mapData) return;
+    const item = this.mapData.items.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    if (updates.itemPath && updates.itemPath !== item.itemPath) {
+      try {
+        await this.resourceLoader.loadImage(updates.itemPath);
+      } catch (error) {
+        console.warn('Failed to preload updated item image:', error);
+      }
+    }
+
+    Object.assign(item, updates);
   }
 
   // ==================== 坐标转换 ====================
