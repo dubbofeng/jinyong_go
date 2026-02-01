@@ -12,6 +12,7 @@ import TsumegoModal from '@/src/components/TsumegoModal';
 import TutorialBoardModal from '@/src/components/TutorialBoardModal';
 import SgfTutorialModal from '@/src/components/SgfTutorialModal';
 import SgfPracticeModal from '@/src/components/SgfPracticeModal';
+import GoProverbModal from '@/src/components/GoProverbModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
@@ -70,6 +71,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [sgfProgressFlag, setSgfProgressFlag] = useState<string | null>(null);
   const [showSgfPractice, setShowSgfPractice] = useState(false);
   const [sgfPracticeSet, setSgfPracticeSet] = useState<string | null>(null);
+  const [showGoProverb, setShowGoProverb] = useState(false);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
   const completedQuestsRef = useRef<string[]>([]);
   const [npcDialogueCounts, setNpcDialogueCounts] = useState<Record<string, number>>({});
@@ -1014,6 +1016,12 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         }
         break;
       }
+
+      case 'go_proverb': {
+        setShowGoProverb(true);
+        setIsDialogueVisible(false);
+        break;
+      }
       
       default:
         console.warn('Unknown action type:', action.type);
@@ -1026,6 +1034,31 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const updateDialogueState = useCallback((engine: DialogueEngine) => {
     const node = engine.getCurrentNode();
     const options = engine.getAvailableOptions();
+
+    const npcId = currentNpcIdRef.current;
+    const defeatedFlag = npcId ? `defeated_${npcId}` : '';
+    const hasDefeated = defeatedFlag ? completedQuestsRef.current.includes(defeatedFlag) : false;
+    const isRepeatableNode = (nodeId?: string) => {
+      if (!nodeId) return false;
+      if (nodeId === 'daily_chat' || nodeId === 'daily_chat_2' || nodeId === 'rematch_challenge' || nodeId === 'proverb_intro') {
+        return true;
+      }
+      if (nodeId === 'challenge_condition' || nodeId === 'start_battle') {
+        return hasDefeated;
+      }
+      return false;
+    };
+
+    if (node?.id && !isRepeatableNode(node.id)) {
+      const flags = npcId ? new Set(npcDialogueFlagsRef.current[npcId] || []) : new Set<string>();
+      if (flags.has(`dialogue_node:${node.id}`)) {
+        const advanced = engine.continue();
+        if (advanced) {
+          updateDialogueState(engine);
+          return;
+        }
+      }
+    }
 
     if (node?.action?.type === 'battle' && battleResult && options.length === 1) {
       const moved = engine.selectOption(0);
@@ -1043,15 +1076,23 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       handleDialogueAction(node.action);
     }
 
-    if (node?.id && (node.action?.type === 'tutorial_board' || node.action?.type === 'tutorial_sgf')) {
+    if (node?.id) {
       const npcId = currentNpcIdRef.current;
       if (npcId) {
-        const lastNode = tutorialNodeCacheRef.current[npcId];
-        if (lastNode !== node.id) {
-          const flag = `tutorial_progress:${npcId}:${Date.now()}:${node.id}`;
-          tutorialNodeCacheRef.current[npcId] = node.id;
-          tutorialProgressCacheRef.current[npcId] = flag;
-          recordDialogueFlags([flag]);
+        const flags = new Set(npcDialogueFlagsRef.current[npcId] || []);
+        const visitFlag = `dialogue_node:${node.id}`;
+        if (!flags.has(visitFlag)) {
+          recordDialogueFlags([visitFlag]);
+        }
+
+        if (node.action?.type === 'tutorial_board' || node.action?.type === 'tutorial_sgf') {
+          const lastNode = tutorialNodeCacheRef.current[npcId];
+          if (lastNode !== node.id) {
+            const flag = `tutorial_progress:${npcId}:${Date.now()}:${node.id}`;
+            tutorialNodeCacheRef.current[npcId] = node.id;
+            tutorialProgressCacheRef.current[npcId] = flag;
+            recordDialogueFlags([flag]);
+          }
         }
       }
     }
@@ -1871,6 +1912,16 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         onClose={() => {
           setShowSgfPractice(false);
           setSgfPracticeSet(null);
+        }}
+      />
+
+      <GoProverbModal
+        isOpen={showGoProverb}
+        onClose={() => {
+          setShowGoProverb(false);
+          if (dialogueEngine) {
+            setIsDialogueVisible(true);
+          }
         }}
       />
 

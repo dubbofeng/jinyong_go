@@ -118,6 +118,26 @@ export class DialogueEngine {
     const currentNode = this.getCurrentNode();
     if (!currentNode || !currentNode.options) return [];
 
+    const npcId = this.tree.npcId;
+    const flagsMap = this.playerState.npcDialogueFlags || {};
+    const visitedFlags = new Set(flagsMap[npcId] || []);
+    const isNodeVisited = (nodeId?: string) =>
+      nodeId ? visitedFlags.has(`dialogue_node:${nodeId}`) : false;
+    const defeatedFlag = npcId ? `defeated_${npcId}` : '';
+    const hasDefeated = defeatedFlag
+      ? (this.playerState.completedQuests || []).includes(defeatedFlag)
+      : false;
+    const isRepeatableNode = (nodeId?: string) => {
+      if (!nodeId) return false;
+      if (nodeId === 'daily_chat' || nodeId === 'daily_chat_2' || nodeId === 'rematch_challenge' || nodeId === 'proverb_intro') {
+        return true;
+      }
+      if (nodeId === 'challenge_condition' || nodeId === 'start_battle') {
+        return hasDefeated;
+      }
+      return false;
+    };
+
     return currentNode.options.filter((option) => {
       const { type, value, inverse } = option.condition || {};
       let conditionMet = false;
@@ -166,9 +186,9 @@ export class DialogueEngine {
       }
 
       // 自动隐藏已触发的一次性技能/任务选项
-      const npcId = option.condition?.npcId || this.tree.npcId;
-      const flagsMap = this.playerState.npcDialogueFlags || {};
-      const flags = new Set(flagsMap[npcId] || []);
+      const optionNpcId = option.condition?.npcId || this.tree.npcId;
+      const optionFlagsMap = this.playerState.npcDialogueFlags || {};
+      const flags = new Set(optionFlagsMap[optionNpcId] || []);
 
       const optionAction = option.action;
       const nextNode = option.nextNodeId
@@ -184,6 +204,12 @@ export class DialogueEngine {
       if (action?.type === 'quest') {
         const questId = typeof action.value === 'string' ? action.value : action.value?.questId;
         if (questId && flags.has(`quest:${questId}`)) return false;
+      }
+
+      if (action?.type === 'go_proverb') return true;
+
+      if (option.nextNodeId && isNodeVisited(option.nextNodeId) && !isRepeatableNode(option.nextNodeId)) {
+        return false;
       }
 
       return true;

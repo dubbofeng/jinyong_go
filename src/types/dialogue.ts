@@ -4,7 +4,7 @@ export interface DialogueOption {
   text: string;
   nextNodeId: string;
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf';
+    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf' | 'go_proverb';
     value: any;
   };
   condition?: {
@@ -25,7 +25,7 @@ export interface DialogueNode {
   text: string;
   options?: DialogueOption[];
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf';
+    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf' | 'go_proverb';
     value: any;
   };
   nextNodeId?: string; // 如果没有options，自动跳转到下一个节点

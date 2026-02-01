@@ -21,82 +21,12 @@
         {
           "text": "Please teach me, Senior!"
         },
-        {
-          "text": "I want to learn 'Blood-Vomiting Break'"
-        },
-        {
-          "text": "Senior, I'd like to play another game with you"
-        },
-        {"text": "What is Blood-Vomiting Break?"},
-        {"text": "Let me prepare first"}
+        {"text": "Let me prepare first"},
+        {"text": "Senior, could you share a Go proverb?"}
       ]
     },
-    {
-      "id": "explain_skill",
-      "speaker": "Hei Baizi",
-      "text": "Years ago, a master exhausted himself trying to solve a life-and-death Go problem, ultimately vomiting blood and dying. But the solution he left behind was earth-shattering."
-    },
-    {
-      "id": "explain_skill_2",
-      "speaker": "Hei Baizi",
-      "text": "'Blood-Vomiting Break' was comprehended from that manual - it can find a glimmer of hope in desperate situations, turning death into life. However, it requires extremely high Go skill and understanding.",
-      "options": [
-        {"text": "Miraculous! Please teach me, Senior"},
-        {"text": "Let me contemplate this further"}
-      ]
-    },
-    {
-      "id": "challenge_intro",
-      "speaker": "Hei Baizi",
-      "text": "Good! You have courage! But my Go skill is no empty reputation. If you want to learn this technique, you must play a game with me first."
-    },
-    {
-      "id": "challenge_condition",
-      "speaker": "Hei Baizi",
-      "text": "I've studied the 'Blood-Vomiting Manual' for years and know its dangers well. If you can beat me, it proves you have the understanding to comprehend this manual's essence.",
-      "options": [
-        {
-          "text": "Please bestow your teaching, Senior!"
-        },
-        {"text": "Let me prepare first"}
-      ]
-    },
-    {
-      "id": "start_battle",
-      "speaker": "Hei Baizi",
-      "text": "Good! Let you witness the power of the 'Blood-Vomiting Manual'!"
-    },
-    {
-      "id": "teach_skill",
-      "speaker": "Hei Baizi",
-      "text": "Brilliant! Truly brilliant! Your game is divine - you already have the aptitude to solve the 'Blood-Vomiting Manual.' I'll teach you 'Blood-Vomiting Break.'"
-    },
-    {
-      "id": "teach_skill_detail",
-      "speaker": "Hei Baizi",
-      "text": "The key to this technique is: in desperate situations, find the way to break through, using one stone's power to reverse the situation. Limited to once per game with a 40-move cooldown."
-    },
-    {
-      "id": "teach_skill_practice",
-      "speaker": "Hei Baizi",
-      "text": "Remember, 'in death ground, fight and live.' When using this technique, have the determination to burn your boats to unleash its maximum power."
-    },
-    {
-      "id": "teach_complete",
-      "speaker": "Hei Baizi",
-      "text": "Now that you've learned this technique, you can calmly handle difficult situations in the future. But remember, this technique harms the body and drains the spirit - don't abuse it.",
-      "options": [
-        {"text": "Thank you, Senior!"},
-        {"text": "I'd like to hear more of your insights"},
-        {"text": "I want to challenge you again"}
-      ]
-    },
-    {
-      "id": "try_again",
-      "speaker": "Hei Baizi",
-      "text": "Your Go skill isn't enough yet. The essence of the 'Blood-Vomiting Manual' can't be comprehended overnight - practice more.",
-      "options": [
-        {"text": "This junior takes his leave"},
+      {
+        "id": "proverb_intro",
         {"text": "Let me challenge you again!"}
       ]
     },

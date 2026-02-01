@@ -22,6 +22,71 @@ export interface TutorialBoardConfig {
 }
 
 export const tutorialBoards: Record<string, TutorialBoardConfig> = {
+  "proverb_empty_triangle": {
+    "id": "proverb_empty_triangle",
+    "title": "空三角愚型",
+    "description": "三子形成空三角，效率低，需尽量避免。",
+    "boardSize": 9,
+    "stones": [
+      {
+        "row": 4,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 4,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 4,
+        "color": "black"
+      }
+    ],
+    "highlights": [
+      {
+        "row": 5,
+        "col": 5,
+        "label": 1
+      }
+    ]
+  },
+  "proverb_rectangular_defense": {
+    "id": "proverb_rectangular_defense",
+    "title": "矩形补断虎输飞",
+    "description": "矩形形状补断时，飞比虎更灵活。",
+    "boardSize": 9,
+    "stones": [
+      {
+        "row": 4,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 4,
+        "col": 5,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 4,
+        "color": "black"
+      },
+      {
+        "row": 5,
+        "col": 5,
+        "color": "black"
+      }
+    ],
+    "highlights": [
+      {
+        "row": 6,
+        "col": 5,
+        "label": 1
+      }
+    ]
+  },
   "musang_liberties": {
     "id": "musang_liberties",
     "title": "气与提子",
