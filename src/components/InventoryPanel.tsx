@@ -241,16 +241,26 @@ export function InventoryPanel() {
               )}
 
               {/* 图标 */}
-              <div className="flex items-center justify-center h-12 mb-1 text-3xl">
-                {item.item.itemType === 'consumable' && '🧪'}
-                {item.item.itemType === 'potion' && '🧪'}
-                {item.item.itemType === 'material' && '⚙️'}
-                {item.item.itemType === 'quest' && '📜'}
-                {item.item.itemType === 'equipment' && '⚔️'}
-                {item.item.itemType === 'decoration' && '🏮'}
-                {item.item.itemType === 'plant' && '🌿'}
-                {item.item.itemType === 'building' && '🏠'}
-                {!['consumable', 'potion', 'material', 'quest', 'equipment', 'decoration', 'plant', 'building'].includes(item.item.itemType) && '📦'}
+              <div className="flex items-center justify-center h-12 mb-1">
+                {item.item.imagePath ? (
+                  <img 
+                    src={item.item.imagePath} 
+                    alt={item.item.name}
+                    className="w-12 h-12 object-contain"
+                  />
+                ) : (
+                  <span className="text-3xl">
+                    {item.item.itemType === 'consumable' && '🧪'}
+                    {item.item.itemType === 'potion' && '🧪'}
+                    {item.item.itemType === 'material' && '⚙️'}
+                    {item.item.itemType === 'quest' && '📜'}
+                    {item.item.itemType === 'equipment' && '⚔️'}
+                    {item.item.itemType === 'decoration' && '🏮'}
+                    {item.item.itemType === 'plant' && '🌿'}
+                    {item.item.itemType === 'building' && '🏠'}
+                    {!['consumable', 'potion', 'material', 'quest', 'equipment', 'decoration', 'plant', 'building'].includes(item.item.itemType) && '📦'}
+                  </span>
+                )}
               </div>
 
               {/* 名称 */}

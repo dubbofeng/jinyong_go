@@ -733,11 +733,18 @@ export class IsometricEngine {
           // 计算物品在当前网格中的位置
           const offsetX = gridX * this.mapData.width;
           const offsetY = gridY * this.mapData.height;
+          const itemX = item.x + offsetX;
+          const itemY = item.y + offsetY;
+          
+          // NPC和传送门只在地图边界内显示（gridX === 0 && gridY === 0）
+          if ((item.itemType === 'npc' || item.itemType === 'portal') && (gridX !== 0 || gridY !== 0)) {
+            continue;
+          }
           
           items.push({
             ...item,
-            x: item.x + offsetX,
-            y: item.y + offsetY,
+            x: itemX,
+            y: itemY,
           });
         }
       }
