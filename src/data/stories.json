@@ -49,7 +49,9 @@
               "silver": 80,
               "items": [
                 { "itemId": "item_story_go_manual", "name": "棋道手札", "nameEn": "Go Notes", "description": "记录木桑道人心得，阅读后获得围棋灵感。", "descriptionEn": "Notes of Taoist Musang; reading grants Go inspiration.", "quantity": 1 },
-                { "itemId": "item_story_talisman", "name": "山行护符", "nameEn": "Mountain Talisman", "description": "山中求安的护身符，小幅提升体力恢复。", "descriptionEn": "A talisman for mountain travel; slightly boosts stamina regen.", "quantity": 1 }
+                { "itemId": "item_story_talisman", "name": "山行护符", "nameEn": "Mountain Talisman", "description": "山中求安的护身符，小幅提升体力恢复。", "descriptionEn": "A talisman for mountain travel; slightly boosts stamina regen.", "quantity": 1 },
+                { "itemId": "go_board_1", "name": "普通棋盘", "nameEn": "Basic Go Board", "description": "寻常木制棋盘，便于携带。", "descriptionEn": "A common wooden Go board, easy to carry.", "quantity": 1 },
+                { "itemId": "go_bowl_1", "name": "棋罐", "nameEn": "Stone Jar", "description": "盛放黑白棋子的木罐。", "descriptionEn": "A wooden jar for black and white stones.", "quantity": 1 }
               ]
             }
           },
@@ -61,7 +63,9 @@
               "exp": 120,
               "silver": 120,
               "items": [
-                { "itemId": "item_story_pine_tea", "name": "松针清茶", "nameEn": "Pine Needle Tea", "description": "山中清茶，饮用后恢复少量内力。", "descriptionEn": "A mountain tea that restores a little inner power.", "quantity": 1 }
+                { "itemId": "item_story_pine_tea", "name": "松针清茶", "nameEn": "Pine Needle Tea", "description": "山中清茶，饮用后恢复少量内力。", "descriptionEn": "A mountain tea that restores a little inner power.", "quantity": 1 },
+                { "itemId": "go_board_1", "name": "普通棋盘", "nameEn": "Basic Go Board", "description": "寻常木制棋盘，便于携带。", "descriptionEn": "A common wooden Go board, easy to carry.", "quantity": 1 },
+                { "itemId": "go_bowl_1", "name": "棋罐", "nameEn": "Stone Jar", "description": "盛放黑白棋子的木罐。", "descriptionEn": "A wooden jar for black and white stones.", "quantity": 1 }
               ]
             }
           }
@@ -80,57 +84,57 @@
         "sceneId": "wanjie_00",
         "backgroundId": "story_wanjie_stone_board",
         "lines": [
-          { "type": "narration", "text": "万劫谷石屋内，石屑纷飞，一张十九道棋盘在青石上刻成。", "textEn": "Inside the stone house of Wanjie Valley, a 19-line board is carved into blue rock as stone chips fly." },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "段施主，棋局定胜负，可敢一局？", "textEn": "Benefactor Duan, shall we let the board decide victory?", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "金刚指力，好功夫！", "textEn": "Diamond Finger power—fine skill!", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "铁杖与木槌在石上留下深痕，黑白势子落定。", "textEn": "Iron staff and wooden mallet leave deep marks as black and white positions are set." },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "施主功力深厚，老僧不敢逞强，还望让上几子。", "textEn": "Your power runs deep. I dare not boast—allow me a few handicap stones.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "棋上要分胜负，便当平下。", "textEn": "If we seek a true result, we play even.", "speakerEn": "Duan Yanqing" },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "四子如何？三子也可。", "textEn": "Four stones? Three will do.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "既自认不及，何必再局？最多让一先。", "textEn": "If you admit inferiority, why play? At most, take the first move.", "speakerEn": "Duan Yanqing" },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "哈哈，原来施主棋力也不过如此，不妨我让你三子。", "textEn": "Ha! So your Go is only so-so. Then I will give you three stones.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "不必相让，分先对弈。", "textEn": "No need. Let us play for first move.", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "黄眉僧心下愈发忌惮，暗知此人不骄不躁，难以激怒。", "textEn": "Huangmei grows wary; he senses this man is calm and hard to provoke." }
+          { "type": "narration", "text": "万劫谷石屋内，石屑纷飞，一张十九道棋盘在青石上刻成。青石表面寒气逼人，石粉如雾缓缓落下，落在棋盘线条间，像给这局添了一层薄霜。两人的气息在狭小石室里回荡，连空气都像被刀削过。", "textEn": "Inside the stone house of Wanjie Valley, a 19-line board is carved into blue rock as stone chips fly. The stone is cold to the touch, and the powder falls like mist into the lines, as if laying a thin frost over the game. Their breathing echoes in the narrow chamber, the air itself feeling honed." },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "段施主，棋局定胜负，可敢一局？今日之争，不求刀兵，只求一局定局。老僧愿以棋见心，胜负由棋面作证。", "textEn": "Benefactor Duan, shall we let the board decide victory? Today’s struggle needs no blades—only a game to decide. I would rather see the heart through Go, with the board as witness.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "金刚指力，好功夫！你刻线如刻骨，倒是配这石盘。只是棋盘虽硬，胜负更硬。", "textEn": "Diamond Finger power—fine skill! Your lines cut like bone, fitting for this stone board. Yet though the board is hard, victory and defeat are harder still.", "speakerEn": "Duan Yanqing" },
+          { "type": "narration", "text": "铁杖与木槌在石上留下深痕，黑白势子落定。每一道刻痕都直如尺规，双方都在比拼劲力与心定，谁也不愿先露一丝不整。棋盘既成，屋内静得只剩呼吸。", "textEn": "Iron staff and wooden mallet leave deep marks as black and white positions are set. Each groove is straight as a ruler, a contest of power and composure—neither willing to show the slightest unevenness. With the board complete, only breathing remains." },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "施主功力深厚，老僧不敢逞强，还望让上几子。让子非求便宜，是给彼此一条退路。若你愿让，老僧也敢竭尽所学。", "textEn": "Your power runs deep; I dare not boast—allow me a few handicap stones. This is not greed, but a courtesy that leaves both a path. If you concede, I will still give all I know.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "棋上要分胜负，便当平下。让子得胜，胜也无味；让子得败，败更难言。", "textEn": "If we seek a true result, we play even. Win with a handicap and the victory tastes thin; lose with one and the defeat is harder to bear.", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "四子如何？三子也可。老僧棋力不济，若全凭侥幸，怕误了大局。让得一分，才有余地谈大事。", "textEn": "Four stones? Three will do. My Go is modest; if I rely on luck alone, I fear I will ruin a greater matter. Grant a little and we can still speak of the larger stakes.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "既自认不及，何必再局？最多让一先。除此之外，再无可谈。", "textEn": "If you admit inferiority, why play? At most, take the first move. Beyond that, there is nothing to discuss.", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "哈哈，原来施主棋力也不过如此，不妨我让你三子。看你有无把握，敢不敢接这份让？", "textEn": "Ha! So your Go is only so-so. Then I will give you three stones. Do you have the courage to accept what I offer?", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "不必相让，分先对弈。先后之争，用手段定，不用口舌。", "textEn": "No need for concessions. Let us play for first move. The order will be decided by skill, not words.", "speakerEn": "Duan Yanqing" },
+          { "type": "narration", "text": "黄眉僧心下愈发忌惮，暗知此人不骄不躁，难以激怒。对方面无波澜，像一口深井，任你掷石，也看不见底。老僧的笑意里，隐隐多了几分凝重。", "textEn": "Huangmei grows wary; he senses this man is calm and hard to provoke. The other’s face is a deep well—no matter what you throw in, you cannot see the bottom. Beneath the monk’s smile, a hint of gravity gathers." }
         ]
       },
       {
         "sceneId": "wanjie_01",
         "backgroundId": "story_wanjie_toe_riddle",
         "lines": [
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "先后之争，便赌一线气运。", "textEn": "For the first move, let us wager a thread of fate.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "你想争先手，便使出你的本事。", "textEn": "If you want the first move, show your skill.", "speakerEn": "Duan Yanqing" },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "先手关乎生死，施主可敢一赌？", "textEn": "The first move decides life or death. Do you dare?", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "赌什么？", "textEn": "What is the wager?", "speakerEn": "Duan Yanqing" },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "猜我年过七十时，足趾是奇是偶。", "textEn": "Guess: when I am over seventy, will my toes be odd or even?", "speakerEn": "Huangmei Monk" },
-          { "type": "narration", "text": "段延庆暗自思量，仍答“偶”。", "textEn": "Duan Yanqing thinks and answers, “Even.”" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "偶数。", "textEn": "Even.", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "黄眉僧笑而不语，除靴验足，竟两足完好无缺。", "textEn": "Huangmei smiles silently, removes his shoes—both feet are intact." },
-          { "type": "narration", "text": "他忽提小铁槌，断下一趾，血珠溅在石面。", "textEn": "He lifts a small iron hammer and severs a toe, blood splashing on stone." },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "今我六十九，待七十，足趾成奇。", "textEn": "I am sixty-nine. When I reach seventy, the count will be odd.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "好。先手归你。", "textEn": "Fine. The first move is yours.", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "先手既定，局势更添肃杀。", "textEn": "With first move decided, the air grows even more tense." },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "今日一子之先，关乎万民命数。", "textEn": "A single move today may decide countless lives.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "命数？我只信胜负。", "textEn": "Fate? I only believe in victory.", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "棋势如剑，针锋相对。", "textEn": "The board sharpens like a sword—edge to edge." }
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "先后之争，便赌一线气运。若先手在我，老僧便可自保；若先手在你，老僧也认这份天意。", "textEn": "For the first move, let us wager a thread of fate. If the initiative is mine, I can protect myself; if it is yours, I will accept that destiny.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "你想争先手，便使出你的本事。靠赌得来的先手，不算先手。", "textEn": "If you want the first move, show your skill. Initiative won by wagering is no true initiative.", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "先手关乎生死，施主可敢一赌？这不是赌命，是赌心——心若定，手便定。", "textEn": "The first move decides life or death. Do you dare? This is not a wager of life, but of heart—if the heart is steady, the hand is steady.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "赌什么？说清楚。", "textEn": "What is the wager? Speak plainly.", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "猜我年过七十时，足趾是奇是偶。猜得中，你先；猜不中，我先。", "textEn": "Guess: when I am over seventy, will my toes be odd or even? Guess right and you play first; guess wrong and I do.", "speakerEn": "Huangmei Monk" },
+          { "type": "narration", "text": "段延庆暗自思量，仍答“偶”。他的眼却不看对方，只盯着棋盘的空点，像在衡量一条不露形的路。", "textEn": "Duan Yanqing thinks and answers, “Even.” Yet he does not look at the monk, only at empty points on the board, as if measuring a path without form." },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "偶数。说罢便下，不必拖。", "textEn": "Even. Speak no more—let us play.", "speakerEn": "Duan Yanqing" },
+          { "type": "narration", "text": "黄眉僧笑而不语，除靴验足，竟两足完好无缺。那一瞬间，你几乎以为此赌就此落定。石室里只听见衣袍摩挲的轻响。", "textEn": "Huangmei smiles silently, removes his shoes—both feet are intact. For a heartbeat, you think the wager is settled. Only the soft rustle of robes fills the stone room." },
+          { "type": "narration", "text": "他忽提小铁槌，断下一趾，血珠溅在石面。血滴滚入棋线，像一枚枚黑子坠下，寒意直透人背。", "textEn": "He lifts a small iron hammer and severs a toe, blood splashing on stone. The drops roll into the lines like black stones falling, a chill running down spines." },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "今我六十九，待七十，足趾成奇。先手归我，老僧不敢轻慢半分。", "textEn": "I am sixty-nine. When I reach seventy, the count will be odd. The first move is mine, and I will not treat it lightly.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "好。先手归你。赢与不赢，终归棋盘定。", "textEn": "Fine. The first move is yours. Win or lose will be decided on the board.", "speakerEn": "Duan Yanqing" },
+          { "type": "narration", "text": "先手既定，局势更添肃杀。空气像被系紧的弓弦，稍一触碰便要震响。你能听见众人吞咽的声音。", "textEn": "With first move decided, the air grows even more tense—like a bowstring drawn tight, ready to snap. You can hear people swallowing." },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "今日一子之先，关乎万民命数。老僧不求虚名，只求一局能换来太平。", "textEn": "A single move today may decide countless lives. I seek no empty fame—only a game that buys peace.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "命数？我只信胜负。胜者为理，败者无言。", "textEn": "Fate? I only believe in victory. The winner holds the reason; the loser has none.", "speakerEn": "Duan Yanqing" },
+          { "type": "narration", "text": "棋势如剑，针锋相对。第一手落下，像在石面刻出一道裂痕，连风也一滞。你知道，这盘棋不会轻易收手。", "textEn": "The board sharpens like a sword—edge to edge. The first move lands like a crack in stone, even the wind pausing. You know this game will not end easily." }
         ]
       },
       {
         "sceneId": "wanjie_02",
         "backgroundId": "story_wanjie_stone_chamber",
         "lines": [
-          { "type": "narration", "text": "棋局中盘，黑子突变，白势摇摇欲坠。", "textEn": "Midgame shifts: black transforms, white’s position trembles." },
-          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "（低声）这一手若不变，怕要失先。", "textEn": "(low) If this isn’t changed, we may lose the initiative.", "speakerEn": "Duan Yu" },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "施主既有见，老僧愿从。", "textEn": "If you see a way, I will follow.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "旁观不语才像君子，多管闲事才是真胆。", "textEn": "A gentleman watches in silence. Meddling is the true boldness.", "speakerEn": "Duan Yanqing" },
-          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "你困我在此，我又怎能沉默？", "textEn": "You trapped me here—how could I stay silent?", "speakerEn": "Duan Yu" },
-          { "type": "narration", "text": "破嗔在背上写下七手，白子一度转危为安。", "textEn": "He writes seven moves on his back; white briefly turns danger into safety." },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "棋在心中，气在指上。", "textEn": "The board is in the heart; the power is at the fingertips.", "speakerEn": "Huangmei Monk" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "好招。可惜，你终要露出破绽。", "textEn": "A fine move. Pity—you will still reveal a flaw.", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "黑子忽然弃势夺要，白棋一时难解。", "textEn": "Black suddenly yields influence to seize the key point; white struggles to respond." },
-          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "若换此手，可借劫转势。", "textEn": "If we change to this move, a ko can turn the tide.", "speakerEn": "Duan Yu" },
-          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "老僧再赌一线。", "textEn": "Then I wager another thread.", "speakerEn": "Huangmei Monk" },
-          { "type": "narration", "text": "铁杖失势，一子成了败笔，段延庆怒碎棋盘。", "textEn": "The iron staff loses shape; one move becomes the blunder. Duan Yanqing smashes the board in rage." },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "此局不算完，天机终会翻转。", "textEn": "This game is not over. Heaven will yet turn.", "speakerEn": "Duan Yanqing" }
+          { "type": "narration", "text": "棋局中盘，黑子突变，白势摇摇欲坠。黑方像猛兽突然折返，白棋阵地被撕开一道口子，寒意从那口子里钻出。石室深处的火光摇晃，你甚至能听见棋盘木槌的轻颤。", "textEn": "Midgame shifts: black transforms, white’s position trembles. Black turns like a beast and tears a gap; a chill slips through. The firelight in the stone chamber wavers, and you can almost hear the board’s mallet tremble." },
+          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "（低声）这一手若不变，怕要失先。若再守，便是被牵着走。若能破口而出，也许尚有回旋。", "textEn": "(low) If this isn’t changed, we may lose the initiative. To keep defending is to be led by the nose. If we break out here, there may still be room to turn.", "speakerEn": "Duan Yu" },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "施主既有见，老僧愿从。愿从不是盲从，是愿将此局与施主共担。", "textEn": "If you see a way, I will follow. This is not blind obedience, but a willingness to share the burden of the game.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "旁观不语才像君子，多管闲事才是真胆。你既插手，便要为此负担。", "textEn": "A gentleman watches in silence; meddling is the true boldness. If you intervene, you must bear the weight of it.", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "你困我在此，我又怎能沉默？若看着别人陷于绝地而不语，那才是懦弱。", "textEn": "You trapped me here—how could I stay silent? To watch another fall into a dead end and say nothing—that would be cowardice.", "speakerEn": "Duan Yu" },
+          { "type": "narration", "text": "破嗔在背上写下七手，白子一度转危为安。那七手像水流般顺势而出，白棋的气口短暂复苏。众人屏息，黄眉僧的眉目也稍稍舒展。", "textEn": "He writes seven moves on his back; white briefly turns danger into safety. Those seven moves flow like water, restoring the white liberties for a moment. Everyone holds their breath; even Huangmei’s brow relaxes slightly." },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "棋在心中，气在指上。心稳一分，指便稳一分；气不断，势便不断。", "textEn": "The board is in the heart; the power is at the fingertips. Steady the heart and the fingers steadies; keep the breath and the momentum endures.", "speakerEn": "Huangmei Monk" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "好招。可惜，你终要露出破绽。胜负不是一手定，而是你终会疲惫。", "textEn": "A fine move. Pity—you will still reveal a flaw. Victory is not decided by one move, but by the moment you tire.", "speakerEn": "Duan Yanqing" },
+          { "type": "narration", "text": "黑子忽然弃势夺要，白棋一时难解。那一弃像削去自己一块皮，却换来对方心口的一刀。局势陡然翻涌，白棋的眼位被逼得越来越窄。", "textEn": "Black suddenly yields influence to seize the key point; white struggles to respond. The sacrifice is like peeling off one’s own skin to cut the opponent’s heart. The position surges, and white’s eyes are pressed ever tighter." },
+          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "若换此手，可借劫转势。劫如风，若能借风，或可再活。", "textEn": "If we change to this move, a ko can turn the tide. A ko is like the wind; if we can ride it, we may live again.", "speakerEn": "Duan Yu" },
+          { "type": "dialogue", "speaker": "黄眉僧", "speakerId": "huangmei_seng", "text": "老僧再赌一线。若此处再失，便以此命偿棋。", "textEn": "Then I wager another thread. If this fails, I will pay for the game with my life.", "speakerEn": "Huangmei Monk" },
+          { "type": "narration", "text": "铁杖失势，一子成了败笔，段延庆怒碎棋盘。石屑再次飞起，棋子滚落一地，黑白分不清。那一瞬你看见胜负之外的狂怒与空虚。", "textEn": "The iron staff loses shape; one move becomes the blunder. Duan Yanqing smashes the board in rage, stone chips flying, stones scattering, black and white indistinguishable. In that moment you see fury and emptiness beyond victory and defeat." },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "此局不算完，天机终会翻转。棋盘碎了，命数未碎。", "textEn": "This game is not over. Heaven will yet turn. The board is broken, but destiny is not.", "speakerEn": "Duan Yanqing" }
         ],
         "choices": [
           {
@@ -236,25 +240,23 @@
         "sceneId": "he_01",
         "backgroundId": "story_kunlun_sands",
         "lines": [
-          { "type": "narration", "text": "昆仑空地上，何足道以剑尖划地，横纵十九道渐成棋盘。", "textEn": "On the Kunlun sands, He Zudao draws nineteen lines with his sword tip." },
-          { "type": "dialogue", "speaker": "何足道", "speakerId": "he_zudao", "text": "琴可入心，剑可入骨，唯棋可入魂。", "textEn": "The zither enters the heart, the sword enters the bone, but Go enters the soul.", "speakerEn": "He Zudao" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "无人对弈，竟自与己争？", "textEn": "With no opponent, you contend with yourself?", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "何足道", "speakerId": "he_zudao", "text": "世上无我之敌，便让心与心为敌。", "textEn": "If the world has no rival for me, then I set my heart against itself.", "speakerEn": "He Zudao" },
-          { "type": "narration", "text": "黑白两势在左上角缠斗，剑气与风声交织。", "textEn": "Black and white clash in the upper-left, sword aura mixing with the wind." },
-          { "type": "dialogue", "speaker": "郭襄", "speakerId": "npc", "text": "此势若恋中腹，恐要全军覆没。", "textEn": "If we cling to the center here, we may be wiped out.", "speakerEn": "Guo Xiang" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "不如弃中取边？", "textEn": "What if we give up the center for the side?", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "何足道", "speakerId": "he_zudao", "text": "弃一处，换一局。", "textEn": "Sacrifice a place, win a whole game.", "speakerEn": "He Zudao" }
+          { "type": "narration", "text": "昆仑空地上风沙扑面，何足道缓步走到古松前，剑尖抵地，一划一划地划了起来。剑势不疾不徐，横着十九招，转向纵划又一十九招，纵横线条平直如尺，尘土被剑气拂起又沉落。郭襄默数剑招，越看越疑，直到看见那纵横十九道都成了棋盘，才忽然明白。", "textEn": "On the Kunlun sands, He Zudao walks to an open patch before an old pine. With his sword tip on the ground, he draws line after line—nineteen across, then nineteen down—each stroke straight as a ruler. Dust rises and settles with the sword’s breath. Guo Xiang counts the moves in silence, puzzled until she realizes the lines form a Go board." },
+          { "type": "dialogue", "speaker": "郭襄", "speakerId": "npc", "text": "世间怎会有如此奇怪的剑法？难道以剑尖在地下乱划，便能克敌制胜？此人之怪，真是难以测度。", "textEn": "How can there be such a strange sword art? Can one really defeat enemies by scratching the ground with a sword tip? This man’s oddity is truly hard to fathom.", "speakerEn": "Guo Xiang" },
+          { "type": "narration", "text": "他在四角布势，圆圈是白子，交叉是黑子，剑尖点点，像落子落在心头。走到第十九着，他以剑拄地，低头沉思，像在权衡弃子取势还是力争边角。", "textEn": "He lays out the four corners—circles for white, crosses for black—each touch of the sword tip like a stone placed upon the heart. At the nineteenth move he props the sword against the ground and lowers his head, weighing whether to sacrifice for influence or cling to the corners." },
+          { "type": "dialogue", "speaker": "郭襄", "speakerId": "npc", "text": "此人和我一般寂寞，空山抚琴，以雀鸟为知音；下棋又没对手，只得自己跟自己下。", "textEn": "This man is as lonely as I am—playing music in empty mountains with birds as his only audience; with no opponent for Go, he must play against himself.", "speakerEn": "Guo Xiang" },
+          { "type": "narration", "text": "白子不肯罢休，与黑子在左上角展开剧斗，妙着纷纭，自北而南，渐渐争到中腹。郭襄看得出神，忍不住走近几步，目光在棋盘上来回游走。", "textEn": "White refuses to yield and clashes with black in the upper-left; brilliant moves bloom, pushing from north to south until the fight reaches the center. Guo Xiang watches, entranced, and steps closer, her gaze tracing the board." }
         ]
       },
       {
         "sceneId": "he_02",
         "backgroundId": "story_kunlun_sword_board",
         "lines": [
-          { "type": "narration", "text": "他大笑数声，转向西侧空地连下两子，势态顿转。", "textEn": "He laughs and plays two stones on the west, the momentum turning at once." },
-          { "type": "dialogue", "speaker": "何足道", "speakerId": "he_zudao", "text": "好！好！局面既破，心境自开。", "textEn": "Good! Good! Once the position breaks, the mind opens.", "speakerEn": "He Zudao" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "这便是弃子取势。", "textEn": "This is sacrifice for influence.", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "何足道", "speakerId": "he_zudao", "text": "世事亦然。", "textEn": "So it is with all things.", "speakerEn": "He Zudao" },
-          { "type": "narration", "text": "他收剑而立，神色舒朗。", "textEn": "He sheathes his sword, his expression serene." }
+          { "type": "narration", "text": "到了第九十三着，白势遇连环劫，岌岌可危，却仍勉力支撑。棋局既深，忽见一线空阔，西边仍留一大片空地。郭襄望着局势，心中一动。", "textEn": "At the ninety-third move, white meets a chain of kos and teeters on the edge, yet struggles on. In the depth of the position, a broad emptiness remains to the west. Guo Xiang’s heart stirs as she watches." },
+          { "type": "dialogue", "speaker": "郭襄", "speakerId": "npc", "text": "常言道：“当局者迷，旁观者清。”", "textEn": "As the saying goes: “Those in the game are confused; those outside see clearly.”", "speakerEn": "Guo Xiang" },
+          { "type": "dialogue", "speaker": "郭襄", "speakerId": "npc", "text": "何不径弃中原，反取西域？", "textEn": "Why not abandon the central plains and take the western regions instead?", "speakerEn": "Guo Xiang" },
+          { "type": "narration", "text": "他闻言一凛，见西边仍空，若乘打劫之势连下两子，占据要津，即使弃了中腹，仍可争得不胜不败。念头既定，他仰天长笑，剑尖连点两处，局面随之顿转。", "textEn": "He startles at the words and sees the west still open. If he rides the ko to play two stones and seize the key points, he can abandon the center and still salvage a draw. With the thought decided, he laughs skyward and taps two points in a row, the balance turning at once." },
+          { "type": "dialogue", "speaker": "何足道", "speakerId": "he_zudao", "text": "好，好！", "textEn": "Good, good!", "speakerEn": "He Zudao" },
+          { "type": "narration", "text": "笑声在山谷回荡，风沙也像被他的笑意拂开。棋局虽是消闲，却在此刻像一场生死相搏，扣人心弦。", "textEn": "His laughter echoes through the valley, the wind and sand seeming to part with it. Though Go is a pastime, in this moment it feels like a life-and-death duel, gripping the heart." }
         ],
         "choices": [
           {
@@ -296,25 +298,23 @@
         "sceneId": "hei_01",
         "backgroundId": "story_meizhuang_study",
         "lines": [
-          { "type": "narration", "text": "梅庄密室里，古谱摊开，黑白子额上微汗。", "textEn": "In Meizhuang’s secret room, the ancient manual lies open and Hei Baizi’s brow is damp." },
-          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "此谱名为《呕血谱》，我思索多年。", "textEn": "This manual is called the Vomiting Blood Manual. I have pondered it for years.", "speakerEn": "Hei Baizi" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "何处最难？", "textEn": "Where is it most difficult?", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "第六十七手，断不稳，连不活，冲也冲不出。", "textEn": "The sixty-seventh move—cutting fails, connecting dies, pushing out is impossible.", "speakerEn": "Hei Baizi" },
-          { "type": "narration", "text": "他指尖敲在石几上，节奏愈急。", "textEn": "His fingertips tap the stone table, growing faster." },
-          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "若你是我，会如何落子？", "textEn": "If you were me, how would you play?", "speakerEn": "Hei Baizi" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "也许要用缓手，让对方自乱。", "textEn": "Perhaps a slow move, letting the opponent unravel.", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "妙，就在此处。", "textEn": "Brilliant—right there.", "speakerEn": "Hei Baizi" }
+          { "type": "narration", "text": "梅庄密室里，古谱摊开。黑白子名中自带黑白，对围棋的痴迷不言而喻。向问天投其所好，引他入局，《呕血谱》的传说也被搬上桌面——昔日国手刘仲甫据说在此谱中惨败，呕血数升。二人走到六十余手便停住，黑白子更是念念不忘。", "textEn": "In Meizhuang’s secret room, the ancient manual lies open. Hei Baizi’s very name speaks of black and white, and his love of Go is plain. Xiang Wentian plays to that obsession, laying out the tale of the Vomiting Blood Manual. They reach the sixties in moves and pause, leaving Hei Baizi restless." },
+          { "type": "narration", "text": "向问天走到石几前，在棋盘“平、上、去、入”四角摆了势子，又在“平部”六三路放白子、九三路放黑子，六五路放白子、九五路放黑子，置子渐慢。黑白缠斗极烈，中间无一子余裕，黑白子额上汗水涔涔而下。", "textEn": "Xiang Wentian lays out the opening at the four corners—ping, shang, qu, ru—then places stones at 6-3, 9-3, 6-5, 9-5, the pace slowing. The fight is fierce with no spare moves, and sweat beads on Hei Baizi’s brow." },
+          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "下一步怎样？", "textEn": "What about the next move?", "speakerEn": "Hei Baizi" },
+          { "type": "dialogue", "speaker": "向问天", "speakerId": "npc", "text": "这是关键所在，以二庄主高见，该当如何？", "textEn": "This is the critical point. What does the Second Master think?", "speakerEn": "Xiang Wentian" },
+          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "这一子吗？断又不妥，连也不对，冲是冲不出，做活却又活不成。这……这……这……", "textEn": "This move? Cutting is wrong, connecting is wrong, pushing won’t break out, and even trying to live fails. This… this… this…", "speakerEn": "Hei Baizi" },
+          { "type": "narration", "text": "他手中拈着一枚白子，在石几上轻轻敲击，直过了一顿饭时分，这一子始终无法放入棋局。", "textEn": "He holds a white stone and taps it softly on the stone table. A whole meal’s time passes, and the stone still cannot be placed." },
+          { "type": "dialogue", "speaker": "丹青生", "speakerId": "npc", "text": "童老兄，这是《呕血谱》，难道你真要我二哥想得呕血不成？下一步怎么下，爽爽快快说出来吧。", "textEn": "Brother Tong, this is the Vomiting Blood Manual—are you really going to make my second brother think until he coughs blood? Say the next move, quick and clear.", "speakerEn": "Dan Qingsheng" }
         ]
       },
       {
         "sceneId": "hei_02",
         "backgroundId": "story_meizhuang_board_close",
         "lines": [
-          { "type": "narration", "text": "他落子于上部要点，局面顿现生机。", "textEn": "He plays at the upper key point, and life appears in the position." },
-          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "好！这一步果然妙。", "textEn": "Good! This move is indeed wonderful.", "speakerEn": "Hei Baizi" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "古谱之妙，在于心静。", "textEn": "The manual’s magic lies in a calm mind.", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "心静一分，棋力便进一分。", "textEn": "Calm the heart by one part, and your Go advances by one part.", "speakerEn": "Hei Baizi" },
-          { "type": "narration", "text": "他将古谱拓印递给你。", "textEn": "He hands you a rubbing of the ancient manual." }
+          { "type": "dialogue", "speaker": "向问天", "speakerId": "npc", "text": "好！这第六十七子，下在这里。", "textEn": "Good! The sixty-seventh stone goes here.", "speakerEn": "Xiang Wentian" },
+          { "type": "narration", "text": "他说罢落子，于是在“上部”七四路下了一子，局面顿时见了生机。黑白子一震，重重一拍大腿。", "textEn": "With that, he places a stone at the 7-4 point in the upper side, and the position suddenly shows life. Hei Baizi jolts and slaps his thigh." },
+          { "type": "dialogue", "speaker": "黑白子", "speakerId": "hei_baizi", "text": "好，这一子下在此处，确是妙着。", "textEn": "Good—placing the stone here is indeed a brilliant move.", "speakerEn": "Hei Baizi" },
+          { "type": "narration", "text": "他将古谱拓印递给你，墨迹未干，余势犹在。", "textEn": "He hands you a rubbing of the manual, the ink still fresh and the momentum lingering." }
         ],
         "choices": [
           {
@@ -356,68 +356,63 @@
         "sceneId": "zhenlong_01_duanyu",
         "backgroundId": "story_zhenlong_duanyu",
         "lines": [
-          { "type": "narration", "text": "擂鼓山石台前，珍珑棋局布成，黑白势子纠缠成网。", "textEn": "Before the stone platform of Leigu Mountain, the Zhenlong Puzzle is set—black and white tangled like a net." },
-          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "此局高处多，落子须断舍。", "textEn": "The board is full of heights; one must know when to cut and let go.", "speakerEn": "Su Xinghe" },
-          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "我看得见上方生机，却舍不得这一片。", "textEn": "I see life above, yet I cannot abandon this group.", "speakerEn": "Duan Yu" },
-          { "type": "narration", "text": "他连下十余手，处处求稳，局势仍被牵制。", "textEn": "He plays more than ten moves seeking safety, yet the position remains constrained." },
-          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "若再弃子，怕一退千里。", "textEn": "If I sacrifice more, I fear a retreat of a thousand miles.", "speakerEn": "Duan Yu" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "惜子过深，反被局势拖住。", "textEn": "Clinging to stones only lets the position drag you down.", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "能见高处已不易，未敢取舍，便难破局。", "textEn": "Seeing the heights is hard enough. Without courage to sacrifice, the puzzle cannot be solved.", "speakerEn": "Su Xinghe" }
+          { "type": "narration", "text": "擂鼓山石台前，珍珑棋局布成，黑白势子纠缠成网。棋盘雕在青石上，晶莹的黑白子密布如星，段誉沉吟良久，连下十余路，终觉难以再深一步。", "textEn": "Before the stone platform of Leigu Mountain, the Zhenlong Puzzle is set—black and white tangled like a net. The board is carved into blue rock, stones shining like stars. Duan Yu plays more than ten moves and still cannot see deeper." },
+          { "type": "dialogue", "speaker": "段誉", "speakerId": "duan_yu", "text": "老先生所摆的珍珑深奥巧妙之极，晚生破解不来。", "textEn": "The Zhenlong puzzle you set is profoundly subtle; I cannot solve it.", "speakerEn": "Duan Yu" },
+          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "公子棋思精密，这十几路棋已臻极高的境界，只是未能再想深一步，可惜，可惜。唉，可惜，可惜！", "textEn": "Young master, your thinking is meticulous and these dozen moves reach a very high realm, yet you could not think one step deeper—what a pity, what a pity.", "speakerEn": "Su Xinghe" },
+          { "type": "narration", "text": "段誉将所下的白子捡回木盒，棋盘上仍留着原来的阵势，四下无声。", "textEn": "Duan Yu collects his white stones into the box, leaving the original formation on the board. Silence settles over the crowd." }
         ]
       },
       {
         "sceneId": "zhenlong_02_fanbailing",
         "backgroundId": "story_zhenlong_fanbailing",
         "lines": [
-          { "type": "narration", "text": "范百龄伏身细算，指尖在棋盘上不停点算。", "textEn": "Fan Bailing bends low, counting tirelessly with his fingertips." },
-          { "type": "dialogue", "speaker": "范百龄", "speakerId": "npc", "text": "这一劫可解，只差一口气……", "textEn": "This ko can be resolved—just one liberty short…", "speakerEn": "Fan Bailing" },
-          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "局非一隅可解，莫只顾局部。", "textEn": "The whole cannot be solved by a corner; do not fixate on the local.", "speakerEn": "Su Xinghe" },
-          { "type": "narration", "text": "他再算数手，胸口发闷，气血翻涌。", "textEn": "He calculates further, chest tightening, blood surging." },
-          { "type": "dialogue", "speaker": "范百龄", "speakerId": "npc", "text": "再想一步，再想一步……", "textEn": "One more move… one more…", "speakerEn": "Fan Bailing" },
-          { "type": "dialogue", "speaker": "丁春秋", "speakerId": "npc", "text": "强行推演，只会反伤自身。", "textEn": "Forcing the calculation only harms oneself.", "speakerEn": "Ding Chunqiu" }
+          { "type": "narration", "text": "范百龄凝神细算，劫中有劫，反复推演，忽觉头晕脑胀，喉头一甜，鲜血几欲喷出。棋局之险，逼得他气血翻涌。", "textEn": "Fan Bailing calculates intently; ko within ko, counterattack within counterattack. He grows dizzy, sweetness rising in his throat as blood threatens to spill. The puzzle’s peril churns his qi and blood." },
+          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "这局棋原是极难，你天资有限，虽然棋力不弱，却也多半解不开，何况又有丁春秋这恶贼在旁施展邪术，迷人心魄，实在大是凶险，你到底要想下去呢，还是不想了？", "textEn": "This puzzle is extremely hard. Your talent is limited; though your skill is not weak, you likely cannot solve it. And with Ding Chunqiu applying evil arts nearby, it is perilous—will you continue or not?", "speakerEn": "Su Xinghe" },
+          { "type": "dialogue", "speaker": "范百龄", "speakerId": "npc", "text": "生死有命，弟……我……我……决意尽心尽力。", "textEn": "Life and death are fated. I… I… I am resolved to do my utmost.", "speakerEn": "Fan Bailing" },
+          { "type": "narration", "text": "他点头再算，身子摇摇晃晃，又喷了一大口鲜血。", "textEn": "He nods and calculates again, his body swaying before he spits another great mouthful of blood." }
         ]
       },
       {
         "sceneId": "zhenlong_03_murongfu",
         "backgroundId": "story_zhenlong_murongfu",
         "lines": [
-          { "type": "narration", "text": "慕容复凝视边角，执意以小胜换大势。", "textEn": "Murong Fu stares at the corners, insisting on small wins for greater influence." },
-          { "type": "dialogue", "speaker": "慕容复", "speakerId": "murong_fu", "text": "边角若得，腹地自开。", "textEn": "Secure the corners and the center will open itself.", "speakerEn": "Murong Fu" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "只取边角，恐腹心空虚。", "textEn": "If you only take corners, the center may be hollow.", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "慕容复", "speakerId": "murong_fu", "text": "胜负在此一线，我绝不能失。", "textEn": "Victory hangs by a thread here. I cannot lose it.", "speakerEn": "Murong Fu" },
-          { "type": "narration", "text": "他步步计较得失，心态被胜负牵动，落子愈发急促。", "textEn": "He counts gains and losses each step, his mind drawn by victory, his moves growing hurried." }
+          { "type": "narration", "text": "慕容复凝神入局，自信已想出解法，鸠摩智却在关键处一着搅乱，全盘计谋尽数落空。局面翻转，他脸色渐白，眼神开始涣散。", "textEn": "Murong Fu enters the puzzle, confident in his solution, only for Jiumozhi to disrupt it with a key move that shatters his plan. The position turns, his face paling and his gaze drifting." },
+          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "慕容公子，你武功虽强，这弈道只怕也是平常。", "textEn": "Young Master Murong, your martial arts are strong, but your Go seems ordinary.", "speakerEn": "Jiumozhi" },
+          { "type": "dialogue", "speaker": "慕容复", "speakerId": "murong_fu", "text": "未必便输于你。", "textEn": "Not necessarily inferior to you.", "speakerEn": "Murong Fu" },
+          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "慕容公子，你连我在边角上的纠缠也摆脱不了，还想逐鹿中原么？", "textEn": "Young Master Murong, you cannot even shake my corner entanglement—how will you contend for the Central Plains?", "speakerEn": "Jiumozhi" },
+          { "type": "dialogue", "speaker": "慕容复", "speakerId": "murong_fu", "text": "我慕容氏天命已尽，一切枉费心机。我一生尽心竭力，终究化作一场春梦！时也命也，夫复何言？", "textEn": "The destiny of House Murong is exhausted; all schemes are vain. I have spent my life striving, only to wake from a spring dream. Fate and time—what more is there to say?", "speakerEn": "Murong Fu" }
         ]
       },
       {
         "sceneId": "zhenlong_04_jiumozhi",
         "backgroundId": "story_zhenlong_jiumozhi",
         "lines": [
-          { "type": "narration", "text": "鸠摩智绕局而行，目光越过局部，直看大势。", "textEn": "Jiumozhi circles the board, eyes bypassing the local to view the whole." },
-          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "此局如江河山岳，格局不小。", "textEn": "This game is like rivers and mountains—its scale is vast.", "speakerEn": "Jiumozhi" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "大师不入局？", "textEn": "Master, you won’t enter the game?", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "心不在棋，入局反成累赘。", "textEn": "If the mind is not with the board, entering only becomes a burden.", "speakerEn": "Jiumozhi" },
-          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "看大势易，解细处难，何必徒耗心神。", "textEn": "Seeing the whole is easy; solving the fine points is hard. Why waste the mind?", "speakerEn": "Jiumozhi" }
+          { "type": "narration", "text": "鸠摩智立在局旁，神情从容，仿佛只是来观一场戏。他的语气既清冷又自负，旁人听来如风掠过。", "textEn": "Jiumozhi stands by the board, composed as if watching a play. His tone is cool and proud, like a wind passing through." },
+          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "小僧途中得见聪辩先生棋会邀帖，不自量力，前来会见天下高人。", "textEn": "On the road I saw the chess gathering invitation and, overestimating myself, came to meet the greats of the world.", "speakerEn": "Jiumozhi" },
+          { "type": "dialogue", "speaker": "鸠摩智", "speakerId": "npc", "text": "这个棋局，原本世人无人能解，乃是用来作弄人的。小僧有自知之明，不想多耗心血于无益之事。", "textEn": "This puzzle is one no one can solve; it was made to toy with people. I know my limits and will not waste effort on a fruitless task.", "speakerEn": "Jiumozhi" }
         ]
       },
       {
         "sceneId": "zhenlong_05_duanyanqing",
         "backgroundId": "story_zhenlong_duanyanqing",
         "lines": [
-          { "type": "narration", "text": "段延庆以铁杖点子入局，思路强硬，步步逼迫。", "textEn": "Duan Yanqing enters with an iron staff, his plan forceful, pressuring every step." },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "正道偏不得，偏道亦难成。", "textEn": "The straight path cannot bend; the crooked path rarely succeeds.", "speakerEn": "Duan Yanqing" },
-          { "type": "dialogue", "speaker": "丁春秋", "speakerId": "npc", "text": "由正入邪易，回头难。", "textEn": "It’s easy to turn crooked from straight, hard to return.", "speakerEn": "Ding Chunqiu" },
-          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "棋上只信胜负分明。", "textEn": "On the board, I only trust clear victory and defeat.", "speakerEn": "Duan Yanqing" },
-          { "type": "narration", "text": "他愈走愈偏，执念成形，局势难以回正。", "textEn": "He drifts farther and farther off course; obsession takes shape and the game cannot return." }
+          { "type": "narration", "text": "段延庆凝神落子，二十余手后日已偏西。棋路起初端正，后来渐入旁门，越走越偏，眉间阴影愈深。", "textEn": "Duan Yanqing concentrates on his stones; after twenty moves the sun tilts west. His path starts straight, then slides into side roads, drifting farther as a shadow gathers between his brows." },
+          { "type": "dialogue", "speaker": "玄难", "speakerId": "npc", "text": "段施主，你起初十着走的是正着，第十一着起，走入了旁门，越走越偏，再也难以挽救了。", "textEn": "Benefactor Duan, your first ten moves were correct; from the eleventh you strayed into a side path, drifting farther and becoming beyond rescue.", "speakerEn": "Xuan Nan" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "你少林派是名门正宗，依你正道，却又如何解法？", "textEn": "Your Shaolin is orthodox—how would your righteous path solve this?", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "玄难", "speakerId": "npc", "text": "这棋局似正非正，似邪非邪，用正道是解不开的，但若纯走偏锋，却也不行！", "textEn": "This puzzle is neither wholly right nor wrong; it cannot be solved by the orthodox path, yet a purely crooked path also fails.", "speakerEn": "Xuan Nan" },
+          { "type": "dialogue", "speaker": "段延庆", "speakerId": "duan_yanqing", "text": "前无去路，后有追兵，正也不是，邪也不是，那可难也！", "textEn": "No road ahead, enemies behind—neither right nor wrong works. How can this not be hard?", "speakerEn": "Duan Yanqing" },
+          { "type": "dialogue", "speaker": "丁春秋", "speakerId": "npc", "text": "是啊！一个人由正入邪易，改邪归正难，你这一生啊，注定是毁了，毁了，毁了！唉，可惜，一失足成千古恨，再想回首，那也是不能了！", "textEn": "Yes! It is easy to turn from right to wrong, hard to return. Your life is doomed—doomed, doomed! Alas, one misstep becomes eternal regret; there is no turning back.", "speakerEn": "Ding Chunqiu" }
         ]
       },
       {
         "sceneId": "zhenlong_06_xuzhu",
         "backgroundId": "story_zhenlong_xuzhu",
         "lines": [
-          { "type": "dialogue", "speaker": "虚竹", "speakerId": "xu_zhu", "text": "我不善棋，只愿不负本心。", "textEn": "I am not good at Go; I only wish to be true to my heart.", "speakerEn": "Xu Zhu" },
-          { "type": "narration", "text": "他闭目落子，自断一块，局面却豁然开朗。", "textEn": "He closes his eyes and plays, cutting off his own stones—the position opens wide." },
-          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "此着自杀，岂有此理！", "textEn": "A suicidal move—how can this be!", "speakerEn": "Su Xinghe" },
-          { "type": "dialogue", "speaker": "虚竹", "speakerId": "xu_zhu", "text": "我只是随缘一手。", "textEn": "I only followed fate for a move.", "speakerEn": "Xu Zhu" },
+          { "type": "dialogue", "speaker": "虚竹", "speakerId": "xu_zhu", "text": "这一着只怕不行！", "textEn": "I fear this move will not work!", "speakerEn": "Xu Zhu" },
+          { "type": "narration", "text": "他自觉棋艺低劣，却为救人心急，忽道要入局捣乱，取过一枚白子，闭目随手放下。", "textEn": "Knowing his Go is poor, he speaks in haste to save someone and steps in, taking a white stone and placing it blindly." },
+          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "胡闹，胡闹，你自填一气，自己杀死一块白棋，哪有这等下棋的法子？", "textEn": "Nonsense, nonsense! You have filled your own liberty and killed your own white group—what kind of Go is that?", "speakerEn": "Su Xinghe" },
+          { "type": "dialogue", "speaker": "虚竹", "speakerId": "xu_zhu", "text": "小僧棋艺低劣，胡乱下子，志在救人。这盘棋小僧是不会下的，请老前辈原谅。", "textEn": "My Go is poor; I played blindly to save someone. I cannot play this game—please forgive me, elder.", "speakerEn": "Xu Zhu" },
+          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "小师父，你杀了自己一块棋子，黑棋再逼紧一步，你如何应法？", "textEn": "Little master, you killed your own group; if black presses further, how will you respond?", "speakerEn": "Su Xinghe" },
           { "type": "narration", "text": "他惶然无措之际，耳畔忽有细声指点方位。", "textEn": "As he stands helpless, a soft voice guides him." },
           { "type": "dialogue", "speaker": "神秘声音", "speakerId": "npc", "text": "去位、平位、上位皆可破势，落子莫疑。", "textEn": "Lower, level, or upper—all can break the momentum. Do not hesitate.", "speakerEn": "Mysterious Voice" },
           { "type": "narration", "text": "虚竹依言落子，局面连转，众人惊叹。", "textEn": "Xu Zhu obeys, and the position twists repeatedly; all are amazed." },
@@ -426,7 +421,10 @@
           { "type": "narration", "text": "数着之后，局面忽然大变，段延庆这才明白此局秘奥在于先让白棋自断大块，再由后续妙手翻转。", "textEn": "After several moves, the position changes drastically. Duan Yanqing realizes the secret: let White cut off a large group, then reverse with later finesse." },
           { "type": "narration", "text": "棋中本有反扑、倒脱靴等弃子之法，但常理只舍少数子力，从未有人敢一口气送出数十子。", "textEn": "Go has sacrifices like counterattacks and shedding a shoe, yet normally only a few stones are given—no one dares to sacrifice dozens at once." },
           { "type": "narration", "text": "这等“挤死自己”的奇变，几乎不在高手常识之内；人皆求生脱困，少有人肯先走入绝路。", "textEn": "Such a strange “self-squeeze” lies beyond common mastery. All seek survival; few choose the dead end first." },
-          { "type": "narration", "text": "若非虚竹闭目误落此手，这一局恐怕再久也无人能解。", "textEn": "Had Xu Zhu not played blindly, this puzzle might never have been solved." }
+          { "type": "narration", "text": "他硬着头皮应对，局面竟豁然开朗，苏星河也被这异着震住，思索良久才应一着。", "textEn": "He steels himself to respond, and the position opens unexpectedly; Su Xinghe is stunned and takes a long time before answering." },
+          { "type": "dialogue", "speaker": "虚竹", "speakerId": "xu_zhu", "text": "好像是成了罢？", "textEn": "It seems it worked?", "speakerEn": "Xu Zhu" },
+          { "type": "dialogue", "speaker": "苏星河", "speakerId": "npc", "text": "先师布下此局，数十年来无人能解，小神僧解开这个珍珑，在下感激不尽。", "textEn": "My master set this puzzle and no one solved it for decades. Little master, you have solved it, and I am deeply grateful.", "speakerEn": "Su Xinghe" },
+          { "type": "dialogue", "speaker": "虚竹", "speakerId": "xu_zhu", "text": "我这是误打误撞，全凭长辈见爱，老先生过奖，实在愧不敢当。", "textEn": "It was sheer luck, thanks to the elders’ kindness. Your praise is too much; I am unworthy.", "speakerEn": "Xu Zhu" }
         ]
       },
       {
