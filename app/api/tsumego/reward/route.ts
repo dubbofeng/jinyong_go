@@ -100,16 +100,26 @@ export async function POST(request: Request) {
         }
       }
 
-      // 资源遭遇奖励（竹子/木材/石子）
-      if (source === 'resource') {
-        const stoneCount = Math.floor(Math.random() * 91) + 10; // 10-100
-        const resourceRewards = [
-          { itemId: 'bamboo', name: '竹子', quantity: 1 },
-          { itemId: 'wood', name: '木材', quantity: 1 },
-          { itemId: 'stone', name: '石子', quantity: stoneCount },
-        ];
-        rewards.items.push(...resourceRewards);
-        await addInventoryItems(resourceRewards.map(({ itemId, quantity }) => ({ itemId, quantity })));
+      // 资源遭遇奖励（根据资源类型给予对应材料）
+      if (source === 'tree' || source === 'bamboo' || source === 'rock') {
+        let resourceReward;
+        
+        if (source === 'tree') {
+          // 打败大树死活题 - 只奖励木材
+          resourceReward = { itemId: 'wood', name: '木材', quantity: 1 };
+        } else if (source === 'bamboo') {
+          // 打败竹子死活题 - 只奖励竹子
+          resourceReward = { itemId: 'bamboo', name: '竹子', quantity: 1 };
+        } else if (source === 'rock') {
+          // 打败石头死活题 - 只奖励石子
+          const stoneCount = Math.floor(Math.random() * 41) + 10; // 10-50
+          resourceReward = { itemId: 'stone', name: '石子', quantity: stoneCount };
+        }
+        
+        if (resourceReward) {
+          rewards.items.push(resourceReward);
+          await addInventoryItems([{ itemId: resourceReward.itemId, quantity: resourceReward.quantity }]);
+        }
       }
 
       // 更新玩家经验和银两

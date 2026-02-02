@@ -11,7 +11,7 @@ interface TsumegoModalProps {
   problem: TsumegoProblem | null;
   onClose: () => void;
   onComplete: (success: boolean) => void;
-  rewardSource?: 'resource';
+  rewardSource?: 'tree' | 'bamboo' | 'rock';
 }
 
 export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rewardSource }: TsumegoModalProps) {

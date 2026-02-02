@@ -99,7 +99,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   // 死活题系统
   const [showTsumegoEncounter, setShowTsumegoEncounter] = useState(false);
   const [currentTsumegoProblem, setCurrentTsumegoProblem] = useState<any>(null);
-  const [tsumegoRewardSource, setTsumegoRewardSource] = useState<'resource' | null>(null);
+  const [tsumegoRewardSource, setTsumegoRewardSource] = useState<'tree' | 'bamboo' | 'rock' | null>(null);
   const [showWorkshop, setShowWorkshop] = useState(false);
   const [workshopBusy, setWorkshopBusy] = useState(false);
   const [workshopError, setWorkshopError] = useState<string | null>(null);
@@ -281,7 +281,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   /**
    * 处理树木碰撞 - 触发死活题挑战
    */
-  const handleTreeCollision = async (resourceName?: string) => {
+  const handleTreeCollision = async (resourceName?: string, resourceType?: 'tree' | 'bamboo' | 'rock') => {
     // 显示挑战提示
     const shouldChallenge = await showConfirm(
       `从${resourceName || '树后'}跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"\n\n要死要活。`,
@@ -289,7 +289,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     );
     
     if (shouldChallenge) {
-      setTsumegoRewardSource('resource');
+      setTsumegoRewardSource(resourceType || 'tree');
       // 根据玩家等级自动匹配难度
       triggerTsumegoEncounter(mapData?.id);
       return;
@@ -1026,8 +1026,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         const resource = isResourceItem(item);
         if (resource.isTree || resource.isBamboo || resource.isRock) {
           const label = resource.isBamboo ? '竹林' : resource.isRock ? '岩石' : '树后';
+          const resourceType = resource.isBamboo ? 'bamboo' : resource.isRock ? 'rock' : 'tree';
           console.log(`🌿 点击资源: ${item.itemName}，触发死活题挑战！`);
-          handleTreeCollision(label);
+          handleTreeCollision(label, resourceType as 'tree' | 'bamboo' | 'rock');
           return;
         }
       }
