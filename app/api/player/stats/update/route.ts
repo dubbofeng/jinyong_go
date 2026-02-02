@@ -124,8 +124,6 @@ export async function PATCH(request: NextRequest) {
         await db
           .update(gameProgress)
           .set({
-            level: updates.level ?? progress.level,
-            experience: updates.experience ?? progress.experience,
             skillPoints: nextSkillPoints,
             updatedAt: new Date(),
           })

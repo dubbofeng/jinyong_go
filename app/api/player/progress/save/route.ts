@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/db';
-import { gameProgress } from '@/src/db/schema';
+import { gameProgress, playerStats } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -17,11 +17,7 @@ import { eq } from 'drizzle-orm';
  *   currentY?: number,
  *   activeQuests?: string[],
  *   completedQuests?: string[],
- *   unlockedSkills?: string[],
- *   skillLevels?: Record<string, number>,
- *   totalGames?: number,
- *   wins?: number,
- *   losses?: number
+ * }
  * }
  */
 export async function POST(request: NextRequest) {
@@ -34,11 +30,7 @@ export async function POST(request: NextRequest) {
       currentY,
       activeQuests,
       completedQuests,
-      unlockedSkills,
-      skillLevels,
-      totalGames,
-      wins,
-      losses
+      
     } = body;
 
     if (!userId) {
@@ -72,11 +64,6 @@ export async function POST(request: NextRequest) {
     if (currentY !== undefined) updateData.currentY = currentY;
     if (activeQuests !== undefined) updateData.activeQuests = activeQuests;
     if (completedQuests !== undefined) updateData.completedQuests = completedQuests;
-    if (unlockedSkills !== undefined) updateData.unlockedSkills = unlockedSkills;
-    if (skillLevels !== undefined) updateData.skillLevels = skillLevels;
-    if (totalGames !== undefined) updateData.totalGames = totalGames;
-    if (wins !== undefined) updateData.wins = wins;
-    if (losses !== undefined) updateData.losses = losses;
 
     // 更新进度
     await db
@@ -130,23 +117,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const [stats] = await db
+      .select()
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
+
     return NextResponse.json({
       success: true,
       progress: {
         playerName: progress.playerName,
-        level: progress.level,
-        experience: progress.experience,
+        level: stats?.level ?? 1,
+        experience: stats?.experience ?? 0,
         currentMap: progress.currentMap,
         currentX: progress.currentX,
         currentY: progress.currentY,
         currentChapter: progress.currentChapter,
         activeQuests: progress.activeQuests,
         completedQuests: progress.completedQuests,
-        unlockedSkills: progress.unlockedSkills,
-        skillLevels: progress.skillLevels,
-        totalGames: progress.totalGames,
-        wins: progress.wins,
-        losses: progress.losses,
         lastSavedAt: progress.lastSavedAt,
       },
     });

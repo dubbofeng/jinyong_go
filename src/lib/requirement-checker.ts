@@ -1,5 +1,5 @@
 import { db } from '@/app/db';
-import { gameProgress, npcRelationships, playerSkills } from '@/src/db/schema';
+import { gameProgress, npcRelationships, playerSkills, playerStats } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import type { Requirement, RequirementCheckResult } from '@/src/types/requirements';
 
@@ -15,10 +15,8 @@ export interface PlayerContext {
   currentMap?: string;
   // 从数据库加载的完整信息
   gameProgress?: {
-    level: number;
     chapter: number;
     completedQuests: string[];
-    unlockedSkills: string[];
     currentMap: string;
   };
   npcRelationships?: Map<string, {
@@ -44,6 +42,19 @@ export async function loadPlayerContext(userId: number): Promise<PlayerContext> 
     .from(gameProgress)
     .where(eq(gameProgress.userId, userId))
     .limit(1);
+
+  // 加载玩家属性
+  const [stats] = await db
+    .select({ level: playerStats.level })
+    .from(playerStats)
+    .where(eq(playerStats.userId, userId))
+    .limit(1);
+
+  // 加载玩家技能（仅解锁）
+  const unlockedSkillRows = await db
+    .select({ skillId: playerSkills.skillId })
+    .from(playerSkills)
+    .where(and(eq(playerSkills.userId, userId), eq(playerSkills.unlocked, true)));
 
   // 加载NPC关系
   const relationships = await db
@@ -72,17 +83,15 @@ export async function loadPlayerContext(userId: number): Promise<PlayerContext> 
 
   return {
     userId,
-    level: progress?.level,
+    level: stats?.level,
     chapter: progress?.chapter,
     completedQuests: progress?.completedQuests || [],
-    unlockedSkills: progress?.unlockedSkills || [],
+    unlockedSkills: unlockedSkillRows.map((row) => row.skillId),
     currentMap: progress?.currentMap || '',
     gameProgress: progress
       ? {
-          level: progress.level,
           chapter: progress.chapter,
           completedQuests: progress.completedQuests || [],
-          unlockedSkills: progress.unlockedSkills || [],
           currentMap: progress.currentMap || '',
         }
       : undefined,
@@ -192,7 +201,7 @@ function checkLevelRequirement(
   requirement: Requirement,
   context: PlayerContext
 ): RequirementCheckResult {
-  const playerLevel = context.level || context.gameProgress?.level || 1;
+  const playerLevel = context.level || 1;
   
   if (requirement.minLevel && playerLevel < requirement.minLevel) {
     return {
@@ -296,7 +305,7 @@ function checkSkillUnlockedRequirement(
     return { satisfied: false, reason: '缺少skillId参数' };
   }
   
-  const unlockedSkills = context.unlockedSkills || context.gameProgress?.unlockedSkills || [];
+  const unlockedSkills = context.unlockedSkills || [];
   const unlocked = unlockedSkills.includes(requirement.skillId);
   
   if (!unlocked) {
@@ -317,7 +326,7 @@ function checkSkillNotUnlockedRequirement(
     return { satisfied: false, reason: '缺少skillId参数' };
   }
   
-  const unlockedSkills = context.unlockedSkills || context.gameProgress?.unlockedSkills || [];
+  const unlockedSkills = context.unlockedSkills || [];
   const unlocked = unlockedSkills.includes(requirement.skillId);
   
   if (unlocked) {

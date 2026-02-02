@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '../../../auth';
 import { db } from '@/src/db';
-import { mapItems } from '@/src/db/schema';
+import { mapItems, maps, items } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { checkRequirements, loadPlayerContext } from '@/src/lib/requirement-checker';
 
@@ -39,8 +39,14 @@ export async function GET(request: NextRequest) {
 
     // 查询传送门信息
     const portal = await db
-      .select()
+      .select({
+        id: mapItems.id,
+        requirements: mapItems.requirements,
+        sceneLinkMapId: mapItems.sceneLinkMapId,
+        itemName: items.name,
+      })
       .from(mapItems)
+      .leftJoin(items, eq(mapItems.itemId, items.id))
       .where(eq(mapItems.id, parseInt(portalId)))
       .limit(1);
 
@@ -53,36 +59,50 @@ export async function GET(request: NextRequest) {
 
     const portalData = portal[0];
 
-    // 如果传送门没有requirements，则默认解锁
-    if (!portalData.requirements) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          portalId: portalData.id,
-          portalName: portalData.itemName,
-          targetMapId: portalData.targetMapId,
-          unlocked: true,
-          reason: '无限制',
-        },
-      });
+    const targetMapId = portalData.sceneLinkMapId;
+    const baseRequirements = Array.isArray(portalData.requirements)
+      ? portalData.requirements
+      : [];
+
+    const combinedRequirements = [...baseRequirements];
+
+    if (targetMapId) {
+      const [targetMap] = await db
+        .select({
+          mapId: maps.mapId,
+          mapType: maps.mapType,
+          chapter: maps.chapter,
+          minLevel: maps.minLevel,
+        })
+        .from(maps)
+        .where(eq(maps.mapId, targetMapId))
+        .limit(1);
+
+      if (targetMap?.mapType === 'scene') {
+        if (targetMap.chapter && targetMap.chapter > 0) {
+          combinedRequirements.push({ type: 'chapter', chapter: targetMap.chapter });
+        }
+        if (targetMap.minLevel && targetMap.minLevel > 1) {
+          combinedRequirements.push({ type: 'level', minLevel: targetMap.minLevel });
+        }
+      }
     }
 
     // 加载玩家上下文
     const playerContext = await loadPlayerContext(userId);
 
     // 检查requirements
-    const requirements = portalData.requirements as any;
-    const unlocked = await checkRequirements(requirements, playerContext);
+    const unlockedResult = await checkRequirements(combinedRequirements, playerContext);
 
     return NextResponse.json({
       success: true,
       data: {
         portalId: portalData.id,
         portalName: portalData.itemName,
-        targetMapId: portalData.targetMapId,
-        unlocked,
-        reason: unlocked ? '已解锁' : '未满足解锁条件',
-        requirements: requirements,
+        targetMapId: targetMapId,
+        unlocked: unlockedResult.satisfied,
+        reason: unlockedResult.satisfied ? '已解锁' : (unlockedResult.reason || '未满足解锁条件'),
+        requirements: combinedRequirements,
       },
     });
 

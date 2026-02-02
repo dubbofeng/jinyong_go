@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/app/auth';
 import { getTranslations } from 'next-intl/server';
 import { db } from '@/app/db';
-import { users, gameProgress, chessRecords } from '@/src/db/schema';
+import { users, playerStats, chessRecords } from '@/src/db/schema';
 import { desc, eq, count, sql } from 'drizzle-orm';
 import Link from 'next/link';
 
@@ -26,10 +26,10 @@ export default async function UsersPage({
   const userStats = await Promise.all(
     allUsers.map(async (user) => {
       // 获取游戏进度
-      const [progress] = await db
+      const [stats] = await db
         .select()
-        .from(gameProgress)
-        .where(eq(gameProgress.userId, user.id))
+        .from(playerStats)
+        .where(eq(playerStats.userId, user.id))
         .limit(1);
 
       // 获取对战记录数
@@ -46,8 +46,8 @@ export default async function UsersPage({
 
       return {
         ...user,
-        level: progress?.level || 1,
-        experience: progress?.experience || 0,
+        level: stats?.level || 1,
+        experience: stats?.experience || 0,
         gamesPlayed: recordCount?.count || 0,
         gamesWon: winCount?.count || 0,
       };

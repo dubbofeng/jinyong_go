@@ -17,8 +17,6 @@ export const gameProgress = pgTable('game_progress', {
   
   // 玩家信息
   playerName: varchar('player_name', { length: 100 }),
-  level: integer('level').default(1).notNull(),
-  experience: integer('experience').default(0).notNull(),
   
   // 当前位置
   currentMap: varchar('current_map', { length: 100 }).default('daoguan_scene').notNull(),
@@ -35,14 +33,7 @@ export const gameProgress = pgTable('game_progress', {
   completedQuests: json('completed_quests').$type<string[]>().default([]).notNull(),
   
   // 技能系统
-  unlockedSkills: json('unlocked_skills').$type<string[]>().default([]).notNull(),
-  skillLevels: json('skill_levels').$type<Record<string, number>>().default({}).notNull(),
   skillPoints: integer('skill_points').default(0).notNull(), // 可用技能点
-  
-  // 对战统计
-  totalGames: integer('total_games').default(0).notNull(),
-  wins: integer('wins').default(0).notNull(),
-  losses: integer('losses').default(0).notNull(),
   
   // 保存时间
   lastSavedAt: timestamp('last_saved_at').defaultNow().notNull(),

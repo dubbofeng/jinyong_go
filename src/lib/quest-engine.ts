@@ -5,8 +5,9 @@
  */
 
 import { db } from '@/app/db';
-import { questProgress, gameProgress, users } from '@/src/db/schema';
+import { questProgress, gameProgress, users, playerStats, playerSkills } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { getExperienceForLevel } from '@/src/lib/rank-system';
 import {
   getAllQuests,
   getQuestById,
@@ -65,13 +66,23 @@ export async function checkQuestRequirementsFromProgress(
     return { met: false, reason: 'Player progress not found' };
   }
 
+  const [stats] = await db
+    .select({ level: playerStats.level })
+    .from(playerStats)
+    .where(eq(playerStats.userId, userId))
+    .limit(1);
+
+  if (!stats) {
+    return { met: false, reason: 'Player stats not found' };
+  }
+
   // 检查等级要求（如果有）
   // 可以根据章节推断等级要求
   const minLevel = questDef.chapter * 10; // 简单映射：章节*10
-  if (progress.level < minLevel) {
+  if (stats.level < minLevel) {
     return {
       met: false,
-      reason: `Level ${minLevel} required (current: ${progress.level})`,
+      reason: `Level ${minLevel} required (current: ${stats.level})`,
     };
   }
 
@@ -271,67 +282,129 @@ export async function completeQuest(
 
     // 发放奖励
     const rewards = questDef.rewards;
-    let newExperience = progress.experience;
-    let newLevel = progress.level;
-    let newSilver = progress.silver || 0;
+
+    const [stats] = await db
+      .select()
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
+
+    if (!stats) {
+      return { success: false, message: 'Player stats not found' };
+    }
+
+    let newExperience = stats.experience;
+    let newLevel = stats.level;
+    let expToNext = stats.experienceToNext;
+    let maxStamina = stats.maxStamina;
+    let maxQi = stats.maxQi;
+    let newSilver = stats.silver || 0;
 
     if (rewards.experience) {
       newExperience += rewards.experience;
-      // 简单升级逻辑：每100经验升1级
-      newLevel = Math.floor(newExperience / 100) + 1;
+
+      while (newExperience >= expToNext && newLevel < 27) {
+        newExperience -= expToNext;
+        newLevel++;
+        expToNext = getExperienceForLevel(newLevel);
+        maxStamina += 10;
+        maxQi += 10;
+      }
+
+      if (newLevel >= 27) {
+        newExperience = 0;
+        expToNext = 0;
+      }
     }
 
     if (rewards.silver) {
       newSilver += rewards.silver;
     }
 
-    // 解锁技能
-    const unlockedSkills = (progress.unlockedSkills as string[]) || [];
-    if (rewards.skill && !unlockedSkills.includes(rewards.skill)) {
-      unlockedSkills.push(rewards.skill);
-    }
-    if (rewards.skills) {
-      rewards.skills.forEach((skill) => {
-        if (!unlockedSkills.includes(skill)) {
-          unlockedSkills.push(skill);
-        }
-      });
-    }
+    const skillRewards = new Set<string>();
+    if (rewards.skill) skillRewards.add(rewards.skill);
+    if (rewards.skills) rewards.skills.forEach((skill) => skillRewards.add(skill));
 
-    // 更新quest进度状态
-    await db
-      .update(questProgress)
-      .set({
-        status: 'completed',
-        completedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(questProgress.userId, userId),
-          eq(questProgress.questId, questId)
-        )
+    await db.transaction(async (tx) => {
+      // 更新quest进度状态
+      await tx
+        .update(questProgress)
+        .set({
+          status: 'completed',
+          completedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(questProgress.userId, userId),
+            eq(questProgress.questId, questId)
+          )
+        );
+
+      // 更新玩家属性
+      const leveledUp = newLevel > stats.level;
+      await tx
+        .update(playerStats)
+        .set({
+          level: newLevel,
+          experience: newExperience,
+          experienceToNext: expToNext,
+          maxStamina,
+          maxQi,
+          stamina: leveledUp ? maxStamina : stats.stamina,
+          qi: leveledUp ? maxQi : stats.qi,
+          silver: newSilver,
+          updatedAt: new Date(),
+        })
+        .where(eq(playerStats.userId, userId));
+
+      // 解锁技能
+      if (skillRewards.size > 0) {
+        const existingSkills = await tx
+          .select({ skillId: playerSkills.skillId, unlocked: playerSkills.unlocked })
+          .from(playerSkills)
+          .where(eq(playerSkills.userId, userId));
+
+        const existingMap = new Map(existingSkills.map((s) => [s.skillId, s]));
+
+        for (const skillId of skillRewards) {
+          const existing = existingMap.get(skillId);
+          if (existing) {
+            if (!existing.unlocked) {
+              await tx
+                .update(playerSkills)
+                .set({ unlocked: true, unlockedAt: new Date() })
+                .where(and(eq(playerSkills.userId, userId), eq(playerSkills.skillId, skillId)));
+            }
+          } else {
+            await tx.insert(playerSkills).values({
+              userId,
+              skillId,
+              unlocked: true,
+              level: 1,
+              experience: 0,
+              unlockedAt: new Date(),
+            });
+          }
+        }
+      }
+
+      // 更新游戏进度
+      completedQuestIds.push(questId);
+      const activeQuests = ((progress.activeQuests as string[]) || []).filter(
+        (id) => id !== questId
       );
 
-    // 更新游戏进度
-    completedQuestIds.push(questId);
-    const activeQuests = ((progress.activeQuests as string[]) || []).filter(
-      (id) => id !== questId
-    );
-
-    await db
-      .update(gameProgress)
-      .set({
-        experience: newExperience,
-        level: newLevel,
-        silver: newSilver,
-        completedQuests: completedQuestIds,
-        activeQuests: activeQuests,
-        currentQuest: activeQuests.length > 0 ? activeQuests[0] : null,
-        unlockedSkills: unlockedSkills,
-        updatedAt: new Date(),
-      })
-      .where(eq(gameProgress.userId, userId));
+      await tx
+        .update(gameProgress)
+        .set({
+          completedQuests: completedQuestIds,
+          activeQuests: activeQuests,
+          currentQuest: activeQuests.length > 0 ? activeQuests[0] : null,
+          updatedAt: new Date(),
+        })
+        .where(eq(gameProgress.userId, userId));
+    });
 
     return {
       success: true,
@@ -356,6 +429,16 @@ export async function getAvailableQuests(userId: number): Promise<any[]> {
       .limit(1);
 
     if (!progress) {
+      return [];
+    }
+
+    const [stats] = await db
+      .select({ level: playerStats.level })
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
+
+    if (!stats) {
       return [];
     }
 
@@ -393,7 +476,7 @@ export async function getAvailableQuests(userId: number): Promise<any[]> {
 
       // 检查等级要求
       const minLevel = questDef.chapter * 10;
-      const levelMet = progress.level >= minLevel;
+      const levelMet = stats.level >= minLevel;
 
       // 合并定义和进度
       const progressData = progressMap.get(questDef.id);

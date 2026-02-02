@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '../../../auth';
 import { db } from '../../../../src/db';
-import { gameProgress } from '../../../../src/db/schema';
+import { gameProgress, playerStats } from '../../../../src/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -34,12 +34,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const stats = await db.query.playerStats.findFirst({
+      where: eq(playerStats.userId, userId)
+    });
+
     return NextResponse.json({
       success: true,
       data: {
         skillPoints: progress.skillPoints,
-        level: progress.level,
-        experience: progress.experience
+        level: stats?.level ?? 1,
+        experience: stats?.experience ?? 0
       }
     });
   } catch (error) {

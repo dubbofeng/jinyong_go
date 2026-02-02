@@ -12,11 +12,6 @@ export interface GameProgressData {
   currentY?: number;
   activeQuests?: string[];
   completedQuests?: string[];
-  unlockedSkills?: string[];
-  skillLevels?: Record<string, number>;
-  totalGames?: number;
-  wins?: number;
-  losses?: number;
 }
 
 export function useAutoSave(
