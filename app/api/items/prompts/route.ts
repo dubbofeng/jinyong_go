@@ -6,7 +6,7 @@ import { eq, inArray } from 'drizzle-orm';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const itemTypes = searchParams.get('types')?.split(',') || ['consumable', 'material', 'building', 'decoration'];
+    const itemTypes = searchParams.get('types')?.split(',') || ['consumable', 'material', 'equipment', 'building', 'decoration'];
 
     // 查询items
     const itemsList = await db

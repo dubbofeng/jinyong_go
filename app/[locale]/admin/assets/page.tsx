@@ -50,7 +50,7 @@ export default function AssetsPage() {
   useEffect(() => {
     const loadDatabaseItems = async () => {
       try {
-        const response = await fetch('/api/items/prompts?types=consumable,material,building,decoration');
+        const response = await fetch('/api/items/prompts?types=consumable,material,equipment,building,decoration');
         const data = await response.json();
         
         if (data.success) {

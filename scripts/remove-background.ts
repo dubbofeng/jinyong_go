@@ -9,6 +9,8 @@ import { join } from 'path';
 
 const INPUT_DIR = join(process.cwd(), 'public', 'game', 'isometric', 'characters');
 const BUILDINGS_DIR = join(process.cwd(), 'public', 'game', 'isometric', 'chinese_buildings');
+const ICONS_DIR = join(process.cwd(), 'public', 'game', 'icons');
+const EQUIPMENTS_DIR = join(process.cwd(), 'public', 'game', 'generated', 'equipments');
 const TARGET_SIZE = 128; // 目标尺寸
 const BUILDINGS_SIZE = 384; // 建筑物目标尺寸
 
@@ -33,6 +35,26 @@ async function removeBackground() {
       
       for (const filename of buildingFiles) {
         await processImage(filename, BUILDINGS_DIR, BUILDINGS_SIZE);
+      }
+    }
+
+    // 3. 处理图标图片
+    if (existsSync(ICONS_DIR)) {
+      console.log('\n📁 处理图标图片 (128x128)...\n');
+      const iconFiles = readdirSync(ICONS_DIR).filter(f => f.endsWith('.png'));
+      
+      for (const filename of iconFiles) {
+        await processImage(filename, ICONS_DIR, TARGET_SIZE);
+      }
+    }
+
+    // 4. 处理装备图片
+    if (existsSync(EQUIPMENTS_DIR)) {
+      console.log('\n📁 处理装备图片 (128x128)...\n');
+      const equipmentFiles = readdirSync(EQUIPMENTS_DIR).filter(f => f.endsWith('.png'));
+      
+      for (const filename of equipmentFiles) {
+        await processImage(filename, EQUIPMENTS_DIR, TARGET_SIZE);
       }
     }
 
