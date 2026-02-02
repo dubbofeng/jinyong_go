@@ -84,13 +84,13 @@ export async function loadPlayerContext(userId: number): Promise<PlayerContext> 
   return {
     userId,
     level: stats?.level,
-    chapter: progress?.chapter,
+    chapter: progress?.currentChapter,
     completedQuests: progress?.completedQuests || [],
     unlockedSkills: unlockedSkillRows.map((row) => row.skillId),
     currentMap: progress?.currentMap || '',
     gameProgress: progress
       ? {
-          chapter: progress.chapter,
+          chapter: progress.currentChapter,
           completedQuests: progress.completedQuests || [],
           currentMap: progress.currentMap || '',
         }
