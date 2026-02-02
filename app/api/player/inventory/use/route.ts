@@ -63,6 +63,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (item.itemType === 'equipment') {
+      return NextResponse.json(
+        { error: '装备请在背包中装备/卸下' },
+        { status: 400 }
+      );
+    }
+
     // 检查数量
     if (inventory.quantity <= 0) {
       return NextResponse.json(

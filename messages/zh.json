@@ -163,11 +163,16 @@
     "items": "件物品",
     "empty": "背包空空如也",
     "clickToUse": "点击使用",
+    "clickToEquip": "点击装备",
+    "clickToUnequip": "点击卸下",
+    "equipped": "已装备",
     "stamina": "体力",
     "qi": "内力",
     "experience": "经验",
     "useSuccess": "使用成功",
-    "useFailed": "使用失败"
+    "useFailed": "使用失败",
+    "equipSuccess": "装备成功",
+    "equipFailed": "装备失败"
   },
   "save": {
     "manual": "手动保存",

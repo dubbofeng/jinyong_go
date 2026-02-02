@@ -7,8 +7,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '../../../auth';
 import { db } from '../../../../src/db';
-import { playerStats, users } from '../../../../src/db/schema';
-import { eq } from 'drizzle-orm';
+import { items, playerInventory, playerStats, users } from '../../../../src/db/schema';
+import { and, eq } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../src/lib/rank-system';
 
 export async function GET(request: NextRequest) {
@@ -36,9 +36,43 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const equippedItems = await db
+      .select({
+        effects: items.effects,
+      })
+      .from(playerInventory)
+      .leftJoin(items, eq(playerInventory.itemId, items.itemId))
+      .where(
+        and(
+          eq(playerInventory.userId, parseInt(session.user.id)),
+          eq(playerInventory.equipped, true),
+          eq(items.itemType, 'equipment')
+        )
+      );
+
+    const bonus = equippedItems.reduce(
+      (acc, cur) => {
+        const effects = (cur.effects as any) || {};
+        acc.maxStamina += effects.maxStamina || 0;
+        acc.maxQi += effects.maxQi || 0;
+        return acc;
+      },
+      { maxStamina: 0, maxQi: 0 }
+    );
+
+    const base = stats[0];
+    const maxStamina = base.maxStamina + bonus.maxStamina;
+    const maxQi = base.maxQi + bonus.maxQi;
+
     return NextResponse.json({
       success: true,
-      data: stats[0],
+      data: {
+        ...base,
+        maxStamina,
+        maxQi,
+        stamina: Math.min(base.stamina, maxStamina),
+        qi: Math.min(base.qi, maxQi),
+      },
     });
   } catch (error) {
     console.error('获取玩家属性失败:', error);

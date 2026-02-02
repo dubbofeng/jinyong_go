@@ -13,6 +13,8 @@ interface ItemEffects {
   stamina?: number;
   qi?: number;
   experience?: number;
+  maxStamina?: number;
+  maxQi?: number;
 }
 
 interface InventoryItem {
@@ -28,7 +30,7 @@ interface InventoryItem {
     itemType: string;
     rarity: string;
     effects: ItemEffects;
-    iconPath: string | null;
+    imagePath: string | null;
   };
 }
 
@@ -148,6 +150,36 @@ export function InventoryPanel() {
     }
   };
 
+  const handleToggleEquip = async (inventoryId: number, equip: boolean) => {
+    if (using) return;
+
+    setUsing(inventoryId);
+
+    try {
+      const response = await fetch('/api/player/inventory/equip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inventoryId, equip }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await fetchInventory();
+        await showAlert(data.message, 'success', t('equipSuccess'));
+      } else {
+        await showAlert(data.error || t('equipFailed'), 'error', t('equipFailed'));
+      }
+    } catch (error) {
+      console.error('装备物品失败:', error);
+      await showAlert(t('equipFailed'), 'error', t('equipFailed'));
+    } finally {
+      setUsing(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg p-4 shadow-md">
@@ -187,9 +219,20 @@ export function InventoryPanel() {
               className={`relative border-2 rounded-lg p-2 cursor-pointer hover:shadow-lg transition-all ${
                 RARITY_COLORS[item.item.rarity as keyof typeof RARITY_COLORS] || RARITY_COLORS.common
               } ${using === item.id ? 'opacity-50' : ''}`}
-              onClick={() => handleUseItem(item.id)}
-              title={`${locale === 'en' ? item.item.descriptionEn || item.item.description : item.item.description}\n${t('clickToUse')}`}
+              onClick={() => {
+                if (item.item.itemType === 'equipment') {
+                  handleToggleEquip(item.id, !item.equipped);
+                } else {
+                  handleUseItem(item.id);
+                }
+              }}
+              title={`${locale === 'en' ? item.item.descriptionEn || item.item.description : item.item.description}\n${item.item.itemType === 'equipment' ? (item.equipped ? t('clickToUnequip') : t('clickToEquip')) : t('clickToUse')}`}
             >
+              {item.equipped && (
+                <div className="absolute top-1 left-1 bg-emerald-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                  {t('equipped')}
+                </div>
+              )}
               {/* 数量 */}
               {item.quantity > 1 && (
                 <div className="absolute top-1 right-1 bg-slate-700 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
@@ -225,6 +268,12 @@ export function InventoryPanel() {
                 )}
                 {item.item.effects?.experience && (
                   <span className="text-yellow-600">✨+{item.item.effects.experience}</span>
+                )}
+                {item.item.effects?.maxStamina && (
+                  <span className="text-rose-600">❤️↑+{item.item.effects.maxStamina} </span>
+                )}
+                {item.item.effects?.maxQi && (
+                  <span className="text-indigo-600">⚡↑+{item.item.effects.maxQi}</span>
                 )}
               </div>
             </div>

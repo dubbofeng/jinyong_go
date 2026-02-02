@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
           name: items.name,
           nameEn: items.nameEn,
           description: items.description,
+            descriptionEn: items.descriptionEn,
           itemType: items.itemType,
           rarity: items.rarity,
           effects: items.effects,

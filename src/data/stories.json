@@ -42,30 +42,30 @@
         "choices": [
           {
             "choiceId": "musang_reward_talisman",
-            "text": "收下棋谱与护符",
-            "textEn": "Accept the manual and talisman",
+            "text": "收下棋道手札与山行护符",
+            "textEn": "Take the Go notes and talisman",
             "rewards": {
               "exp": 120,
               "silver": 80,
               "items": [
-                { "itemId": "item_story_go_manual", "name": "棋道手札", "nameEn": "Go Notes", "description": "记录木桑道人心得，阅读后获得围棋灵感。", "descriptionEn": "Notes of Taoist Musang; reading grants Go inspiration.", "quantity": 1 },
-                { "itemId": "item_story_talisman", "name": "山行护符", "nameEn": "Mountain Talisman", "description": "山中求安的护身符，小幅提升体力恢复。", "descriptionEn": "A talisman for mountain travel; slightly boosts stamina regen.", "quantity": 1 },
-                { "itemId": "go_board_1", "name": "普通棋盘", "nameEn": "Basic Go Board", "description": "寻常木制棋盘，便于携带。", "descriptionEn": "A common wooden Go board, easy to carry.", "quantity": 1 },
-                { "itemId": "go_bowl_1", "name": "棋罐", "nameEn": "Stone Jar", "description": "盛放黑白棋子的木罐。", "descriptionEn": "A wooden jar for black and white stones.", "quantity": 1 }
+                { "itemId": "item_story_go_manual", "name": "棋道手札", "nameEn": "Go Notes", "description": "记录木桑道人心得，携带可提升内力上限。", "descriptionEn": "Notes of Taoist Musang; carrying increases max qi.", "quantity": 1 },
+                { "itemId": "item_story_talisman", "name": "山行护符", "nameEn": "Mountain Talisman", "description": "山中求安的护身符，携带可提升体力上限。", "descriptionEn": "A talisman for mountain travel; carrying increases max stamina.", "quantity": 1 },
+                { "itemId": "go_board_1", "name": "松木棋盘", "nameEn": "Pine Go Board", "description": "装备：最大内力 +8", "descriptionEn": "Equip: Max Qi +8", "quantity": 1 },
+                { "itemId": "go_bowl_1", "name": "竹编棋罐", "nameEn": "Bamboo Go Bowl", "description": "装备：最大体力 +8", "descriptionEn": "Equip: Max Stamina +8", "quantity": 1 }
               ]
             }
           },
           {
             "choiceId": "musang_reward_tea",
-            "text": "只取清茶与碎银",
-            "textEn": "Take the tea and silver",
+            "text": "收下松针清茶与棋具",
+            "textEn": "Take pine tea and the Go set",
             "rewards": {
               "exp": 120,
               "silver": 120,
               "items": [
-                { "itemId": "item_story_pine_tea", "name": "松针清茶", "nameEn": "Pine Needle Tea", "description": "山中清茶，饮用后恢复少量内力。", "descriptionEn": "A mountain tea that restores a little inner power.", "quantity": 1 },
-                { "itemId": "go_board_1", "name": "普通棋盘", "nameEn": "Basic Go Board", "description": "寻常木制棋盘，便于携带。", "descriptionEn": "A common wooden Go board, easy to carry.", "quantity": 1 },
-                { "itemId": "go_bowl_1", "name": "棋罐", "nameEn": "Stone Jar", "description": "盛放黑白棋子的木罐。", "descriptionEn": "A wooden jar for black and white stones.", "quantity": 1 }
+                { "itemId": "item_story_pine_tea", "name": "松针清茶", "nameEn": "Pine Needle Tea", "description": "山中清茶，携带可提升少量内力上限。", "descriptionEn": "A mountain tea; carrying slightly increases max qi.", "quantity": 1 },
+                { "itemId": "go_board_1", "name": "松木棋盘", "nameEn": "Pine Go Board", "description": "装备：最大内力 +8", "descriptionEn": "Equip: Max Qi +8", "quantity": 1 },
+                { "itemId": "go_bowl_1", "name": "竹编棋罐", "nameEn": "Bamboo Go Bowl", "description": "装备：最大体力 +8", "descriptionEn": "Equip: Max Stamina +8", "quantity": 1 }
               ]
             }
           }
@@ -139,8 +139,8 @@
         "choices": [
           {
             "choiceId": "wanjie_reward_huangmei",
-            "text": "帮黄眉僧稳局",
-            "textEn": "Help Huangmei stabilize",
+            "text": "收下禅定香囊",
+            "textEn": "Take the meditation sachet",
             "rewards": {
               "exp": 180,
               "silver": 120,
@@ -151,8 +151,8 @@
           },
           {
             "choiceId": "wanjie_reward_duan",
-            "text": "帮段延庆破局",
-            "textEn": "Help Duan Yanqing break through",
+            "text": "收下铁杖印记",
+            "textEn": "Take the iron staff mark",
             "rewards": {
               "exp": 180,
               "silver": 120,
@@ -203,8 +203,8 @@
         "choices": [
           {
             "choiceId": "chen_reward_precision",
-            "text": "学习稳准之法",
-            "textEn": "Learn steadiness and precision",
+            "text": "收下定手石",
+            "textEn": "Take the steadying stone",
             "rewards": {
               "exp": 140,
               "silver": 100,
@@ -215,8 +215,8 @@
           },
           {
             "choiceId": "chen_reward_chaos",
-            "text": "学习乱中求变",
-            "textEn": "Learn to transform chaos",
+            "text": "收下散势袋",
+            "textEn": "Take the scattering pouch",
             "rewards": {
               "exp": 140,
               "silver": 100,
@@ -261,8 +261,8 @@
         "choices": [
           {
             "choiceId": "he_reward_qin",
-            "text": "学琴意静心",
-            "textEn": "Learn calm through music",
+            "text": "收下清弦谱",
+            "textEn": "Take the calming chord",
             "rewards": {
               "exp": 130,
               "silver": 90,
@@ -273,8 +273,8 @@
           },
           {
             "choiceId": "he_reward_jian",
-            "text": "学剑意决断",
-            "textEn": "Learn decisive sword intent",
+            "text": "收下决断符",
+            "textEn": "Take the decisive charm",
             "rewards": {
               "exp": 130,
               "silver": 90,
@@ -319,8 +319,8 @@
         "choices": [
           {
             "choiceId": "hei_reward_rubbing",
-            "text": "收下拓本",
-            "textEn": "Accept the rubbing",
+            "text": "收下呕血谱拓本",
+            "textEn": "Take the manual rubbing",
             "rewards": {
               "exp": 150,
               "silver": 110,
@@ -331,8 +331,8 @@
           },
           {
             "choiceId": "hei_reward_ink",
-            "text": "换取墨石",
-            "textEn": "Trade for inkstone",
+            "text": "收下静心墨石",
+            "textEn": "Take the calm inkstone",
             "rewards": {
               "exp": 150,
               "silver": 110,
@@ -441,8 +441,8 @@
         "choices": [
           {
             "choiceId": "zhenlong_reward_compassion",
-            "text": "赠虚竹清心药",
-            "textEn": "Gift Xu Zhu calming medicine",
+            "text": "收下清心丸",
+            "textEn": "Take the clear mind pill",
             "rewards": {
               "exp": 200,
               "silver": 150,
@@ -453,8 +453,8 @@
           },
           {
             "choiceId": "zhenlong_reward_observer",
-            "text": "收下残局手札",
-            "textEn": "Accept the endgame notes",
+            "text": "收下珍珑札记",
+            "textEn": "Take the Zhenlong notes",
             "rewards": {
               "exp": 200,
               "silver": 150,

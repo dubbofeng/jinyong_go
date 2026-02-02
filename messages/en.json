@@ -162,11 +162,16 @@
     "items": "items",
     "empty": "Your inventory is empty",
     "clickToUse": "Click to use",
+    "clickToEquip": "Click to equip",
+    "clickToUnequip": "Click to unequip",
+    "equipped": "Equipped",
     "stamina": "Stamina",
     "qi": "Qi",
     "experience": "Experience",
     "useSuccess": "Used Successfully",
-    "useFailed": "Failed to Use"
+    "useFailed": "Failed to Use",
+    "equipSuccess": "Equipped",
+    "equipFailed": "Equip failed"
   },
   "save": {
     "manual": "Manual Save",
