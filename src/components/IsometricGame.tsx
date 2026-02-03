@@ -2063,11 +2063,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         const rewardSilver = 50;
         
         try {
-          const response = await fetch('/api/player/rewards', {
-            method: 'POST',
+          const response = await fetch('/api/player/stats', {
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              userId,
               experience: rewardExp,
               silver: rewardSilver,
             }),
@@ -2558,7 +2557,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         onComplete={(success) => {
           if (success) {
             console.log('✅ Tsumego completed successfully!');
-            // TODO: 发放奖励
+            // 触发UI更新事件，刷新玩家状态和背包
+            window.dispatchEvent(new CustomEvent('player-stats-update', {
+              detail: { forceRefresh: true }
+            }));
+            window.dispatchEvent(new Event('player-inventory-update'));
           } else {
             console.log('❌ Tsumego failed or escaped');
           }

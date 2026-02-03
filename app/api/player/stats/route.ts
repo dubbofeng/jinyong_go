@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '../../../auth';
 import { db } from '../../../../src/db';
 import { items, playerInventory, playerStats, users } from '../../../../src/db/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../src/lib/rank-system';
 
 export async function GET(request: NextRequest) {
@@ -140,6 +140,52 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('初始化玩家属性失败:', error);
+    return NextResponse.json(
+      { error: '服务器错误' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * PATCH - 增加玩家经验和银两
+ */
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth();
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: '未登录' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { experience = 0, silver = 0 } = body;
+
+    // 更新玩家属性
+    await db
+      .update(playerStats)
+      .set({
+        experience: sql`${playerStats.experience} + ${experience}`,
+        silver: sql`${playerStats.silver} + ${silver}`,
+      })
+      .where(eq(playerStats.userId, parseInt(session.user.id)));
+
+    // 获取更新后的状态
+    const updatedStats = await db
+      .select()
+      .from(playerStats)
+      .where(eq(playerStats.userId, parseInt(session.user.id)))
+      .limit(1);
+
+    return NextResponse.json({
+      success: true,
+      data: updatedStats[0],
+    });
+  } catch (error) {
+    console.error('更新玩家属性失败:', error);
     return NextResponse.json(
       { error: '服务器错误' },
       { status: 500 }
