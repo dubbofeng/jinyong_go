@@ -14,6 +14,7 @@ import SgfTutorialModal from '@/src/components/SgfTutorialModal';
 import SgfPracticeModal from '@/src/components/SgfPracticeModal';
 import ChessReplayModal from '@/src/components/ChessReplayModal';
 import GoProverbModal from '@/src/components/GoProverbModal';
+import HotelModal from '@/src/components/HotelModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
@@ -110,6 +111,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [pharmacyBusy, setPharmacyBusy] = useState(false);
   const [pharmacyError, setPharmacyError] = useState<string | null>(null);
   const [pharmacyInventory, setPharmacyInventory] = useState({ herb: 0 });
+  
+  // Hotel modal state
+  const [showHotel, setShowHotel] = useState(false);
   
   // 自定义Alert/Confirm系统
   const [alertState, setAlertState] = useState<{
@@ -517,6 +521,81 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       setPharmacyBusy(false);
     }
   }, [loadPharmacyInventory, pharmacyBusy, showAlert]);
+
+  // ==================== 客栈功能 ====================
+
+  /**
+   * 处理点菜
+   */
+  const handleHotelOrder = useCallback(async (item: any) => {
+    try {
+      const response = await fetch('/api/player/stats', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          silver: -item.price,
+          stamina: item.staminaRestore,
+          qi: item.qiRestore,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        await showAlert(data.error || '银两不足或操作失败', 'error');
+        return;
+      }
+
+      // 触发UI更新
+      window.dispatchEvent(new Event('player-stats-update'));
+      
+      await showAlert(
+        `享用了${item.name}！\n体力 +${item.staminaRestore}\n内力 +${item.qiRestore}`,
+        'success',
+        '用餐'
+      );
+    } catch (error) {
+      console.error('点菜失败:', error);
+      await showAlert('点菜失败', 'error');
+    }
+  }, [showAlert]);
+
+  /**
+   * 处理住店休息
+   */
+  const handleHotelRest = useCallback(async () => {
+    try {
+      const response = await fetch('/api/player/stats', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          silver: -100,
+          restoreAll: true,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        await showAlert(data.error || '银两不足或操作失败', 'error');
+        return;
+      }
+
+      // 触发UI更新
+      window.dispatchEvent(new Event('player-stats-update'));
+      
+      await showAlert(
+        '美美地睡了一觉！\n体力和内力已全部恢复！',
+        'success',
+        '住店休息'
+      );
+      
+      setShowHotel(false);
+    } catch (error) {
+      console.error('住店休息失败:', error);
+      await showAlert('住店休息失败', 'error');
+    }
+  }, [showAlert]);
 
   // ==================== 地图加载 ====================
 
@@ -933,6 +1012,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         if (item.itemId === 'pharmacy' || item.itemName?.includes('药') || item.itemName?.includes('药铺')) {
           setShowPharmacy(true);
           await loadPharmacyInventory();
+        }
+        if (item.itemId === 'hotel' || item.itemName?.includes('客栈') || item.itemName?.includes('Inn')) {
+          setShowHotel(true);
         }
         if (item.itemId === 'go_pavilion') {
           const currentMapId = mapData?.id;
@@ -2569,6 +2651,14 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setCurrentTsumegoProblem(null);
           setTsumegoRewardSource(null);
         }}
+      />
+
+      {/* 客栈Modal */}
+      <HotelModal
+        isOpen={showHotel}
+        onClose={() => setShowHotel(false)}
+        onOrder={handleHotelOrder}
+        onRest={handleHotelRest}
       />
 
       {showWorkshop && (
