@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import GoBoardGame from './GoBoardGame';
 import { AIEngineSelector, type AIEngineType } from './AIEngineSelector';
 import { useKataGoBrowser } from '@/hooks/useKataGoBrowser';
@@ -55,6 +55,13 @@ export default function GoGameModal({
     }
   }, [isOpen, vsAI, isKatagoReady, isKatagoLoading, initializeKataGo]);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300); // 等待淡出动画完成
+  }, [onClose]);
+
   // ESC键关闭
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -65,14 +72,7 @@ export default function GoGameModal({
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onClose();
-    }, 300); // 等待淡出动画完成
-  };
+  }, [isOpen, handleClose]);
 
   if (!isOpen && !isVisible) return null;
 

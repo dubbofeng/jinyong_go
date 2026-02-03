@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { GoBoard, type BoardSize, type BoardPosition } from '../lib/go-board';
 import { GoEngine } from '../lib/go-engine';
 import { getQuestByNpc } from '../lib/quest-manager';
@@ -66,7 +66,7 @@ export default function GoBoardGame({
   const [playerMaxQi, setPlayerMaxQi] = useState<number | null>(null);
   const [boardPixelSize, setBoardPixelSize] = useState(() => Math.min(width, height));
 
-  const npcNameMap: Record<string, string> = {
+  const npcNameMap = useMemo((): Record<string, string> => ({
     musang_daoren: '木桑道人',
     hong_qigong: '洪七公',
     linghu_chong: '令狐冲',
@@ -87,7 +87,7 @@ export default function GoBoardGame({
     qiao_feng: '乔峰',
     xu_zhu: '虚竹',
     murong_fu: '慕容复',
-  };
+  }), []);
 
   const skillSpeakerMap: Record<string, string> = {
     kanglongyouhui: '郭靖',
@@ -561,6 +561,7 @@ export default function GoBoardGame({
     } finally {
       setIsAIThinking(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vsAI, aiDifficulty, katagoEngine, size, yiYangRestriction]);
 
   // 监听玩家切换，触发AI落子
@@ -663,7 +664,7 @@ export default function GoBoardGame({
     const duration = Math.floor((Date.now() - gameStartTime.current) / 1000);
 
     // 玩家颜色（假设玩家是黑方）
-    const playerColor: 'black' | 'white' = 'black';
+    const playerColor = 'black' as 'black' | 'white';
     const playerWon = winner === playerColor;
     const isDraw = winner === 'draw';
 
@@ -689,11 +690,13 @@ export default function GoBoardGame({
     // 保存对战记录和NPC关系
     try {
       // 获取完整的棋谱数据
-      const moves = engine.getMoveHistory().map(move => ({
-        x: move.position.col,
-        y: move.position.row,
-        color: move.color
-      }));
+      const moves = engine.getMoveHistory()
+        .filter(move => move.color !== null)
+        .map(move => ({
+          x: move.position.col,
+          y: move.position.row,
+          color: move.color as 'black' | 'white'
+        }));
 
       const opponentDisplayName = npcId ? (npcNameMap[npcId] ?? npcId) : 'AI';
       const playerName = session?.user?.name || session?.user?.email || '玩家';
@@ -839,7 +842,7 @@ export default function GoBoardGame({
 
     setGameResult(result);
     setShowResultModal(true);
-  }, [session, capturedCount, moveCount, npcId, aiDifficulty, size, onGameEnd]);
+  }, [session, capturedCount, moveCount, npcId, aiDifficulty, size, onGameEnd, isE2E, npcNameMap]);
 
   const handleResign = useCallback(() => {
     if (confirm('确认认输吗？')) {

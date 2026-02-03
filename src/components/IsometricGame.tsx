@@ -1030,7 +1030,6 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             await engineRef.current?.updateItemState(item.id, {
               itemPath: '',
               blocking: false,
-              interactable: false,
               collected: true,
             });
 
