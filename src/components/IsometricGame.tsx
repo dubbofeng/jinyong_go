@@ -164,6 +164,55 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     };
   }, [skillUnlockToast]);
 
+  // 加载玩家的NPC关系数据（包括defeated状态和dialogue flags）
+  useEffect(() => {
+    if (!userId) return;
+    
+    const loadPlayerNpcData = async () => {
+      try {
+        const response = await fetch(`/api/npc-relationships?userId=${userId}`);
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        if (!data.success || !Array.isArray(data.data)) return;
+        
+        const defeatedNpcs: string[] = [];
+        const flagsMap: Record<string, string[]> = {};
+        
+        for (const relationship of data.data) {
+          const npcId = relationship.npcId;
+          
+          // 收集defeated状态
+          if (relationship.defeated) {
+            defeatedNpcs.push(`defeated_${npcId}`);
+          }
+          
+          // 收集dialogue flags
+          if (relationship.dialogueFlags && Array.isArray(relationship.dialogueFlags)) {
+            flagsMap[npcId] = relationship.dialogueFlags;
+          }
+        }
+        
+        // 更新状态
+        if (defeatedNpcs.length > 0) {
+          setCompletedQuests(defeatedNpcs);
+          completedQuestsRef.current = defeatedNpcs;
+        }
+        
+        if (Object.keys(flagsMap).length > 0) {
+          setNpcDialogueFlags(flagsMap);
+          npcDialogueFlagsRef.current = flagsMap;
+        }
+        
+        console.log('✅ Loaded NPC data:', { defeatedNpcs, flagsMap });
+      } catch (error) {
+        console.error('Failed to load NPC relationships:', error);
+      }
+    };
+    
+    loadPlayerNpcData();
+  }, [userId]);
+
   const stories = storiesData as any[];
 
   const getLatestTutorialProgressNode = (flags: string[], npcId: string): string | null => {
