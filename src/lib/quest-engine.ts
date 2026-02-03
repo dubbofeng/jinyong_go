@@ -5,7 +5,7 @@
  */
 
 import { db } from '@/app/db';
-import { questProgress, gameProgress, users, playerStats, playerSkills } from '@/src/db/schema';
+import { questProgress, gameProgress, users, playerStats, playerSkills, npcRelationships } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getExperienceForLevel } from '@/src/lib/rank-system';
 import {
@@ -13,7 +13,9 @@ import {
   getQuestById,
   checkQuestPrerequisites,
   mergeQuestWithProgress,
+  checkObjectiveCompletion,
   type QuestDefinition,
+  type QuestObjective,
 } from '@/src/lib/quest-manager';
 
 export interface QuestRequirements {
@@ -325,6 +327,8 @@ export async function completeQuest(
     if (rewards.skill) skillRewards.add(rewards.skill);
     if (rewards.skills) rewards.skills.forEach((skill) => skillRewards.add(skill));
 
+    const leveledUp = newLevel > stats.level;
+
     await db.transaction(async (tx) => {
       // 更新quest进度状态
       await tx
@@ -342,7 +346,6 @@ export async function completeQuest(
         );
 
       // 更新玩家属性
-      const leveledUp = newLevel > stats.level;
       await tx
         .update(playerStats)
         .set({
@@ -405,6 +408,11 @@ export async function completeQuest(
         })
         .where(eq(gameProgress.userId, userId));
     });
+
+    // 如果升级了，检查 reach_level 任务
+    if (leveledUp) {
+      await autoCompleteQuests(userId, { level: newLevel });
+    }
 
     return {
       success: true,
@@ -546,4 +554,119 @@ export async function getActiveQuests(userId: number): Promise<any[]> {
     console.error('Error getting active quests:', error);
     return [];
   }
+}
+
+/**
+ * 自动检查并完成符合条件的任务
+ * 通用函数，用于各种任务目标类型的自动完成
+ */
+export async function autoCompleteQuests(
+  userId: number,
+  context?: {
+    npcId?: string;
+    itemId?: string;
+    level?: number;
+    tutorialCompleted?: boolean;
+    defeatedNpc?: string;
+  }
+): Promise<string[]> {
+  const completedQuests: string[] = [];
+
+  try {
+    // 查找所有进行中的任务
+    const activeQuestProgress = await db
+      .select()
+      .from(questProgress)
+      .where(
+        and(
+          eq(questProgress.userId, userId),
+          eq(questProgress.status, 'in_progress')
+        )
+      );
+
+    if (activeQuestProgress.length === 0) {
+      return completedQuests;
+    }
+
+    // 获取所有任务定义
+    const allQuestsObj = getAllQuests();
+    const allQuests = Object.values(allQuestsObj);
+
+    // 获取NPC关系（用于检查defeat_npc目标）
+    const npcRelations = await db
+      .select()
+      .from(npcRelationships)
+      .where(eq(npcRelationships.userId, userId));
+
+    const npcRelationsMap = new Map(
+      npcRelations.map((rel) => [rel.npcId, rel])
+    );
+
+    // 获取玩家等级（用于检查reach_level目标）
+    const [stats] = await db
+      .select()
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
+
+    const playerLevel = stats?.level || 1;
+
+    // 检查每个进行中的任务
+    for (const progress of activeQuestProgress) {
+      const quest = allQuests.find((q) => q.id === progress.questId);
+      if (!quest) continue;
+
+      // 构建完整的进度数据（合并当前上下文）
+      const progressData = (progress.progress as Record<string, any>) || {};
+      
+      if (context?.tutorialCompleted) {
+        progressData.tutorial_completed = true;
+      }
+      if (context?.level) {
+        progressData.current_level = context.level;
+      }
+
+      // 检查所有目标是否都已完成
+      const allObjectivesCompleted = quest.objectives.every((obj) => {
+        // 特殊处理：如果当前操作刚完成某个目标
+        if (context?.defeatedNpc && obj.type === 'defeat_npc' && obj.target === context.defeatedNpc) {
+          return true;
+        }
+        if (context?.npcId && obj.type === 'dialogue' && obj.target === context.npcId) {
+          return true;
+        }
+        if (context?.npcId && obj.type === 'meet_npc' && obj.target === context.npcId) {
+          return true;
+        }
+
+        // 使用checkObjectiveCompletion检查其他目标
+        if (obj.type === 'defeat_npc' && obj.target) {
+          const npcRel = npcRelationsMap.get(obj.target);
+          return npcRel?.defeated === true;
+        }
+        if (obj.type === 'reach_level') {
+          return playerLevel >= (obj.count || 1);
+        }
+
+        return checkObjectiveCompletion(obj, progressData);
+      });
+
+      // 如果所有目标都完成，自动完成任务
+      if (allObjectivesCompleted) {
+        try {
+          const result = await completeQuest(userId, quest.id);
+          if (result.success) {
+            completedQuests.push(quest.id);
+            console.log(`Auto-completed quest: ${quest.id} for user ${userId}`);
+          }
+        } catch (error) {
+          console.error(`Failed to auto-complete quest ${quest.id}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in autoCompleteQuests:', error);
+  }
+
+  return completedQuests;
 }

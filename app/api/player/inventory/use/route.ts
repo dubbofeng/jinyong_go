@@ -63,11 +63,89 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 如果是装备类型，自动转为装备逻辑
     if (item.itemType === 'equipment') {
-      return NextResponse.json(
-        { error: '装备请在背包中装备/卸下' },
-        { status: 400 }
-      );
+      // 检查是否已装备
+      const shouldEquip = !inventory.equipped;
+      
+      if (shouldEquip) {
+        // 确定装备槽位
+        const itemId = item.itemId;
+        const isGoBoard = itemId.startsWith('go_board_');
+        const isGoBowl = itemId.startsWith('go_bowl_');
+        const slot = isGoBoard ? 'go_board' : isGoBowl ? 'go_bowl' : 'treasure';
+
+        // 棋盘和棋罐：检查同类装备冲突
+        if (isGoBoard || isGoBowl) {
+          const sameSlot = await db
+            .select()
+            .from(playerInventory)
+            .where(
+              and(
+                eq(playerInventory.userId, userId),
+                eq(playerInventory.equipped, true),
+                eq(playerInventory.slot, slot)
+              )
+            )
+            .limit(1);
+
+          if (sameSlot.length > 0) {
+            return NextResponse.json(
+              { error: isGoBoard ? '已装备棋盘，只能同时装备一个棋盘' : '已装备棋罐，只能同时装备一个棋罐' },
+              { status: 400 }
+            );
+          }
+        } else {
+          // 宝物类装备：检查数量限制（最多3件）
+          const equippedTreasures = await db
+            .select()
+            .from(playerInventory)
+            .where(
+              and(
+                eq(playerInventory.userId, userId),
+                eq(playerInventory.equipped, true),
+                eq(playerInventory.slot, 'treasure')
+              )
+            );
+
+          if (equippedTreasures.length >= 3) {
+            return NextResponse.json(
+              { error: '最多只能装备3件宝物' },
+              { status: 400 }
+            );
+          }
+        }
+
+        // 装备
+        await db
+          .update(playerInventory)
+          .set({
+            equipped: true,
+            slot: slot,
+            updatedAt: new Date(),
+          })
+          .where(eq(playerInventory.id, inventoryId));
+
+        return NextResponse.json({
+          success: true,
+          message: `已装备 ${item.name}`,
+        });
+      } else {
+        // 卸下
+        await db
+          .update(playerInventory)
+          .set({
+            equipped: false,
+            slot: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(playerInventory.id, inventoryId));
+
+        return NextResponse.json({
+          success: true,
+          message: `已卸下 ${item.name}`,
+        });
+      }
     }
 
     // 检查数量
@@ -79,16 +157,18 @@ export async function POST(request: NextRequest) {
     }
 
     // 应用物品效果
-    const effects = item.effects as any;
+    const effects = (item.effects as any) || {};
     const updates: any = {};
 
-    if (effects.stamina) {
+    console.log('Item:', item.itemId, 'Effects:', effects);
+
+    if (effects && effects.stamina) {
       updates.staminaDelta = effects.stamina;
     }
-    if (effects.qi) {
+    if (effects && effects.qi) {
       updates.qiDelta = effects.qi;
     }
-    if (effects.experience) {
+    if (effects && effects.experience) {
       updates.experienceDelta = effects.experience;
     }
 
@@ -100,29 +180,35 @@ export async function POST(request: NextRequest) {
         .where(eq(playerStats.userId, userId))
         .limit(1);
 
-      if (stats.length > 0) {
+      if (stats.length > 0 && stats[0]) {
         const current = stats[0];
         const statUpdates: any = { updatedAt: new Date() };
 
         if (updates.staminaDelta) {
-          statUpdates.stamina = Math.min(current.maxStamina, current.stamina + updates.staminaDelta);
+          statUpdates.stamina = Math.min(
+            current.maxStamina || 100, 
+            (current.stamina || 0) + updates.staminaDelta
+          );
           statUpdates.lastStaminaRegen = new Date();
         }
         if (updates.qiDelta) {
-          statUpdates.qi = Math.min(current.maxQi, current.qi + updates.qiDelta);
+          statUpdates.qi = Math.min(
+            current.maxQi || 100, 
+            (current.qi || 0) + updates.qiDelta
+          );
           statUpdates.lastQiRegen = new Date();
         }
         if (updates.experienceDelta) {
-          let newExp = current.experience + updates.experienceDelta;
-          let newLevel = current.level;
-          let expToNext = current.experienceToNext;
+          let newExp = (current.experience || 0) + updates.experienceDelta;
+          let newLevel = current.level || 1;
+          let expToNext = current.experienceToNext || 100;
 
           while (newExp >= expToNext && newLevel < 100) {
             newExp -= expToNext;
             newLevel++;
             expToNext = Math.floor(100 * newLevel * 1.5);
-            statUpdates.maxStamina = current.maxStamina + 10;
-            statUpdates.maxQi = current.maxQi + 10;
+            statUpdates.maxStamina = (current.maxStamina || 100) + 10;
+            statUpdates.maxQi = (current.maxQi || 100) + 10;
           }
 
           statUpdates.experience = newExp;
@@ -134,6 +220,11 @@ export async function POST(request: NextRequest) {
           .update(playerStats)
           .set(statUpdates)
           .where(eq(playerStats.userId, userId));
+      } else {
+        return NextResponse.json(
+          { error: '玩家数据不存在，请先创建角色' },
+          { status: 404 }
+        );
       }
     }
 

@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { levelToRank, getExperienceForLevel, getRankColor, getRankBorderColor, getRankBgColor } from '@/src/lib/rank-system';
+import SkillPointsModal from './SkillPointsModal';
 
 interface PlayerStats {
   level: number;
@@ -25,13 +26,17 @@ export function PlayerStatsPanel() {
   const t = useTranslations('player');
   const [stats, setStats] = useState<PlayerStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [skillPoints, setSkillPoints] = useState(0);
+  const [showSkillModal, setShowSkillModal] = useState(false);
 
   useEffect(() => {
     fetchStats();
+    fetchSkillPoints();
     
     // 监听全局更新事件
     const handleUpdate = () => {
       fetchStats();
+      fetchSkillPoints();
     };
     
     window.addEventListener('player-stats-update', handleUpdate);
@@ -65,6 +70,26 @@ export function PlayerStatsPanel() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchSkillPoints = async () => {
+    try {
+      const response = await fetch('/api/player/skill-points');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setSkillPoints(data.data.availablePoints);
+        }
+      }
+    } catch (error) {
+      console.error('获取技能点失败:', error);
+    }
+  };
+
+  const handleSkillModalClose = () => {
+    setShowSkillModal(false);
+    fetchSkillPoints(); // Refresh skill points after modal closes
+    window.dispatchEvent(new Event('player-stats-update')); // Refresh stats
   };
 
   if (loading) {
@@ -104,10 +129,25 @@ export function PlayerStatsPanel() {
       {/* 标题和段位 */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold text-amber-900">{t('attributes')}</h3>
-        <div className={`px-3 py-1 rounded-lg border-2 ${rankBorderColor} ${rankBgColor}`}>
-          <span className={`text-sm font-bold ${rankColor}`}>
-            {rankInfo.display}
-          </span>
+        <div className="flex items-center gap-2">
+          {/* 技能点按钮 */}
+          {skillPoints > 0 && (
+            <button
+              onClick={() => setShowSkillModal(true)}
+              className="px-2 py-1 rounded-lg border-2 border-green-400 bg-green-50 hover:bg-green-100 transition-colors"
+              title="分配技能点"
+            >
+              <span className="text-xs font-bold text-green-700">
+                ⭐ {skillPoints}
+              </span>
+            </button>
+          )}
+          {/* 段位显示 */}
+          <div className={`px-3 py-1 rounded-lg border-2 ${rankBorderColor} ${rankBgColor}`}>
+            <span className={`text-sm font-bold ${rankColor}`}>
+              {rankInfo.display}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -196,6 +236,12 @@ export function PlayerStatsPanel() {
           <span>{stats.coins} {t('coins')}</span>
         </div>
       </div>
+
+      {/* 技能点分配模态框 */}
+      <SkillPointsModal 
+        isOpen={showSkillModal} 
+        onClose={handleSkillModalClose}
+      />
     </div>
   );
 }

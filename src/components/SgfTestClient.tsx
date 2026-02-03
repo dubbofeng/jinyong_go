@@ -114,7 +114,7 @@ export default function SgfTestClient({
   highlightPosition,
 }: SgfTestClientProps) {
   const [internalMoveIndex, setInternalMoveIndex] = useState(0);
-  const defaultInteractive = useMemo(() => (interactive ?? boardSize <= 5), [interactive, boardSize]);
+  const defaultInteractive = useMemo(() => (interactive ?? false), [interactive]);
   const [isInteractive, setIsInteractive] = useState(defaultInteractive);
 
   const currentMoveIndex = moveIndex ?? internalMoveIndex;

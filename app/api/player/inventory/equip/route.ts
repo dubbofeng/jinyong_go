@@ -51,15 +51,7 @@ export async function POST(request: NextRequest) {
     const slot = isGoBoard ? 'go_board' : isGoBowl ? 'go_bowl' : 'treasure';
 
     if (equip && !inventory.equipped) {
-      const equippedCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(playerInventory)
-        .where(and(eq(playerInventory.userId, userId), eq(playerInventory.equipped, true)));
-
-      if ((equippedCount[0]?.count ?? 0) >= 3) {
-        return NextResponse.json({ error: '最多只能装备3件宝物' }, { status: 400 });
-      }
-
+      // 棋盘和棋罐：检查同类装备冲突
       if (isGoBoard || isGoBowl) {
         const sameSlot = await db
           .select({ id: playerInventory.id })
@@ -78,6 +70,22 @@ export async function POST(request: NextRequest) {
             { error: isGoBoard ? '已装备棋盘，只能同时装备一个棋盘' : '已装备棋罐，只能同时装备一个棋罐' },
             { status: 400 }
           );
+        }
+      } else {
+        // 宝物类装备：检查数量限制（最多3件）
+        const equippedTreasures = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(playerInventory)
+          .where(
+            and(
+              eq(playerInventory.userId, userId),
+              eq(playerInventory.equipped, true),
+              eq(playerInventory.slot, 'treasure')
+            )
+          );
+
+        if ((equippedTreasures[0]?.count ?? 0) >= 3) {
+          return NextResponse.json({ error: '最多只能装备3件宝物' }, { status: 400 });
         }
       }
     }

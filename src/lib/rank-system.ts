@@ -83,27 +83,27 @@ export function rankToLevel(rank: string): number {
  * 计算升级所需经验
  * 
  * 经验公式：
- * - 18k-10k (level 1-9): 100 * level
- * - 9k-1k (level 10-18): 150 * (level - 8)
- * - 1d-9d (level 19-27): 300 * (level - 18)
+ * - 18k-10k (level 1-9): 1000 * level
+ * - 9k-1k (level 10-18): 1500 * (level - 8)
+ * - 1d-9d (level 19-27): 3000 * (level - 18)
  */
 export function getExperienceForLevel(level: number): number {
   if (level <= 0) return 0;
   if (level > 27) return 0; // 已达最高等级
   
-  // 18k-10k: 100 * level
+  // 18k-10k: 1000 * level
   if (level >= 1 && level <= 9) {
-    return 100 * level;
+    return 1000 * level;
   }
   
-  // 9k-1k: 150 * (level - 8)
+  // 9k-1k: 1500 * (level - 8)
   if (level >= 10 && level <= 18) {
-    return 150 * (level - 8);
+    return 1500 * (level - 8);
   }
   
-  // 1d-9d: 300 * (level - 18)
+  // 1d-9d: 3000 * (level - 18)
   if (level >= 19 && level <= 27) {
-    return 300 * (level - 18);
+    return 3000 * (level - 18);
   }
   
   return 0;

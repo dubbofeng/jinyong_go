@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/auth';
 import { db } from '@/app/db';
-import { npcs, npcRelationships, playerStats } from '@/src/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { npcs, npcRelationships, playerStats, gameProgress } from '@/src/db/schema';
+import { eq, and, inArray } from 'drizzle-orm';
+import { getChapterNpcIds } from '@/src/lib/quest-manager';
+import { autoCompleteQuests } from '@/src/lib/quest-engine';
 
 /**
  * POST /api/npcs/[npcId]/battle-result
@@ -153,6 +155,64 @@ export async function POST(
       )
       .limit(1);
 
+    // 自动完成相关任务（仅当玩家胜利时）
+    const completedQuests = playerWon 
+      ? await autoCompleteQuests(userId, { defeatedNpc: npcId })
+      : [];
+
+    // 检查章节完成条件（仅当玩家胜利时）
+    let chapterCompleted = false;
+    let newChapter: number | undefined;
+    
+    if (playerWon) {
+      // 获取玩家当前章节
+      const [progress] = await db
+        .select()
+        .from(gameProgress)
+        .where(eq(gameProgress.userId, userId))
+        .limit(1);
+      
+      if (progress) {
+        const currentChapter = progress.currentChapter;
+        
+        // 获取本章所有NPC的ID
+        const chapterNpcIds = getChapterNpcIds(currentChapter);
+        
+        if (chapterNpcIds.length > 0) {
+          // 查询本章所有NPC的defeated状态
+          const chapterRelationships = await db
+            .select()
+            .from(npcRelationships)
+            .where(
+              and(
+                eq(npcRelationships.userId, userId),
+                inArray(npcRelationships.npcId, chapterNpcIds)
+              )
+            );
+          
+          // 检查是否所有NPC都已被击败
+          const allDefeated = chapterNpcIds.every(npcId => {
+            const rel = chapterRelationships.find(r => r.npcId === npcId);
+            return rel && rel.defeated === true;
+          });
+          
+          // 如果所有NPC都被击败，升级章节
+          if (allDefeated) {
+            newChapter = currentChapter + 1;
+            await db
+              .update(gameProgress)
+              .set({
+                currentChapter: newChapter,
+                updatedAt: new Date(),
+              })
+              .where(eq(gameProgress.userId, userId));
+            
+            chapterCompleted = true;
+          }
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -164,6 +224,9 @@ export async function POST(
           battlesLost: updatedRelationship.battlesLost,
         },
         experienceGained,
+        chapterCompleted,
+        newChapter,
+        completedQuests, // 返回自动完成的任务列表
       },
     });
   } catch (error) {

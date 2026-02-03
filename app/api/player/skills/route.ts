@@ -37,8 +37,8 @@ const SKILL_DEFINITIONS = {
     id: 'fuyu_chuanyin',
     name: '腹语传音',
     nameEn: 'Fuyu Chuanyin',
-    character: '虚竹',
-    description: '虚竹的腹语传音，可以获得AI下一步的建议',
+    character: '段延庆',
+    description: '段延庆的腹语传音，可以获得AI下一步的建议',
     baseQiCost: 20,
     baseCooldown: 0,
     baseUsesPerGame: 3,
@@ -61,7 +61,7 @@ const SKILL_DEFINITIONS = {
     nameEn: 'Stone Weapon',
     character: '陈家洛',
     description: '陈家洛的棋子暗器，可以打歪对手刚下的棋子',
-    baseQiCost: 30,
+    baseQiCost: 40,
     baseCooldown: 20,
     baseUsesPerGame: 1,
     maxLevel: 9,
@@ -72,7 +72,7 @@ const SKILL_DEFINITIONS = {
     nameEn: 'One Yang Finger',
     character: '一灯大师',
     description: '限制对手下一手落子区域',
-    baseQiCost: 25,
+    baseQiCost: 35,
     baseCooldown: 20,
     baseUsesPerGame: 1,
     maxLevel: 9,
@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
       const skill = skillMap.get(definition.id);
       const unlocked = Boolean(skill?.unlocked);
       const level = unlocked ? skill.level : 0;
-      const usesPerGame = unlocked ? level : 0;
+      const usesPerGame = unlocked ? definition.baseUsesPerGame * level : 0;
 
       return {
         skillId: definition.id,

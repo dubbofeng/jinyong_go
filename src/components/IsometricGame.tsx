@@ -873,6 +873,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               : currentMapId === 'huashan_scene'
                 ? 'huashan'
                 : 'gop';
+          
+          // 恢复10点体力和10点内力
+          try {
+            await fetch('/api/player/stats/update', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ staminaDelta: 10, qiDelta: 10 }),
+            });
+            window.dispatchEvent(new Event('player-stats-update'));
+          } catch (error) {
+            console.error('恢复体力内力失败:', error);
+          }
+          
           setSgfPracticeSet(practiceSet);
           setShowSgfPractice(true);
         }

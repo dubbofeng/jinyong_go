@@ -76,7 +76,7 @@ export interface Quest extends QuestDefinition {
  * 获取所有quest定义
  */
 export function getAllQuests(): Record<string, QuestDefinition> {
-  return questsData as Record<string, QuestDefinition>;
+  return questsData as any;
 }
 
 /**
@@ -266,4 +266,20 @@ export function getAvailableSideQuests(
     quest.chapter <= currentChapter &&
     checkQuestPrerequisites(quest.id, completedQuests)
   );
+}
+
+/**
+ * 获取指定章节的所有NPC（通过任务中的npcId）
+ */
+export function getChapterNpcIds(chapter: number): string[] {
+  const quests = Object.values(questsData as any) as QuestDefinition[];
+  const npcIds = new Set<string>();
+  
+  quests.forEach(quest => {
+    if (quest.chapter === chapter && quest.npcId) {
+      npcIds.add(quest.npcId);
+    }
+  });
+  
+  return Array.from(npcIds);
 }

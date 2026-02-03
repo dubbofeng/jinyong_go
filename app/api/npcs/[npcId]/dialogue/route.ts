@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/auth';
 import { db } from '@/app/db';
-import { npcs, npcRelationships } from '@/src/db/schema';
+import { npcs, npcRelationships, questProgress } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { autoCompleteQuests } from '@/src/lib/quest-engine';
 
 /**
  * POST /api/npcs/[npcId]/dialogue
@@ -96,6 +97,35 @@ export async function POST(
         )
       );
 
+    // 更新 meet_npc 进度（首次见面）
+    if (wasFirstTime) {
+      const activeQuestProgress = await db
+        .select()
+        .from(questProgress)
+        .where(
+          and(
+            eq(questProgress.userId, userId),
+            eq(questProgress.status, 'in_progress')
+          )
+        );
+      
+      for (const progress of activeQuestProgress) {
+        const progressData = (progress.progress as Record<string, any>) || {};
+        progressData[`met_${npcId}`] = true;
+        
+        await db
+          .update(questProgress)
+          .set({
+            progress: progressData,
+            updatedAt: new Date(),
+          })
+          .where(eq(questProgress.id, progress.id));
+      }
+    }
+    
+    // 自动完成相关任务
+    const completedQuests = await autoCompleteQuests(userId, { npcId });
+
     return NextResponse.json({
       success: true,
       data: {
@@ -103,6 +133,7 @@ export async function POST(
         dialoguesCount: nextCount,
         dialogueFlags: nextFlags,
         isFirstTime: wasFirstTime,
+        completedQuests, // 返回自动完成的任务列表
       },
     });
   } catch (error) {

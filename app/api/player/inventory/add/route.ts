@@ -6,8 +6,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '../../../../auth';
 import { db } from '../../../../../src/db';
-import { playerInventory } from '../../../../../src/db/schema';
+import { playerInventory, questProgress } from '../../../../../src/db/schema';
 import { and, eq, sql } from 'drizzle-orm';
+import { autoCompleteQuests } from '@/src/lib/quest-engine';
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,6 +55,43 @@ export async function POST(request: NextRequest) {
       }
 
       applied.push({ itemId, quantity });
+    }
+
+    // 更新 collect_item 任务进度并自动完成
+    if (applied.length > 0) {
+      const activeQuestProgress = await db
+        .select()
+        .from(questProgress)
+        .where(
+          and(
+            eq(questProgress.userId, userId),
+            eq(questProgress.status, 'in_progress')
+          )
+        );
+      
+      for (const progress of activeQuestProgress) {
+        const progressData = (progress.progress as Record<string, any>) || {};
+        let updated = false;
+        
+        for (const item of applied) {
+          const key = `collected_${item.itemId}`;
+          progressData[key] = (progressData[key] || 0) + item.quantity;
+          updated = true;
+        }
+        
+        if (updated) {
+          await db
+            .update(questProgress)
+            .set({
+              progress: progressData,
+              updatedAt: new Date(),
+            })
+            .where(eq(questProgress.id, progress.id));
+        }
+      }
+      
+      // 自动完成相关任务
+      await autoCompleteQuests(userId, { itemId: applied[0].itemId });
     }
 
     return NextResponse.json({ success: true, data: applied });
