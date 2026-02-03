@@ -258,9 +258,8 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           },
           {
             optionId: '2',
-            nextNodeId: 'start_battle',
-            condition: { type: 'quest', value: 'defeated_hong_qigong' },
-            action: { type: 'battle', value: 'hong_qigong' }
+            nextNodeId: 'rematch_challenge',
+            condition: { type: 'quest', value: 'defeated_hong_qigong' }
           },
           { optionId: '3', nextNodeId: 'explain_go' },
           { optionId: '4', nextNodeId: 'not_ready' },
@@ -337,10 +336,26 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         options: [
           {
             optionId: '0',
-            nextNodeId: 'start_battle',
+            nextNodeId: 'rematch_battle',
             action: { type: 'battle', value: 'hong_qigong' }
           },
           { optionId: '1', nextNodeId: 'daily_chat' }
+        ]
+      },
+      {
+        id: 'rematch_battle',
+        action: { type: 'battle', value: 'hong_qigong' },
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'daily_chat',
+            condition: { type: 'playerWon' }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'try_again',
+            condition: { type: 'playerLost' }
+          }
         ]
       },
       {

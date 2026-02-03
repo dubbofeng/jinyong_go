@@ -157,7 +157,7 @@ export default function StoryModal({
                   onClick={onAdvance}
                   className="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg text-sm"
                 >
-                  {isLastLine ? '继续' : '下一句'}
+                  {isLastLine ? '继续' : '继续...'}
                 </button>
               </div>
             )}

@@ -12,6 +12,17 @@
   },
   {
     "category": "story",
+    "id": "story_musang_ai_learning",
+    "name": "桑AI诞生",
+    "nameEn": "Birth of Sai",
+    "prompt": "Close-up of a futuristic AI device with glowing indicator lights rapidly flashing blue and green, holographic Chinese Go board patterns and stone positions flowing into the device, data streams and ancient Go wisdom visualized as golden light particles, mountain courtyard background softly blurred, the same elderly Taoist with white moustache, white hair and beard, kind smile, wearing traditional Taoist robes, hand extended toward the device transmitting knowledge, use character reference: /public/game/isometric/characters/npc_musang_daoren.png, consistent character design, mystical blend of technology and tradition, cinematic sci-fi wuxia fusion, highly detailed digital painting, 4K",
+    "negativePrompt": "modern city, robots, scary, dark, low quality",
+    "width": 1920,
+    "height": 1080,
+    "style": "sci-fi wuxia fusion"
+  },
+  {
+    "category": "story",
     "id": "story_musang_taoist_room",
     "name": "道观灯下",
     "nameEn": "Taoist Room by Lamplight",

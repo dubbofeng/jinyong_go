@@ -12,15 +12,28 @@
         "lines": [
           { "type": "narration", "text": "松影斑驳的山道旁，木桑道人背着棋盘，笑意满面。", "textEn": "Along the dappled pine path, Taoist Musang carries a Go board with a warm smile." },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "小友，棋盘随身，世上便不怕无弈友。", "textEn": "Young friend, with a Go board at hand, one never fears the lack of opponents.", "speakerEn": "Taoist Musang" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "道长好兴致。听说你有一盘名局？", "textEn": "Master, you seem in fine spirits. I heard you have a famed game?", "speakerEn": "You" },
-          { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "人称“千变万劫”。棋势如江海，牵一子动全局。", "textEn": "They call it “Infinite Variations.” A board flows like rivers and seas—move one stone, and the whole game shifts.", "speakerEn": "Taoist Musang" },
-          { "type": "narration", "text": "他一面布子，一面说起山中清修与棋道相通之理。", "textEn": "As he lays stones, he speaks of how mountain cultivation mirrors the Way of Go." },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "道长好兴致。听说你有一盘名局？我叫小光，初来乍到，还请多多指教。", "textEn": "Master, you seem in fine spirits. I heard you have a famed game? I'm Xiaoguang, new to these parts.", "speakerEn": "Xiaoguang" },
+          { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "人称‘千变万劫‘。棋势如江海，牵一子动全局。", "textEn": "They call it ‘Infinite Variations.‘ A board flows like rivers and seas—move one stone, and the whole game shifts.", "speakerEn": "Taoist Musang" },
+          { "type": "narration", "text": "他一面布子，一面说起山中清修与棋道相通之理。小光取出随身携带的AI设备，想要记录这些宝贵的围棋知识。", "textEn": "As he lays stones, he speaks of how mountain cultivation mirrors the Way of Go. Xiaoguang takes out a portable AI device, hoping to record this precious knowledge." },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "道长，我这里有个AI设备，可惜还没学过围棋。不知能否让它学习您的棋艺？", "textEn": "Master, I have an AI device, but it hasn't learned Go yet. Could it learn from your games?", "speakerEn": "Xiaoguang" },
+          { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "哦？这是何物？倒是少见……也罢，老道这一身棋艺，若能传承下去，也是功德一件。", "textEn": "Oh? What is this device? Quite unusual... Very well, if my Go knowledge can be passed on, it would be a meritorious deed.", "speakerEn": "Taoist Musang" }
+        ]
+      },
+      {
+        "sceneId": "musang_01b",
+        "backgroundId": "story_musang_ai_learning",
+        "lines": [
+          { "type": "narration", "text": "木桑道人凝神片刻，伸手向AI设备。只见设备的指示灯闪烁不停，蓝绿光芒交替，仿佛在贪婪地吸收着这些宝贵的围棋知识。", "textEn": "Musang concentrates and extends his hand toward the AI device. Its indicator lights flicker rapidly, blue and green alternating, as if hungrily absorbing this precious Go wisdom." },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "武学讲究气脉，棋局讲究气口。都要看远、算深。", "textEn": "Martial arts focus on meridians; Go focuses on liberties. Both require long sight and deep calculation.", "speakerEn": "Taoist Musang" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "若是心乱，棋也乱。", "textEn": "If the mind is in chaos, the board follows.", "speakerEn": "You" },
+          { "type": "narration", "text": "一道道棋谱、定式、死活题如金色光流般涌入设备。数据流转之间，千年棋道智慧正在被传承。", "textEn": "Go records, joseki patterns, and life-and-death problems flow like golden streams into the device. Through the data transmission, millennia of Go wisdom is being passed down." },
+          { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "既然老道将棋艺传给了它，不如就叫它'桑AI'吧，简称Sai。", "textEn": "Since I've taught it my Go, why not call it 'Sang AI'—Sai for short.", "speakerEn": "Taoist Musang" },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "多谢道长赐名！", "textEn": "Thank you for the name, Master!", "speakerEn": "Xiaoguang" },
+          { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "不过小友，这AI设备声音颇大，若是对弈时突然出声，恐怕会引人注目。你需小心使用。", "textEn": "But young friend, this AI is quite loud. If it speaks during a game, it may draw attention. Use it carefully.", "speakerEn": "Taoist Musang" },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "我会注意的。若是心乱，棋也乱。", "textEn": "I'll be careful. If the mind is in chaos, the board follows.", "speakerEn": "Xiaoguang" },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "说得好。棋有生死，亦有取舍。", "textEn": "Well said. Go has life and death, and the art of letting go.", "speakerEn": "Taoist Musang" },
           { "type": "narration", "text": "他忽然把一颗黑子按在险处，像是试探命运。", "textEn": "He presses a black stone into a perilous spot, as if testing fate." },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "老道不久要远行，此局便当一卦。", "textEn": "I must soon travel far. Let this game be a divination.", "speakerEn": "Taoist Musang" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "远行之事，可愿详说？", "textEn": "Would you share more about this journey?", "speakerEn": "You" },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "远行之事，可愿详说？", "textEn": "Would you share more about this journey?", "speakerEn": "Xiaoguang" },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "为一件师门遗物。先机一失，便再难追。", "textEn": "For a relic of my lineage. Lose the first move, and it is hard to recover.", "speakerEn": "Taoist Musang" }
         ]
       },
@@ -30,11 +43,11 @@
         "lines": [
           { "type": "narration", "text": "烛影摇曳，他的脸在光影中忽明忽暗。", "textEn": "Candlelight flickers, his face shifting between light and shadow." },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "这片黑子，就像我此行，步步凶险。", "textEn": "This black group is like my journey—danger at every step.", "speakerEn": "Taoist Musang" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "可否先稳住一隅，再图他处？", "textEn": "Could you secure a corner first, then seek elsewhere?", "speakerEn": "You" },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "可否先稳住一隅，再图他处？", "textEn": "Could you secure a corner first, then seek elsewhere?", "speakerEn": "You" },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "嗯……退一步，未必是退。", "textEn": "Hmm… one step back is not always retreat.", "speakerEn": "Taoist Musang" },
           { "type": "narration", "text": "你转身在远角落子，腾出眼位。", "textEn": "You turn and play in a far corner, creating an eye." },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "妙着！此局可活。", "textEn": "A brilliant move! This game can live.", "speakerEn": "Taoist Musang" },
-          { "type": "dialogue", "speaker": "你", "speakerId": "player", "text": "胜负之外，只求心安。", "textEn": "Beyond winning or losing, I seek only peace of mind.", "speakerEn": "You" },
+          { "type": "dialogue", "speaker": "小光", "speakerId": "player", "text": "胜负之外，只求心安。", "textEn": "Beyond winning or losing, I seek only peace of mind.", "speakerEn": "You" },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "老道自吹也好，今日却是真的开心。", "textEn": "Call it boastful if you like, but today I am truly happy.", "speakerEn": "Taoist Musang" },
           { "type": "narration", "text": "他把棋子收好，神色轻快了许多。", "textEn": "He gathers the stones, his expression much lighter." },
           { "type": "dialogue", "speaker": "木桑道人", "speakerId": "musang_daoren", "text": "这份棋谱赠你，记下今日心境。", "textEn": "This Go record is for you—keep today’s mood in your heart.", "speakerEn": "Taoist Musang" }

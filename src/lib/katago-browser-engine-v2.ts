@@ -23,6 +23,8 @@ export interface BrowserAnalysis {
   winrate: number;
   visits: number;
   thinkingTime: number;
+  shouldResign?: boolean;       // KataGo 是否建议认输
+  moveType?: 'move' | 'pass' | 'resign'; // 着法类型
   // 详细分析数据
   scoreLead?: number;           // 分数差（正数=黑优，负数=白优）
   scoreStdev?: number;          // 分数标准差
@@ -530,7 +532,7 @@ export class KataGoBrowserEngineV2 {
         const response = await this.sendCommand(`genmove ${color}`);
         
         // 解析响应
-        const move = this.parseMove(response, boardSize);
+        const { move, type } = this.parseMove(response, boardSize);
         
         const thinkingTime = Date.now() - startTime;
 
@@ -539,6 +541,8 @@ export class KataGoBrowserEngineV2 {
           winrate: 0.5,
           visits: 100,
           thinkingTime,
+          shouldResign: type === 'resign',
+          moveType: type,
         };
       }
     } catch (error) {
@@ -959,13 +963,21 @@ export class KataGoBrowserEngineV2 {
 
   /**
    * 解析GTP move响应
+   * 返回 { move, type } 其中 type 可以是 'move', 'pass', 或 'resign'
    */
-  private parseMove(response: string, boardSize: number): BoardPosition | null {
+  private parseMove(response: string, boardSize: number): { move: BoardPosition | null; type: 'move' | 'pass' | 'resign' } {
+    // 检查是否是 resign
+    if (response.toLowerCase().includes('resign')) {
+      return { move: null, type: 'resign' };
+    }
+    
+    // 检查是否是 pass
+    if (response.toLowerCase().includes('pass')) {
+      return { move: null, type: 'pass' };
+    }
+    
     const match = response.match(/=\s*([A-Z])(\d+)/);
     if (!match) {
-      if (response.includes('pass') || response.includes('resign')) {
-        return null;
-      }
       throw new Error('Invalid move response: ' + response);
     }
 
@@ -973,10 +985,10 @@ export class KataGoBrowserEngineV2 {
     const row = parseInt(match[2]) - 1;
 
     if (col < 0 || col >= boardSize || row < 0 || row >= boardSize) {
-      return null;
+      return { move: null, type: 'pass' };
     }
 
-    return { row, col };
+    return { move: { row, col }, type: 'move' };
   }
 
   /**

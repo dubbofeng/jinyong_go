@@ -116,7 +116,15 @@ export class DialogueEngine {
   // 获取可用选项（过滤条件不满足的选项）
   getAvailableOptions(): DialogueOption[] {
     const currentNode = this.getCurrentNode();
-    if (!currentNode || !currentNode.options) return [];
+    console.log('🔍 getAvailableOptions - currentNode:', currentNode?.id, currentNode);
+    
+    if (!currentNode || !currentNode.options) {
+      console.log('❌ No currentNode or no options');
+      return [];
+    }
+
+    console.log('📝 Current node options count:', currentNode.options.length);
+    console.log('📝 Options:', currentNode.options);
 
     const npcId = this.tree.npcId;
     const flagsMap = this.playerState.npcDialogueFlags || {};
@@ -129,10 +137,16 @@ export class DialogueEngine {
       : false;
     const isRepeatableNode = (nodeId?: string) => {
       if (!nodeId) return false;
+      // 对话循环节点和说明类节点可以重复访问
       if (nodeId === 'daily_chat' || nodeId === 'daily_chat_2' || nodeId === 'rematch_challenge' || nodeId === 'proverb_intro') {
         return true;
       }
-      if (nodeId === 'challenge_condition' || nodeId === 'start_battle') {
+      // 说明类节点可以重复访问
+      if (nodeId === 'explain_go' || nodeId === 'explain_venues' || nodeId === 'not_ready' || nodeId === 'farewell') {
+        return true;
+      }
+      // 挑战类节点在击败后可以重复访问
+      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro') {
         return hasDefeated;
       }
       return false;
@@ -177,7 +191,9 @@ export class DialogueEngine {
       !completedQuests.has('learned_go_basics') &&
       !completedQuests.has('skipped_tutorial');
 
-    const availableOptions = currentNode.options.filter((option) => {
+    const availableOptions = currentNode.options.filter((option, index) => {
+      console.log(`\n🔍 Checking option ${index}:`, option.text);
+      
       const { type, value, inverse } = option.condition || {};
       let conditionMet = false;
       let baseMet = true;
@@ -190,6 +206,7 @@ export class DialogueEngine {
         }
         case 'quest':
           conditionMet = this.playerState.completedQuests?.includes(value) || false;
+          console.log(`  - Quest condition: ${value}, met: ${conditionMet}, inverse: ${inverse}`);
           break;
         case 'item':
           conditionMet = this.playerState.inventory?.includes(value) || false;
@@ -221,7 +238,10 @@ export class DialogueEngine {
       if (option.condition) {
         // 如果有 inverse 标记，反转结果
         baseMet = inverse ? !conditionMet : conditionMet;
-        if (!baseMet) return false;
+        if (!baseMet) {
+          console.log(`  ❌ Filtered by condition`);
+          return false;
+        }
       }
 
       // 自动隐藏已触发的一次性技能/任务选项
@@ -238,22 +258,36 @@ export class DialogueEngine {
       const action = optionAction || nextAction;
       if (action?.type === 'skill') {
         const skillId = action.value?.skillId;
-        if (skillId && flags.has(`skill:${skillId}`)) return false;
+        if (skillId && flags.has(`skill:${skillId}`)) {
+          console.log(`  ❌ Filtered by skill flag`);
+          return false;
+        }
         if (skillId && Array.isArray(this.playerState.learnedSkills)) {
-          if (this.playerState.learnedSkills.includes(skillId)) return false;
+          if (this.playerState.learnedSkills.includes(skillId)) {
+            console.log(`  ❌ Filtered by learned skill`);
+            return false;
+          }
         }
       }
       if (action?.type === 'quest') {
         const questId = typeof action.value === 'string' ? action.value : action.value?.questId;
-        if (questId && flags.has(`quest:${questId}`)) return false;
+        if (questId && flags.has(`quest:${questId}`)) {
+          console.log(`  ❌ Filtered by quest flag`);
+          return false;
+        }
       }
 
-      if (action?.type === 'go_proverb') return true;
+      if (action?.type === 'go_proverb') {
+        console.log(`  ✅ Go proverb - always visible`);
+        return true;
+      }
 
       if (option.nextNodeId && isNodeVisited(option.nextNodeId) && !isRepeatableNode(option.nextNodeId)) {
+        console.log(`  ❌ Filtered by visited node: ${option.nextNodeId}`);
         return false;
       }
 
+      console.log(`  ✅ Option passes filter`);
       return true;
     });
 

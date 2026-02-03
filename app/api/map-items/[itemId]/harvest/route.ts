@@ -40,11 +40,34 @@ export async function POST(
       return NextResponse.json({ error: '该草药已采摘' }, { status: 400 });
     }
 
-    const isHerb = mapItem.itemType === 'plant'
-      && (mapItem.plantType === 'herb' || mapItem.itemName?.includes('草'));
-    const harvestable = mapItem.harvestable !== false;
-    if (!isHerb || !harvestable) {
-      return NextResponse.json({ error: '无法采摘该物品' }, { status: 400 });
+    // 判断是否为草药：itemType为plant，且plantType为herb
+    const isHerb = mapItem.itemType === 'plant' && mapItem.plantType === 'herb';
+    
+    // 对于草药类型，忽略harvestable字段；其他植物需要检查harvestable
+    const canHarvest = isHerb || (mapItem.itemType === 'plant' && mapItem.harvestable !== false && mapItem.itemName?.includes('草'));
+    
+    console.log('🌿 Harvest check:', {
+      mapItemId,
+      itemType: mapItem.itemType,
+      plantType: mapItem.plantType,
+      itemName: mapItem.itemName,
+      harvestable: mapItem.harvestable,
+      isHerb,
+      canHarvest
+    });
+    
+    if (!canHarvest) {
+      return NextResponse.json({ 
+        error: '无法采摘该物品',
+        debug: {
+          itemType: mapItem.itemType,
+          plantType: mapItem.plantType,
+          itemName: mapItem.itemName,
+          harvestable: mapItem.harvestable,
+          isHerb,
+          canHarvest
+        }
+      }, { status: 400 });
     }
 
     const userId = session.user.id;

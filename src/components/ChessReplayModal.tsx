@@ -305,7 +305,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
 
       setAnalysis(results);
     } catch (err) {
-      setAnalysisError(err instanceof Error ? err.message : 'KataGo 复盘失败');
+      setAnalysisError(err instanceof Error ? err.message : 'Sai复盘失败');
     } finally {
       setIsAnalyzing(false);
     }
@@ -396,7 +396,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
 
             {parsed && (
               <div className="flex flex-col gap-3 border border-slate-700 rounded-lg p-4 bg-slate-900/60">
-                <div className="text-sm text-slate-200 font-semibold">KataGo 复盘</div>
+                <div className="text-sm text-slate-200 font-semibold">请Sai帮忙复盘</div>
                 <p className="text-xs text-slate-400">每次复盘消耗 10 玄铁棋子（黑）+ 10 白玉棋子（白）。</p>
                 <div className="flex flex-wrap gap-3 items-center">
                   <button
@@ -408,10 +408,10 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                         : 'bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg font-semibold'
                     }
                   >
-                    {isAnalyzing ? '分析中...' : '开始复盘分析'}
+                    {isAnalyzing ? 'Sai分析中...' : '请Sai开始复盘'}
                   </button>
                   {isKataGoLoading && (
-                    <span className="text-xs text-slate-400">KataGo 加载中...</span>
+                    <span className="text-xs text-slate-400">Sai准备中...</span>
                   )}
                   {kataGoError && (
                     <span className="text-xs text-red-300">{kataGoError}</span>

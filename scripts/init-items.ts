@@ -958,7 +958,7 @@ async function initItems() {
       size: 1,
       blocking: true,
       plantType: 'herb',
-      harvestable: false,
+      harvestable: true,
     },
     {
       itemId: 'shrub2_01',
@@ -984,7 +984,7 @@ async function initItems() {
       size: 1,
       blocking: true,
       plantType: 'herb',
-      harvestable: false,
+      harvestable: true,
     },
     {
       itemId: 'tropical01',

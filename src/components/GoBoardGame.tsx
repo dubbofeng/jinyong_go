@@ -325,6 +325,7 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!board || !engine) return;
 
+    // AI思考中或轮到AI时，禁止玩家落子
     if (vsAI && (isAIThinking || currentPlayer === 'white')) {
       setLastMessage('🤖 AI思考中...');
       return;
@@ -335,6 +336,12 @@ export default function GoBoardGame({
 
     // 使用函数式更新来避免闭包问题
     setCurrentPlayer((prevPlayer) => {
+      // 双重检查：再次确认不是AI回合
+      if (vsAI && prevPlayer === 'white') {
+        setLastMessage('🤖 AI思考中...');
+        return prevPlayer;
+      }
+
       if (
         yiYangRestriction &&
         yiYangRestriction.restrictedColor === prevPlayer &&
@@ -453,6 +460,24 @@ export default function GoBoardGame({
 
         const analysis = await katagoEngine.analyzePosition(size, stones, 'white');
         bestMove = analysis.bestMove;
+        
+        // 检查 KataGo 是否建议认输
+        if (analysis.shouldResign || analysis.moveType === 'resign') {
+          console.log('🏳️ KataGo 认为局面无望，选择认输');
+          setLastMessage('🤖 KataGo 认输');
+          setIsAIThinking(false);
+          setAiResign(true);
+          return;
+        }
+        
+        // 检查 KataGo 是否选择 pass
+        if (analysis.moveType === 'pass' || !bestMove) {
+          console.log('🤖 KataGo 选择 Pass');
+          setLastMessage('🤖 AI Pass');
+          setIsAIThinking(false);
+          handlePass(); // 执行 pass
+          return;
+        }
       } else {
         console.error('⚠️ KataGo引擎未就绪');
         setLastMessage('🤖 KataGo引擎未初始化');
@@ -514,19 +539,18 @@ export default function GoBoardGame({
           // AI落子成功，切换到玩家回合
           setCurrentPlayer('black');
         } else {
-          // AI落子失败（如自杀着），认输
-          console.error('AI落子失败:', result.error);
-          setLastMessage('🤖 AI落子失败（自杀着），认输');
+          // AI落子失败（如自杀着或无合法着点），认输
+          console.warn('AI落子失败:', result.error, '- AI认输');
+          setLastMessage('🤖 AI无法继续，认输');
           setIsAIThinking(false);
-          // 触发AI认输
           setAiResign(true);
           return;
         }
       } else {
         // AI没有合法着点，认输
-        setLastMessage('🤖 AI没有合法着点，认输');
+        console.log('🤖 AI没有合法着点，认输');
+        setLastMessage('🤖 AI无法继续，认输');
         setIsAIThinking(false);
-        // 触发AI认输
         setAiResign(true);
         return;
       }
@@ -758,7 +782,7 @@ export default function GoBoardGame({
           console.error('Failed to update player stats');
         } else {
           // 触发全局更新事件
-          window.dispatchEvent(new Event('playerStatsUpdated'));
+          window.dispatchEvent(new Event('player-stats-update'));
         }
       } catch (error) {
         console.error('Error updating player stats:', error);

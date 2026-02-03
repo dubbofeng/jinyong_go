@@ -58,10 +58,12 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [dialogueOptions, setDialogueOptions] = useState<DialogueOption[]>([]);
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
   const [currentNpcAvatar, setCurrentNpcAvatar] = useState<string | null>(null);
+  const [isUniversalChallenge, setIsUniversalChallenge] = useState(false); // 标记是否为通用挑战
   
   // 围棋对弈状态
   const [showGoGame, setShowGoGame] = useState(false);
   const [goOpponentName, setGoOpponentName] = useState(t('opponent'));
+  const [goOpponentDifficulty, setGoOpponentDifficulty] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>(5);
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
@@ -115,6 +117,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     type: AlertType;
     title?: string;
     message: string;
+    confirmText?: string;
+    cancelText?: string;
     onConfirm?: () => void;
     onCancel?: () => void;
   }>({ isOpen: false, type: 'info', message: '' });
@@ -263,13 +267,15 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   /**
    * 显示确认框
    */
-  const showConfirm = useCallback((message: string, title?: string): Promise<boolean> => {
+  const showConfirm = useCallback((message: string, title?: string, confirmText?: string, cancelText?: string): Promise<boolean> => {
     return new Promise((resolve) => {
       setAlertState({
         isOpen: true,
         type: 'confirm',
         title,
         message,
+        confirmText,
+        cancelText,
         onConfirm: () => resolve(true),
         onCancel: () => resolve(false),
       });
@@ -285,7 +291,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     // 显示挑战提示
     const shouldChallenge = await showConfirm(
       `从${resourceName || '树后'}跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"\n\n要死要活。`,
-      '⚔️ 遭遇挑战'
+      '⚔️ 遭遇挑战',
+      '接受挑战',
+      '逃跑'
     );
     
     if (shouldChallenge) {
@@ -312,11 +320,23 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       const silverPenalty = Math.min(300, 10 + level * 5);
       const staminaPenalty = Math.min(60, 5 + Math.floor(level / 2));
 
-      await fetch('/api/player/stats/update', {
+      const response = await fetch('/api/player/stats/update', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ silverDelta: -silverPenalty, staminaDelta: -staminaPenalty }),
       });
+
+      if (response.ok) {
+        // 触发全局属性更新事件
+        window.dispatchEvent(new Event('player-stats-update'));
+        
+        // 显示扣除提示
+        await showAlert(
+          `你选择了逃跑！\n\n💰 银两 -${silverPenalty}\n❤️ 体力 -${staminaPenalty}`,
+          'warning',
+          '⚠️ 逃跑惩罚'
+        );
+      }
     } catch (error) {
       console.warn('逃跑扣除体力/金钱失败:', error);
     }
@@ -972,7 +992,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             } else {
               // 传送门未解锁，显示条件提示
               const requirements = result.data.requirements;
-              let hint = '该传送门尚未解锁\n\n解锁条件：\n';
+              const targetMapName = item.targetMapId ? getMapName(item.targetMapId) : '未知地点';
+              let hint = `通往【${targetMapName}】的传送门尚未解锁\n\n解锁条件：\n`;
               
               if (requirements && Array.isArray(requirements)) {
                 requirements.forEach((req: any, index: number) => {
@@ -1135,6 +1156,21 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
                         opponentId === 'linghu_chong' ? '令狐冲' :
                         opponentId === 'guo_jing' ? '郭靖' : '对手';
         
+        // 获取 NPC 的难度
+        fetch(`/api/npcs/${opponentId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.data?.difficulty) {
+              setGoOpponentDifficulty(data.data.difficulty as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
+            } else {
+              setGoOpponentDifficulty(5); // 默认难度
+            }
+          })
+          .catch(err => {
+            console.error('获取NPC难度失败:', err);
+            setGoOpponentDifficulty(5); // 默认难度
+          });
+        
         // 关闭对话，显示对战挑战
         setTimeout(() => {
           setPendingGoOpponent(npcName);
@@ -1291,12 +1327,30 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     const npcId = currentNpcIdRef.current;
     const defeatedFlag = npcId ? `defeated_${npcId}` : '';
     const hasDefeated = defeatedFlag ? completedQuestsRef.current.includes(defeatedFlag) : false;
+    
+    console.log('📊 updateDialogueState:', {
+      npcId,
+      nodeId: node?.id,
+      defeatedFlag,
+      hasDefeated,
+      completedQuests: completedQuestsRef.current,
+      optionsCount: options.length,
+      isCompleted: engine.isCompleted(),
+      options: options.map(o => o.text)
+    });
+    
     const isRepeatableNode = (nodeId?: string) => {
       if (!nodeId) return false;
+      // 对话循环节点和说明类节点可以重复访问
       if (nodeId === 'daily_chat' || nodeId === 'daily_chat_2' || nodeId === 'rematch_challenge' || nodeId === 'proverb_intro') {
         return true;
       }
-      if (nodeId === 'challenge_condition' || nodeId === 'start_battle') {
+      // 说明类节点可以重复访问
+      if (nodeId === 'explain_go' || nodeId === 'explain_venues' || nodeId === 'not_ready' || nodeId === 'farewell') {
+        return true;
+      }
+      // 挑战类节点在击败后可以重复访问
+      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro') {
         return hasDefeated;
       }
       return false;
@@ -1322,19 +1376,54 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     }
     
     setCurrentDialogueNode(node);
-    setDialogueOptions(options);
+    
+    // 为所有NPC对话添加通用的"切磋对局"选项
+    let enhancedOptions = [...options];
+    
+    // 只在有选项且对话未结束时添加通用挑战选项
+    // 对于有剧情对局的NPC，必须先完成剧情对局（hasDefeated = true）才能使用通用挑战
+    if (npcId && options.length > 0 && !engine.isCompleted()) {
+      console.log('🎯 Checking universal challenge for NPC:', npcId);
+      console.log('🎯 hasDefeated:', hasDefeated);
+      console.log('🎯 Available options:', options.map(opt => opt.text));
+      
+      const alreadyHasChallenge = options.some(opt => 
+        opt.text.includes('切磋') || 
+        opt.text.includes('挑战') || 
+        opt.text.includes('对局')
+      );
+      
+      console.log('🎯 alreadyHasChallenge:', alreadyHasChallenge);
+      
+      // 如果原选项中没有挑战相关选项，且已经击败过该NPC（或NPC没有剧情对局），添加通用选项
+      if (!alreadyHasChallenge && hasDefeated) {
+        console.log('✅ Adding universal challenge option');
+        enhancedOptions.push({
+          text: '我想和您切磋一局围棋',
+          nextNodeId: '__universal_challenge__', // 特殊标记
+        });
+      } else {
+        console.log('❌ Not adding universal challenge:', { alreadyHasChallenge, hasDefeated });
+      }
+    }
+    
+    setDialogueOptions(enhancedOptions);
 
     if (actionConsumedNodeId && node?.id && node.id !== actionConsumedNodeId) {
       setActionConsumedNodeId(null);
     }
     
-    // 处理节点的 action
-    if (node?.action) {
+    // 处理节点的 action，但跳过已处理的 action
+    if (node?.action && !(actionConsumedNodeId && node?.id === actionConsumedNodeId)) {
       const shouldDelayAction =
         node.action.type === 'tutorial_board' ||
         node.action.type === 'tutorial_sgf' ||
         node.action.type === 'go_proverb';
       if (!shouldDelayAction) {
+        // 对于 battle action，立即标记为已处理，避免重复触发
+        if (node.action.type === 'battle' && node.id) {
+          setActionConsumedNodeId(node.id);
+        }
         handleDialogueAction(node.action);
       }
     }
@@ -1599,6 +1688,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
     try {
       await Promise.all(tasks);
+      // 触发全局属性更新事件
+      window.dispatchEvent(new Event('player-stats-update'));
     } catch (error) {
       console.warn('发放故事奖励失败:', error);
     }
@@ -1669,6 +1760,36 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     
     const options = dialogueEngine.getAvailableOptions();
     const selectedOption = options[optionIndex];
+    
+    // 处理通用挑战选项
+    if (selectedOption?.nextNodeId === '__universal_challenge__') {
+      const npcId = currentNpcIdRef.current;
+      if (npcId) {
+        // 标记为通用挑战
+        setIsUniversalChallenge(true);
+        
+        // 关闭对话框
+        setIsDialogueVisible(false);
+        
+        // 获取NPC信息并启动对局
+        fetch(`/api/npcs/${npcId}`)
+          .then(res => res.json())
+          .then(data => {
+            const difficulty = data.difficulty || 5;
+            setGoOpponentDifficulty(difficulty);
+            setGoOpponentName(data.name || '神秘高手');
+            setShowGoGame(true);
+          })
+          .catch(err => {
+            console.error('Failed to fetch NPC data:', err);
+            // 使用默认值
+            setGoOpponentDifficulty(5);
+            setGoOpponentName('神秘高手');
+            setShowGoGame(true);
+          });
+      }
+      return;
+    }
     
     // 如果选项有 action，先处理 action
     if (selectedOption?.action) {
@@ -1837,6 +1958,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     console.log('🎯 Dialogue engine:', dialogueEngine);
     console.log('🎯 Pending opponent:', pendingGoOpponent);
     console.log('🎯 Go opponent name:', goOpponentName);
+    console.log('🎯 Is universal challenge:', isUniversalChallenge);
     
     // 记录对战结果
     const battleOutcome = result.playerWon ? 'win' : 'lose';
@@ -1844,6 +1966,24 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     
     // 关闭对战界面
     setShowGoGame(false);
+    
+    // 如果是通用挑战，直接重新打开对话框，显示原来的对话节点
+    if (isUniversalChallenge) {
+      setIsUniversalChallenge(false);
+      
+      // 简单显示结果提示
+      if (result.playerWon) {
+        alert('恭喜你获胜了！继续加油！');
+      } else {
+        alert('这次失败了，再接再厉！');
+      }
+      
+      // 恢复对话框
+      setIsDialogueVisible(true);
+      return;
+    }
+    
+    // 以下是剧情战斗的原有逻辑
     
     // 如果玩家胜利且有对话引擎在运行，记录胜利状态并恢复对话
     if (dialogueEngine) {
@@ -2162,6 +2302,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         boardSize={9}
         onComplete={handleGoGameComplete}
         vsAI={!isE2EEnabled()}
+        aiDifficulty={goOpponentDifficulty}
         npcId={goOpponentName === '洪七公' ? 'hong_qigong' : 
                goOpponentName === '令狐冲' ? 'linghu_chong' :
                goOpponentName === '郭靖' ? 'guo_jing' : undefined}
@@ -2664,6 +2805,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         type={alertState.type}
         title={alertState.title}
         message={alertState.message}
+        confirmText={alertState.confirmText}
+        cancelText={alertState.cancelText}
         onConfirm={alertState.onConfirm}
         onCancel={alertState.onCancel}
         onClose={() => setAlertState({ ...alertState, isOpen: false })}

@@ -38,7 +38,7 @@ const SKILL_DEFINITIONS = {
     name: '腹语传音',
     nameEn: 'Fuyu Chuanyin',
     character: '段延庆',
-    description: '段延庆的腹语传音，可以获得AI下一步的建议',
+    description: '段延庆的腹语传音绝技，让Sai用无声的方式给你支招，获得AI下一步的建议',
     baseQiCost: 20,
     baseCooldown: 0,
     baseUsesPerGame: 3,

@@ -86,7 +86,7 @@ export default function GoGameModal({
       {vsAI && isKatagoLoading ? (
         <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
           <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-            <h2 className="text-2xl font-bold text-amber-300 mb-4">🤖 加载KataGo引擎...</h2>
+            <h2 className="text-2xl font-bold text-amber-300 mb-4">🤖 加载围棋对局引擎...</h2>
             <div className="mb-4">
               <div className="w-full bg-gray-700 rounded-full h-4">
                 <div 
@@ -109,13 +109,13 @@ export default function GoGameModal({
       ) : vsAI && !isKatagoReady ? (
         <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
           <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-            <h2 className="text-2xl font-bold text-amber-300 mb-4">⚠️ KataGo未就绪</h2>
-            <p className="text-gray-400 mb-4">需要初始化KataGo引擎才能开始游戏</p>
+            <h2 className="text-2xl font-bold text-amber-300 mb-4">⚠️ 围棋对局引擎未就绪</h2>
+            <p className="text-gray-400 mb-4">需要初始化围棋对局引擎才能开始游戏</p>
             <button
               onClick={() => initializeKataGo()}
               className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
             >
-              初始化KataGo
+              初始化围棋对局引擎
             </button>
           </div>
         </div>
