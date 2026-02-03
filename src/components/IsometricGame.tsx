@@ -2001,7 +2001,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   /**
    * 围棋对战结束处理
    */
-  const handleGoGameComplete = (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => {
+  const handleGoGameComplete = async (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => {
     console.log('🎯 Go game completed:', result);
     console.log('🎯 Dialogue engine:', dialogueEngine);
     console.log('🎯 Pending opponent:', pendingGoOpponent);
@@ -2015,7 +2015,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     // 关闭对战界面
     setShowGoGame(false);
     
-    // 如果是通用挑战，直接重新打开对话框，显示原来的对话节点
+    // 如果是通用挑战（不在对话流程中的挑战），直接显示简单结果
     if (isUniversalChallenge) {
       setIsUniversalChallenge(false);
       
@@ -2031,19 +2031,21 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       return;
     }
     
-    // 以下是剧情战斗的原有逻辑
+    // 记录首次战胜NPC的状态（仅用于解锁通用挑战）
+    const defeatedNpcId = currentNpcIdRef.current ? `defeated_${currentNpcIdRef.current}` : null;
     
-    // 如果玩家胜利且有对话引擎在运行，记录胜利状态并恢复对话
+    // 检查是否为rematch战斗（如果已经战胜过该NPC，则为rematch）
+    const isRematchBattle = defeatedNpcId && completedQuestsRef.current.includes(defeatedNpcId);
+    
+    // 更新对话引擎的战斗结果
     if (dialogueEngine) {
       dialogueEngine.updatePlayerState({ battleResult: battleOutcome });
     }
 
     if (result.playerWon && dialogueEngine) {
-      const defeatedNpcId = currentNpcIdRef.current ? `defeated_${currentNpcIdRef.current}` : null;
-
-      if (defeatedNpcId) {
+      if (defeatedNpcId && !completedQuestsRef.current.includes(defeatedNpcId)) {
         setCompletedQuests((prev) => {
-          const next = prev.includes(defeatedNpcId) ? prev : [...prev, defeatedNpcId];
+          const next = [...prev, defeatedNpcId];
           completedQuestsRef.current = next;
           dialogueEngine.updatePlayerState({
             completedQuests: next,
@@ -2054,14 +2056,96 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         console.log(`✅ Player defeated ${defeatedNpcId}, updated dialogue state`);
       }
       
-      // 更新对话状态以显示新节点
-      updateDialogueState(dialogueEngine);
+      // 如果是rematch战斗，显示通用胜利提示和奖励
+      if (isRematchBattle) {
+        // 发放通用奖励
+        const rewardExp = 100;
+        const rewardSilver = 50;
+        
+        try {
+          const response = await fetch('/api/player/rewards', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              experience: rewardExp,
+              silver: rewardSilver,
+            }),
+          });
+          
+          if (response.ok) {
+            // 触发玩家状态更新事件
+            window.dispatchEvent(new CustomEvent('player-stats-update', {
+              detail: {
+                experience: rewardExp,
+                silver: rewardSilver,
+              }
+            }));
+            
+            // 显示胜利提示
+            setAlertState({
+              isOpen: true,
+              type: 'info',
+              title: '🎉 胜利！',
+              message: `恭喜你战胜了${goOpponentName || '对手'}！\n\n获得奖励：\n经验 +${rewardExp}\n银两 +${rewardSilver}`,
+              confirmText: '太好了！',
+              onConfirm: () => {
+                setAlertState(prev => ({ ...prev, isOpen: false }));
+                // 跳转到 daily_chat 节点
+                if (dialogueEngine && dialogueEngine.hasNode('daily_chat')) {
+                  dialogueEngine.setCurrentNodeId('daily_chat');
+                  updateDialogueState(dialogueEngine);
+                }
+                setIsDialogueVisible(true);
+              },
+            });
+          }
+        } catch (error) {
+          console.error('Failed to grant rematch rewards:', error);
+          alert('恭喜你获胜了！');
+          if (dialogueEngine && dialogueEngine.hasNode('daily_chat')) {
+            dialogueEngine.setCurrentNodeId('daily_chat');
+            updateDialogueState(dialogueEngine);
+          }
+          setIsDialogueVisible(true);
+        }
+        
+        setPendingGoOpponent(null);
+        return;
+      }
       
-      // 清空待处理的对手并恢复对话
+      // 剧情战斗：更新对话状态以显示下一个节点
+      updateDialogueState(dialogueEngine);
       setPendingGoOpponent(null);
       setIsDialogueVisible(true);
     } else {
-      // 如果失败，可以选择恢复对话或关闭
+      // 失败处理
+      if (isRematchBattle) {
+        // rematch失败：显示通用失败提示
+        setAlertState({
+          isOpen: true,
+          type: 'info',
+          title: '💪 再接再厉',
+          message: '这次失败了，多练练再来吧！',
+          confirmText: '好的',
+          onConfirm: () => {
+            setAlertState(prev => ({ ...prev, isOpen: false }));
+            // 跳转到 try_again 或 daily_chat 节点
+            if (dialogueEngine) {
+              const fallbackNode = dialogueEngine.hasNode('try_again') ? 'try_again' : 'daily_chat';
+              if (dialogueEngine.hasNode(fallbackNode)) {
+                dialogueEngine.setCurrentNodeId(fallbackNode);
+                updateDialogueState(dialogueEngine);
+              }
+            }
+            setIsDialogueVisible(true);
+          },
+        });
+        setPendingGoOpponent(null);
+        return;
+      }
+      
+      // 剧情战斗失败：显示失败后的对话节点
       setPendingGoOpponent(null);
       if (dialogueEngine) {
         updateDialogueState(dialogueEngine, battleOutcome);

@@ -106,6 +106,15 @@
       ]
     },
     {
+      "id": "try_again",
+      "speaker": "Hong Qigong",
+      "text": "Haha! Losing is no big deal. It's all about improving your skills. Want to try again?",
+      "options": [
+        {"text": "Yes! Please let me try again, Senior!"},
+        {"text": "Let me practice more first"}
+      ]
+    },
+    {
       "id": "daily_chat",
       "speaker": "Hong Qigong",
       "text": "Playing Go is like commanding an army - you must know when to advance and retreat, understand what's real and what's feint. Remember: corners are gold, edges are silver, center is grass. Don't rush to the middle at the start.",

@@ -336,26 +336,10 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         options: [
           {
             optionId: '0',
-            nextNodeId: 'rematch_battle',
+            nextNodeId: 'daily_chat',
             action: { type: 'battle', value: 'hong_qigong' }
           },
           { optionId: '1', nextNodeId: 'daily_chat' }
-        ]
-      },
-      {
-        id: 'rematch_battle',
-        action: { type: 'battle', value: 'hong_qigong' },
-        options: [
-          {
-            optionId: '0',
-            nextNodeId: 'daily_chat',
-            condition: { type: 'playerWon' }
-          },
-          {
-            optionId: '1',
-            nextNodeId: 'try_again',
-            condition: { type: 'playerLost' }
-          }
         ]
       },
       {
