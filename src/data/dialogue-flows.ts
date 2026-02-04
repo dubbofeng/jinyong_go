@@ -388,7 +388,12 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '4', nextNodeId: 'farewell_early' }
         ]
       },
-      { id: 'explain_connection', nextNodeId: 'check_status' },
+      {
+        id: 'explain_connection',
+        options: [
+          { optionId: '0', nextNodeId: 'check_status' }
+        ]
+      },
       {
         id: 'explain_skill',
         options: [

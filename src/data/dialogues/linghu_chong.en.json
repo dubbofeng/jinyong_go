@@ -49,7 +49,12 @@
     {
       "id": "explain_connection",
       "speaker": "Linghu Chong",
-      "text": "The Dugu Nine Swords emphasizes anticipating the opponent's moves - no technique beats all techniques. Go is the same! See through your opponent's intent, understand the board situation, and strike first."
+      "text": "The Dugu Nine Swords emphasizes anticipating the opponent's moves - no technique beats all techniques. Go is the same! See through your opponent's intent, understand the board situation, and strike first.",
+      "options": [
+        {
+          "text": "I see, thank you for the lesson"
+        }
+      ]
     },
     {
       "id": "explain_skill",
