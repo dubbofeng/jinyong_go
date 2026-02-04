@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocale } from 'next-intl';
 import SgfTestClient from '@/src/components/SgfTestClient';
 import type { ParsedSgf } from '@/src/lib/sgf';
 import { GoEngine } from '@/src/lib/go-engine';
@@ -82,6 +83,7 @@ const sgfToPosition = (coord: string, size: number): { row: number; col: number 
 };
 
 export default function ChessReplayModal({ isOpen, userId, onClose }: ChessReplayModalProps) {
+  const locale = useLocale();
   const [records, setRecords] = useState<ChessRecordSummary[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedOpponent, setSelectedOpponent] = useState<string>('all');
@@ -125,7 +127,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/chess-records?userId=${encodeURIComponent(userId)}&limit=20`);
+      const response = await fetch(`/api/chess-records?userId=${encodeURIComponent(userId)}&limit=20&locale=${locale}`);
       const data = await response.json();
       if (!response.ok || !data?.records) {
         throw new Error(data?.error || '加载记录失败');
@@ -136,14 +138,14 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [userId, locale]);
 
   const loadRecordDetail = useCallback(async (recordId: number) => {
     setIsLoadingRecord(true);
     setParsed(null);
     setError(null);
     try {
-      const response = await fetch(`/api/chess-records/${recordId}/sgf`);
+      const response = await fetch(`/api/chess-records/${recordId}/sgf?locale=${locale}`);
       const data = (await response.json()) as RecordDetailResponse;
       if (!response.ok || !data?.parsed) {
         throw new Error((data as any)?.error || '加载SGF失败');
@@ -154,7 +156,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     } finally {
       setIsLoadingRecord(false);
     }
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     if (!isOpen) return;
