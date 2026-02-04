@@ -1049,6 +1049,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           'old_house': { tier: 'tier2', difficultyRange: [6, 7] },
           'stable': { tier: 'tier3', difficultyRange: [4, 5] },
           'house': { tier: 'tier4', difficultyRange: [1, 3] },
+          'repair_building': { tier: 'special', difficultyRange: [1, 9] },
         };
         
         const buildingConfig = item.itemId ? buildingToNpcMap[item.itemId] : undefined;
@@ -1065,16 +1066,32 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             // 随机选择一个NPC
             const randomNpc = npcs[Math.floor(Math.random() * npcs.length)];
             
+            // 处理动态难度NPC（如小亮）
+            let npcDifficulty = randomNpc.difficulty;
+            if (randomNpc.dynamicDifficulty) {
+              try {
+                const statsResponse = await fetch('/api/player/stats');
+                if (statsResponse.ok) {
+                  const statsData = await statsResponse.json();
+                  const playerLevel = Number(statsData?.data?.level || 1);
+                  npcDifficulty = Math.max(1, Math.min(9, Math.floor(playerLevel / 3)));
+                }
+              } catch (error) {
+                console.warn('获取玩家等级失败，使用默认难度:', error);
+                npcDifficulty = 1;
+              }
+            }
+            
             // 确认是否挑战
             const shouldChallenge = await showConfirm(
-              `遇到了 ${randomNpc.name.zh}（${randomNpc.name.en}）\n${randomNpc.description.zh}\n\n是否与其对弈？`,
+              `遇到了 ${randomNpc.name.zh}（${randomNpc.name.en}）\n${randomNpc.description.zh}\n难度: ${npcDifficulty}\n\n是否与其对弈？`,
               '武林高手'
             );
             
             if (shouldChallenge) {
               setCurrentBattleNpcId(randomNpc.id);
               setGoOpponentName(randomNpc.name.zh);
-              setGoOpponentDifficulty(randomNpc.difficulty);
+              setGoOpponentDifficulty(npcDifficulty as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
               setShowGoGame(true);
             }
           } catch (error) {

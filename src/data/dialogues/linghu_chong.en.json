@@ -17,7 +17,10 @@
           "text": "Brother Linghu! Please teach me Go"
         },
         {
-          "text": "I'd like to hear about swordplay and Go"
+          "text": "I want to learn the essence of Dugu Nine Swords"
+        },
+        {
+          "text": "I want to challenge you again!"
         },
         {
           "text": "What's the connection between Dugu Nine Swords and Go?"
@@ -51,10 +54,10 @@
     {
       "id": "explain_skill",
       "speaker": "Linghu Chong",
-      "text": "I have a technique called 'Dugu Nine Swords: Assessment Chapter' that lets you see the board situation clearly and judge the advantage.",
+      "text": "I have a technique called 'Dugu Nine Swords: Assessment Chapter' that lets you see the board situation clearly and judge the advantage. But you must defeat me first before I can teach you.",
       "options": [
         {
-          "text": "Please teach me!"
+          "text": "I'd be honored! Please teach me!"
         },
         {
           "text": "Let me think about it"
@@ -62,18 +65,95 @@
       ]
     },
     {
-      "id": "teach_request",
+      "id": "challenge_condition",
       "speaker": "Linghu Chong",
-      "text": "Haha, you flatter me. I'm no match for Senior Hong Qigong. But my Dugu Nine Swords can connect with Go."
+      "text": "Good! Let me see your Go skills. Dugu Nine Swords is about anticipating your opponent. Let's see if you can predict my moves!",
+      "options": [
+        {
+          "text": "Let's do this!"
+        },
+        {
+          "text": "Let me prepare more"
+        }
+      ]
+    },
+    {
+      "id": "start_battle",
+      "speaker": "Linghu Chong",
+      "text": "Please!",
+      "options": [
+        {
+          "text": "[After Victory] Thank you for the lesson!"
+        },
+        {
+          "text": "[After Defeat] My skills are insufficient, I'll return another day"
+        }
+      ]
     },
     {
       "id": "teach_skill",
       "speaker": "Linghu Chong",
-      "text": "This technique lets you see the advantage and disadvantage on the board at any time, just like how the Dugu Nine Swords sees through an opponent's flaws. Remember, know yourself and your enemy, and you'll never lose!",
-      "action": {
-        "type": "quest",
-        "value": "unlock_skill_dugu"
-      }
+      "text": "You indeed have great potential! I'll teach you the 'Dugu Nine Swords: Assessment Chapter' now."
+    },
+    {
+      "id": "teach_skill_detail",
+      "speaker": "Linghu Chong",
+      "text": "This technique lets you see the advantage and disadvantage on the board at any time, just like how the Dugu Nine Swords sees through an opponent's flaws. Remember, know yourself and your enemy, and you'll never lose!"
+    },
+    {
+      "id": "teach_complete",
+      "speaker": "Linghu Chong",
+      "text": "There's a Hero Guo in Xiangyang City whose Go skills are unfathomable. If you've learned well, go find him for a match.",
+      "options": [
+        {
+          "text": "Thank you, Brother Linghu!"
+        },
+        {
+          "text": "I want to challenge you again!"
+        },
+        {
+          "text": "Can you tell me more about Dugu Nine Swords?"
+        }
+      ]
+    },
+    {
+      "id": "try_again",
+      "speaker": "Linghu Chong",
+      "text": "No worries, victory and defeat are common in battles. Practice more and return another day.",
+      "options": [
+        {
+          "text": "Farewell!"
+        },
+        {
+          "text": "I want to try again!"
+        }
+      ]
+    },
+    {
+      "id": "rematch_challenge",
+      "speaker": "Linghu Chong",
+      "text": "Haha, good! Let's have another match!",
+      "options": [
+        {
+          "text": "Please teach me!"
+        },
+        {
+          "text": "Another day"
+        }
+      ]
+    },
+    {
+      "id": "daily_chat",
+      "speaker": "Linghu Chong",
+      "text": "You've mastered the essence of Dugu Nine Swords, keep up the good work!",
+      "options": [
+        {
+          "text": "Thank you!"
+        },
+        {
+          "text": "I want to challenge you again!"
+        }
+      ]
     },
     {
       "id": "after_teach",

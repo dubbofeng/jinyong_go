@@ -369,35 +369,111 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       {
         id: 'check_status',
         options: [
-          { optionId: '0', nextNodeId: 'explain_skill' },
-          { optionId: '1', nextNodeId: 'introduce' },
-          { optionId: '2', nextNodeId: 'explain_connection' },
-          { optionId: '3', nextNodeId: 'farewell_early' }
+          {
+            optionId: '0',
+            nextNodeId: 'explain_skill',
+            condition: { type: 'quest', value: 'defeated_linghu_chong', inverse: true }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'teach_skill',
+            condition: { type: 'quest', value: 'defeated_linghu_chong' }
+          },
+          {
+            optionId: '2',
+            nextNodeId: 'rematch_challenge',
+            condition: { type: 'quest', value: 'defeated_linghu_chong' }
+          },
+          { optionId: '3', nextNodeId: 'explain_connection' },
+          { optionId: '4', nextNodeId: 'farewell_early' }
         ]
       },
-      {
-        id: 'introduce',
-        options: [
-          { optionId: '0', nextNodeId: 'explain_skill' },
-          { optionId: '1', nextNodeId: 'explain_connection' },
-          { optionId: '2', nextNodeId: 'farewell_early' }
-        ]
-      },
-      { id: 'explain_connection', nextNodeId: 'explain_skill' },
+      { id: 'explain_connection', nextNodeId: 'check_status' },
       {
         id: 'explain_skill',
         options: [
-          { optionId: '0', nextNodeId: 'teach_request' },
+          { optionId: '0', nextNodeId: 'challenge_condition' },
           { optionId: '1', nextNodeId: 'think_again' }
         ]
       },
-      { id: 'teach_request', nextNodeId: 'teach_skill' },
-      { id: 'teach_skill', nextNodeId: 'after_teach' },
       {
-        id: 'after_teach',
+        id: 'challenge_condition',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'start_battle',
+            action: { type: 'battle', value: 'linghu_chong' }
+          },
+          { optionId: '1', nextNodeId: 'think_again' }
+        ]
+      },
+      {
+        id: 'start_battle',
+        action: { type: 'battle', value: 'linghu_chong' },
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'teach_skill',
+            condition: { type: 'playerWon' }
+          },
+          {
+            optionId: '1',
+            nextNodeId: 'try_again',
+            condition: { type: 'playerLost' }
+          }
+        ]
+      },
+      { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
+      { 
+        id: 'teach_skill_detail', 
+        nextNodeId: 'teach_complete',
+        action: { 
+          type: 'skill', 
+          value: { 
+            skillId: 'dugu_jiujian',
+            questId: 'unlock_skill_dugu'
+          }
+        }
+      },
+      {
+        id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'talk_sword' }
+          {
+            optionId: '1',
+            nextNodeId: 'rematch_challenge',
+            condition: { type: 'repeatable' }
+          },
+          { optionId: '2', nextNodeId: 'talk_sword' }
+        ]
+      },
+      {
+        id: 'try_again',
+        options: [
+          { optionId: '0', nextNodeId: 'farewell' },
+          { optionId: '1', nextNodeId: 'challenge_condition' }
+        ]
+      },
+      {
+        id: 'rematch_challenge',
+        options: [
+          {
+            optionId: '0',
+            nextNodeId: 'daily_chat',
+            action: { type: 'battle', value: 'linghu_chong' }
+          },
+          { optionId: '1', nextNodeId: 'daily_chat' }
+        ]
+      },
+      {
+        id: 'daily_chat',
+        options: [
+          { optionId: '0', nextNodeId: 'farewell' },
+          {
+            optionId: '1',
+            nextNodeId: 'rematch_challenge',
+            condition: { type: 'repeatable' }
+          }
         ]
       },
       {

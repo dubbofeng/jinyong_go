@@ -1085,5 +1085,21 @@
       "difficulty": 1,
       "building": "house"
     }
+  ],
+  "special": [
+    {
+      "id": "xiao_liang",
+      "name": {
+        "zh": "小亮",
+        "en": "Xiao Liang"
+      },
+      "description": {
+        "zh": "一位神秘的少年，他的围棋实力会随着你的成长而提升",
+        "en": "A mysterious young man whose Go skills grow with your level"
+      },
+      "difficulty": 0,
+      "building": "repair_building",
+      "dynamicDifficulty": true
+    }
   ]
 }
