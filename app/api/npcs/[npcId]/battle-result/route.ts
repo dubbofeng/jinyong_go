@@ -34,19 +34,20 @@ export async function POST(
       );
     }
 
-    // 验证NPC存在
+    // 验证NPC是否在数据库中（可选，other_npcs中的NPC可能不在数据库）
     const [npc] = await db
       .select()
       .from(npcs)
       .where(eq(npcs.npcId, npcId))
       .limit(1);
 
-    if (!npc) {
-      return NextResponse.json(
-        { success: false, error: 'NPC not found' },
-        { status: 404 }
-      );
-    }
+    // 如果NPC不在数据库中，仍然允许记录战斗结果（用于other_npcs.json中的NPC）
+    // if (!npc) {
+    //   return NextResponse.json(
+    //     { success: false, error: 'NPC not found' },
+    //     { status: 404 }
+    //   );
+    // }
 
     // 获取或创建NPC关系
     let [relationship] = await db

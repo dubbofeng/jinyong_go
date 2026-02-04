@@ -23,6 +23,7 @@ interface GoBoardGameProps {
   aiDifficulty?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // AI难度（1-9级）
   katagoEngine?: KataGoBrowserEngineV2 | null; // KataGo浏览器引擎实例（V2版本）
   npcId?: string; // 对战的NPC ID（用于任务进度）
+  opponentName?: string; // 对手名称
   onGameModalClose?: () => void; // 关闭游戏 Modal 的回调
   onGameEnd?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
 }
@@ -35,6 +36,7 @@ export default function GoBoardGame({
   aiDifficulty = 5, // 默认5级难度（中等）
   katagoEngine = null,
   npcId,
+  opponentName = '对手',
   onGameModalClose,
   onGameEnd
 }: GoBoardGameProps) {
@@ -1576,9 +1578,33 @@ export default function GoBoardGame({
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">
       {/* 左侧：棋盘区域 */}
       <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
+        {/* 对手信息 - 左上角 */}
+        <div className="absolute top-4 left-4 bg-gradient-to-r from-amber-600 to-amber-700 text-white px-6 py-3 rounded-lg shadow-2xl border-2 border-amber-400">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">⚔️</span>
+            <div>
+              <div className="font-bold text-lg">{opponentName}</div>
+              <div className="text-sm text-amber-100 flex items-center gap-2">
+                <span>难度:</span>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 9 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full ${
+                        i < aiDifficulty ? 'bg-yellow-300' : 'bg-gray-500'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="font-semibold">({aiDifficulty}/9)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         {/* 游戏信息 */}
         <div className="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg mb-4">
           <div className="flex items-center gap-6">

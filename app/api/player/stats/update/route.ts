@@ -9,6 +9,7 @@ import { db } from '../../../../../src/db';
 import { playerStats, gameProgress, playerInventory, items } from '../../../../../src/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../../src/lib/rank-system';
+import { getActualMaxStats } from '../../../../../src/lib/player-stats-utils';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -41,32 +42,11 @@ export async function PATCH(request: NextRequest) {
     const stats = current[0];
 
     // 获取装备加成
-    const equippedItems = await db
-      .select({
-        effects: items.effects,
-      })
-      .from(playerInventory)
-      .leftJoin(items, eq(playerInventory.itemId, items.itemId))
-      .where(
-        and(
-          eq(playerInventory.userId, userId),
-          eq(playerInventory.equipped, true),
-          eq(items.itemType, 'equipment')
-        )
-      );
-
-    const bonus = equippedItems.reduce(
-      (acc, cur) => {
-        const effects = (cur.effects as any) || {};
-        acc.maxStamina += effects.maxStamina || 0;
-        acc.maxQi += effects.maxQi || 0;
-        return acc;
-      },
-      { maxStamina: 0, maxQi: 0 }
+    const { actualMaxStamina, actualMaxQi } = await getActualMaxStats(
+      stats.maxStamina,
+      stats.maxQi,
+      userId
     );
-
-    const actualMaxStamina = stats.maxStamina + bonus.maxStamina;
-    const actualMaxQi = stats.maxQi + bonus.maxQi;
 
     // 构建更新对象
     const updates: any = {

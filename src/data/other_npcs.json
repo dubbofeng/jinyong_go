@@ -1,0 +1,1089 @@
+{
+  "tier1": [
+    {
+      "id": "aqing",
+      "name": {
+        "zh": "阿青",
+        "en": "Ah Qing"
+      },
+      "description": {
+        "zh": "《越女剑》中的绝世剑客，剑气横扫三千甲，武力值断层第一",
+        "en": "Legendary swordmaster from Yue Maiden Sword"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "damo",
+      "name": {
+        "zh": "达摩祖师",
+        "en": "Bodhidharma"
+      },
+      "description": {
+        "zh": "少林武学源头，中原武学之祖",
+        "en": "Founder of Shaolin martial arts"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "shi_potian",
+      "name": {
+        "zh": "石破天",
+        "en": "Shi Potian"
+      },
+      "description": {
+        "zh": "《侠客行》主角，武学已臻化境",
+        "en": "Protagonist of Ode to Gallantry"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "saodi_seng",
+      "name": {
+        "zh": "扫地僧",
+        "en": "Sweeping Monk"
+      },
+      "description": {
+        "zh": "《天龙八部》中的神秘高僧，三尺气墙化解顶级攻击",
+        "en": "Mysterious monk from Demi-Gods and Semi-Devils"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "xiaoyao_zi",
+      "name": {
+        "zh": "逍遥子",
+        "en": "Xiaoyao Zi"
+      },
+      "description": {
+        "zh": "逍遥派创始人",
+        "en": "Founder of Carefree Sect"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "dugu_qiubai",
+      "name": {
+        "zh": "独孤求败",
+        "en": "Dugu Qiubai"
+      },
+      "description": {
+        "zh": "剑道巅峰，一生求一败而不可得",
+        "en": "Legendary swordsman seeking a worthy opponent"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "zhang_sanfeng",
+      "name": {
+        "zh": "张三丰",
+        "en": "Zhang Sanfeng"
+      },
+      "description": {
+        "zh": "武当派创始人，道家武学泰斗",
+        "en": "Founder of Wudang Sect"
+      },
+      "difficulty": 9,
+      "building": "small_2stories"
+    },
+    {
+      "id": "huang_shang",
+      "name": {
+        "zh": "黄裳",
+        "en": "Huang Shang"
+      },
+      "description": {
+        "zh": "《九阴真经》作者",
+        "en": "Author of Nine Yin Manual"
+      },
+      "difficulty": 8,
+      "building": "small_2stories"
+    },
+    {
+      "id": "taijian",
+      "name": {
+        "zh": "前朝太监",
+        "en": "Former Dynasty Eunuch"
+      },
+      "description": {
+        "zh": "《葵花宝典》作者",
+        "en": "Author of Sunflower Manual"
+      },
+      "difficulty": 8,
+      "building": "small_2stories"
+    }
+  ],
+  "tier2": [
+    {
+      "id": "tianshan_tongmu",
+      "name": {
+        "zh": "天山童姥",
+        "en": "Tianshan Tongmu"
+      },
+      "description": {
+        "zh": "逍遥派掌门，天山六阳掌传人",
+        "en": "Leader of Carefree Sect"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "li_qiushui",
+      "name": {
+        "zh": "李秋水",
+        "en": "Li Qiushui"
+      },
+      "description": {
+        "zh": "逍遥派长老，小无相功传人",
+        "en": "Elder of Carefree Sect"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "wuyazi",
+      "name": {
+        "zh": "无崖子",
+        "en": "Wu Yazi"
+      },
+      "description": {
+        "zh": "逍遥派掌门，琴棋书画无所不精",
+        "en": "Former leader of Carefree Sect"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "jiumo_zhi",
+      "name": {
+        "zh": "鸠摩智",
+        "en": "Jiumo Zhi"
+      },
+      "description": {
+        "zh": "大轮明王，火焰刀传人",
+        "en": "Great Wheel Wisdom King"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "wang_chongyang",
+      "name": {
+        "zh": "王重阳",
+        "en": "Wang Chongyang"
+      },
+      "description": {
+        "zh": "全真教创始人，天下第一",
+        "en": "Founder of Quanzhen Sect"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "murong_bo",
+      "name": {
+        "zh": "慕容博",
+        "en": "Murong Bo"
+      },
+      "description": {
+        "zh": "慕容复之父，参合指传人",
+        "en": "Father of Murong Fu"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "xiao_yuanshan",
+      "name": {
+        "zh": "萧远山",
+        "en": "Xiao Yuanshan"
+      },
+      "description": {
+        "zh": "萧峰之父，少林寺藏经阁守护者",
+        "en": "Father of Xiao Feng"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "dongfang_bubai",
+      "name": {
+        "zh": "东方不败",
+        "en": "Dongfang Bubai"
+      },
+      "description": {
+        "zh": "日月神教教主，葵花宝典集大成者",
+        "en": "Leader of Sun Moon Holy Cult"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "jinlun_fawang",
+      "name": {
+        "zh": "金轮法王",
+        "en": "Jinlun Fawang"
+      },
+      "description": {
+        "zh": "蒙古国师，十层龙象般若功",
+        "en": "Mongolian National Preceptor"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "lin_chaoying",
+      "name": {
+        "zh": "林朝英",
+        "en": "Lin Chaoying"
+      },
+      "description": {
+        "zh": "古墓派创始人，玉女心经作者",
+        "en": "Founder of Ancient Tomb Sect"
+      },
+      "difficulty": 7,
+      "building": "old_house"
+    },
+    {
+      "id": "ouyang_feng",
+      "name": {
+        "zh": "欧阳锋",
+        "en": "Ouyang Feng"
+      },
+      "description": {
+        "zh": "西毒，蛤蟆功传人",
+        "en": "Western Poison"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "long_daozhu",
+      "name": {
+        "zh": "龙岛主",
+        "en": "Long Daozhu"
+      },
+      "description": {
+        "zh": "侠客岛岛主之一",
+        "en": "Master of Knight Island"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "mu_daozhu",
+      "name": {
+        "zh": "木岛主",
+        "en": "Mu Daozhu"
+      },
+      "description": {
+        "zh": "侠客岛岛主之一",
+        "en": "Master of Knight Island"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "duan_siping",
+      "name": {
+        "zh": "段思平",
+        "en": "Duan Siping"
+      },
+      "description": {
+        "zh": "大理开国皇帝，六脉神剑创始人",
+        "en": "Founder of Dali Kingdom"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "murong_longcheng",
+      "name": {
+        "zh": "慕容龙城",
+        "en": "Murong Longcheng"
+      },
+      "description": {
+        "zh": "慕容世家先祖，斗转星移创始人",
+        "en": "Ancestor of Murong Clan"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "feng_qingyang",
+      "name": {
+        "zh": "风清扬",
+        "en": "Feng Qingyang"
+      },
+      "description": {
+        "zh": "华山派剑宗高手，独孤九剑传人",
+        "en": "Sword master of Mount Hua"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "jueyuan_dashi",
+      "name": {
+        "zh": "觉远大师",
+        "en": "Jueyuan Dashi"
+      },
+      "description": {
+        "zh": "少林寺僧人，九阳真经传播者",
+        "en": "Shaolin monk"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "lin_yuantu",
+      "name": {
+        "zh": "林远图",
+        "en": "Lin Yuantu"
+      },
+      "description": {
+        "zh": "辟邪剑法创始人",
+        "en": "Creator of Evil-Warding Swordplay"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "ren_woxing",
+      "name": {
+        "zh": "任我行",
+        "en": "Ren Woxing"
+      },
+      "description": {
+        "zh": "日月神教前教主，吸星大法传人",
+        "en": "Former leader of Sun Moon Holy Cult"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    },
+    {
+      "id": "fangzheng_dashi",
+      "name": {
+        "zh": "方证大师",
+        "en": "Fangzheng Dashi"
+      },
+      "description": {
+        "zh": "少林寺方丈",
+        "en": "Abbot of Shaolin Temple"
+      },
+      "difficulty": 6,
+      "building": "old_house"
+    }
+  ],
+  "tier3": [
+    {
+      "id": "yang_dingtian",
+      "name": {
+        "zh": "阳顶天",
+        "en": "Yang Dingtian"
+      },
+      "description": {
+        "zh": "明教教主，乾坤大挪移传人",
+        "en": "Leader of Ming Cult"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "xuanci_dashi",
+      "name": {
+        "zh": "玄慈大师",
+        "en": "Xuanci Dashi"
+      },
+      "description": {
+        "zh": "少林寺方丈",
+        "en": "Abbot of Shaolin Temple"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "kurong_dashi",
+      "name": {
+        "zh": "枯荣大师",
+        "en": "Kurong Dashi"
+      },
+      "description": {
+        "zh": "天龙寺高僧",
+        "en": "Master of Tianlong Temple"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "chongxu_daozhang",
+      "name": {
+        "zh": "冲虚道长",
+        "en": "Chongxu Daozhang"
+      },
+      "description": {
+        "zh": "武当派掌门",
+        "en": "Leader of Wudang Sect"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "zuo_lengchan",
+      "name": {
+        "zh": "左冷禅",
+        "en": "Zuo Lengchan"
+      },
+      "description": {
+        "zh": "嵩山派掌门，五岳剑派盟主",
+        "en": "Leader of Songshan Sect"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "cheng_kun",
+      "name": {
+        "zh": "成昆",
+        "en": "Cheng Kun"
+      },
+      "description": {
+        "zh": "混元霹雳手",
+        "en": "Master of Hunyuan Pili Shou"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "xie_xun",
+      "name": {
+        "zh": "谢逊",
+        "en": "Xie Xun"
+      },
+      "description": {
+        "zh": "金毛狮王，明教四大法王之一",
+        "en": "Golden Lion King"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "zhang_cuishan",
+      "name": {
+        "zh": "张翠山",
+        "en": "Zhang Cuishan"
+      },
+      "description": {
+        "zh": "武当五侠",
+        "en": "Fifth Hero of Wudang"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "xiang_wentian",
+      "name": {
+        "zh": "向问天",
+        "en": "Xiang Wentian"
+      },
+      "description": {
+        "zh": "日月神教光明左使",
+        "en": "Left Emissary of Sun Moon Holy Cult"
+      },
+      "difficulty": 5,
+      "building": "stable"
+    },
+    {
+      "id": "lin_pingzhi",
+      "name": {
+        "zh": "林平之",
+        "en": "Lin Pingzhi"
+      },
+      "description": {
+        "zh": "辟邪剑法传人",
+        "en": "Practitioner of Evil-Warding Swordplay"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "yuan_chengzhi",
+      "name": {
+        "zh": "袁承志",
+        "en": "Yuan Chengzhi"
+      },
+      "description": {
+        "zh": "《碧血剑》主角",
+        "en": "Protagonist of Sword Stained with Royal Blood"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "xia_xueyi",
+      "name": {
+        "zh": "夏雪宜",
+        "en": "Xia Xueyi"
+      },
+      "description": {
+        "zh": "金蛇郎君",
+        "en": "Golden Snake Lord"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "mu_renqing",
+      "name": {
+        "zh": "穆人清",
+        "en": "Mu Renqing"
+      },
+      "description": {
+        "zh": "紫衣侯",
+        "en": "Purple-Robed Marquis"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "gui_xinshu",
+      "name": {
+        "zh": "归辛树",
+        "en": "Gui Xinshu"
+      },
+      "description": {
+        "zh": "铁剑门门主",
+        "en": "Leader of Iron Sword Gate"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "shenshan_shangren",
+      "name": {
+        "zh": "神山上人",
+        "en": "Shenshan Shangren"
+      },
+      "description": {
+        "zh": "昆仑派掌门",
+        "en": "Leader of Kunlun Sect"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "hu_fei",
+      "name": {
+        "zh": "胡斐",
+        "en": "Hu Fei"
+      },
+      "description": {
+        "zh": "飞狐外传主角，胡家刀法传人",
+        "en": "Protagonist of Fox Volant of the Snowy Mountain"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "miao_renfeng",
+      "name": {
+        "zh": "苗人凤",
+        "en": "Miao Renfeng"
+      },
+      "description": {
+        "zh": "金面佛，打遍天下无敌手",
+        "en": "Golden-Faced Buddha"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "hu_yidao",
+      "name": {
+        "zh": "胡一刀",
+        "en": "Hu Yidao"
+      },
+      "description": {
+        "zh": "胡家刀法传人",
+        "en": "Master of Hu Family Sabre"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "ding_chunqiu",
+      "name": {
+        "zh": "丁春秋",
+        "en": "Ding Chunqiu"
+      },
+      "description": {
+        "zh": "星宿老怪",
+        "en": "Old Freak of Xingxiu"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "fan_yao",
+      "name": {
+        "zh": "范遥",
+        "en": "Fan Yao"
+      },
+      "description": {
+        "zh": "明教光明右使",
+        "en": "Right Emissary of Ming Cult"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "yang_xiao",
+      "name": {
+        "zh": "杨逍",
+        "en": "Yang Xiao"
+      },
+      "description": {
+        "zh": "明教光明左使",
+        "en": "Left Emissary of Ming Cult"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "gongsun_zhi",
+      "name": {
+        "zh": "公孙止",
+        "en": "Gongsun Zhi"
+      },
+      "description": {
+        "zh": "绝情谷谷主",
+        "en": "Master of Unrequited Love Valley"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "qiu_qianren",
+      "name": {
+        "zh": "裘千仞",
+        "en": "Qiu Qianren"
+      },
+      "description": {
+        "zh": "铁掌帮帮主",
+        "en": "Leader of Iron Palm Gang"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "zhou_zhiruo",
+      "name": {
+        "zh": "周芷若",
+        "en": "Zhou Zhiruo"
+      },
+      "description": {
+        "zh": "峨眉派掌门，九阴真经传人",
+        "en": "Leader of Emei Sect"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "baisun_daoren",
+      "name": {
+        "zh": "百损道人",
+        "en": "Baisun Daoren"
+      },
+      "description": {
+        "zh": "昆仑派高手",
+        "en": "Master of Kunlun Sect"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "kongwen_dashi",
+      "name": {
+        "zh": "空闻大师",
+        "en": "Kongwen Dashi"
+      },
+      "description": {
+        "zh": "少林寺方丈",
+        "en": "Abbot of Shaolin Temple"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    },
+    {
+      "id": "yu_lianzhou",
+      "name": {
+        "zh": "俞莲舟",
+        "en": "Yu Lianzhou"
+      },
+      "description": {
+        "zh": "武当二侠",
+        "en": "Second Hero of Wudang"
+      },
+      "difficulty": 4,
+      "building": "stable"
+    }
+  ],
+  "tier4": [
+    {
+      "id": "hong_antong",
+      "name": {
+        "zh": "洪安通",
+        "en": "Hong Antong"
+      },
+      "description": {
+        "zh": "神龙教教主",
+        "en": "Leader of Divine Dragon Cult"
+      },
+      "difficulty": 3,
+      "building": "house"
+    },
+    {
+      "id": "gui_erniang",
+      "name": {
+        "zh": "归二娘",
+        "en": "Gui Erniang"
+      },
+      "description": {
+        "zh": "五毒教教主",
+        "en": "Leader of Five Poison Cult"
+      },
+      "difficulty": 3,
+      "building": "house"
+    },
+    {
+      "id": "feng_xifan",
+      "name": {
+        "zh": "冯锡范",
+        "en": "Feng Xifan"
+      },
+      "description": {
+        "zh": "神龙教白龙使",
+        "en": "White Dragon Emissary"
+      },
+      "difficulty": 3,
+      "building": "house"
+    },
+    {
+      "id": "hu_guinan",
+      "name": {
+        "zh": "胡桂南",
+        "en": "Hu Guinan"
+      },
+      "description": {
+        "zh": "红花会四当家",
+        "en": "Fourth Leader of Red Flower Society"
+      },
+      "difficulty": 3,
+      "building": "house"
+    },
+    {
+      "id": "yuzhen_zi",
+      "name": {
+        "zh": "玉真子",
+        "en": "Yuzhen Zi"
+      },
+      "description": {
+        "zh": "武当派高手",
+        "en": "Master of Wudang Sect"
+      },
+      "difficulty": 3,
+      "building": "house"
+    },
+    {
+      "id": "li_mochou",
+      "name": {
+        "zh": "李莫愁",
+        "en": "Li Mochou"
+      },
+      "description": {
+        "zh": "赤练仙子",
+        "en": "Scarlet Serpent Fairy"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "mei_chaofeng",
+      "name": {
+        "zh": "梅超风",
+        "en": "Mei Chaofeng"
+      },
+      "description": {
+        "zh": "铁尸梅超风，九阴白骨爪传人",
+        "en": "Iron Corpse Mei Chaofeng"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "yue_buqun",
+      "name": {
+        "zh": "岳不群",
+        "en": "Yue Buqun"
+      },
+      "description": {
+        "zh": "华山派掌门，君子剑",
+        "en": "Leader of Mount Hua Sect"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "miejue_shitai",
+      "name": {
+        "zh": "灭绝师太",
+        "en": "Miejue Shitai"
+      },
+      "description": {
+        "zh": "峨眉派掌门",
+        "en": "Leader of Emei Sect"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "song_yuanqiao",
+      "name": {
+        "zh": "宋远桥",
+        "en": "Song Yuanqiao"
+      },
+      "description": {
+        "zh": "武当大侠",
+        "en": "First Hero of Wudang"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "mo_shenggu",
+      "name": {
+        "zh": "莫声谷",
+        "en": "Mo Shenggu"
+      },
+      "description": {
+        "zh": "武当七侠",
+        "en": "Seventh Hero of Wudang"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "yin_tianzheng",
+      "name": {
+        "zh": "殷天正",
+        "en": "Yin Tianzheng"
+      },
+      "description": {
+        "zh": "明教鹰王",
+        "en": "Eagle King of Ming Cult"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "wei_yixiao",
+      "name": {
+        "zh": "韦一笑",
+        "en": "Wei Yixiao"
+      },
+      "description": {
+        "zh": "明教青翼蝠王",
+        "en": "Green-Winged Bat King"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "xie_yanke",
+      "name": {
+        "zh": "谢烟客",
+        "en": "Xie Yanke"
+      },
+      "description": {
+        "zh": "摩天居士",
+        "en": "Sky-Reaching Layman"
+      },
+      "difficulty": 2,
+      "building": "house"
+    },
+    {
+      "id": "bai_zizai",
+      "name": {
+        "zh": "白自在",
+        "en": "Bai Zizai"
+      },
+      "description": {
+        "zh": "天地会青木堂堂主",
+        "en": "Leader of Green Wood Hall"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "zhang_san",
+      "name": {
+        "zh": "张三",
+        "en": "Zhang San"
+      },
+      "description": {
+        "zh": "赏善罚恶使之一",
+        "en": "One of the Twin Judges"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "li_si",
+      "name": {
+        "zh": "李四",
+        "en": "Li Si"
+      },
+      "description": {
+        "zh": "赏善罚恶使之一",
+        "en": "One of the Twin Judges"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "ding_busan",
+      "name": {
+        "zh": "丁不三",
+        "en": "Ding Busan"
+      },
+      "description": {
+        "zh": "江湖恶人",
+        "en": "Villain in Jianghu"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "ding_busi",
+      "name": {
+        "zh": "丁不四",
+        "en": "Ding Busi"
+      },
+      "description": {
+        "zh": "江湖恶人",
+        "en": "Villain in Jianghu"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "wu_laoda",
+      "name": {
+        "zh": "乌老大",
+        "en": "Wu Laoda"
+      },
+      "description": {
+        "zh": "江湖高手",
+        "en": "Martial Artist in Jianghu"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "buping_daoren",
+      "name": {
+        "zh": "不平道人",
+        "en": "Buping Daoren"
+      },
+      "description": {
+        "zh": "衡山派掌门",
+        "en": "Leader of Hengshan Sect"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "zhuo_bufan",
+      "name": {
+        "zh": "卓不凡",
+        "en": "Zhuo Bufan"
+      },
+      "description": {
+        "zh": "神刀堂堂主",
+        "en": "Leader of Divine Blade Hall"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "duan_zhengchun",
+      "name": {
+        "zh": "段正淳",
+        "en": "Duan Zhengchun"
+      },
+      "description": {
+        "zh": "大理镇南王",
+        "en": "Prince of Dali"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "you_tanzhi",
+      "name": {
+        "zh": "游坦之",
+        "en": "You Tanzhi"
+      },
+      "description": {
+        "zh": "庄聚贤之子，后成为丐帮帮主",
+        "en": "Son of Zhuang Juxian"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "ding_dian",
+      "name": {
+        "zh": "丁典",
+        "en": "Ding Dian"
+      },
+      "description": {
+        "zh": "神照功传人",
+        "en": "Master of Divine照 Technique"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "di_yun",
+      "name": {
+        "zh": "狄云",
+        "en": "Di Yun"
+      },
+      "description": {
+        "zh": "《连城诀》主角",
+        "en": "Protagonist of A Deadly Secret"
+      },
+      "difficulty": 1,
+      "building": "house"
+    },
+    {
+      "id": "xuedao_laoseng",
+      "name": {
+        "zh": "血刀老祖",
+        "en": "Xuedao Laozu"
+      },
+      "description": {
+        "zh": "血刀门掌门",
+        "en": "Leader of Blood Knife Sect"
+      },
+      "difficulty": 1,
+      "building": "house"
+    }
+  ]
+}

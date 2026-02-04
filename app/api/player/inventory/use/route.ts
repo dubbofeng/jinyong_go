@@ -8,6 +8,7 @@ import { auth } from '../../../../auth';
 import { db } from '../../../../../src/db';
 import { playerInventory, items, playerStats } from '../../../../../src/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { getActualMaxStats } from '../../../../../src/lib/player-stats-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -182,18 +183,26 @@ export async function POST(request: NextRequest) {
 
       if (stats.length > 0 && stats[0]) {
         const current = stats[0];
+        
+        // 计算装备加成
+        const { actualMaxStamina, actualMaxQi } = await getActualMaxStats(
+          current.maxStamina,
+          current.maxQi,
+          userId
+        );
+        
         const statUpdates: any = { updatedAt: new Date() };
 
         if (updates.staminaDelta) {
           statUpdates.stamina = Math.min(
-            current.maxStamina || 100, 
+            actualMaxStamina, 
             (current.stamina || 0) + updates.staminaDelta
           );
           statUpdates.lastStaminaRegen = new Date();
         }
         if (updates.qiDelta) {
           statUpdates.qi = Math.min(
-            current.maxQi || 100, 
+            actualMaxQi, 
             (current.qi || 0) + updates.qiDelta
           );
           statUpdates.lastQiRegen = new Date();

@@ -10,7 +10,7 @@ import { db } from '../../../../src/db';
 import { items, playerInventory, playerStats, users } from '../../../../src/db/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../src/lib/rank-system';
-
+import { getActualMaxStats } from '../../../../src/lib/player-stats-utils';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -187,32 +187,11 @@ export async function PATCH(request: NextRequest) {
     const current = currentStats[0];
 
     // 获取装备加成
-    const equippedItems = await db
-      .select({
-        effects: items.effects,
-      })
-      .from(playerInventory)
-      .leftJoin(items, eq(playerInventory.itemId, items.itemId))
-      .where(
-        and(
-          eq(playerInventory.userId, parseInt(session.user.id)),
-          eq(playerInventory.equipped, true),
-          eq(items.itemType, 'equipment')
-        )
-      );
-
-    const bonus = equippedItems.reduce(
-      (acc, cur) => {
-        const effects = (cur.effects as any) || {};
-        acc.maxStamina += effects.maxStamina || 0;
-        acc.maxQi += effects.maxQi || 0;
-        return acc;
-      },
-      { maxStamina: 0, maxQi: 0 }
+    const { actualMaxStamina, actualMaxQi } = await getActualMaxStats(
+      current.maxStamina,
+      current.maxQi,
+      parseInt(session.user.id)
     );
-
-    const actualMaxStamina = current.maxStamina + bonus.maxStamina;
-    const actualMaxQi = current.maxQi + bonus.maxQi;
 
     // 检查银两是否足够
     if (silver < 0 && current.silver + silver < 0) {

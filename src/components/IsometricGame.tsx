@@ -7,6 +7,7 @@ import { DialogueEngine, loadDialogueTree } from '@/src/lib/dialogue-engine';
 import DialogueBox from '@/src/components/DialogueBox';
 import StoryModal from '@/src/components/StoryModal';
 import storiesData from '@/src/data/stories.json';
+import otherNpcsData from '@/src/data/other_npcs.json';
 import GoGameModal from '@/src/components/GoGameModal';
 import TsumegoModal from '@/src/components/TsumegoModal';
 import TutorialBoardModal from '@/src/components/TutorialBoardModal';
@@ -68,6 +69,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
+  const [currentBattleNpcId, setCurrentBattleNpcId] = useState<string | undefined>(undefined);
   const [showTutorialBoard, setShowTutorialBoard] = useState(false);
   const [tutorialBoard, setTutorialBoard] = useState<TutorialBoardConfig | null>(null);
   const [showSgfTutorial, setShowSgfTutorial] = useState(false);
@@ -1039,6 +1041,46 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           
           setSgfPracticeSet(practiceSet);
           setShowSgfPractice(true);
+        }
+        
+        // 处理特殊建筑的NPC对局挑战
+        const buildingToNpcMap: Record<string, { tier: string; difficultyRange: [number, number] }> = {
+          'small_2stories': { tier: 'tier1', difficultyRange: [8, 9] },
+          'old_house': { tier: 'tier2', difficultyRange: [6, 7] },
+          'stable': { tier: 'tier3', difficultyRange: [4, 5] },
+          'house': { tier: 'tier4', difficultyRange: [1, 3] },
+        };
+        
+        const buildingConfig = item.itemId ? buildingToNpcMap[item.itemId] : undefined;
+        if (buildingConfig) {
+          try {
+            // 直接使用导入的NPC数据
+            const npcs = (otherNpcsData as any)[buildingConfig.tier] || [];
+            
+            if (npcs.length === 0) {
+              await showAlert('这里似乎没有人...', 'info');
+              return;
+            }
+            
+            // 随机选择一个NPC
+            const randomNpc = npcs[Math.floor(Math.random() * npcs.length)];
+            
+            // 确认是否挑战
+            const shouldChallenge = await showConfirm(
+              `遇到了 ${randomNpc.name.zh}（${randomNpc.name.en}）\n${randomNpc.description.zh}\n\n是否与其对弈？`,
+              '武林高手'
+            );
+            
+            if (shouldChallenge) {
+              setCurrentBattleNpcId(randomNpc.id);
+              setGoOpponentName(randomNpc.name.zh);
+              setGoOpponentDifficulty(randomNpc.difficulty);
+              setShowGoGame(true);
+            }
+          } catch (error) {
+            console.error('加载NPC配置失败:', error);
+            await showAlert('系统错误', 'error');
+          }
         }
         return;
       }
@@ -2516,9 +2558,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         onComplete={handleGoGameComplete}
         vsAI={!isE2EEnabled()}
         aiDifficulty={goOpponentDifficulty}
-        npcId={goOpponentName === '洪七公' ? 'hong_qigong' : 
+        npcId={currentBattleNpcId || 
+               (goOpponentName === '洪七公' ? 'hong_qigong' : 
                goOpponentName === '令狐冲' ? 'linghu_chong' :
-               goOpponentName === '郭靖' ? 'guo_jing' : undefined}
+               goOpponentName === '郭靖' ? 'guo_jing' : undefined)}
       />
 
       <TutorialBoardModal

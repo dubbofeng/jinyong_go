@@ -78,13 +78,14 @@ export default function GoGameModal({
 
   return (
     <div 
-      className={`fixed inset-0 z-50 transition-opacity duration-300 ${
+      className={`fixed top-0 left-0 bottom-0 z-50 transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
+      style={{ right: '320px' }} // 右侧留出320px给右侧栏
     >
       {/* KataGo加载状态 */}
       {vsAI && isKatagoLoading ? (
-        <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
           <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
             <h2 className="text-2xl font-bold text-amber-300 mb-4">🤖 加载围棋对局引擎...</h2>
             <div className="mb-4">
@@ -107,7 +108,7 @@ export default function GoGameModal({
           </div>
         </div>
       ) : vsAI && !isKatagoReady ? (
-        <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
           <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
             <h2 className="text-2xl font-bold text-amber-300 mb-4">⚠️ 围棋对局引擎未就绪</h2>
             <p className="text-gray-400 mb-4">需要初始化围棋对局引擎才能开始游戏</p>
@@ -121,10 +122,10 @@ export default function GoGameModal({
         </div>
       ) : (
         <>
-          {/* 关闭按钮 - 固定在右上角 */}
+          {/* 关闭按钮 - 固定在右上角（相对于modal区域） */}
           <button
             onClick={handleClose}
-            className="fixed top-4 right-4 z-10 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700/50 backdrop-blur-sm"
+            className="absolute top-4 right-4 z-10 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700/50 backdrop-blur-sm"
             aria-label="关闭"
           >
             <svg 
@@ -153,6 +154,7 @@ export default function GoGameModal({
             onGameModalClose={handleClose}
             onGameEnd={onComplete}
             npcId={npcId}
+            opponentName={opponentName}
           />
         </>
       )}
