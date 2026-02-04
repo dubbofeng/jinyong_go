@@ -98,19 +98,32 @@ export default function HotelModal({ isOpen, onClose, onOrder, onRest }: HotelMo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-amber-50 rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto border-4 border-amber-800">
         {/* 标题 */}
-        <div className="bg-gradient-to-r from-amber-700 to-amber-600 text-white p-4 rounded-t-lg">
-          <h2 className="text-2xl font-bold text-center">🏨 客栈</h2>
-          <p className="text-center text-sm mt-1 opacity-90">Inn</p>
+        <div className="bg-gradient-to-r from-amber-700 to-amber-600 text-white p-4 rounded-t-lg flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-center">🏨 客栈</h2>
+            <p className="text-center text-sm mt-1 opacity-90">Inn</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-white hover:text-red-400 transition-colors text-3xl font-bold"
+          >
+            ✕
+          </button>
         </div>
-
         {/* 内容区 */}
         <div className="p-6">
           {/* 住宿区 */}
           <div className="mb-6 bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border-2 border-purple-300">
-            <h3 className="text-lg font-bold mb-2 text-purple-800">💤 住宿休息</h3>
-            <p className="text-sm text-gray-600 mb-3">睡一觉，体力内力全部恢复</p>
+            <h3 className="text-lg font-bold mb-2 text-purple-800">
+              💤 住宿休息
+            </h3>
+            <p className="text-sm text-gray-600 mb-3">
+              睡一觉，体力内力全部恢复
+            </p>
             <div className="flex items-center justify-between">
-              <div className="text-lg font-bold text-amber-700">💰 价格: 100 银两</div>
+              <div className="text-lg font-bold text-amber-700">
+                💰 价格: 100 银两
+              </div>
               <button
                 onClick={handleRest}
                 disabled={busy}
@@ -133,9 +146,13 @@ export default function HotelModal({ isOpen, onClose, onOrder, onRest }: HotelMo
                   <div className="flex-1">
                     <h4 className="font-bold text-lg text-amber-900">
                       {item.name}
-                      <span className="text-sm text-gray-500 ml-2 font-normal">{item.nameEn}</span>
+                      <span className="text-sm text-gray-500 ml-2 font-normal">
+                        {item.nameEn}
+                      </span>
                     </h4>
-                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {item.description}
+                    </p>
                     <div className="flex gap-3 mt-2 text-sm">
                       {item.staminaRestore > 0 && (
                         <span className="text-green-600 font-medium">
@@ -150,7 +167,9 @@ export default function HotelModal({ isOpen, onClose, onOrder, onRest }: HotelMo
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2 ml-4">
-                    <div className="text-lg font-bold text-amber-700">💰 {item.price}</div>
+                    <div className="text-lg font-bold text-amber-700">
+                      💰 {item.price}
+                    </div>
                     <button
                       onClick={() => handleOrder(item)}
                       disabled={busy}

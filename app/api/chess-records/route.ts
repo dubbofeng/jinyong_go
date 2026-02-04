@@ -1,20 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/app/db';
 import { chessRecords } from '@/src/db/schema';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
-// NPC name translation helper
-function getTranslatedNpcName(npcId: string, locale: string): string {
-  try {
-    const messagesPath = join(process.cwd(), 'messages', `${locale}.json`);
-    const messages = JSON.parse(readFileSync(messagesPath, 'utf-8'));
-    return messages.game?.npcs?.[npcId] || npcId;
-  } catch (error) {
-    console.error('Error loading translations:', error);
-    return npcId;
-  }
-}
+import { getTranslatedNpcName } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {

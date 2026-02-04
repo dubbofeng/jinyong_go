@@ -21,6 +21,7 @@ import SkillUnlockToast from '@/src/components/SkillUnlockToast';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 import { tutorialBoards, type TutorialBoardConfig } from '@/src/data/go-tutorials';
+import { getTranslatedNpcName } from '@/lib/utils';
 
 declare global {
   interface Window {
@@ -1341,9 +1342,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           dialogueEngine.updatePlayerState({ battleResult: null });
         }
         const opponentId = action.value;
-        const npcName = opponentId === 'hong_qigong' ? '洪七公' :
-                        opponentId === 'linghu_chong' ? '令狐冲' :
-                        opponentId === 'guo_jing' ? '郭靖' : '对手';
+        const npcName = getTranslatedNpcName(opponentId, locale);
         
         // 获取 NPC 的难度
         fetch(`/api/npcs/${opponentId}`)

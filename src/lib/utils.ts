@@ -1,4 +1,6 @@
 // 工具函数库
+import messageZh from '../../messages/zh.json'
+import messageEn from '../../messages/en.json'
 
 /**
  * 格式化日期
@@ -48,4 +50,14 @@ export function getLevelFromExperience(experience: number): number {
   }
 
   return level - 1;
+}
+
+export function getTranslatedNpcName(npcId: string, locale: string): string {
+  try {
+    const messages = (locale === "zh" ? messageZh : messageEn) as any;
+    return messages.game?.npcs?.[npcId] || npcId;
+  } catch (error) {
+    console.error('Error loading translations:', error);
+    return npcId;
+  }
 }
