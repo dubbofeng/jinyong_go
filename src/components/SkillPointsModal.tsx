@@ -200,7 +200,7 @@ export default function SkillPointsModal({ isOpen, onClose, onSkillUpgraded }: S
                       skill.unlocked ? '' : 'opacity-60'
                     }`}
                   >
-                    <div className="flex items-center gap-4 flex-1">
+                    <div className="flex items-center gap-4 flex-1 mr-4">
                       {isImageIcon ? (
                         <img
                           src={icon}

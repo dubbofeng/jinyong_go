@@ -26,6 +26,7 @@ interface GoBoardGameProps {
   opponentName?: string; // 对手名称
   onGameModalClose?: () => void; // 关闭游戏 Modal 的回调
   onGameEnd?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
+  inDialogue?: boolean; // 是否在对话流程中（影响结果modal的按钮显示）
 }
 
 export default function GoBoardGame({ 
@@ -38,7 +39,8 @@ export default function GoBoardGame({
   npcId,
   opponentName = '对手',
   onGameModalClose,
-  onGameEnd
+  onGameEnd,
+  inDialogue = false,
 }: GoBoardGameProps) {
   const { data: session } = useSession();
   const isE2E = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('e2e');
@@ -2070,7 +2072,7 @@ export default function GoBoardGame({
           isOpen={showResultModal}
           result={gameResult}
           playerColor="black"
-          inDialogue={!!onGameEnd}
+          inDialogue={inDialogue}
           onClose={() => {
             setShowResultModal(false);
             setGameResult(null);

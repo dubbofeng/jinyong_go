@@ -78,7 +78,7 @@ export function PlayerStatsPanel() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setSkillPoints(data.data.availablePoints);
+          setSkillPoints(data.data.skillPoints);
         }
       }
     } catch (error) {

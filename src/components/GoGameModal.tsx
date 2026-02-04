@@ -14,6 +14,7 @@ interface GoGameModalProps {
   aiDifficulty?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // AI难度（1-9级）
   onComplete?: (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => void; // 游戏结束回调
   npcId?: string; // NPC ID，用于特殊功能（如测试按钮）
+  inDialogue?: boolean; // 是否在对话流程中
 }
 
 export default function GoGameModal({ 
@@ -24,7 +25,8 @@ export default function GoGameModal({
   vsAI = true, // 默认对战AI
   aiDifficulty = 5, // 默认5级难度（中等）
   onComplete,
-  npcId
+  npcId,
+  inDialogue = false,
 }: GoGameModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   // 固定使用KataGo，移除引擎选择
@@ -155,6 +157,7 @@ export default function GoGameModal({
             onGameEnd={onComplete}
             npcId={npcId}
             opponentName={opponentName}
+            inDialogue={inDialogue}
           />
         </>
       )}

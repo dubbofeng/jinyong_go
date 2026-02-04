@@ -2153,22 +2153,18 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     const battleOutcome = result.playerWon ? 'win' : 'lose';
     setBattleResult(battleOutcome);
     
-    // 关闭对战界面
-    setShowGoGame(false);
+    // ⚠️ 不要在这里关闭对战界面！让 GameResultModal 显示后用户手动关闭
+    // setShowGoGame(false); // 已移除
     
-    // 如果是通用挑战（不在对话流程中的挑战），直接显示简单结果
+    // 如果是通用挑战（不在对话流程中的挑战），等待 GameResultModal 显示
     if (isUniversalChallenge) {
       setIsUniversalChallenge(false);
       
-      // 简单显示结果提示
-      if (result.playerWon) {
-        alert('恭喜你获胜了！继续加油！');
-      } else {
-        alert('这次失败了，再接再厉！');
-      }
+      // GameResultModal 会自动显示奖励信息
+      // 用户点击关闭按钮后会自动关闭 GoGameModal
       
-      // 恢复对话框
-      setIsDialogueVisible(true);
+      // 不再使用 alert，让 GameResultModal 正常显示
+      // 恢复对话框的逻辑移到 GoGameModal 关闭时处理
       return;
     }
     
@@ -2183,14 +2179,18 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       dialogueEngine.updatePlayerState({ battleResult: battleOutcome });
     }
 
-    if (result.playerWon && dialogueEngine) {
+    // 处理胜利情况
+    if (result.playerWon) {
+      // 首次战胜NPC：更新 completedQuests
       if (defeatedNpcId && !completedQuestsRef.current.includes(defeatedNpcId)) {
         setCompletedQuests((prev) => {
           const next = [...prev, defeatedNpcId];
           completedQuestsRef.current = next;
-          dialogueEngine.updatePlayerState({
-            completedQuests: next,
-          });
+          if (dialogueEngine) {
+            dialogueEngine.updatePlayerState({
+              completedQuests: next,
+            });
+          }
           return next;
         });
 
@@ -2254,14 +2254,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         return;
       }
       
-      // 剧情战斗：更新对话状态以显示下一个节点
-      updateDialogueState(dialogueEngine);
-      setPendingGoOpponent(null);
-      setIsDialogueVisible(true);
+      // 首次剧情战斗胜利（只对有对话流程的 NPC）：不在这里更新对话，等 modal 关闭时更新
+      if (dialogueEngine) {
+        // updateDialogueState(dialogueEngine);
+        setPendingGoOpponent(null);
+        // setIsDialogueVisible(true); // 等 modal 关闭时再显示
+      } else {
+        // other NPC 首次胜利：没有特殊处理，GameResultModal 会显示奖励
+        setPendingGoOpponent(null);
+      }
     } else {
       // 失败处理
-      if (isRematchBattle) {
-        // rematch失败：显示通用失败提示
+      if (isRematchBattle && dialogueEngine) {
+        // 对话流程中的 rematch失败：显示通用失败提示
         setAlertState({
           isOpen: true,
           type: 'info',
@@ -2285,11 +2290,14 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         return;
       }
       
-      // 剧情战斗失败：显示失败后的对话节点
-      setPendingGoOpponent(null);
+      // 剧情战斗失败或 other NPC 失败：不在这里更新对话，等 modal 关闭时更新
       if (dialogueEngine) {
-        updateDialogueState(dialogueEngine, battleOutcome);
-        setIsDialogueVisible(true);
+        setPendingGoOpponent(null);
+        // updateDialogueState(dialogueEngine, battleOutcome);
+        // setIsDialogueVisible(true); // 等 modal 关闭时再显示
+      } else {
+        // other NPC 失败：没有特殊处理，GameResultModal 会显示
+        setPendingGoOpponent(null);
       }
     }
   };
@@ -2569,7 +2577,18 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       {/* 围棋对弈Modal */}
       <GoGameModal
         isOpen={showGoGame}
-        onClose={() => setShowGoGame(false)}
+        onClose={() => {
+          setShowGoGame(false);
+          // 对话流程中的战斗结束后，更新对话状态
+          if (dialogueEngine && !isUniversalChallenge) {
+            updateDialogueState(dialogueEngine);
+            setIsDialogueVisible(true);
+          }
+          // 如果不在对话流程中（例如通用挑战），关闭后恢复对话框
+          else if (!dialogueEngine && isUniversalChallenge) {
+            setIsDialogueVisible(true);
+          }
+        }}
         opponentName={goOpponentName}
         boardSize={9}
         onComplete={handleGoGameComplete}
@@ -2579,6 +2598,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
                (goOpponentName === '洪七公' ? 'hong_qigong' : 
                goOpponentName === '令狐冲' ? 'linghu_chong' :
                goOpponentName === '郭靖' ? 'guo_jing' : undefined)}
+        inDialogue={!!dialogueEngine}
       />
 
       <TutorialBoardModal

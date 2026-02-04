@@ -142,7 +142,8 @@ export class DialogueEngine {
         return true;
       }
       // 说明类节点可以重复访问
-      if (nodeId === 'explain_go' || nodeId === 'explain_venues' || nodeId === 'not_ready' || nodeId === 'farewell') {
+      if (nodeId === 'explain_go' || nodeId === 'explain_venues' || nodeId === 'not_ready' || nodeId === 'farewell' || 
+          nodeId === 'farewell_early' || nodeId === 'explain_connection' || nodeId === 'explain_skill') {
         return true;
       }
       // 挑战类节点在击败后可以重复访问
@@ -217,6 +218,11 @@ export class DialogueEngine {
         case 'playerLost':
           conditionMet = this.playerState.battleResult === 'lose';
           break;
+        case 'repeatable':
+          // repeatable 条件总是为真，表示这个选项可以重复显示
+          conditionMet = true;
+          console.log(`  - Repeatable condition: always true`);
+          break;
         case 'first_time': {
           const npcId = option.condition?.npcId || this.tree.npcId;
           const counts = this.playerState.npcDialoguesCount || {};
@@ -250,10 +256,18 @@ export class DialogueEngine {
       const flags = new Set(optionFlagsMap[optionNpcId] || []);
 
       const optionAction = option.action;
-      const nextNode = option.nextNodeId
-        ? this.tree.nodes.find((node) => node.id === option.nextNodeId)
-        : null;
-      const nextAction = nextNode?.action;
+      
+      // 递归查找后续节点的 action（最多查找 3 层以避免无限循环）
+      const findNextAction = (nodeId: string | undefined, depth: number = 0): any => {
+        if (!nodeId || depth > 3) return null;
+        const node = this.tree.nodes.find((n) => n.id === nodeId);
+        if (!node) return null;
+        if (node.action) return node.action;
+        if (node.nextNodeId) return findNextAction(node.nextNodeId, depth + 1);
+        return null;
+      };
+      
+      const nextAction = option.nextNodeId ? findNextAction(option.nextNodeId) : null;
 
       const action = optionAction || nextAction;
       if (action?.type === 'skill') {
