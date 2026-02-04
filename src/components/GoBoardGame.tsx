@@ -686,7 +686,10 @@ export default function GoBoardGame({
     }
 
     // 计算经验值和体力变化
-    const baseExperienceGained = playerWon ? 50 + Math.floor(moveCount / 10) * 5 : 10;
+    // 基础经验值根据NPC难度计算：难度越高，经验值越多
+    const difficultyBonus = aiDifficulty * 50;
+    const moveBonus = Math.floor(moveCount / 10) * 5;
+    const baseExperienceGained = playerWon ? difficultyBonus + moveBonus : Math.floor(difficultyBonus * 0.2);
     const questRewards = playerWon && npcId ? getQuestByNpc(npcId)?.rewards : null;
     const experienceGained = questRewards?.experience ?? baseExperienceGained;
     const staminaChange = playerWon ? 0 : -20; // 失败扣体力
