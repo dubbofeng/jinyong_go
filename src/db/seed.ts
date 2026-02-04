@@ -20,7 +20,7 @@ const seedNPCs = [
     },
     npcType: 'teacher',
     difficulty: 1,
-    teachableSkills: ['kanglongyouhui'],
+    teachableSkills: ['kanglong_youhui'],
   },
   {
     npcId: 'linghuchong',
@@ -36,7 +36,7 @@ const seedNPCs = [
     },
     npcType: 'teacher',
     difficulty: 2,
-    teachableSkills: ['dugujiujian'],
+    teachableSkills: ['dugu_jiujian'],
   },
   {
     npcId: 'guojing',
@@ -68,7 +68,7 @@ const seedNPCs = [
     },
     npcType: 'teacher',
     difficulty: 2,
-    teachableSkills: ['fuyuchuanyin'],
+    teachableSkills: ['fuyu_chuanyin'],
   },
   {
     npcId: 'huangrong',
@@ -84,7 +84,7 @@ const seedNPCs = [
     },
     npcType: 'teacher',
     difficulty: 3,
-    teachableSkills: ['jiguansuanjin'],
+    teachableSkills: ['jiguan_suanjin'],
   },
 ];
 

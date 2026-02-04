@@ -56,7 +56,7 @@ async function main() {
       },
       rewards: {
         experience: 300,
-        skills: ['kanglongyouhui'],
+        skills: ['kanglong_youhui'],
       },
       prerequisiteQuests: ['main_quest_01'],
     },
@@ -115,7 +115,7 @@ async function main() {
       },
       rewards: {
         experience: 800,
-        skills: ['dugujiujian'],
+        skills: ['dugu_jiujian'],
       },
       prerequisiteQuests: ['main_quest_04'],
     },

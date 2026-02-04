@@ -92,15 +92,15 @@ export default function GoBoardGame({
   }), []);
 
   const skillSpeakerMap: Record<string, string> = {
-    kanglongyouhui: '郭靖',
-    dugujiujian: '令狐冲',
-    fuyuchuanyin: '段延庆',
-    jiguansuanjin: '黄蓉',
-    qizianqi: '陈家洛',
-    qiankundanuo: '张无忌',
-    yiyangzhi: '一灯大师',
-    zuoyouhubo: '周伯通',
-    beimingshengong: '段誉',
+    kanglong_youhui: '郭靖',
+    dugu_jiujian: '令狐冲',
+    fuyu_chuanyin: '段延庆',
+    jiguan_suanjin: '黄蓉',
+    qizi_anqi: '陈家洛',
+    qiankun_danuo: '张无忌',
+    yiyang_zhi: '一灯大师',
+    zuoyou_hubo: '周伯通',
+    beiming_shengong: '段誉',
   };
 
   const skillIconMap: Record<string, string> = {
@@ -961,7 +961,7 @@ export default function GoBoardGame({
    */
   const useKangLongYouHui = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('kanglongyouhui');
+    const skill = skillManager?.getSkill('kanglong_youhui');
     
     if (!skill || !('use' in skill)) return;
     
@@ -1007,7 +1007,7 @@ export default function GoBoardGame({
       setMoveCount(prev => Math.max(0, prev - stepsToUndo));
       await applyQiDelta(-skill.qiCost);
       setSkillMessage(
-        'kanglongyouhui',
+        'kanglong_youhui',
         `亢龙有悔，悔棋成功（撤销${stepsToUndo}手）${vsAI ? '，已撤销你和AI的落子' : ''}，剩余${skill.currentUses}次`
       );
       setSkillsRefreshKey(k => k + 1);
@@ -1021,7 +1021,7 @@ export default function GoBoardGame({
    */
   const useDuGuJiuJian = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('dugujiujian');
+    const skill = skillManager?.getSkill('dugu_jiujian');
     
     if (!skill || !('use' in skill)) return;
     
@@ -1037,7 +1037,7 @@ export default function GoBoardGame({
       return;
     }
     
-    setSkillMessage('dugujiujian', '独孤九剑推演局势中...');
+    setSkillMessage('dugu_jiujian', '独孤九剑推演局势中...');
     
     try {
       // 使用KataGo引擎获取详细分析
@@ -1125,7 +1125,7 @@ export default function GoBoardGame({
           await applyQiDelta(-skill.qiCost);
           
           setEvaluation(result);
-          setSkillMessage('dugujiujian', `${result.evaluation}，剩余${skill.currentUses}次`);
+          setSkillMessage('dugu_jiujian', `${result.evaluation}，剩余${skill.currentUses}次`);
           setSkillsRefreshKey(k => k + 1);
           
           // 在棋盘上显示地盘归属
@@ -1168,7 +1168,7 @@ export default function GoBoardGame({
    */
   const useFuYuChuanYin = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('fuyuchuanyin');
+    const skill = skillManager?.getSkill('fuyu_chuanyin');
     
     if (!skill || !('use' in skill)) return;
     
@@ -1185,7 +1185,7 @@ export default function GoBoardGame({
       return;
     }
     
-    setSkillMessage('fuyuchuanyin', '腹语传音推演中...');
+    setSkillMessage('fuyu_chuanyin', '腹语传音推演中...');
     
     try {
       // 使用KataGo引擎获取真正的AI建议
@@ -1248,7 +1248,7 @@ export default function GoBoardGame({
           
           setSuggestions(suggestions);
           setSkillMessage(
-            'fuyuchuanyin',
+            'fuyu_chuanyin',
             `已给出推荐落点：${formatGoPosition(analysis.bestMove.row, analysis.bestMove.col)}，剩余${skill.currentUses}次`
           );
           setSkillsRefreshKey(k => k + 1);
@@ -1284,7 +1284,7 @@ export default function GoBoardGame({
    */
   const useJiGuanSuanJin = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('jiguansuanjin');
+    const skill = skillManager?.getSkill('jiguan_suanjin');
     
     if (!skill || !('use' in skill)) return;
     
@@ -1323,7 +1323,7 @@ export default function GoBoardGame({
       setVariationStones(stones);
       setShowVariationBoard(true);
       await applyQiDelta(-skill.qiCost);
-      setSkillMessage('jiguansuanjin', `机关算尽已开启试下棋盘，剩余${skill.currentUses}次`);
+      setSkillMessage('jiguan_suanjin', `机关算尽已开启试下棋盘，剩余${skill.currentUses}次`);
       setSkillsRefreshKey(k => k + 1);
     } else {
       setLastMessage('❌ 无法使用【机关算尽】');
@@ -1335,7 +1335,7 @@ export default function GoBoardGame({
    */
   const useQiZiAnQi = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('qizianqi');
+    const skill = skillManager?.getSkill('qizi_anqi');
 
     if (!skill || !('use' in skill)) return;
 
@@ -1375,7 +1375,7 @@ export default function GoBoardGame({
 
     const colorLabel = result.color === 'black' ? '黑子' : '白子';
     setSkillMessage(
-      'qizianqi',
+      'qizi_anqi',
       `棋子暗器出手，${colorLabel}从 ${formatGoPosition(result.from.row, result.from.col)} 打歪到 ${formatGoPosition(result.to.row, result.to.col)}`
     );
     setTimeout(() => {
@@ -1389,7 +1389,7 @@ export default function GoBoardGame({
    */
   const useQianKunDaNuo = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('qiankundanuo');
+    const skill = skillManager?.getSkill('qiankun_danuo');
 
     if (!skill || !('use' in skill)) return;
 
@@ -1436,7 +1436,7 @@ export default function GoBoardGame({
     const whiteTo = formatGoPosition(result.white.to.row, result.white.to.col);
 
     setSkillMessage(
-      'qiankundanuo',
+      'qiankun_danuo',
       `乾坤大挪移完成：黑子 ${blackFrom}→${blackTo}，白子 ${whiteFrom}→${whiteTo}`
     );
     setSkillsRefreshKey(k => k + 1);
@@ -1447,7 +1447,7 @@ export default function GoBoardGame({
    */
   const useYiYangZhi = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('yiyangzhi');
+    const skill = skillManager?.getSkill('yiyang_zhi');
 
     if (!skill || !('use' in skill)) return;
 
@@ -1465,7 +1465,7 @@ export default function GoBoardGame({
       return;
     }
 
-    setSkillMessage('yiyangzhi', '一阳指已起，请选择限制区域');
+    setSkillMessage('yiyang_zhi', '一阳指已起，请选择限制区域');
     setPendingYiYangSkill(skill);
     setShowYiYangSelect(true);
   };
@@ -1493,7 +1493,7 @@ export default function GoBoardGame({
     setShowYiYangSelect(false);
     setPendingYiYangSkill(null);
     setSkillMessage(
-      'yiyangzhi',
+      'yiyang_zhi',
       `限制${restrictedColor === 'black' ? '黑棋' : '白棋'}仅可在${getRegionLabel(region)}落子`
     );
     setSkillsRefreshKey(k => k + 1);
@@ -1504,7 +1504,7 @@ export default function GoBoardGame({
    */
   const useZuoYouHuBo = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('zuoyouhubo');
+    const skill = skillManager?.getSkill('zuoyou_hubo');
 
     if (!skill || !('use' in skill)) return;
 
@@ -1541,7 +1541,7 @@ export default function GoBoardGame({
 
     setDoubleMoveState({ color: currentPlayer, remainingMoves: 1 });
     await applyQiDelta(-skill.qiCost);
-    setSkillMessage('zuoyouhubo', '左右互搏生效，获得额外一手');
+    setSkillMessage('zuoyou_hubo', '左右互搏生效，获得额外一手');
     setSkillsRefreshKey(k => k + 1);
   };
 
@@ -1550,7 +1550,7 @@ export default function GoBoardGame({
    */
   const useBeiMingShenGong = async () => {
     const skillManager = skillManagerRef.current;
-    const skill = skillManager?.getSkill('beimingshengong');
+    const skill = skillManager?.getSkill('beiming_shengong');
 
     if (!skill || !('use' in skill)) return;
 
@@ -1573,7 +1573,7 @@ export default function GoBoardGame({
     await applyQiDelta(result.qiRestore);
     skillManager?.clearAllCooldowns();
 
-    setSkillMessage('beimingshengong', `北冥神功恢复内力${result.qiRestore}点，已清除技能冷却`);
+    setSkillMessage('beiming_shengong', `北冥神功恢复内力${result.qiRestore}点，已清除技能冷却`);
     setSkillsRefreshKey(k => k + 1);
   };
 
@@ -1704,7 +1704,7 @@ export default function GoBoardGame({
           <div className="grid grid-cols-2 gap-3">
             {/* 技能1：亢龙有悔 */}
             {learnedSkills.includes('kanglong_youhui') && (() => {
-              const skill = skillManagerRef.current?.getSkill('kanglongyouhui');
+              const skill = skillManagerRef.current?.getSkill('kanglong_youhui');
               const level = skillLevels['kanglong_youhui'] || 1;
               const canUse = skill && engineRef.current && 'canUse' in skill && (skill as any).canUse(engineRef.current)
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1732,7 +1732,7 @@ export default function GoBoardGame({
 
             {/* 技能2：独孤九剑 */}
             {learnedSkills.includes('dugu_jiujian') && (() => {
-              const skill = skillManagerRef.current?.getSkill('dugujiujian');
+              const skill = skillManagerRef.current?.getSkill('dugu_jiujian');
               const level = skillLevels['dugu_jiujian'] || 1;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1760,7 +1760,7 @@ export default function GoBoardGame({
 
           {/* 技能3：腹语传音 */}
           {learnedSkills.includes('fuyu_chuanyin') && (() => {
-            const skill = skillManagerRef.current?.getSkill('fuyuchuanyin');
+            const skill = skillManagerRef.current?.getSkill('fuyu_chuanyin');
             const level = skillLevels['fuyu_chuanyin'] || 1;
             const canUse = skill && 'canUse' in skill && (skill as any).canUse()
               && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1788,7 +1788,7 @@ export default function GoBoardGame({
 
             {/* 技能4：机关算尽 */}
             {learnedSkills.includes('jiguan_suanjin') && (() => {
-              const skill = skillManagerRef.current?.getSkill('jiguansuanjin');
+              const skill = skillManagerRef.current?.getSkill('jiguan_suanjin');
               const level = skillLevels['jiguan_suanjin'] || 1;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1819,7 +1819,7 @@ export default function GoBoardGame({
 
             {/* 技能5：棋子暗器 */}
             {learnedSkills.includes('qizi_anqi') && (() => {
-              const skill = skillManagerRef.current?.getSkill('qizianqi');
+              const skill = skillManagerRef.current?.getSkill('qizi_anqi');
               const level = skillLevels['qizi_anqi'] || 1;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1850,7 +1850,7 @@ export default function GoBoardGame({
 
             {/* 技能6：乾坤大挪移 */}
             {learnedSkills.includes('qiankun_danuo') && (() => {
-              const skill = skillManagerRef.current?.getSkill('qiankundanuo');
+              const skill = skillManagerRef.current?.getSkill('qiankun_danuo');
               const level = skillLevels['qiankun_danuo'] || 1;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1880,7 +1880,7 @@ export default function GoBoardGame({
 
             {/* 技能7：一阳指 */}
             {learnedSkills.includes('yiyang_zhi') && (() => {
-              const skill = skillManagerRef.current?.getSkill('yiyangzhi');
+              const skill = skillManagerRef.current?.getSkill('yiyang_zhi');
               const level = skillLevels['yiyang_zhi'] || 1;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -1910,7 +1910,7 @@ export default function GoBoardGame({
 
             {/* 技能8：左右互搏 */}
             {learnedSkills.includes('zuoyou_hubo') && (() => {
-              const skill = skillManagerRef.current?.getSkill('zuoyouhubo');
+              const skill = skillManagerRef.current?.getSkill('zuoyou_hubo');
               const level = skillLevels['zuoyou_hubo'] || 1;
               const inWindow = moveCount >= 10 && moveCount <= 39;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
@@ -1946,7 +1946,7 @@ export default function GoBoardGame({
 
             {/* 技能9：北冥神功 */}
             {learnedSkills.includes('beiming_shengong') && (() => {
-              const skill = skillManagerRef.current?.getSkill('beimingshengong');
+              const skill = skillManagerRef.current?.getSkill('beiming_shengong');
               const level = skillLevels['beiming_shengong'] || 1;
               const canUse = skill && 'canUse' in skill && (skill as any).canUse()
                 && playerQi !== null && playerQi >= (skill?.qiCost ?? 0);
@@ -2055,7 +2055,7 @@ export default function GoBoardGame({
               onClick={() => {
                 setShowYiYangSelect(false);
                 setPendingYiYangSkill(null);
-                setSkillMessage('yiyangzhi', '已取消一阳指');
+                setSkillMessage('yiyang_zhi', '已取消一阳指');
               }}
             >
               取消
@@ -2093,7 +2093,7 @@ export default function GoBoardGame({
           isOpen={showVariationBoard}
           onClose={() => {
             setShowVariationBoard(false);
-            setSkillMessage('jiguansuanjin', '已退出试下棋盘');
+            setSkillMessage('jiguan_suanjin', '已退出试下棋盘');
           }}
           boardSize={size}
           currentStones={variationStones}

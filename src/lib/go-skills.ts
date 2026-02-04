@@ -15,6 +15,7 @@
 
 import type { GoEngine } from './go-engine';
 import type { StoneColor, BoardPosition } from './go-board';
+import { SKILL_DEFINITIONS } from '../data/skill-definitions';
 
 // ==================== 技能接口定义 ====================
 
@@ -73,12 +74,12 @@ export interface Variation {
  * 效果：撤销最后一手棋
  */
 export class KangLongYouHuiSkill implements Skill {
-  id = 'kanglongyouhui';
-  name = '亢龙有悔';
-  nameEn = 'Regretful Dragon';
-  character = '郭靖';
-  description = '悔棋，撤回上一步落子';
-  qiCost = 10;
+  id = SKILL_DEFINITIONS.kanglong_youhui.id;
+  name = SKILL_DEFINITIONS.kanglong_youhui.name;
+  nameEn = SKILL_DEFINITIONS.kanglong_youhui.nameEn;
+  character = SKILL_DEFINITIONS.kanglong_youhui.character;
+  description = SKILL_DEFINITIONS.kanglong_youhui.description;
+  qiCost = SKILL_DEFINITIONS.kanglong_youhui.baseQiCost;
   maxUses: number;
   currentUses: number;
   
@@ -125,12 +126,12 @@ export class KangLongYouHuiSkill implements Skill {
  * 效果：显示当前局势评估
  */
 export class DuGuJiuJianSkill implements Skill {
-  id = 'dugujiujian';
-  name = '独孤九剑';
-  nameEn = 'Nine Swords';
-  character = '令狐冲';
-  description = '形势判断，显示当前黑白优势';
-  qiCost = 15;
+  id = SKILL_DEFINITIONS.dugu_jiujian.id;
+  name = SKILL_DEFINITIONS.dugu_jiujian.name;
+  nameEn = SKILL_DEFINITIONS.dugu_jiujian.nameEn;
+  character = SKILL_DEFINITIONS.dugu_jiujian.character;
+  description = SKILL_DEFINITIONS.dugu_jiujian.description;
+  qiCost = SKILL_DEFINITIONS.dugu_jiujian.baseQiCost;
   maxUses: number;
   currentUses: number;
   
@@ -297,12 +298,12 @@ export class DuGuJiuJianSkill implements Skill {
  * 效果：显示AI推荐的最佳落点
  */
 export class FuYuChuanYinSkill implements Skill {
-  id = 'fuyuchuanyin';
-  name = '腹语传音';
-  nameEn = 'Telepathy';
-  character = '虚竹';
-  description = 'AI建议，显示3个最佳落点';
-  qiCost = 20;
+  id = SKILL_DEFINITIONS.fuyu_chuanyin.id;
+  name = SKILL_DEFINITIONS.fuyu_chuanyin.name;
+  nameEn = SKILL_DEFINITIONS.fuyu_chuanyin.nameEn;
+  character = SKILL_DEFINITIONS.fuyu_chuanyin.character;
+  description = SKILL_DEFINITIONS.fuyu_chuanyin.description;
+  qiCost = SKILL_DEFINITIONS.fuyu_chuanyin.baseQiCost;
   maxUses: number;
   currentUses: number;
   
@@ -529,12 +530,12 @@ export class FuYuChuanYinSkill implements Skill {
  * 效果：创建变化图分支，支持试下和回放
  */
 export class JiGuanSuanJinSkill implements Skill {
-  id = 'jiguansuanjin';
-  name = '机关算尽';
-  nameEn = 'Master Strategist';
-  character = '黄蓉';
-  description = '变化图，试下多个可能的下法';
-  qiCost = 25;
+  id = SKILL_DEFINITIONS.jiguan_suanjin.id;
+  name = SKILL_DEFINITIONS.jiguan_suanjin.name;
+  nameEn = SKILL_DEFINITIONS.jiguan_suanjin.nameEn;
+  character = SKILL_DEFINITIONS.jiguan_suanjin.character;
+  description = SKILL_DEFINITIONS.jiguan_suanjin.description;
+  qiCost = SKILL_DEFINITIONS.jiguan_suanjin.baseQiCost;
   maxUses: number;
   currentUses: number;
   cooldown: number;
@@ -678,12 +679,12 @@ export class JiGuanSuanJinSkill implements Skill {
  * 效果：将对手刚下的棋子打歪到随机空位（无视合法性）
  */
 export class QiZiAnQiSkill implements Skill {
-  id = 'qizianqi';
-  name = '棋子暗器';
-  nameEn = 'Stone Weapon';
-  character = '陈家洛';
-  description = '打歪对手刚下的棋子，随机移动到空位';
-  qiCost = 30;
+  id = SKILL_DEFINITIONS.qizi_anqi.id;
+  name = SKILL_DEFINITIONS.qizi_anqi.name;
+  nameEn = SKILL_DEFINITIONS.qizi_anqi.nameEn;
+  character = SKILL_DEFINITIONS.qizi_anqi.character;
+  description = SKILL_DEFINITIONS.qizi_anqi.description;
+  qiCost = SKILL_DEFINITIONS.qizi_anqi.baseQiCost;
   maxUses: number;
   currentUses: number;
   cooldown: number;
@@ -765,12 +766,12 @@ export class QiZiAnQiSkill implements Skill {
  * 效果：交换上一手黑子与白子的位置（必须合法）
  */
 export class QianKunDaNuoSkill implements Skill {
-  id = 'qiankundanuo';
-  name = '乾坤大挪移';
-  nameEn = 'Heaven and Earth Shift';
-  character = '张无忌';
-  description = '交换上一手黑子与白子的位置（必须合法）';
-  qiCost = 40;
+  id = SKILL_DEFINITIONS.qiankun_danuo.id;
+  name = SKILL_DEFINITIONS.qiankun_danuo.name;
+  nameEn = SKILL_DEFINITIONS.qiankun_danuo.nameEn;
+  character = SKILL_DEFINITIONS.qiankun_danuo.character;
+  description = SKILL_DEFINITIONS.qiankun_danuo.description;
+  qiCost = SKILL_DEFINITIONS.qiankun_danuo.baseQiCost;
   maxUses: number;
   currentUses: number;
   cooldown: number;
@@ -876,12 +877,12 @@ export class QianKunDaNuoSkill implements Skill {
  * 效果：限制对手下一手落子区域（水平/垂直分割）
  */
 export class YiYangZhiSkill implements Skill {
-  id = 'yiyangzhi';
-  name = '一阳指';
-  nameEn = 'One Yang Finger';
-  character = '一灯大师';
-  description = '限制对手落子区域（水平/垂直分割）';
-  qiCost = 25;
+  id = SKILL_DEFINITIONS.yiyang_zhi.id;
+  name = SKILL_DEFINITIONS.yiyang_zhi.name;
+  nameEn = SKILL_DEFINITIONS.yiyang_zhi.nameEn;
+  character = SKILL_DEFINITIONS.yiyang_zhi.character;
+  description = SKILL_DEFINITIONS.yiyang_zhi.description;
+  qiCost = SKILL_DEFINITIONS.yiyang_zhi.baseQiCost;
   maxUses: number;
   currentUses: number;
   cooldown: number;
@@ -927,12 +928,12 @@ export class YiYangZhiSkill implements Skill {
  * 效果：触发后可连下两手（本方额外一手）
  */
 export class ZuoYouHuBoSkill implements Skill {
-  id = 'zuoyouhubo';
-  name = '左右互搏';
-  nameEn = 'Dual Wielding';
-  character = '周伯通';
-  description = '触发后可连下两手';
-  qiCost = 30;
+  id = SKILL_DEFINITIONS.zuoyou_hubo.id;
+  name = SKILL_DEFINITIONS.zuoyou_hubo.name;
+  nameEn = SKILL_DEFINITIONS.zuoyou_hubo.nameEn;
+  character = SKILL_DEFINITIONS.zuoyou_hubo.character;
+  description = SKILL_DEFINITIONS.zuoyou_hubo.description;
+  qiCost = SKILL_DEFINITIONS.zuoyou_hubo.baseQiCost;
   maxUses: number;
   currentUses: number;
   cooldown: number;
@@ -978,12 +979,12 @@ export class ZuoYouHuBoSkill implements Skill {
  * 效果：恢复内力，并清除所有技能冷却
  */
 export class BeiMingShenGongSkill implements Skill {
-  id = 'beimingshengong';
-  name = '北冥神功';
-  nameEn = 'Beiming Divine Art';
-  character = '段誉';
-  description = '恢复内力，并清除所有技能冷却';
-  qiCost = 35;
+  id = SKILL_DEFINITIONS.beiming_shengong.id;
+  name = SKILL_DEFINITIONS.beiming_shengong.name;
+  nameEn = SKILL_DEFINITIONS.beiming_shengong.nameEn;
+  character = SKILL_DEFINITIONS.beiming_shengong.character;
+  description = SKILL_DEFINITIONS.beiming_shengong.description;
+  qiCost = Math.abs(SKILL_DEFINITIONS.beiming_shengong.baseQiCost);
   qiRestore = 50;
   maxUses: number;
   currentUses: number;
@@ -1026,15 +1027,15 @@ export class SkillManager {
     this.skillLevels = new Map();
     
     // 初始化六个技能（默认1级）
-    this.initializeSkill('kanglongyouhui', 1);
-    this.initializeSkill('dugujiujian', 1);
-    this.initializeSkill('fuyuchuanyin', 1);
-    this.initializeSkill('jiguansuanjin', 1);
-    this.initializeSkill('qizianqi', 1);
-    this.initializeSkill('qiankundanuo', 1);
-    this.initializeSkill('yiyangzhi', 1);
-    this.initializeSkill('zuoyouhubo', 1);
-    this.initializeSkill('beimingshengong', 1);
+    this.initializeSkill('kanglong_youhui', 1);
+    this.initializeSkill('dugu_jiujian', 1);
+    this.initializeSkill('fuyu_chuanyin', 1);
+    this.initializeSkill('jiguan_suanjin', 1);
+    this.initializeSkill('qizi_anqi', 1);
+    this.initializeSkill('qiankun_danuo', 1);
+    this.initializeSkill('yiyang_zhi', 1);
+    this.initializeSkill('zuoyou_hubo', 1);
+    this.initializeSkill('beiming_shengong', 1);
   }
   
   /**
@@ -1046,31 +1047,31 @@ export class SkillManager {
     // 简化公式：等级 = 使用次数
     // Lv.1 = 1次, Lv.2 = 2次, Lv.3 = 3次, Lv.4 = 4次, Lv.5 = 5次
     switch (skillId) {
-      case 'kanglongyouhui':
+      case 'kanglong_youhui':
         this.skills.set(skillId, new KangLongYouHuiSkill(level));
         break;
-      case 'dugujiujian':
+      case 'dugu_jiujian':
         this.skills.set(skillId, new DuGuJiuJianSkill(level));
         break;
-      case 'fuyuchuanyin':
+      case 'fuyu_chuanyin':
         this.skills.set(skillId, new FuYuChuanYinSkill(level));
         break;
-      case 'jiguansuanjin':
+      case 'jiguan_suanjin':
         this.skills.set(skillId, new JiGuanSuanJinSkill(level, 10));
         break;
-      case 'qizianqi':
+      case 'qizi_anqi':
         this.skills.set(skillId, new QiZiAnQiSkill(level, 20));
         break;
-      case 'qiankundanuo':
+      case 'qiankun_danuo':
         this.skills.set(skillId, new QianKunDaNuoSkill(level, 50));
         break;
-      case 'yiyangzhi':
+      case 'yiyang_zhi':
         this.skills.set(skillId, new YiYangZhiSkill(level, 20));
         break;
-      case 'zuoyouhubo':
+      case 'zuoyou_hubo':
         this.skills.set(skillId, new ZuoYouHuBoSkill(level, 10));
         break;
-      case 'beimingshengong':
+      case 'beiming_shengong':
         this.skills.set(skillId, new BeiMingShenGongSkill(level));
         break;
     }
@@ -1081,9 +1082,7 @@ export class SkillManager {
    */
   updateSkillLevels(levels: Record<string, number>) {
     Object.entries(levels).forEach(([skillId, level]) => {
-      // 转换skill_id格式（带下划线）到内部格式（无下划线）
-      const internalId = skillId.replace(/_/g, '');
-      this.initializeSkill(internalId, level);
+      this.initializeSkill(skillId, level);
     });
   }
   

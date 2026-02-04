@@ -1,7 +1,7 @@
 [
   {
     "category": "skill",
-    "id": "kanglongyouhui",
+    "id": "kanglong_youhui",
     "name": "亢龙有悔",
     "nameEn": "Dragon Regret",
     "prompt": "Skill icon for a martial arts technique, golden dragon in circular frame, dynamic energy waves, martial arts style, game icon design, vibrant colors, high contrast, 256x256 pixels, centered composition, no text, no letters",
@@ -12,7 +12,7 @@
   },
   {
     "category": "skill",
-    "id": "dugujiujian",
+    "id": "dugu_jiujian",
     "name": "独孤九剑",
     "nameEn": "Nine Swords of Dugu",
     "prompt": "Skill icon for a sword technique, sharp silver sword with energy trails, nine sword silhouettes in background, circular frame, sword fighting style, game icon design, blue and silver colors, high contrast, 256x256 pixels, no text, no letters",
@@ -23,7 +23,7 @@
   },
   {
     "category": "skill",
-    "id": "fuyuchuanyin",
+    "id": "fuyu_chuanyin",
     "name": "腹语传音",
     "nameEn": "Telepathic Voice",
     "prompt": "Skill icon for telepathy/mind reading, glowing brain with mystical energy waves, purple and cyan colors, circular frame, magical style, game icon design, ethereal effects, 256x256 pixels, centered composition, no text, no letters",
@@ -34,7 +34,7 @@
   },
   {
     "category": "skill",
-    "id": "jiguansuanjin",
+    "id": "jiguan_suanjin",
     "name": "机关算尽",
     "nameEn": "Master Strategist",
     "prompt": "Skill icon for strategic thinking, ancient Chinese compass (Luopan) with abstract mechanisms, golden gears and mechanisms, circular frame, steampunk meets ancient China, game icon design, warm colors, 256x256 pixels, no text, no letters",
