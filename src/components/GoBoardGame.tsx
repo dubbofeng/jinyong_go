@@ -51,6 +51,7 @@ export default function GoBoardGame({
   const gameStartTime = useRef<number>(Date.now());
   
   const [currentPlayer, setCurrentPlayer] = useState<'black' | 'white'>('black');
+  const [aiColor, setAiColor] = useState<'black' | 'white'>('white'); // AI的颜色，默认白棋（支持猜先）
   const [moveCount, setMoveCount] = useState(0);
   const [capturedCount, setCapturedCount] = useState({ black: 0, white: 0 });
   const [lastMessage, setLastMessage] = useState<string>('');
@@ -59,6 +60,12 @@ export default function GoBoardGame({
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [aiResign, setAiResign] = useState(false); // AI认输标志
+  
+  // 猜先相关状态
+  const [showNigiriModal, setShowNigiriModal] = useState(true); // 显示猜先Modal
+  const [nigiriStones, setNigiriStones] = useState<number>(0); // AI抓的棋子数量
+  const [nigiriResult, setNigiriResult] = useState<string>(''); // 猜先结果提示
+  const [gameStarted, setGameStarted] = useState(false); // 游戏是否已开始
   
   // 技能系统状态
   const [evaluation, setEvaluation] = useState<TerritoryEvaluation | null>(null);
@@ -124,6 +131,34 @@ export default function GoBoardGame({
       className="w-10 h-10 rounded-lg object-cover mx-auto mb-1"
     />
   );
+
+  // 猜先：玩家选择单数或双数
+  const handleNigiri = (guess: 'odd' | 'even') => {
+    // AI抓一把棋子（随机5-15颗）
+    const stones = Math.floor(Math.random() * 11) + 5;
+    setNigiriStones(stones);
+    
+    const isOdd = stones % 2 === 1;
+    const guessCorrect = (guess === 'odd' && isOdd) || (guess === 'even' && !isOdd);
+    
+    if (guessCorrect) {
+      // 玩家猜对，执黑先行
+      setAiColor('white');
+      setCurrentPlayer('black');
+      setNigiriResult(`${opponentName}抓了${stones}颗棋子（${isOdd ? '单数' : '双数'}），您猜对了！执黑先行。`);
+    } else {
+      // 玩家猜错，执白后行
+      setAiColor('black');
+      setCurrentPlayer('black'); // AI执黑先行
+      setNigiriResult(`${opponentName}抓了${stones}颗棋子（${isOdd ? '单数' : '双数'}），您猜错了！${opponentName}执黑先行。`);
+    }
+    
+    // 2秒后关闭Modal，开始游戏
+    setTimeout(() => {
+      setShowNigiriModal(false);
+      setGameStarted(true);
+    }, 2500);
+  };
 
   // 一阳指：限制对手落子区域
   const [yiYangRestriction, setYiYangRestriction] = useState<null | {
@@ -330,8 +365,8 @@ export default function GoBoardGame({
     if (!board || !engine) return;
 
     // AI思考中或轮到AI时，禁止玩家落子
-    if (vsAI && (isAIThinking || currentPlayer === 'white')) {
-      setLastMessage('🤖 AI思考中...');
+    if (vsAI && (isAIThinking || currentPlayer === aiColor)) {
+      setLastMessage(`⏳ 等待${opponentName}落子...`);
       return;
     }
 
@@ -341,8 +376,8 @@ export default function GoBoardGame({
     // 使用函数式更新来避免闭包问题
     setCurrentPlayer((prevPlayer) => {
       // 双重检查：再次确认不是AI回合
-      if (vsAI && prevPlayer === 'white') {
-        setLastMessage('🤖 AI思考中...');
+      if (vsAI && prevPlayer === aiColor) {
+        setLastMessage(`⏳ 等待${opponentName}落子...`);
         return prevPlayer;
       }
 
@@ -417,6 +452,9 @@ export default function GoBoardGame({
           setLastMessage('❌ 劫争！不能立即回提');
         } else if (result.error === 'Suicide move') {
           setLastMessage('❌ 自杀手！不能自己没气');
+        } else if (vsAI && prevPlayer === aiColor) {
+          // 如果是AI回合点击，显示等待而不是错误
+          setLastMessage(`⏳ 等待${opponentName}落子...`);
         } else {
           setLastMessage('❌ 此位置不能落子');
         }
@@ -434,7 +472,7 @@ export default function GoBoardGame({
     }
 
     setIsAIThinking(true);
-    setLastMessage('🤖 AI思考中...');
+    setLastMessage(`⏳ ${opponentName}思考中...`);
 
     try {
       let bestMove = null;
@@ -518,11 +556,11 @@ export default function GoBoardGame({
               white: prev.white + result.capturedStones.length
             }));
             
-            setLastMessage(`🤖 AI提取了${result.capturedStones.length}子！`);
+            setLastMessage(`🤖 ${opponentName}提取了${result.capturedStones.length}子！`);
           } else {
             // 棋盘行号从下往上标记，需要转换：size - row
             const displayRow = size - position.row;
-            setLastMessage(`🤖 AI落子于 (${displayRow}, ${String.fromCharCode(65 + position.col)})`);
+            setLastMessage(`🤖 ${opponentName}落子于 (${displayRow}, ${String.fromCharCode(65 + position.col)})`);
           }
           
           setMoveCount(prev => prev + 1);
@@ -570,15 +608,15 @@ export default function GoBoardGame({
 
   // 监听玩家切换，触发AI落子
   useEffect(() => {
-    if (vsAI && currentPlayer === 'white' && !isAIThinking) {
-      // 白棋是AI，添加短暂延迟确保黑棋先渲染
+    if (vsAI && gameStarted && currentPlayer === aiColor && !isAIThinking) {
+      // AI的回合，添加短暂延迟确保对方棋子先渲染
       const timer = setTimeout(() => {
         makeAIMove();
-      }, 100); // 100ms延迟，让黑棋有时间显示
+      }, 100); // 100ms延迟，让对方棋子有时间显示
       
       return () => clearTimeout(timer);
     }
-  }, [vsAI, currentPlayer, isAIThinking, makeAIMove]);
+  }, [vsAI, gameStarted, currentPlayer, aiColor, isAIThinking, makeAIMove]);
 
   // 初始化棋盘
   useEffect(() => {
@@ -667,8 +705,8 @@ export default function GoBoardGame({
     // 计算游戏时长
     const duration = Math.floor((Date.now() - gameStartTime.current) / 1000);
 
-    // 玩家颜色（假设玩家是黑方）
-    const playerColor = 'black' as 'black' | 'white';
+    // 玩家颜色：与AI颜色相反
+    const playerColor = aiColor === 'black' ? 'white' : 'black';
     const playerWon = winner === playerColor;
     const isDraw = winner === 'draw';
 
@@ -769,29 +807,37 @@ export default function GoBoardGame({
       console.error('Error saving chess record:', error);
     }
 
-    // 更新玩家属性（经验值、体力、银两）
+    // 更新玩家属性（体力、银两）
+    // 注意：经验值已在 battle-result API 中更新，此处只更新体力和银两
     if (!isDraw) {
       try {
         const silverDelta = questRewards?.silver ?? 0;
         const statsPayload: Record<string, number | string> = {
           userId: session.user.id,
-          experienceDelta: experienceGained,
           staminaDelta: staminaChange,
         };
+        
+        // 只有在有银两奖励或体力变化时才调用API
         if (silverDelta) {
           statsPayload.silverDelta = silverDelta;
         }
+        
+        // 只有在有银两奖励或失败扣体力时才调用
+        if (silverDelta !== 0 || staminaChange !== 0) {
+          const statsResponse = await fetch('/api/player/stats/update', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(statsPayload),
+          });
 
-        const statsResponse = await fetch('/api/player/stats/update', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(statsPayload),
-        });
-
-        if (!statsResponse.ok) {
-          console.error('Failed to update player stats');
+          if (!statsResponse.ok) {
+            console.error('Failed to update player stats');
+          } else {
+            // 触发全局更新事件
+            window.dispatchEvent(new Event('player-stats-update'));
+          }
         } else {
-          // 触发全局更新事件
+          // 即使没有调用API，也触发更新事件（因为经验值在battle-result中已更新）
           window.dispatchEvent(new Event('player-stats-update'));
         }
       } catch (error) {
@@ -2025,6 +2071,61 @@ export default function GoBoardGame({
         )}
         </div>
       </div>
+      
+      {/* 猜先Modal */}
+      {vsAI && showNigiriModal && (
+        <div className="fixed inset-0 bg-black/80 z-[10001] flex items-center justify-center">
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-4 border-amber-500 rounded-2xl p-8 w-[480px] text-white shadow-2xl">
+            {!nigiriResult ? (
+              <>
+                <h2 className="text-center font-bold text-2xl mb-2 text-amber-400">🎲 猜先</h2>
+                <p className="text-center text-gray-300 mb-6">
+                  {opponentName}将抓一把白子，请猜单数还是双数
+                </p>
+                <div className="text-center text-sm text-gray-400 mb-6">
+                  猜对者执黑先行，猜错者执白后行
+                </div>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    className="bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all text-lg"
+                    onClick={() => handleNigiri('odd')}
+                  >
+                    <div className="text-5xl mb-1">①</div>
+                    单数
+                  </button>
+                  <button
+                    className="bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all text-lg"
+                    onClick={() => handleNigiri('even')}
+                  >
+                    <div className="text-5xl mb-1">②</div>
+                    双数
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-center font-bold text-2xl mb-4 text-amber-400">猜先结果</h2>
+                <div className="bg-black/40 rounded-xl p-6 mb-4">
+                  <div className="text-center text-6xl mb-4">
+                    {Array.from({ length: Math.min(nigiriStones, 12) }, (_, i) => '⚪').join('')}
+                    {nigiriStones > 12 && '...'}
+                  </div>
+                  <div className="text-center text-xl font-bold text-amber-300 mb-2">
+                    共 {nigiriStones} 颗棋子
+                  </div>
+                </div>
+                <p className="text-center text-lg leading-relaxed text-gray-200">
+                  {nigiriResult}
+                </p>
+                <div className="mt-6 text-center text-sm text-gray-400 animate-pulse">
+                  游戏即将开始...
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      
       {showYiYangSelect && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
           <div className="bg-gray-900 border-2 border-yellow-500 rounded-xl p-6 w-[360px] text-white shadow-2xl">
@@ -2074,7 +2175,7 @@ export default function GoBoardGame({
         <GameResultModal
           isOpen={showResultModal}
           result={gameResult}
-          playerColor="black"
+          playerColor={aiColor === 'black' ? 'white' : 'black'}
           inDialogue={inDialogue}
           onClose={() => {
             setShowResultModal(false);

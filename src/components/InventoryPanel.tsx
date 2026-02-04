@@ -81,20 +81,7 @@ export function InventoryPanel() {
     try {
       const response = await fetch('/api/player/inventory');
       const data = await response.json();
-      
-      console.log('📦 背包API返回:', data);
-      
       if (data.success) {
-        console.log('📦 背包物品总数:', data.data.length);
-        data.data.forEach((item: any, index: number) => {
-          console.log(`  物品${index + 1}:`, {
-            id: item.id,
-            itemId: item.itemId,
-            quantity: item.quantity,
-            hasItemData: !!item.item,
-            itemData: item.item
-          });
-        });
         setInventory(data.data);
       }
     } catch (error) {

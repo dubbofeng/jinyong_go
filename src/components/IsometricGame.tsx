@@ -1537,9 +1537,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       if (nodeId === 'explain_go' || nodeId === 'explain_venues' || nodeId === 'not_ready' || nodeId === 'farewell') {
         return true;
       }
-      // 挑战类节点在击败后可以重复访问
-      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro') {
-        return hasDefeated;
+      // 挑战类节点在未击败时可以重复访问（允许多次尝试），击败后需要隐藏
+      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro' || nodeId === 'try_again') {
+        return !hasDefeated;
       }
       return false;
     };
@@ -2196,8 +2196,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         console.log(`✅ Player defeated ${defeatedNpcId}, updated dialogue state`);
       }
       
-      // 如果是rematch战斗，显示通用胜利提示和奖励
-      if (isRematchBattle) {
+      // 如果是对话流程中的rematch战斗，显示通用胜利提示和奖励
+      if (isRematchBattle && dialogueEngine) {
         // 发放通用奖励
         const rewardExp = 100;
         const rewardSilver = 50;

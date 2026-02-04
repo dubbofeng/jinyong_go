@@ -146,9 +146,9 @@ export class DialogueEngine {
           nodeId === 'farewell_early' || nodeId === 'explain_connection' || nodeId === 'explain_skill') {
         return true;
       }
-      // 挑战类节点在击败后可以重复访问
-      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro') {
-        return hasDefeated;
+      // 挑战类节点在未击败时可以重复访问（允许多次尝试），击败后需要隐藏
+      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro' || nodeId === 'try_again') {
+        return !hasDefeated;
       }
       return false;
     };

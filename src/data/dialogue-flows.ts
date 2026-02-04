@@ -2147,7 +2147,15 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [
+          { optionId: '0', nextNodeId: 'farewell' },
+          {
+            optionId: '1',
+            nextNodeId: 'start_battle',
+            condition: { type: 'repeatable' },
+            action: { type: 'battle', value: 'qiao_feng' }
+          }
+        ]
       },
       { id: 'not_ready' },
       { id: 'farewell' }

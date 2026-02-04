@@ -431,18 +431,17 @@ export class KataGoBrowserEngineV2 {
    * @param difficulty 难度等级 1-9，数字越大越强
    */
   async setDifficulty(difficulty: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): Promise<void> {
-    // 根据难度设置maxVisits：等级1-9映射到25-800次访问
-    // Lv1: 25, Lv2: 50, Lv3: 75, Lv4: 100, Lv5: 125, Lv6: 150, Lv7: 175, Lv8: 200, Lv9: 300
+    // 根据难度设置maxVisits：等级1-9映射到更高的访问次数
     const maxVisitsMap: Record<number, number> = {
-        1: 25,
-        2: 50,
-        3: 75,
-        4: 100,
-        5: 125,
-        6: 150,
-        7: 175,
-        8: 200,
-        9: 300
+        1: 50,      // 入门级
+        2: 100,     // 初级
+        3: 200,     // 进阶
+        4: 400,     // 中级
+        5: 800,     // 中高级
+        6: 1600,    // 高级
+        7: 3200,    // 专家级
+        8: 6400,    // 大师级
+        9: 12800    // 顶尖级
     };
     
     this.maxVisits = maxVisitsMap[difficulty];
@@ -527,9 +526,11 @@ export class KataGoBrowserEngineV2 {
 
         return analysis;
       } else {
-        // 使用genmove获取最佳着法
+        // 使用kata-genmove获取最佳着法（利用maxVisits参数）
         const color = nextColor === 'black' ? 'B' : 'W';
-        const response = await this.sendCommand(`genmove ${color}`);
+        console.log(`🎮 使用kata-genmove获取AI着法 (maxVisits=${this.maxVisits})...`);
+        const response = await this.sendCommand(`kata-genmove ${color}`);
+        console.log('📥 kata-genmove响应:', response);
         
         // 解析响应
         const { move, type } = this.parseMove(response, boardSize);
@@ -763,7 +764,7 @@ export class KataGoBrowserEngineV2 {
       if (!jsonStr) {
         console.warn('⚠️ 响应中没有找到JSON数据');
         // 降级到简单解析
-        const move = this.parseMove(moveStr, boardSize);
+        const { move } = this.parseMove(moveStr, boardSize);
         return {
           bestMove: move,
           winrate: 0.5,
@@ -839,7 +840,7 @@ export class KataGoBrowserEngineV2 {
     } catch (error) {
       console.error('❌ 解析JSON失败:', error);
       // 尝试降级解析
-      const move = this.parseMove(response, boardSize);
+      const { move } = this.parseMove(response, boardSize);
       return {
         bestMove: move,
         winrate: 0.5,
