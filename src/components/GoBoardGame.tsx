@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { GoBoard, type BoardSize, type BoardPosition } from '../lib/go-board';
 import { GoEngine } from '../lib/go-engine';
 import { getQuestByNpc } from '../lib/quest-manager';
@@ -37,13 +38,21 @@ export default function GoBoardGame({
   aiDifficulty = 5, // 默认5级难度（中等）
   katagoEngine = null,
   npcId,
-  opponentName = '对手',
+  opponentName,
   onGameModalClose,
   onGameEnd,
   inDialogue = false,
 }: GoBoardGameProps) {
+  const t = useTranslations('game.goboard');
+  const tNpcs = useTranslations('game.npcs');
+  const locale = useLocale();
   const { data: session } = useSession();
   const isE2E = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('e2e');
+  
+  // 使用翻译的对手名称
+  const defaultOpponentName = t('messages.opponent', { name: tNpcs('ai') });
+  const resolvedOpponentName = opponentName || defaultOpponentName;
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boardRef = useRef<GoBoard | null>(null);
   const engineRef = useRef<GoEngine | null>(null);
@@ -140,19 +149,20 @@ export default function GoBoardGame({
     
     const isOdd = stones % 2 === 1;
     const guessCorrect = (guess === 'odd' && isOdd) || (guess === 'even' && !isOdd);
+    const parity = isOdd ? t('nigiri.odd') : t('nigiri.even');
     
     if (guessCorrect) {
       // 玩家猜对，执黑先行
       console.log('🎲 猜先结果：玩家猜对 → 玩家执黑(先行), AI执白');
       setAiColor('white');
       setCurrentPlayer('black');
-      setNigiriResult(`${opponentName}抓了${stones}颗棋子（${isOdd ? '单数' : '双数'}），您猜对了！执黑先行。`);
+      setNigiriResult(t('nigiri.guessCorrect', { opponentName: resolvedOpponentName, stones, parity }));
     } else {
       // 玩家猜错，执白后行
       console.log('🎲 猜先结果：玩家猜错 → AI执黑(先行), 玩家执白');
       setAiColor('black');
       setCurrentPlayer('black'); // AI执黑先行
-      setNigiriResult(`${opponentName}抓了${stones}颗棋子（${isOdd ? '单数' : '双数'}），您猜错了！${opponentName}执黑先行。`);
+      setNigiriResult(t('nigiri.guessWrong', { opponentName: resolvedOpponentName, stones, parity }));
     }
     
     // 2秒后关闭Modal，开始游戏
@@ -303,12 +313,12 @@ export default function GoBoardGame({
 
   const canAffordSkill = (skill: { qiCost?: number }) => {
     if (playerQi === null) {
-      setLastMessage('⚠️ 内力数据未就绪');
+      setLastMessage(t('skills.qiNotReady'));
       return false;
     }
     const cost = skill.qiCost || 0;
     if (cost > playerQi) {
-      setLastMessage(`❌ 内力不足，需要${cost}，当前${playerQi}`);
+      setLastMessage(t('skills.insufficientQi'));
       return false;
     }
     return true;
@@ -356,15 +366,15 @@ export default function GoBoardGame({
   const getRegionLabel = (region: 'left' | 'right' | 'top' | 'bottom') => {
     switch (region) {
       case 'left':
-        return '左半盘';
+        return t('skills.yiyangRegions.left');
       case 'right':
-        return '右半盘';
+        return t('skills.yiyangRegions.right');
       case 'top':
-        return '上半盘';
+        return t('skills.yiyangRegions.top');
       case 'bottom':
-        return '下半盘';
+        return t('skills.yiyangRegions.bottom');
       default:
-        return '指定区域';
+        return t('skills.yiyangRegions.specified');
     }
   };
 
@@ -387,7 +397,7 @@ export default function GoBoardGame({
     // AI思考中或轮到AI时，禁止玩家落子
     if (vsAI && (isAIThinking || currentPlayer === aiColor)) {
       console.log('🚫 阻止玩家落子：AI回合', { isAIThinking, currentPlayer, aiColor });
-      setLastMessage(`⏳ 等待${opponentName}落子...`);
+      setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
       return;
     }
 
@@ -403,7 +413,7 @@ export default function GoBoardGame({
       // 双重检查：再次确认不是AI回合
       if (vsAI && prevPlayer === aiColor) {
         console.log('🚫 setCurrentPlayer内部：AI回合，阻止');
-        setLastMessage(`⏳ 等待${opponentName}落子...`);
+        setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
         return prevPlayer;
       }
 
@@ -412,7 +422,7 @@ export default function GoBoardGame({
         yiYangRestriction.restrictedColor === prevPlayer &&
         !isPositionAllowed(position, yiYangRestriction, size)
       ) {
-        setLastMessage('❌ 一阳指限制：此区域不可落子');
+        setLastMessage(t('skills.yiyangRestricted'));
         return prevPlayer;
       }
 
@@ -436,7 +446,7 @@ export default function GoBoardGame({
             [prevPlayer]: prev[prevPlayer] + result.capturedStones.length
           }));
           
-          setLastMessage(`提取了${result.capturedStones.length}子！`);
+          setLastMessage(t('messages.captured', { count: result.capturedStones.length }));
         } else {
           setLastMessage('');
         }
@@ -476,14 +486,14 @@ export default function GoBoardGame({
       } else {
         // 落子失败
         if (result.isKo) {
-          setLastMessage('❌ 劫争！不能立即回提');
+          setLastMessage(t('messages.koRule'));
         } else if (result.error === 'Suicide move') {
-          setLastMessage('❌ 自杀手！不能自己没气');
+          setLastMessage(t('messages.suicide'));
         } else if (vsAI && prevPlayer !== aiColor) {
           // 如果是AI回合点击，显示等待而不是错误
-          setLastMessage(`⏳ 等待${opponentName}落子...`);
+          setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
         } else {
-          setLastMessage('❌ 此位置不能落子');
+          setLastMessage(t('messages.invalidMove'));
         }
         return prevPlayer;
       }
@@ -499,7 +509,7 @@ export default function GoBoardGame({
     }
 
     setIsAIThinking(true);
-    setLastMessage(`⏳ ${opponentName}思考中...`);
+    setLastMessage(t('messages.aiThinking', { name: resolvedOpponentName }));
 
     try {
       let bestMove = null;
@@ -511,7 +521,7 @@ export default function GoBoardGame({
           isReady: katagoEngine.isEngineReady(),
           difficulty: aiDifficulty
         });
-        setLastMessage(`🤖 KataGo Lv.${aiDifficulty} 思考中...`);
+        setLastMessage(t('messages.katagoThinking', { difficulty: aiDifficulty }));
         
         // 设置难度
         await katagoEngine.setDifficulty(aiDifficulty);
@@ -533,7 +543,7 @@ export default function GoBoardGame({
         // 检查 KataGo 是否建议认输
         if (analysis.shouldResign || analysis.moveType === 'resign') {
           console.log('🏳️ KataGo 认为局面无望，选择认输');
-          setLastMessage('🤖 KataGo 认输');
+          setLastMessage(t('messages.aiResign'));
           setIsAIThinking(false);
           setAiResign(true);
           return;
@@ -542,14 +552,14 @@ export default function GoBoardGame({
         // 检查 KataGo 是否选择 pass
         if (analysis.moveType === 'pass' || !bestMove) {
           console.log('🤖 KataGo 选择 Pass');
-          setLastMessage(`🤖 ${opponentName} 停了一手（Pass）`);
+          setLastMessage(t('messages.aiPass', { name: resolvedOpponentName }));
           setIsAIThinking(false);
           handlePass(); // 执行 pass
           return;
         }
       } else {
         console.error('⚠️ KataGo引擎未就绪');
-        setLastMessage('🤖 KataGo引擎未初始化');
+        setLastMessage(t('messages.katagoNotReady'));
         return;
       }
 
@@ -615,7 +625,7 @@ export default function GoBoardGame({
         } else {
           // AI落子失败（如自杀着或无合法着点），认输
           console.warn('AI落子失败:', result.error, '- AI认输');
-          setLastMessage('🤖 AI无法继续，认输');
+          setLastMessage(t('messages.aiCannotContinue'));
           setIsAIThinking(false);
           setAiResign(true);
           return;
@@ -623,14 +633,14 @@ export default function GoBoardGame({
       } else {
         // AI没有合法着点，认输
         console.log('🤖 AI没有合法着点，认输');
-        setLastMessage('🤖 AI无法继续，认输');
+        setLastMessage(t('messages.aiCannotContinue'));
         setIsAIThinking(false);
         setAiResign(true);
         return;
       }
     } catch (error) {
       console.error('AI分析失败:', error);
-      setLastMessage('🤖 AI出错，跳过回合');
+      setLastMessage(t('messages.aiError'));
       setCurrentPlayer('black'); // AI出错，切换回玩家
     } finally {
       setIsAIThinking(false);
@@ -729,7 +739,8 @@ export default function GoBoardGame({
         boardRef.current.setNextStoneColor(nextPlayer);
       }
       
-      setLastMessage(`${prevPlayer === 'black' ? '⚫' : '⚪'} 选择停一手（Pass）`);
+      const color = prevPlayer === 'black' ? '⚫' : '⚪';
+      setLastMessage(t('messages.pass', { color }));
       
       return nextPlayer;
     });
@@ -947,11 +958,11 @@ export default function GoBoardGame({
   }, [session, capturedCount, moveCount, npcId, aiDifficulty, size, onGameEnd, isE2E, npcNameMap]);
 
   const handleResign = useCallback(() => {
-    if (confirm('确认认输吗？')) {
+    if (confirm(t('messages.confirmResign'))) {
       const winner = currentPlayer === 'black' ? 'white' : 'black';
       handleGameEnd(winner, 'resign');
     }
-  }, [currentPlayer, handleGameEnd]);
+  }, [currentPlayer, handleGameEnd, t]);
 
   // 监听AI认输
   useEffect(() => {
@@ -1049,9 +1060,9 @@ export default function GoBoardGame({
         // vsAI模式下currentPlayer保持为'black'
         
         setMoveCount(prev => Math.max(0, prev - stepsToUndo));
-        setLastMessage(vsAI ? '悔棋成功（已撤销你和AI的落子）' : '悔棋成功');
+        setLastMessage(vsAI ? t('messages.undoSuccess') : t('messages.undoSuccessSimple'));
       } else {
-        setLastMessage('无法悔棋');
+        setLastMessage(t('messages.undoFailed'));
       }
     }
   };
@@ -1072,7 +1083,7 @@ export default function GoBoardGame({
     
     // 检查技能是否可用
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【亢龙有悔】使用次数已用完');
+      setLastMessage(t('skills.kanglongUsedUp'));
       return;
     }
 
@@ -1110,11 +1121,11 @@ export default function GoBoardGame({
       await applyQiDelta(-skill.qiCost);
       setSkillMessage(
         'kanglong_youhui',
-        `亢龙有悔，悔棋成功（撤销${stepsToUndo}手）${vsAI ? '，已撤销你和AI的落子' : ''}，剩余${skill.currentUses}次`
+        `${t('skills.kanglongSuccess')}（${t('skills.kanglongUndoSteps')}${stepsToUndo}${t('skills.kanglongHand')}）${vsAI ? `，${t('skills.kanglongUndoBoth')}` : ''}，${t('skills.remainingUses')}${skill.currentUses}${t('skills.times')}`
       );
       setSkillsRefreshKey(k => k + 1);
     } else {
-      setLastMessage('❌ 无法使用【亢龙有悔】');
+      setLastMessage(t('skills.kanglongFailed'));
     }
   };
 
@@ -1131,7 +1142,7 @@ export default function GoBoardGame({
     if (!engine) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【独孤九剑】使用次数已用完');
+      setLastMessage(t('skills.duguUsedUp'));
       return;
     }
 
@@ -1139,7 +1150,7 @@ export default function GoBoardGame({
       return;
     }
     
-    setSkillMessage('dugu_jiujian', '独孤九剑推演局势中...');
+    setSkillMessage('dugu_jiujian', t('skills.duguAnalyzing'));
     
     try {
       // 使用KataGo引擎获取详细分析
@@ -1175,41 +1186,42 @@ export default function GoBoardGame({
           
           if (Math.abs(winrate - 0.5) < 0.05) {
             advantage = 'even';
-            evaluation = '局势均衡，难分伯仲';
+            evaluation = t('situation.balanced');
           } else if (winrate > 0.5) {
             advantage = 'black';
             if (winrate > 0.75) {
-              evaluation = `黑棋大优，胜率${(winrate * 100).toFixed(1)}%`;
+              evaluation = `${t('situation.blackHuge')}，${t('situation.winrate')}${(winrate * 100).toFixed(1)}%`;
             } else if (winrate > 0.6) {
-              evaluation = `黑棋优势明显，胜率${(winrate * 100).toFixed(1)}%`;
+              evaluation = `${t('situation.blackStrong')}，${t('situation.winrate')}${(winrate * 100).toFixed(1)}%`;
             } else {
-              evaluation = `黑棋略有优势，胜率${(winrate * 100).toFixed(1)}%`;
+              evaluation = `${t('situation.blackSlight')}，${t('situation.winrate')}${(winrate * 100).toFixed(1)}%`;
             }
           } else {
             advantage = 'white';
             const whiteWinrate = (1 - winrate) * 100;
             if (winrate < 0.25) {
-              evaluation = `白棋大优，胜率${whiteWinrate.toFixed(1)}%`;
+              evaluation = `${t('situation.whiteHuge')}，${t('situation.winrate')}${whiteWinrate.toFixed(1)}%`;
             } else if (winrate < 0.4) {
-              evaluation = `白棋优势明显，胜率${whiteWinrate.toFixed(1)}%`;
+              evaluation = `${t('situation.whiteStrong')}，${t('situation.winrate')}${whiteWinrate.toFixed(1)}%`;
             } else {
-              evaluation = `白棋略有优势，胜率${whiteWinrate.toFixed(1)}%`;
+              evaluation = `${t('situation.whiteSlight')}，${t('situation.winrate')}${whiteWinrate.toFixed(1)}%`;
             }
           }
           
           // 添加分数差信息
           if (Math.abs(scoreLead) > 1) {
-            evaluation += `，${scoreLead > 0 ? '黑' : '白'}领先约${Math.abs(scoreLead).toFixed(1)}目`;
+            const color = scoreLead > 0 ? t('situation.black') : t('situation.white');
+            evaluation += `，${color}${t('situation.leadBy')}${Math.abs(scoreLead).toFixed(1)}${t('situation.points')}`;
           }
           
           // 添加局势稳定性信息
           let stability = '';
           if (scoreStdev < 5) {
-            stability = '局势稳定';
+            stability = t('situation.stable');
           } else if (scoreStdev < 15) {
-            stability = '局势有变化';
+            stability = t('situation.changed');
           } else {
-            stability = '局势复杂多变';
+            stability = t('situation.complex');
           }
           
           const result: TerritoryEvaluation = {
@@ -1227,7 +1239,7 @@ export default function GoBoardGame({
           await applyQiDelta(-skill.qiCost);
           
           setEvaluation(result);
-          setSkillMessage('dugu_jiujian', `${result.evaluation}，剩余${skill.currentUses}次`);
+          setSkillMessage('dugu_jiujian', `${result.evaluation}，${t('skills.remainingUses')}${skill.currentUses}${t('skills.times')}`);
           setSkillsRefreshKey(k => k + 1);
           
           // 在棋盘上显示地盘归属
@@ -1254,14 +1266,14 @@ export default function GoBoardGame({
             }
           }, 10000);
         } else {
-          setLastMessage('❌ AI分析失败');
+          setLastMessage(t('skills.duguAnalysisFailed'));
         }
       } else {
-        setLastMessage('❌ KataGo引擎未就绪');
+        setLastMessage(t('messages.katagoNotReady'));
       }
     } catch (error) {
       console.error('独孤九剑技能失败:', error);
-      setLastMessage('❌ AI分析失败');
+      setLastMessage(t('skills.duguAnalysisFailed'));
     }
   };
 
@@ -1279,7 +1291,7 @@ export default function GoBoardGame({
     if (!engine || !board) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【腹语传音】使用次数已用完');
+      setLastMessage(t('skills.fuyuUsedUp'));
       return;
     }
 
@@ -1287,7 +1299,7 @@ export default function GoBoardGame({
       return;
     }
     
-    setSkillMessage('fuyu_chuanyin', '腹语传音推演中...');
+    setSkillMessage('fuyu_chuanyin', t('skills.fuyuAnalyzing'));
     
     try {
       // 使用KataGo引擎获取真正的AI建议
@@ -1315,7 +1327,7 @@ export default function GoBoardGame({
           suggestions.push({
             position: analysis.bestMove,
             score: 100,
-            reason: `AI最佳推荐，胜率${(analysis.winrate * 100).toFixed(1)}%`
+            reason: `${t('skills.fuyuBestMove')}，${t('situation.winrate')}${(analysis.winrate * 100).toFixed(1)}%`
           });
           
           // 找附近的候选点作为备选
@@ -1337,7 +1349,7 @@ export default function GoBoardGame({
                 suggestions.push({
                   position: pos,
                   score: 80 - addedCount * 10,
-                  reason: '备选着法'
+                  reason: t('skills.fuyuAlternative')
                 });
                 addedCount++;
               }
@@ -1351,7 +1363,7 @@ export default function GoBoardGame({
           setSuggestions(suggestions);
           setSkillMessage(
             'fuyu_chuanyin',
-            `已给出推荐落点：${formatGoPosition(analysis.bestMove.row, analysis.bestMove.col)}，剩余${skill.currentUses}次`
+            `${t('skills.fuyuSuggestion')}${formatGoPosition(analysis.bestMove.row, analysis.bestMove.col)}，${t('skills.remainingUses')}${skill.currentUses}${t('skills.times')}`
           );
           setSkillsRefreshKey(k => k + 1);
           
@@ -1370,14 +1382,14 @@ export default function GoBoardGame({
             }
           }, 8000);
         } else {
-          setLastMessage('❌ AI分析失败');
+          setLastMessage(t('skills.duguAnalysisFailed'));
         }
       } else {
-        setLastMessage('❌ KataGo引擎未就绪');
+        setLastMessage(t('messages.katagoNotInitialized'));
       }
     } catch (error) {
       console.error('腹语传音技能失败:', error);
-      setLastMessage('❌ AI推荐失败');
+      setLastMessage(t('skills.duguAnalysisFailed'));
     }
   };
 
@@ -1395,12 +1407,12 @@ export default function GoBoardGame({
     
     // 检查是否可以使用
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【机关算尽】使用次数已用完');
+      setLastMessage(t('skills.jiguanUsedUp'));
       return;
     }
     
     if ('currentCooldown' in skill && (skill as any).currentCooldown > 0) {
-      setLastMessage(`❌ 【机关算尽】冷却中，还需${(skill as any).currentCooldown}手`);
+      setLastMessage(`❌ Skill on cooldown: ${(skill as any).currentCooldown} moves remaining`);
       return;
     }
 
@@ -1425,10 +1437,10 @@ export default function GoBoardGame({
       setVariationStones(stones);
       setShowVariationBoard(true);
       await applyQiDelta(-skill.qiCost);
-      setSkillMessage('jiguan_suanjin', `机关算尽已开启试下棋盘，剩余${skill.currentUses}次`);
+      setSkillMessage('jiguan_suanjin', `${t('skills.jiguanOpened')}，${t('skills.remainingUses')}${skill.currentUses}${t('skills.times')}`);
       setSkillsRefreshKey(k => k + 1);
     } else {
-      setLastMessage('❌ 无法使用【机关算尽】');
+      setLastMessage(t('skills.jiguanFailed'));
     }
   };
 
@@ -1446,7 +1458,7 @@ export default function GoBoardGame({
     if (!engine || !board) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【棋子暗器】使用次数已用完');
+      setLastMessage(t('skills.qiziUsedUp'));
       return;
     }
 
@@ -1461,7 +1473,7 @@ export default function GoBoardGame({
 
     const result = (skill as any).use(engine, currentPlayer) as { from: BoardPosition; to: BoardPosition; color: 'black' | 'white' } | null;
     if (!result) {
-      setLastMessage('❌ 无法使用【棋子暗器】');
+      setLastMessage(t('skills.qiziFailed'));
       return;
     }
 
@@ -1469,16 +1481,16 @@ export default function GoBoardGame({
     const placed = board.placeStone(result.to, result.color);
     if (!placed) {
       board.placeStone(result.from, result.color);
-      setLastMessage('❌ 【棋子暗器】落点异常');
+      setLastMessage(t('skills.qiziInvalidPosition'));
       return;
     }
 
     await applyQiDelta(-skill.qiCost);
 
-    const colorLabel = result.color === 'black' ? '黑子' : '白子';
+    const colorLabel = result.color === 'black' ? t('skills.blackStone') : t('skills.whiteStone');
     setSkillMessage(
       'qizi_anqi',
-      `棋子暗器出手，${colorLabel}从 ${formatGoPosition(result.from.row, result.from.col)} 打歪到 ${formatGoPosition(result.to.row, result.to.col)}`
+      `${t('skills.qiziEffect')}，${colorLabel}${t('skills.qiziFrom')} ${formatGoPosition(result.from.row, result.from.col)} ${t('skills.qiziTo')} ${formatGoPosition(result.to.row, result.to.col)}`
     );
     setTimeout(() => {
       setLastMessage(formatSpeakerMessage(getOpponentName(), '😡 可恶！我的棋子竟被你打歪了！'));
@@ -1500,7 +1512,7 @@ export default function GoBoardGame({
     if (!engine || !board) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【乾坤大挪移】使用次数已用完');
+      setLastMessage(t('skills.qiankunUsedUp'));
       return;
     }
 
@@ -1519,7 +1531,7 @@ export default function GoBoardGame({
     } | null;
 
     if (!result) {
-      setLastMessage('❌ 无法使用【乾坤大挪移】');
+      setLastMessage(t('skills.qiankunFailed'));
       return;
     }
 
@@ -1539,7 +1551,7 @@ export default function GoBoardGame({
 
     setSkillMessage(
       'qiankun_danuo',
-      `乾坤大挪移完成：黑子 ${blackFrom}→${blackTo}，白子 ${whiteFrom}→${whiteTo}`
+      `${t('skills.qiankunEffect')}：${t('skills.blackStone')} ${blackFrom}→${blackTo}，${t('skills.whiteStone')} ${whiteFrom}→${whiteTo}`
     );
     setSkillsRefreshKey(k => k + 1);
   };
@@ -1554,7 +1566,7 @@ export default function GoBoardGame({
     if (!skill || !('use' in skill)) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【一阳指】使用次数已用完');
+      setLastMessage(t('skills.yiyangUsedUp'));
       return;
     }
 
@@ -1567,7 +1579,7 @@ export default function GoBoardGame({
       return;
     }
 
-    setSkillMessage('yiyang_zhi', '一阳指已起，请选择限制区域');
+    setSkillMessage('yiyang_zhi', t('skills.yiyangSelect'));
     setPendingYiYangSkill(skill);
     setShowYiYangSelect(true);
   };
@@ -1578,7 +1590,7 @@ export default function GoBoardGame({
 
     const success = (skill as any).use();
     if (!success) {
-      setLastMessage('❌ 无法使用【一阳指】');
+      setLastMessage(t('skills.yiyangFailed'));
       setShowYiYangSelect(false);
       setPendingYiYangSkill(null);
       return;
@@ -1596,7 +1608,7 @@ export default function GoBoardGame({
     setPendingYiYangSkill(null);
     setSkillMessage(
       'yiyang_zhi',
-      `限制${restrictedColor === 'black' ? '黑棋' : '白棋'}仅可在${getRegionLabel(region)}落子`
+      `${t('skills.yiyangRestrict')}${restrictedColor === 'black' ? t('skills.black') : t('skills.white')}${t('skills.yiyangOnlyIn')}${getRegionLabel(region)}${t('skills.yiyangPlace')}`
     );
     setSkillsRefreshKey(k => k + 1);
   };
@@ -1611,7 +1623,7 @@ export default function GoBoardGame({
     if (!skill || !('use' in skill)) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【左右互搏】使用次数已用完');
+      setLastMessage(t('skills.zuoyouUsedUp'));
       return;
     }
 
@@ -1621,13 +1633,13 @@ export default function GoBoardGame({
     }
 
     if (doubleMoveState) {
-      setLastMessage('❌ 【左右互搏】已在连下两手状态');
+      setLastMessage(t('skills.zuoyouAlreadyActive'));
       return;
     }
 
     const inWindow = moveCount >= 10 && moveCount <= 39;
     if (!inWindow) {
-      setLastMessage('❌ 【左右互搏】仅限第11-40手之间使用');
+      setLastMessage(t('skills.zuoyouWindowOnly'));
       return;
     }
 
@@ -1637,13 +1649,13 @@ export default function GoBoardGame({
 
     const success = (skill as any).use();
     if (!success) {
-      setLastMessage('❌ 无法使用【左右互搏】');
+      setLastMessage(t('skills.zuoyouFailed'));
       return;
     }
 
     setDoubleMoveState({ color: currentPlayer, remainingMoves: 1 });
     await applyQiDelta(-skill.qiCost);
-    setSkillMessage('zuoyou_hubo', '左右互搏生效，获得额外一手');
+    setSkillMessage('zuoyou_hubo', t('skills.zuoyouEffect'));
     setSkillsRefreshKey(k => k + 1);
   };
 
@@ -1657,7 +1669,7 @@ export default function GoBoardGame({
     if (!skill || !('use' in skill)) return;
 
     if (skill.currentUses <= 0) {
-      setLastMessage('❌ 【北冥神功】使用次数已用完');
+      setLastMessage(t('skills.beimingUsedUp'));
       return;
     }
 
@@ -1667,7 +1679,7 @@ export default function GoBoardGame({
 
     const result = (skill as any).use();
     if (!result) {
-      setLastMessage('❌ 无法使用【北冥神功】');
+      setLastMessage(t('skills.beimingFailed'));
       return;
     }
 
@@ -1675,7 +1687,7 @@ export default function GoBoardGame({
     await applyQiDelta(result.qiRestore);
     skillManager?.clearAllCooldowns();
 
-    setSkillMessage('beiming_shengong', `北冥神功恢复内力${result.qiRestore}点，已清除技能冷却`);
+    setSkillMessage('beiming_shengong', `${t('skills.beimingEffect')}${result.qiRestore}${t('skills.beimingQi')}，${t('skills.beimingClearCd')}`);
     setSkillsRefreshKey(k => k + 1);
   };
 
@@ -1715,17 +1727,17 @@ export default function GoBoardGame({
                 currentPlayer === 'black' ? 'bg-black' : 'bg-white border border-gray-400'
               }`} />
               <span className="font-semibold">
-                {currentPlayer === 'black' ? '黑方' : '白方'}落子
+                {currentPlayer === 'black' ? t('ui.blackSide') : t('ui.whiteSide')}{t('ui.placeStone')}
               </span>
             </div>
             <div className="text-sm text-gray-300">
-              手数: {moveCount}
+              {t('ui.moveCount')}: {moveCount}
             </div>
             <div className="text-sm text-gray-300">
-              棋盘: {size}路
+              {t('ui.boardSize')}: {size}{t('ui.road')}
             </div>
             <div className="text-sm text-gray-300">
-              提子: 黑{capturedCount.black} 白{capturedCount.white}
+              {t('ui.captured')}: {t('situation.black')}{capturedCount.black} {t('situation.white')}{capturedCount.white}
             </div>
             <div className="text-sm text-gray-300">
               内力: {playerQi ?? '--'}/{playerMaxQi ?? '--'}
