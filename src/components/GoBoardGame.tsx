@@ -376,7 +376,13 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!board || !engine) return;
 
-    console.log('🎯 玩家尝试落子:', { position, currentPlayer, aiColor, isAIThinking, vsAI });
+    console.log('🎯 玩家尝试落子:', { position, currentPlayer, aiColor, isAIThinking, vsAI, gameStarted });
+
+    // 游戏尚未开始，禁止落子
+    if (!gameStarted) {
+      console.log('🚫 阻止玩家落子：游戏尚未开始');
+      return;
+    }
 
     // AI思考中或轮到AI时，禁止玩家落子
     if (vsAI && (isAIThinking || currentPlayer === aiColor)) {
@@ -482,7 +488,7 @@ export default function GoBoardGame({
         return prevPlayer;
       }
     });
-  }, [currentPlayer, isAIThinking, vsAI, aiColor, opponentName, yiYangRestriction, size, doubleMoveState]);
+  }, [currentPlayer, isAIThinking, vsAI, aiColor, opponentName, yiYangRestriction, size, doubleMoveState, gameStarted]);
 
   /**
    * AI落子

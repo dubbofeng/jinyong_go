@@ -435,15 +435,17 @@ export class KataGoBrowserEngineV2 {
   async setDifficulty(difficulty: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): Promise<void> {
     // 难度配置：maxVisits, rootPolicyTemperature, analysisWideRootNoise
     const difficultyConfig: Record<number, { visits: number; temp: number; noise: number }> = {
-        1: { visits: 1,   temp: 9, noise: 0.9 },  // 入门级 - 极弱，像初学者
-        2: { visits: 2,   temp: 8, noise: 0.8 },   // 初级 - 很弱，经常失误
-        3: { visits: 4,   temp: 7, noise: 0.7 },  // 进阶 - 较弱，有明显缺陷
-        4: { visits: 8,  temp: 6, noise: 0.6 },  // 中级 - 偶尔失误
-        5: { visits: 16,  temp: 5, noise: 0.5 },   // 中高级 - 较少失误
-        6: { visits: 32,  temp: 4, noise: 0.4 },  // 高级 - 接近完美
-        7: { visits: 64, temp: 3, noise: 0.3 },   // 专家级 - 完美发挥
-        8: { visits: 128, temp: 2, noise: 0.2 },   // 大师级 - 深度思考
-        9: { visits: 256, temp: 1.0, noise: 0.1 }    // 顶尖级 - 最强
+        1: { visits: 1,   temp: 10, noise: 1 },  // 入门级 - 极弱，像初学者
+        2: { visits: 2,   temp: 9, noise: 0.9 },   // 初级 - 很弱，经常失误
+        3: { visits: 4,   temp: 8, noise: 0.8 },  // 进阶 - 较弱，有明显缺陷
+        4: { visits: 8,  temp: 7, noise: 0.7 },  // 中级 - 偶尔失误
+        5: { visits: 16,  temp: 6, noise: 0.6 },   // 中高级 - 较少失误
+        6: { visits: 32,  temp: 5, noise: 0.5 },  // 高级 - 接近完美
+        7: { visits: 64, temp: 4, noise: 0.4 },   // 专家级 - 完美发挥
+        8: { visits: 128, temp: 3, noise: 0.3 },   // 大师级 - 深度思考
+        9: { visits: 256, temp: 2, noise: 0.2 },    // 顶尖级 - 最强
+        10: { visits: 512, temp: 1, noise: 0.1 },   // 传奇级 - 极限挑战
+        11: { visits: 1024, temp: 0.5, noise: 0 }   // 神级 - 无随机性，最优着法
     };
     
     const config = difficultyConfig[difficulty];
