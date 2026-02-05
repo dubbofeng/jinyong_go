@@ -115,7 +115,9 @@ export default function SgfPracticeModal({ isOpen, practiceSet, onClose, onRepla
     const toIndex = (row: number, col: number | string) => {
       if (typeof col === 'string') {
         const letter = col.trim().toUpperCase();
-        const colIndex = letter.charCodeAt(0) - 65;
+        // GTP坐标系统跳过字母I: A-H, J-T
+        let colIndex = letter.charCodeAt(0) - 65;
+        if (letter > 'I') colIndex--; // 如果J-T，减1跳过I
         return { row: 9 - row, col: colIndex };
       }
       return { row, col };

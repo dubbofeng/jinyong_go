@@ -311,7 +311,9 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
                       // 将SGF坐标转换为围棋坐标 (例如: 'ea' -> 'E1')
                       const col = sgf.charCodeAt(0) - 97; // 'a' = 0
                       const row = problem.boardSize - (sgf.charCodeAt(1) - 97); // 'a' = boardSize
-                      const colLetter = String.fromCharCode(65 + col); // 0 -> 'A'
+                      // GTP坐标系统跳过字母I: A-H, J-T
+                      const colIndex = col >= 8 ? col + 1 : col;
+                      const colLetter = String.fromCharCode(65 + colIndex);
                       return (
                         <div>
                           第一手：{problem.solution[0][0] === 'B' ? '⚫ 黑' : '⚪ 白'} 

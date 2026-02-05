@@ -231,10 +231,12 @@ export class GoBoard {
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     
-    // 列标签 (A, B, C, ...)
+    // 列标签 (A, B, C, ...) - 跳过字母I以符合围棋标准
     for (let col = 0; col < this.size; col++) {
       const x = this.padding + col * this.gridSize;
-      const label = String.fromCharCode(65 + col); // A=65
+      // GTP坐标系统跳过字母I: A-H, J-T
+      const charCode = col >= 8 ? 65 + col + 1 : 65 + col;
+      const label = String.fromCharCode(charCode);
       
       // 上方
       this.ctx.fillText(label, x, this.padding - 20);

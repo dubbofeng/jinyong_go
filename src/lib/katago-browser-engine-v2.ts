@@ -484,7 +484,9 @@ export class KataGoBrowserEngineV2 {
 
       // 放置棋子
       for (const stone of stones) {
-        const x = String.fromCharCode(65 + stone.col); // A-S
+        // GTP坐标系统跳过字母I: A-H, J-T
+        const col = stone.col >= 8 ? stone.col + 1 : stone.col; // 如果>=8(I位置)，则+1跳过I
+        const x = String.fromCharCode(65 + col); // A-H, J-T
         const y = stone.row + 1;
         const color = stone.color === 'black' ? 'B' : 'W';
         await this.sendCommand(`play ${color} ${x}${y}`);
@@ -782,7 +784,10 @@ export class KataGoBrowserEngineV2 {
       // 解析着法
       let bestMove: BoardPosition | null = null;
       if (moveStr && moveStr !== 'pass' && moveStr !== 'resign') {
-        const col = moveStr.charCodeAt(0) - 65;
+        const colLetter = moveStr.charAt(0);
+        // GTP坐标系统跳过字母I: A-H, J-T
+        let col = colLetter.charCodeAt(0) - 65;
+        if (colLetter > 'I') col--; // 如果J-T，减1跳过I
         const row = parseInt(moveStr.substring(1)) - 1;
         if (!isNaN(row) && !isNaN(col)) {
           bestMove = { row, col };
@@ -875,7 +880,10 @@ export class KataGoBrowserEngineV2 {
           // 解析 info move 行
           const moveMatch = line.match(/move\s+([A-Z])(\d+)/);
           if (moveMatch) {
-            const col = moveMatch[1].charCodeAt(0) - 65;
+            const colLetter = moveMatch[1];
+            // GTP坐标系统跳过字母I: A-H, J-T
+            let col = colLetter.charCodeAt(0) - 65;
+            if (colLetter > 'I') col--; // 如果是J-T，减1跳过I
             const row = parseInt(moveMatch[2]) - 1;
             bestMove = { row, col };
             console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
@@ -982,7 +990,10 @@ export class KataGoBrowserEngineV2 {
       throw new Error('Invalid move response: ' + response);
     }
 
-    const col = match[1].charCodeAt(0) - 65;
+    const colLetter = match[1];
+    // GTP坐标系统跳过字母I: A-H, J-T
+    let col = colLetter.charCodeAt(0) - 65;
+    if (colLetter > 'I') col--; // 如果是J-T，减1跳过I
     const row = parseInt(match[2]) - 1;
 
     if (col < 0 || col >= boardSize || row < 0 || row >= boardSize) {

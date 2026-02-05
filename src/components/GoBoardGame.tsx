@@ -572,7 +572,10 @@ export default function GoBoardGame({
           } else {
             // 棋盘行号从下往上标记，需要转换：size - row
             const displayRow = size - position.row;
-            setLastMessage(`🤖 ${opponentName}落子于 (${displayRow}, ${String.fromCharCode(65 + position.col)})`);
+            // GTP坐标系统跳过字母I: A-H, J-T
+            const colIndex = position.col >= 8 ? position.col + 1 : position.col;
+            const colLetter = String.fromCharCode(65 + colIndex);
+            setLastMessage(`🤖 ${opponentName}落子于 (${displayRow}, ${colLetter})`);
           }
           
           setMoveCount(prev => prev + 1);

@@ -23,7 +23,10 @@ const normalizeBoardSize = (size: number): BoardSize => {
 const normalizeCol = (col: number | string) => {
   if (typeof col === 'number') return col;
   const letter = col.trim().toUpperCase();
-  return letter.charCodeAt(0) - 65;
+  // GTP坐标系统跳过字母I: A-H, J-T
+  let colIndex = letter.charCodeAt(0) - 65;
+  if (letter > 'I') colIndex--; // 如果J-T，减1跳过I
+  return colIndex;
 };
 
 const buildBoardState = (size: number, stones: TutorialBoardStone[]) => {

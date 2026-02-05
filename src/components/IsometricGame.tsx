@@ -87,6 +87,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const npcDialogueCountsRef = useRef<Record<string, number>>({});
   const [npcDialogueFlags, setNpcDialogueFlags] = useState<Record<string, string[]>>({});
   const npcDialogueFlagsRef = useRef<Record<string, string[]>>({});
+  const [npcNameToIdMap, setNpcNameToIdMap] = useState<Record<string, string>>({});
   const currentNpcIdRef = useRef<string | null>(null);
   const lastReportedMapRef = useRef<string | null>(null);
   const tutorialProgressCacheRef = useRef<Record<string, string>>({});
@@ -152,6 +153,32 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const isE2EStoryEnabled = useCallback((): boolean => {
     if (typeof window === 'undefined') return false;
     return new URLSearchParams(window.location.search).has('e2eStory');
+  }, []);
+
+  // 加载数据库中的NPC数据，构建名称到ID的映射表
+  useEffect(() => {
+    const loadNpcsFromDatabase = async () => {
+      try {
+        const response = await fetch('/api/npcs');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && Array.isArray(data.data)) {
+            const dbMap: Record<string, string> = {};
+            data.data.forEach((npc: any) => {
+              if (npc.npcId && npc.name) {
+                // 数据库中的name可能是中文或英文
+                dbMap[npc.name] = npc.npcId;
+              }
+            });
+            setNpcNameToIdMap(dbMap);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load NPCs from database:', error);
+      }
+    };
+
+    loadNpcsFromDatabase();
   }, []);
 
   useEffect(() => {
@@ -1655,17 +1682,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     }
 
     if (!npcId) {
-      const npcIdMap: Record<string, string> = {
-        '洪七公': 'hong_qigong',
-        '郭靖': 'guo_jing',
-        '令狐冲': 'linghu_chong',
-        '黄蓉': 'huang_rong',
-      };
-      npcId = npcIdMap[item.itemName] || '';
+      npcId = npcNameToIdMap[item.itemName] || '';
     }
 
     return npcId;
-  }, []);
+  }, [npcNameToIdMap]);
 
   const startDialogueInternal = useCallback(async (item: any) => {
     try {
@@ -2230,12 +2251,12 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               confirmText: '太好了！',
               onConfirm: () => {
                 setAlertState(prev => ({ ...prev, isOpen: false }));
-                // 跳转到 daily_chat 节点
+                // 跳转到 daily_chat 节点并立即更新对话状态
                 if (dialogueEngine && dialogueEngine.hasNode('daily_chat')) {
                   dialogueEngine.setCurrentNodeId('daily_chat');
                   updateDialogueState(dialogueEngine);
+                  setIsDialogueVisible(true);
                 }
-                setIsDialogueVisible(true);
               },
             });
           }
@@ -2578,10 +2599,16 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         isOpen={showGoGame}
         onClose={() => {
           setShowGoGame(false);
-          // 对话流程中的战斗结束后，更新对话状态
+          // 对话流程中的战斗结束后，只有在非rematch的情况下才更新对话状态
+          // rematch的对话状态已经在 handleGoGameComplete 中更新过了
           if (dialogueEngine && !isUniversalChallenge) {
-            updateDialogueState(dialogueEngine);
-            setIsDialogueVisible(true);
+            // 检查是否是rematch（通过检查battleResult是否已经设置）
+            const isRematch = battleResult !== null;
+            if (!isRematch) {
+              updateDialogueState(dialogueEngine);
+              setIsDialogueVisible(true);
+            }
+            // rematch情况下，对话框已经在 alert confirm 时显示了
           }
           // 如果不在对话流程中（例如通用挑战），关闭后恢复对话框
           else if (!dialogueEngine && isUniversalChallenge) {
@@ -2593,10 +2620,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         onComplete={handleGoGameComplete}
         vsAI={!isE2EEnabled()}
         aiDifficulty={goOpponentDifficulty}
-        npcId={currentBattleNpcId || 
-               (goOpponentName === '洪七公' ? 'hong_qigong' : 
-               goOpponentName === '令狐冲' ? 'linghu_chong' :
-               goOpponentName === '郭靖' ? 'guo_jing' : undefined)}
+        npcId={currentBattleNpcId || npcNameToIdMap[goOpponentName]}
         inDialogue={!!dialogueEngine}
       />
 
