@@ -883,6 +883,21 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     };
   }, [isLoading]);
 
+  // 强制重新渲染Canvas，修复modal关闭后的灰屏问题
+  useEffect(() => {
+    if (!isDialogueVisible && !showPharmacy && !showWorkshop && engineRef.current && canvasRef.current) {
+      // Modal关闭后，强制清理和重新渲染Canvas
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // 清除Canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 强制重新渲染
+        render();
+      }
+    }
+  }, [isDialogueVisible, showPharmacy, showWorkshop]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const currentMapId = mapData?.id;
@@ -954,7 +969,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const getRequirementHint = (requirement: any): string => {
     switch (requirement.type) {
       case 'level':
-        return `等级达到 ${levelToRank(requirement.minLevel)}`;
+        return `等级达到 ${levelToRank(requirement.minLevel).display}`;
       case 'chapter':
         return `第 ${requirement.chapter} 章`;
       case 'quest_completed':
