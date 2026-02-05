@@ -9,6 +9,7 @@ import { db } from '../../../../../src/db';
 import { playerInventory, items, playerStats } from '../../../../../src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getActualMaxStats } from '../../../../../src/lib/player-stats-utils';
+import { addRewards } from '@/lib/experience-manager';
 
 export async function POST(request: NextRequest) {
   try {
@@ -207,22 +208,26 @@ export async function POST(request: NextRequest) {
           );
           statUpdates.lastQiRegen = new Date();
         }
+        // 使用统一的经验管理器处理经验和升级
         if (updates.experienceDelta) {
-          let newExp = (current.experience || 0) + updates.experienceDelta;
-          let newLevel = current.level || 1;
-          let expToNext = current.experienceToNext || 100;
-
-          while (newExp >= expToNext && newLevel < 100) {
-            newExp -= expToNext;
-            newLevel++;
-            expToNext = Math.floor(100 * newLevel * 1.5);
-            statUpdates.maxStamina = (current.maxStamina || 100) + 10;
-            statUpdates.maxQi = (current.maxQi || 100) + 10;
+          await addRewards(userId, {
+            experience: updates.experienceDelta,
+          });
+          // 获取更新后的数据用于返回
+          const [updated] = await db
+            .select()
+            .from(playerStats)
+            .where(eq(playerStats.userId, userId))
+            .limit(1);
+          if (updated) {
+            Object.assign(statUpdates, {
+              experience: updated.experience,
+              level: updated.level,
+              experienceToNext: updated.experienceToNext,
+              maxStamina: updated.maxStamina,
+              maxQi: updated.maxQi,
+            });
           }
-
-          statUpdates.experience = newExp;
-          statUpdates.level = newLevel;
-          statUpdates.experienceToNext = expToNext;
         }
 
         await db

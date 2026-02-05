@@ -187,14 +187,20 @@ export async function POST(request: Request) {
         if (achievement.reward) {
           const reward = achievement.reward;
 
-          // 更新玩家属性
-          if (reward.experience || reward.silver || reward.coins) {
+          // 使用统一的奖励管理器
+          if (reward.experience || reward.silver) {
+            await addRewards(userId, {
+              experience: reward.experience,
+              silver: reward.silver,
+            });
+          }
+          
+          // 单独处理coins（因为addRewards暂不支持）
+          if (reward.coins) {
             await db
               .update(playerStats)
               .set({
-                experience: sql`${playerStats.experience} + ${reward.experience || 0}`,
-                silver: sql`${playerStats.silver} + ${reward.silver || 0}`,
-                coins: sql`${playerStats.coins} + ${reward.coins || 0}`,
+                coins: sql`${playerStats.coins} + ${reward.coins}`,
                 updatedAt: new Date(),
               })
               .where(eq(playerStats.userId, userId));

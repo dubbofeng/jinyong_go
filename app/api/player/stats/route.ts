@@ -11,6 +11,7 @@ import { items, playerInventory, playerStats, users } from '../../../../src/db/s
 import { and, eq, sql } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../src/lib/rank-system';
 import { getActualMaxStats } from '../../../../src/lib/player-stats-utils';
+import { addRewards } from '@/lib/experience-manager';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -201,12 +202,15 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // 构建更新对象
-    const updateData: any = {};
-
+    // 使用统一的经验管理器处理经验和升级
     if (experience !== 0) {
-      updateData.experience = sql`${playerStats.experience} + ${experience}`;
+      await addRewards(parseInt(session.user.id), {
+        experience,
+      });
     }
+
+    // 构建其他更新对象
+    const updateData: any = {};
 
     if (silver !== 0) {
       updateData.silver = sql`${playerStats.silver} + ${silver}`;

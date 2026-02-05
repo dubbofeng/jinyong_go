@@ -7,7 +7,7 @@
 import { db } from '@/app/db';
 import { questProgress, gameProgress, users, playerStats, playerSkills, npcRelationships } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { getExperienceForLevel } from '@/src/lib/rank-system';
+import { addRewards } from '@/src/lib/experience-manager';
 import {
   getAllQuests,
   getQuestById,
@@ -295,33 +295,28 @@ export async function completeQuest(
       return { success: false, message: 'Player stats not found' };
     }
 
-    let newExperience = stats.experience;
-    let newLevel = stats.level;
-    let expToNext = stats.experienceToNext;
-    let maxStamina = stats.maxStamina;
-    let maxQi = stats.maxQi;
-    let newSilver = stats.silver || 0;
-
-    if (rewards.experience) {
-      newExperience += rewards.experience;
-
-      while (newExperience >= expToNext && newLevel < 27) {
-        newExperience -= expToNext;
-        newLevel++;
-        expToNext = getExperienceForLevel(newLevel);
-        maxStamina += 10;
-        maxQi += 10;
-      }
-
-      if (newLevel >= 27) {
-        newExperience = 0;
-        expToNext = 0;
-      }
+    // 使用统一的奖励管理器处理经验和银两
+    let experienceResult;
+    if (rewards.experience || rewards.silver) {
+      experienceResult = await addRewards(userId, {
+        experience: rewards.experience,
+        silver: rewards.silver,
+      });
     }
 
-    if (rewards.silver) {
-      newSilver += rewards.silver;
+    // 获取更新后的数据
+    const [updatedStats] = await db
+      .select()
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
+    
+    if (!updatedStats) {
+      return { success: false, message: 'Failed to get updated stats' };
     }
+    
+    const newLevel = updatedStats.level;
+    const newExperience = updatedStats.experience;
 
     const skillRewards = new Set<string>();
     if (rewards.skill) skillRewards.add(rewards.skill);
@@ -345,21 +340,16 @@ export async function completeQuest(
           )
         );
 
-      // 更新玩家属性
-      await tx
-        .update(playerStats)
-        .set({
-          level: newLevel,
-          experience: newExperience,
-          experienceToNext: expToNext,
-          maxStamina,
-          maxQi,
-          stamina: leveledUp ? maxStamina : stats.stamina,
-          qi: leveledUp ? maxQi : stats.qi,
-          silver: newSilver,
-          updatedAt: new Date(),
-        })
-        .where(eq(playerStats.userId, userId));
+      // 只需要更新银两（经验已经由addRewards处理）
+      if (rewards.silver) {
+        await tx
+          .update(playerStats)
+          .set({
+            silver: updatedStats.silver,
+            updatedAt: new Date(),
+          })
+          .where(eq(playerStats.userId, userId));
+      }
 
       // 解锁技能
       if (skillRewards.size > 0) {

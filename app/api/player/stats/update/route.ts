@@ -10,6 +10,7 @@ import { playerStats, gameProgress, playerInventory, items } from '../../../../.
 import { and, eq } from 'drizzle-orm';
 import { getExperienceForLevel } from '../../../../../src/lib/rank-system';
 import { getActualMaxStats } from '../../../../../src/lib/player-stats-utils';
+import { addRewards } from '@/lib/experience-manager';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -67,43 +68,26 @@ export async function PATCH(request: NextRequest) {
       updates.lastQiRegen = new Date();
     }
 
-    // 经验变化
+    // 经验变化（使用统一的经验管理器）
     let levelDelta = 0;
-    if (body.experienceDelta !== undefined) {
-      let newExp = stats.experience + body.experienceDelta;
-      let newLevel = stats.level;
-      let expToNext = stats.experienceToNext;
-      let maxStamina = stats.maxStamina;
-      let maxQi = stats.maxQi;
-
-      // 检查升级 (最高段位是9d = level 27)
-      while (newExp >= expToNext && newLevel < 27) {
-        newExp -= expToNext;
-        newLevel++;
-        expToNext = getExperienceForLevel(newLevel);
-        
-        // 升级奖励：+10 最大体力和内力
-        maxStamina += 10;
-        maxQi += 10;
-      }
+    let experienceResult;
+    if (body.experienceDelta !== undefined && body.experienceDelta !== 0) {
+      experienceResult = await addRewards(userId, {
+        experience: body.experienceDelta,
+      });
+      levelDelta = experienceResult.newLevel - experienceResult.oldLevel;
       
-      // 如果达到最高段位，经验不再累积
-      if (newLevel >= 27) {
-        newExp = 0;
-        expToNext = 0;
-      }
-
-      levelDelta = newLevel - stats.level;
-      updates.experience = newExp;
-      updates.level = newLevel;
-      updates.experienceToNext = expToNext;
-      
-      // 如果有升级，应用升级奖励
-      if (newLevel > stats.level) {
-        updates.maxStamina = maxStamina;
-        updates.maxQi = maxQi;
-        updates.stamina = maxStamina; // 满血满蓝
-        updates.qi = maxQi;
+      // 如果有升级，满血满蓝
+      if (levelDelta > 0) {
+        const [updatedStats] = await db
+          .select()
+          .from(playerStats)
+          .where(eq(playerStats.userId, userId))
+          .limit(1);
+        if (updatedStats) {
+          updates.stamina = updatedStats.maxStamina;
+          updates.qi = updatedStats.maxQi;
+        }
       }
     }
 
