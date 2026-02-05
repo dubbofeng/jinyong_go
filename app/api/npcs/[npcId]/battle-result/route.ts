@@ -5,6 +5,7 @@ import { npcs, npcRelationships, playerStats, gameProgress } from '@/src/db/sche
 import { eq, and, inArray } from 'drizzle-orm';
 import { getChapterNpcIds } from '@/src/lib/quest-manager';
 import { autoCompleteQuests } from '@/src/lib/quest-engine';
+import { addExperience } from '@/src/lib/experience-manager';
 
 /**
  * POST /api/npcs/[npcId]/battle-result
@@ -125,23 +126,10 @@ export async function POST(
         )
       );
 
-    // 更新玩家经验值
+    // 更新玩家经验值和等级
+    let experienceResult;
     if (experienceGained > 0) {
-      const [currentStats] = await db
-        .select()
-        .from(playerStats)
-        .where(eq(playerStats.userId, userId))
-        .limit(1);
-      
-      if (currentStats) {
-        await db
-          .update(playerStats)
-          .set({
-            experience: (currentStats.experience || 0) + experienceGained,
-            updatedAt: new Date(),
-          })
-          .where(eq(playerStats.userId, userId));
-      }
+      experienceResult = await addExperience(userId, experienceGained);
     }
 
     // 获取更新后的关系信息

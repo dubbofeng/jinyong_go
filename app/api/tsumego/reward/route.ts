@@ -3,6 +3,7 @@ import { auth } from '@/app/auth';
 import { db } from '@/app/db';
 import { playerInventory, playerStats, playerTsumegoRecords, tsumegoProblems } from '@/src/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
+import { addRewards } from '@/src/lib/experience-manager';
 
 /**
  * POST /api/tsumego/reward
@@ -122,14 +123,11 @@ export async function POST(request: Request) {
         }
       }
 
-      // 更新玩家经验和银两
-      await db
-        .update(playerStats)
-        .set({
-          experience: player.experience + rewards.experience,
-          silver: player.silver + rewards.silver,
-        })
-        .where(eq(playerStats.id, player.id));
+      // 更新玩家经验、等级和银两
+      const rewardResult = await addRewards(session.user.id, {
+        experience: rewards.experience,
+        silver: rewards.silver,
+      });
     }
 
     // 记录解题历史

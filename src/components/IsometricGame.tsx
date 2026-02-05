@@ -22,6 +22,7 @@ import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 import { tutorialBoards, type TutorialBoardConfig } from '@/src/data/go-tutorials';
 import { getTranslatedNpcName } from '@/lib/utils';
+import { levelToRank } from '@/src/lib/rank-system';
 
 declare global {
   interface Window {
@@ -953,7 +954,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const getRequirementHint = (requirement: any): string => {
     switch (requirement.type) {
       case 'level':
-        return `等级达到 ${requirement.minLevel} 级`;
+        return `等级达到 ${levelToRank(requirement.minLevel)}`;
       case 'chapter':
         return `第 ${requirement.chapter} 章`;
       case 'quest_completed':
