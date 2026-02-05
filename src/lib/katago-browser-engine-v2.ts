@@ -120,6 +120,8 @@ export class KataGoBrowserEngineV2 {
   private scriptElement: HTMLScriptElement | null = null;
   private readyPromiseResolve: (() => void) | null = null;
   private maxVisits: number = 100; // 默认访问次数（难度）
+  private rootPolicyTemperature: number = 1.0; // 策略温度
+  private analysisWideRootNoise: number = 0.0; // 根节点噪声
 
   constructor(config: KataGoBrowserConfig) {
     this.config = config;
@@ -427,30 +429,42 @@ export class KataGoBrowserEngineV2 {
   }
 
   /**
-   * 设置难度（通过maxVisits参数）
+   * 设置难度（通过maxVisits和其他参数调整）
    * @param difficulty 难度等级 1-9，数字越大越强
    */
   async setDifficulty(difficulty: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): Promise<void> {
-    // 根据难度设置maxVisits：等级1-9映射到更高的访问次数
-    const maxVisitsMap: Record<number, number> = {
-        1: 50,      // 入门级
-        2: 100,     // 初级
-        3: 200,     // 进阶
-        4: 400,     // 中级
-        5: 800,     // 中高级
-        6: 1600,    // 高级
-        7: 3200,    // 专家级
-        8: 6400,    // 大师级
-        9: 12800    // 顶尖级
+    // 难度配置：maxVisits, rootPolicyTemperature, analysisWideRootNoise
+    const difficultyConfig: Record<number, { visits: number; temp: number; noise: number }> = {
+        1: { visits: 1,   temp: 9, noise: 0.9 },  // 入门级 - 极弱，像初学者
+        2: { visits: 2,   temp: 8, noise: 0.8 },   // 初级 - 很弱，经常失误
+        3: { visits: 4,   temp: 7, noise: 0.7 },  // 进阶 - 较弱，有明显缺陷
+        4: { visits: 8,  temp: 6, noise: 0.6 },  // 中级 - 偶尔失误
+        5: { visits: 16,  temp: 5, noise: 0.5 },   // 中高级 - 较少失误
+        6: { visits: 32,  temp: 4, noise: 0.4 },  // 高级 - 接近完美
+        7: { visits: 64, temp: 3, noise: 0.3 },   // 专家级 - 完美发挥
+        8: { visits: 128, temp: 2, noise: 0.2 },   // 大师级 - 深度思考
+        9: { visits: 256, temp: 1.0, noise: 0.1 }    // 顶尖级 - 最强
     };
     
-    this.maxVisits = maxVisitsMap[difficulty];
+    const config = difficultyConfig[difficulty];
+    this.maxVisits = config.visits;
+    this.rootPolicyTemperature = config.temp;
+    this.analysisWideRootNoise = config.noise;
     
     if (this.isReady) {
       try {
-        // 使用kata-set-param命令设置参数
-        await this.sendCommand(`kata-set-param maxVisits ${this.maxVisits}`);
-        this.config.onLog?.(`✅ 难度设置为 Lv.${difficulty} (maxVisits=${this.maxVisits})`);
+        // 设置最大访问次数
+        await this.sendCommand(`kata-set-param maxVisits ${config.visits}`);
+        
+        // 设置策略温度（增加随机性）
+        await this.sendCommand(`kata-set-param rootPolicyTemperature ${config.temp}`);
+        
+        // 设置根节点噪声（让AI下出"不完美"的棋）
+        if (config.noise > 0) {
+          await this.sendCommand(`kata-set-param analysisWideRootNoise ${config.noise}`);
+        }
+        
+        this.config.onLog?.(`✅ 难度设置为 Lv.${difficulty} (visits=${config.visits}, temp=${config.temp}, noise=${config.noise})`);
       } catch (error) {
         console.error('设置难度失败:', error);
         this.config.onLog?.(`⚠️ 难度设置失败: ${error}`);
@@ -530,7 +544,7 @@ export class KataGoBrowserEngineV2 {
       } else {
         // 使用genmove获取最佳着法（利用maxVisits参数）
         const color = nextColor === 'black' ? 'B' : 'W';
-        console.log(`🎮 使用genmove获取AI着法 (maxVisits=${this.maxVisits})...`);
+        console.log(`🎮 使用genmove获取AI着法 (visits=${this.maxVisits}, temp=${this.rootPolicyTemperature}, noise=${this.analysisWideRootNoise})`);
         const response = await this.sendCommand(`genmove ${color}`);
         console.log('📥 genmove响应:', response);
         

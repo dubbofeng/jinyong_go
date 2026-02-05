@@ -259,6 +259,16 @@ export default function GoBoardGame({
     }
   }, []);
 
+  // 监听玩家属性更新事件（例如使用物品后）
+  useEffect(() => {
+    const handleStatsUpdate = () => {
+      fetchPlayerStats();
+    };
+
+    window.addEventListener('player-stats-update', handleStatsUpdate);
+    return () => window.removeEventListener('player-stats-update', handleStatsUpdate);
+  }, [fetchPlayerStats]);
+
   useEffect(() => {
     if (session?.user) {
       fetchPlayerStats();
@@ -2128,16 +2138,18 @@ export default function GoBoardGame({
             ) : (
               <>
                 <h2 className="text-center font-bold text-2xl mb-4 text-amber-400">猜先结果</h2>
-                <div className="bg-black/40 rounded-xl p-6 mb-4">
-                  <div className="text-center text-3xl mb-4 leading-relaxed">
-                    {Array.from({ length: Math.min(nigiriStones, 15) }, (_, i) => '⚪').join('')}
-                    {nigiriStones > 15 && '...'}
+                <div className="bg-black/40 rounded-xl p-4 mb-4">
+                  <div className="text-center text-xl mb-3 leading-relaxed flex flex-wrap justify-center gap-1 max-w-md mx-auto">
+                    {Array.from({ length: Math.min(nigiriStones, 20) }, (_, i) => (
+                      <span key={i}>⚪</span>
+                    ))}
+                    {nigiriStones > 20 && <span className="text-gray-400">...</span>}
                   </div>
-                  <div className="text-center text-xl font-bold text-amber-300 mb-2">
+                  <div className="text-center text-lg font-bold text-amber-300">
                     共 {nigiriStones} 颗棋子
                   </div>
                 </div>
-                <p className="text-center text-lg leading-relaxed text-gray-200">
+                <p className="text-center text-base leading-relaxed text-gray-200">
                   {nigiriResult}
                 </p>
                 <div className="mt-6 text-center text-sm text-gray-400 animate-pulse">
