@@ -30,7 +30,12 @@
     {
       "id": "challenge_intro",
       "speaker": "乔峰",
-      "text": "好！有胆色！你要想见识我的棋势，就先与在下对弈一局。"
+      "text": "好！有胆色！你要想见识我的棋势，就先与在下对弈一局。",
+      "options": [
+        {
+          "text": "好！"
+        }
+      ]
     },
     {
       "id": "challenge_condition",

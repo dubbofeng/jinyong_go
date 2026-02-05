@@ -526,11 +526,11 @@ export class KataGoBrowserEngineV2 {
 
         return analysis;
       } else {
-        // 使用kata-genmove获取最佳着法（利用maxVisits参数）
+        // 使用genmove获取最佳着法（利用maxVisits参数）
         const color = nextColor === 'black' ? 'B' : 'W';
-        console.log(`🎮 使用kata-genmove获取AI着法 (maxVisits=${this.maxVisits})...`);
-        const response = await this.sendCommand(`kata-genmove ${color}`);
-        console.log('📥 kata-genmove响应:', response);
+        console.log(`🎮 使用genmove获取AI着法 (maxVisits=${this.maxVisits})...`);
+        const response = await this.sendCommand(`genmove ${color}`);
+        console.log('📥 genmove响应:', response);
         
         // 解析响应
         const { move, type } = this.parseMove(response, boardSize);

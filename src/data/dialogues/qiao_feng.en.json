@@ -30,7 +30,12 @@
     {
       "id": "challenge_intro",
       "speaker": "Qiao Feng",
-      "text": "Good! You have courage! If you want to see my style, you must play a game with me first."
+      "text": "Good! You have courage! If you want to see my style, you must play a game with me first.",
+      "options": [
+        {
+          "text": "Alright!"
+        }
+      ]
     },
     {
       "id": "challenge_condition",

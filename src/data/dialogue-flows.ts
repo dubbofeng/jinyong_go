@@ -522,13 +522,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
     startNodeId: 'greeting',
     nodes: [
       { id: 'greeting', nextNodeId: 'check_status' },
-      { id: 'check_status', nextNodeId: 'ask_purpose' },
+      {
+        id: 'check_status',
+        options: [
+          { optionId: '0', nextNodeId: 'learn_request' },
+          { optionId: '1', nextNodeId: 'challenge', condition: { type: 'repeatable' } },
+          { optionId: '2', nextNodeId: 'teach_wisdom' },
+          { optionId: '3', nextNodeId: 'just_visit' }
+        ]
+      },
       {
         id: 'ask_purpose',
         options: [
           { optionId: '0', nextNodeId: 'respect_response' },
           { optionId: '1', nextNodeId: 'learn_request' },
-          { optionId: '2', nextNodeId: 'just_visit' }
+          { optionId: '2', nextNodeId: 'challenge' },
+          { optionId: '3', nextNodeId: 'just_visit' }
         ]
       },
       { id: 'respect_response', nextNodeId: 'talk_rong' },
@@ -539,7 +548,13 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '1', nextNodeId: 'challenge' }
         ]
       },
-      { id: 'learn_request', nextNodeId: 'eye_intro' },
+      { id: 'learn_request', 
+        options: [
+          { optionId: '0', nextNodeId: 'eye_intro' },
+          { optionId: '1', nextNodeId: 'teach_wisdom' },
+          { optionId: '2', nextNodeId: 'challenge' }
+        ]
+      },
       {
         id: 'eye_intro',
         options: [
@@ -603,16 +618,14 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '0', nextNodeId: 'accept_challenge' },
           {
             optionId: '1',
-            nextNodeId: 'ready_challenge',
-            condition: { type: 'level', value: 5 }
+            nextNodeId: 'ready_challenge'
           }
         ]
       },
       { id: 'accept_challenge', nextNodeId: 'farewell' },
       {
         id: 'ready_challenge',
-        nextNodeId: 'farewell',
-        action: { type: 'battle', value: 'guo_jing_battle_1' }
+        action: { type: 'battle', value: 'guo_jing' }
       },
       {
         id: 'just_visit',
@@ -2122,7 +2135,11 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '2', nextNodeId: 'not_ready' }
         ]
       },
-      { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
+      { id: 'challenge_intro', 
+        options: [
+          { optionId: '0', nextNodeId: 'challenge_condition' }
+        ]
+      },
       {
         id: 'challenge_condition',
         options: [

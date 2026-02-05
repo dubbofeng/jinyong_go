@@ -146,9 +146,11 @@ export class DialogueEngine {
           nodeId === 'farewell_early' || nodeId === 'explain_connection' || nodeId === 'explain_skill') {
         return true;
       }
-      // 挑战类节点在未击败时可以重复访问（允许多次尝试），击败后需要隐藏
-      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro' || nodeId === 'try_again') {
-        return !hasDefeated;
+      // 挑战类节点可以一直重复访问（允许多次挑战）
+      if (nodeId === 'challenge' || nodeId === 'challenge_condition' || nodeId === 'start_battle' || 
+          nodeId === 'challenge_intro' || nodeId === 'try_again' || nodeId === 'ready_challenge' || 
+          nodeId === 'accept_challenge') {
+        return true;
       }
       return false;
     };

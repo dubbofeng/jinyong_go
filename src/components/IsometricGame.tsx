@@ -928,7 +928,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       case 'level':
         return `等级达到 ${requirement.minLevel} 级`;
       case 'chapter':
-        return `完成第 ${requirement.chapter} 章`;
+        return `第 ${requirement.chapter} 章`;
       case 'quest_completed':
         return `完成任务：${requirement.questId}`;
       case 'npc_defeated':

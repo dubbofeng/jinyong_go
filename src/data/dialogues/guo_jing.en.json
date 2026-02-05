@@ -10,7 +10,22 @@
     },
     {
       "id": "check_status",
-      "speaker": "Guo Jing"
+      "speaker": "Guo Jing",
+      "text": "You look travel-worn. What brings you here?",
+      "options": [
+        {
+          "text": "I want to learn Go from Hero Guo"
+        },
+        {
+          "text": "I'd like to play a game with Hero Guo"
+        },
+        {
+          "text": "I'd like to hear about your military strategy insights"
+        },
+        {
+          "text": "Just passing by"
+        }
+      ]
     },
     {
       "id": "eye_intro",
@@ -76,8 +91,9 @@
         {
           "text": "I'd like to learn Go from Hero Guo"
         },
-        {
-          "text": "Just passing by"
+        {          "text": "I'd like to play a game with Hero Guo"
+        },
+        {          "text": "Just passing by"
         }
       ]
     },
@@ -102,7 +118,18 @@
     {
       "id": "learn_request",
       "speaker": "Guo Jing",
-      "text": "I may be slow-witted, but thanks to my teachers and Rong'er, I've learned some skills. Since you sincerely seek knowledge, I'll teach you everything I know."
+      "text": "I may be slow-witted, but thanks to my teachers and Rong'er, I've learned some skills. Since you sincerely seek knowledge, I'll teach you everything I know.",
+      "options": [
+        {
+          "text": "Please teach me about eye shapes"
+        },
+        {
+          "text": "I'd like to hear your military strategy insights"
+        },
+        {
+          "text": "Actually, I'd like to play a game"
+        }
+      ]
     },
     {
       "id": "teach_wisdom",

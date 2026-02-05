@@ -143,11 +143,13 @@ export default function GoBoardGame({
     
     if (guessCorrect) {
       // 玩家猜对，执黑先行
+      console.log('🎲 猜先结果：玩家猜对 → 玩家执黑(先行), AI执白');
       setAiColor('white');
       setCurrentPlayer('black');
       setNigiriResult(`${opponentName}抓了${stones}颗棋子（${isOdd ? '单数' : '双数'}），您猜对了！执黑先行。`);
     } else {
       // 玩家猜错，执白后行
+      console.log('🎲 猜先结果：玩家猜错 → AI执黑(先行), 玩家执白');
       setAiColor('black');
       setCurrentPlayer('black'); // AI执黑先行
       setNigiriResult(`${opponentName}抓了${stones}颗棋子（${isOdd ? '单数' : '双数'}），您猜错了！${opponentName}执黑先行。`);
@@ -364,19 +366,27 @@ export default function GoBoardGame({
     const engine = engineRef.current;
     if (!board || !engine) return;
 
+    console.log('🎯 玩家尝试落子:', { position, currentPlayer, aiColor, isAIThinking, vsAI });
+
     // AI思考中或轮到AI时，禁止玩家落子
     if (vsAI && (isAIThinking || currentPlayer === aiColor)) {
+      console.log('🚫 阻止玩家落子：AI回合', { isAIThinking, currentPlayer, aiColor });
       setLastMessage(`⏳ 等待${opponentName}落子...`);
       return;
     }
+
+    console.log('✅ 允许玩家落子');
 
     // 落子后重置连续Pass计数
     setConsecutivePasses(0);
 
     // 使用函数式更新来避免闭包问题
     setCurrentPlayer((prevPlayer) => {
+      console.log('🔄 setCurrentPlayer内部:', { prevPlayer, aiColor, vsAI });
+      
       // 双重检查：再次确认不是AI回合
       if (vsAI && prevPlayer === aiColor) {
+        console.log('🚫 setCurrentPlayer内部：AI回合，阻止');
         setLastMessage(`⏳ 等待${opponentName}落子...`);
         return prevPlayer;
       }
@@ -392,6 +402,7 @@ export default function GoBoardGame({
 
       // 尝试通过规则引擎落子
       const result = engine.placeStone(position, prevPlayer);
+      console.log('🎮 落子结果:', { position, color: prevPlayer, success: result.success });
       
       if (result.success) {
         // 在棋盘上显示落子
@@ -452,7 +463,7 @@ export default function GoBoardGame({
           setLastMessage('❌ 劫争！不能立即回提');
         } else if (result.error === 'Suicide move') {
           setLastMessage('❌ 自杀手！不能自己没气');
-        } else if (vsAI && prevPlayer === aiColor) {
+        } else if (vsAI && prevPlayer !== aiColor) {
           // 如果是AI回合点击，显示等待而不是错误
           setLastMessage(`⏳ 等待${opponentName}落子...`);
         } else {
@@ -461,7 +472,7 @@ export default function GoBoardGame({
         return prevPlayer;
       }
     });
-  }, [currentPlayer, isAIThinking, vsAI, yiYangRestriction, size, doubleMoveState]);
+  }, [currentPlayer, isAIThinking, vsAI, aiColor, opponentName, yiYangRestriction, size, doubleMoveState]);
 
   /**
    * AI落子
@@ -500,7 +511,7 @@ export default function GoBoardGame({
           }
         }
 
-        const analysis = await katagoEngine.analyzePosition(size, stones, 'white');
+        const analysis = await katagoEngine.analyzePosition(size, stones, aiColor);
         bestMove = analysis.bestMove;
         
         // 检查 KataGo 是否建议认输
@@ -515,7 +526,7 @@ export default function GoBoardGame({
         // 检查 KataGo 是否选择 pass
         if (analysis.moveType === 'pass' || !bestMove) {
           console.log('🤖 KataGo 选择 Pass');
-          setLastMessage('🤖 AI Pass');
+          setLastMessage(`🤖 ${opponentName} 停了一手（Pass）`);
           setIsAIThinking(false);
           handlePass(); // 执行 pass
           return;
@@ -529,9 +540,9 @@ export default function GoBoardGame({
       if (bestMove) {
         let position = bestMove;
 
-        if (yiYangRestriction && yiYangRestriction.restrictedColor === 'white') {
+        if (yiYangRestriction && yiYangRestriction.restrictedColor === aiColor) {
           const allowedPreferred = isPositionAllowed(position, yiYangRestriction, size);
-          if (!allowedPreferred || !engineRef.current.isValidMove(position, 'white')) {
+          if (!allowedPreferred || !engineRef.current.isValidMove(position, aiColor)) {
             const fallback = findFirstAllowedMove(engineRef.current, yiYangRestriction, size);
             if (fallback) {
               position = fallback;
@@ -540,10 +551,10 @@ export default function GoBoardGame({
         }
         
         // AI落子
-        const result = engineRef.current.placeStone(position, 'white');
+        const result = engineRef.current.placeStone(position, aiColor);
         
         if (result.success) {
-          boardRef.current.placeStone(position, 'white');
+          boardRef.current.placeStone(position, aiColor);
           
           // 处理提子
           if (result.capturedStones.length > 0) {
@@ -551,9 +562,10 @@ export default function GoBoardGame({
               boardRef.current.removeStone(captured);
             }
             
+            // AI提子计数：如果AI是黑棋，增加black计数；如果AI是白棋，增加white计数
             setCapturedCount(prev => ({
               ...prev,
-              white: prev.white + result.capturedStones.length
+              [aiColor]: prev[aiColor] + result.capturedStones.length
             }));
             
             setLastMessage(`🤖 ${opponentName}提取了${result.capturedStones.length}子！`);
@@ -566,7 +578,7 @@ export default function GoBoardGame({
           setMoveCount(prev => prev + 1);
 
           setYiYangRestriction(prev => {
-            if (!prev || prev.restrictedColor !== 'white') return prev;
+            if (!prev || prev.restrictedColor !== aiColor) return prev;
             const remaining = prev.remainingMoves - 1;
             return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
           });
@@ -577,9 +589,10 @@ export default function GoBoardGame({
             setSkillsRefreshKey(k => k + 1); // 刷新技能UI
           }
           
-          boardRef.current.setNextStoneColor('black');
+          const playerColor = aiColor === 'black' ? 'white' : 'black';
+          boardRef.current.setNextStoneColor(playerColor);
           // AI落子成功，切换到玩家回合
-          setCurrentPlayer('black');
+          setCurrentPlayer(playerColor);
         } else {
           // AI落子失败（如自杀着或无合法着点），认输
           console.warn('AI落子失败:', result.error, '- AI认输');
@@ -604,19 +617,24 @@ export default function GoBoardGame({
       setIsAIThinking(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vsAI, aiDifficulty, katagoEngine, size, yiYangRestriction]);
+  }, [vsAI, aiDifficulty, katagoEngine, size, yiYangRestriction, aiColor, opponentName]);
 
   // 监听玩家切换，触发AI落子
   useEffect(() => {
     if (vsAI && gameStarted && currentPlayer === aiColor && !isAIThinking) {
+      // 立即设置AI思考状态，防止玩家在延迟期间点击
+      setIsAIThinking(true);
+      
       // AI的回合，添加短暂延迟确保对方棋子先渲染
       const timer = setTimeout(() => {
         makeAIMove();
       }, 100); // 100ms延迟，让对方棋子有时间显示
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
-  }, [vsAI, gameStarted, currentPlayer, aiColor, isAIThinking, makeAIMove]);
+  }, [vsAI, gameStarted, currentPlayer, aiColor, makeAIMove]);
 
   // 初始化棋盘
   useEffect(() => {
@@ -639,12 +657,6 @@ export default function GoBoardGame({
     const skillManager = new SkillManager();
     skillManagerRef.current = skillManager;
     
-    // 设置落子回调（使用本地函数避免闭包问题）
-    const onStonePlace = (position: { row: number; col: number }) => {
-      handleStonePlace(position);
-    };
-    board.setOnStonePlace(onStonePlace);
-    
     board.render();
 
     return () => {
@@ -652,25 +664,43 @@ export default function GoBoardGame({
       board.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, boardPixelSize, vsAI, aiDifficulty]);
+  }, [size, boardPixelSize]);
+
+  // 单独的 useEffect 来更新落子回调（避免重新创建整个棋盘）
+  useEffect(() => {
+    const board = boardRef.current;
+    if (!board) return;
+
+    const onStonePlace = (position: { row: number; col: number }) => {
+      handleStonePlace(position);
+    };
+    board.setOnStonePlace(onStonePlace);
+  }, [handleStonePlace]);
 
   const handlePass = () => {
-    setConsecutivePasses(prev => prev + 1);
-    
-    // 连续两次Pass，游戏结束
-    if (consecutivePasses >= 1) {
-      // 双方都Pass，计算最终得分
-      const engine = engineRef.current;
-      if (engine) {
-        const territory = engine.countTerritory();
-        const blackScore = territory.blackTerritory + capturedCount.black;
-        const whiteScore = territory.whiteTerritory + capturedCount.white + 7.5; // 贴目
-        
-        const winner = blackScore > whiteScore ? 'black' : blackScore < whiteScore ? 'white' : 'draw';
-        handleGameEnd(winner, 'score');
+    setConsecutivePasses(prev => {
+      const newCount = prev + 1;
+      
+      // 连续两次Pass，游戏结束
+      if (newCount >= 2) {
+        // 双方都Pass，计算最终得分
+        const engine = engineRef.current;
+        if (engine) {
+          const territory = engine.countTerritory();
+          const blackScore = territory.blackTerritory + capturedCount.black;
+          const whiteScore = territory.whiteTerritory + capturedCount.white + 7.5; // 贴目
+          
+          const winner = blackScore > whiteScore ? 'black' : blackScore < whiteScore ? 'white' : 'draw';
+          
+          // 使用 setTimeout 确保状态更新后再结束游戏
+          setTimeout(() => {
+            handleGameEnd(winner, 'score');
+          }, 100);
+        }
       }
-      return;
-    }
+      
+      return newCount;
+    });
     
     setCurrentPlayer((prevPlayer) => {
       console.log(`${prevPlayer} passes`);
@@ -907,7 +937,9 @@ export default function GoBoardGame({
   // 监听AI认输
   useEffect(() => {
     if (aiResign) {
-      handleGameEnd('black', 'resign');
+      // AI认输，玩家获胜（玩家颜色与AI颜色相反）
+      const playerColor = aiColor === 'black' ? 'white' : 'black';
+      handleGameEnd(playerColor, 'resign');
       setAiResign(false);
     }
   }, [aiResign, handleGameEnd]);
@@ -1666,11 +1698,6 @@ export default function GoBoardGame({
               <span className="font-semibold">
                 {currentPlayer === 'black' ? '黑方' : '白方'}落子
               </span>
-              {isAIThinking && (
-                <span className="ml-2 text-sm text-blue-400 animate-pulse">
-                  🤖 AI思考中...
-                </span>
-              )}
             </div>
             <div className="text-sm text-gray-300">
               手数: {moveCount}
@@ -1696,16 +1723,9 @@ export default function GoBoardGame({
         <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl relative max-w-full">
           <canvas
             ref={canvasRef}
-            className={`border-2 border-yellow-800 rounded max-w-full ${isAIThinking ? 'opacity-50 cursor-wait' : ''}`}
+            className={`border-2 border-yellow-800 rounded max-w-full`}
             style={{ pointerEvents: isAIThinking ? 'none' : 'auto' }}
           />
-          {isAIThinking && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-black bg-opacity-70 text-white px-6 py-3 rounded-lg text-sm">
-                🤖 AI正在思考...
-              </div>
-            </div>
-          )}
         </div>
 
         {/* 控制按钮 */}
@@ -2106,9 +2126,9 @@ export default function GoBoardGame({
               <>
                 <h2 className="text-center font-bold text-2xl mb-4 text-amber-400">猜先结果</h2>
                 <div className="bg-black/40 rounded-xl p-6 mb-4">
-                  <div className="text-center text-6xl mb-4">
-                    {Array.from({ length: Math.min(nigiriStones, 12) }, (_, i) => '⚪').join('')}
-                    {nigiriStones > 12 && '...'}
+                  <div className="text-center text-3xl mb-4 leading-relaxed">
+                    {Array.from({ length: Math.min(nigiriStones, 15) }, (_, i) => '⚪').join('')}
+                    {nigiriStones > 15 && '...'}
                   </div>
                   <div className="text-center text-xl font-bold text-amber-300 mb-2">
                     共 {nigiriStones} 颗棋子
