@@ -25,6 +25,12 @@ out/
 dist/
 build/
 
+# Scripts (deprecated/testing)
+scripts/
+
+# RPG unused code
+src/rpg/
+
 # Environment files
 .env*
 
