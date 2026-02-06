@@ -29,12 +29,7 @@ export async function POST(request: Request) {
     const unlockedAchievements = await db
       .select()
       .from(playerAchievements)
-      .where(
-        and(
-          eq(playerAchievements.userId, userId),
-          eq(playerAchievements.unlocked, true)
-        )
-      );
+      .where(and(eq(playerAchievements.userId, userId), eq(playerAchievements.unlocked, true)));
 
     const unlockedIds = new Set(unlockedAchievements.map((a: any) => a.achievementId));
 
@@ -44,12 +39,7 @@ export async function POST(request: Request) {
         total: sql<number>`COUNT(*)`,
       })
       .from(playerTsumegoRecords)
-      .where(
-        and(
-          eq(playerTsumegoRecords.userId, userId),
-          eq(playerTsumegoRecords.solved, true)
-        )
-      );
+      .where(and(eq(playerTsumegoRecords.userId, userId), eq(playerTsumegoRecords.solved, true)));
 
     const totalSolved = Number(solveCount[0]?.total || 0);
 
@@ -59,16 +49,8 @@ export async function POST(request: Request) {
         maxDiff: sql<number>`MAX(${tsumegoProblems.difficulty})`,
       })
       .from(playerTsumegoRecords)
-      .innerJoin(
-        tsumegoProblems,
-        eq(playerTsumegoRecords.problemId, tsumegoProblems.id)
-      )
-      .where(
-        and(
-          eq(playerTsumegoRecords.userId, userId),
-          eq(playerTsumegoRecords.solved, true)
-        )
-      );
+      .innerJoin(tsumegoProblems, eq(playerTsumegoRecords.problemId, tsumegoProblems.id))
+      .where(and(eq(playerTsumegoRecords.userId, userId), eq(playerTsumegoRecords.solved, true)));
 
     const maxDiff = Number(maxDifficulty[0]?.maxDiff || 0);
 
@@ -187,14 +169,25 @@ export async function POST(request: Request) {
         if (achievement.reward) {
           const reward = achievement.reward;
 
-          // 使用统一的奖励管理器
+          // 更新玩家经验和银两
           if (reward.experience || reward.silver) {
-            await addRewards(userId, {
-              experience: reward.experience,
-              silver: reward.silver,
-            });
+            const currentStats = await db
+              .select()
+              .from(playerStats)
+              .where(eq(playerStats.userId, userId));
+
+            if (currentStats.length > 0) {
+              await db
+                .update(playerStats)
+                .set({
+                  experience: sql`${playerStats.experience} + ${reward.experience || 0}`,
+                  silver: sql`${playerStats.silver} + ${reward.silver || 0}`,
+                  updatedAt: new Date(),
+                })
+                .where(eq(playerStats.userId, userId));
+            }
           }
-          
+
           // 单独处理coins（因为addRewards暂不支持）
           if (reward.coins) {
             await db
@@ -253,10 +246,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('检查成就失败:', error);
-    return NextResponse.json(
-      { error: 'Failed to check achievements' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to check achievements' }, { status: 500 });
   }
 }
 
@@ -280,9 +270,7 @@ export async function GET(request: Request) {
       .from(playerAchievements)
       .where(eq(playerAchievements.userId, userIdNum));
 
-    const progressMap = new Map(
-      playerProgress.map((p: any) => [p.achievementId, p])
-    );
+    const progressMap = new Map(playerProgress.map((p: any) => [p.achievementId, p]));
 
     const achievementsWithProgress = allAchievements.map((achievement: any) => {
       const progress: any = progressMap.get(achievement.achievementId);
@@ -295,20 +283,20 @@ export async function GET(request: Request) {
     });
 
     // 按分类分组
-    const grouped = achievementsWithProgress.reduce((acc: any, achievement: any) => {
-      if (!acc[achievement.category]) {
-        acc[achievement.category] = [];
-      }
-      acc[achievement.category].push(achievement);
-      return acc;
-    }, {} as Record<string, typeof achievementsWithProgress>);
+    const grouped = achievementsWithProgress.reduce(
+      (acc: any, achievement: any) => {
+        if (!acc[achievement.category]) {
+          acc[achievement.category] = [];
+        }
+        acc[achievement.category].push(achievement);
+        return acc;
+      },
+      {} as Record<string, typeof achievementsWithProgress>
+    );
 
     return NextResponse.json(grouped);
   } catch (error) {
     console.error('获取成就列表失败:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch achievements' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch achievements' }, { status: 500 });
   }
 }

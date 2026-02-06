@@ -6,13 +6,15 @@ import { eq } from 'drizzle-orm';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId');
+    const userIdStr = searchParams.get('userId');
 
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'User ID is required' },
-        { status: 400 }
-      );
+    if (!userIdStr) {
+      return NextResponse.json({ success: false, error: 'User ID is required' }, { status: 400 });
+    }
+
+    const userId = parseInt(userIdStr, 10);
+    if (isNaN(userId)) {
+      return NextResponse.json({ success: false, error: 'Invalid User ID' }, { status: 400 });
     }
 
     // 查询该用户所有的NPC关系

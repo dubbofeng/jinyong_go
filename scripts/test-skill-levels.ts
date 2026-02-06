@@ -4,7 +4,7 @@
  */
 
 import { db } from '@/app/db';
-import { playerSkills, users } from '@/db/schema';
+import { playerSkills, users } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 async function testSkillLevelSystem() {
@@ -13,7 +13,7 @@ async function testSkillLevelSystem() {
 
     // 1. 查找测试用户
     const testUser = await db.query.users.findFirst({
-      where: eq(users.email, 'test@example.com') // 修改为你的测试用户邮箱
+      where: eq(users.email, 'test@example.com'), // 修改为你的测试用户邮箱
     });
 
     if (!testUser) {
@@ -25,10 +25,7 @@ async function testSkillLevelSystem() {
 
     // 2. 确保用户有"机关算尽"技能
     let skill = await db.query.playerSkills.findFirst({
-      where: and(
-        eq(playerSkills.userId, testUser.id),
-        eq(playerSkills.skillId, 'jiguan_suanjin')
-      )
+      where: and(eq(playerSkills.userId, testUser.id), eq(playerSkills.skillId, 'jiguan_suanjin')),
     });
 
     if (!skill) {
@@ -41,14 +38,14 @@ async function testSkillLevelSystem() {
         experience: 0,
         unlockedAt: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
-      
+
       skill = await db.query.playerSkills.findFirst({
         where: and(
           eq(playerSkills.userId, testUser.id),
           eq(playerSkills.skillId, 'jiguan_suanjin')
-        )
+        ),
       });
     }
 
@@ -72,18 +69,12 @@ async function testSkillLevelSystem() {
       .update(playerSkills)
       .set({
         experience: newExp,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
-      .where(and(
-        eq(playerSkills.userId, testUser.id),
-        eq(playerSkills.skillId, 'jiguan_suanjin')
-      ));
+      .where(and(eq(playerSkills.userId, testUser.id), eq(playerSkills.skillId, 'jiguan_suanjin')));
 
     const updatedSkill = await db.query.playerSkills.findFirst({
-      where: and(
-        eq(playerSkills.userId, testUser.id),
-        eq(playerSkills.skillId, 'jiguan_suanjin')
-      )
+      where: and(eq(playerSkills.userId, testUser.id), eq(playerSkills.skillId, 'jiguan_suanjin')),
     });
 
     console.log(`✅ 经验添加成功！新经验值: ${updatedSkill?.experience}\n`);
@@ -105,7 +96,6 @@ async function testSkillLevelSystem() {
     console.log('✅ 测试完成！');
     console.log('💡 提示：现在可以通过 POST /api/player/skills/upgrade 接口升级技能');
     console.log('   请求体: { "skillId": "jiguan_suanjin" }');
-
   } catch (error) {
     console.error('❌ 测试失败:', error);
   } finally {

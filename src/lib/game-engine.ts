@@ -17,7 +17,7 @@ export class GameEngine {
   private config: GameConfig;
   private running: boolean = false;
   private lastTime: number = 0;
-  private listeners: Map<string, Function[]> = new Map();
+  private listeners: Map<string, ((data?: unknown) => void)[]> = new Map();
 
   constructor(canvas: HTMLCanvasElement, config: GameConfig) {
     this.canvas = canvas;
@@ -45,14 +45,14 @@ export class GameEngine {
     });
   }
 
-  on(event: string, callback: Function) {
+  on(event: string, callback: (data?: unknown) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
     this.listeners.get(event)!.push(callback);
   }
 
-  private emit(event: string, data?: any) {
+  private emit(event: string, data?: unknown) {
     const callbacks = this.listeners.get(event);
     if (callbacks) {
       callbacks.forEach((cb) => cb(data));
@@ -74,7 +74,7 @@ export class GameEngine {
     if (!this.running) return;
 
     const now = performance.now();
-    const deltaTime = Math.min((now - this.lastTime), 100); // 以毫秒为单位，限制最大值
+    const deltaTime = Math.min(now - this.lastTime, 100); // 以毫秒为单位，限制最大值
     this.lastTime = now;
 
     this.emit('update', deltaTime);

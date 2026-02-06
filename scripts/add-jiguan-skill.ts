@@ -3,7 +3,7 @@
  */
 
 import { db } from '@/app/db';
-import { playerSkills } from '@/db/schema';
+import { playerSkills } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 async function addJiGuanSuanJinSkill() {
@@ -15,20 +15,17 @@ async function addJiGuanSuanJinSkill() {
 
     // 检查技能是否已存在
     const existingSkill = await db.query.playerSkills.findFirst({
-      where: and(
-        eq(playerSkills.userId, testUserId),
-        eq(playerSkills.skillId, 'jiguan_suanjin')
-      )
+      where: and(eq(playerSkills.userId, testUserId), eq(playerSkills.skillId, 'jiguan_suanjin')),
     });
 
     if (existingSkill) {
       console.log('✅ 技能已存在，更新为已解锁状态');
-      await db.update(playerSkills)
+      await db
+        .update(playerSkills)
         .set({ unlocked: true })
-        .where(and(
-          eq(playerSkills.userId, testUserId),
-          eq(playerSkills.skillId, 'jiguan_suanjin')
-        ));
+        .where(
+          and(eq(playerSkills.userId, testUserId), eq(playerSkills.skillId, 'jiguan_suanjin'))
+        );
     } else {
       console.log('✅ 添加新技能记录');
       await db.insert(playerSkills).values({
@@ -36,7 +33,7 @@ async function addJiGuanSuanJinSkill() {
         skillId: 'jiguan_suanjin',
         unlocked: true,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
     }
 

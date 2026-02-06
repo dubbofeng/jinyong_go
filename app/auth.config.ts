@@ -13,8 +13,7 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnProtectedPage =
-        nextUrl.pathname.startsWith('/protected') ||
-        nextUrl.pathname.startsWith('/game');
+        nextUrl.pathname.startsWith('/protected') || nextUrl.pathname.startsWith('/game');
 
       if (isOnProtectedPage) {
         if (isLoggedIn) return true;
@@ -34,8 +33,8 @@ export const authConfig = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as number;
-        session.user.email = token.email as string;
+        (session.user as any).id = token.id as number;
+        (session.user as any).email = token.email as string;
       }
       return session;
     },

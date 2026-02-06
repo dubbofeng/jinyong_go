@@ -2,15 +2,11 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/app/auth';
 import { getTranslations } from 'next-intl/server';
 import { db } from '@/app/db';
-import { quests } from '@/src/db/schema';
+import { questProgress } from '@/src/db/schema';
 import { desc } from 'drizzle-orm';
 import Link from 'next/link';
 
-export default async function QuestsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function QuestsPage({ params }: { params: Promise<{ locale: string }> }) {
   const session = await auth();
   if (!session?.user) {
     redirect('/login');
@@ -19,8 +15,8 @@ export default async function QuestsPage({
   const { locale } = await params;
   const t = await getTranslations('admin.quests');
 
-  // 获取所有任务
-  const allQuests = await db.select().from(quests).orderBy(desc(quests.chapter), desc(quests.createdAt));
+  // 获取所有任务进度
+  const allQuests = await db.select().from(questProgress).orderBy(desc(questProgress.createdAt));
 
   return (
     <div className="p-6">
@@ -43,22 +39,22 @@ export default async function QuestsPage({
           <thead className="bg-gray-700">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {t('table.id')}
+                {t('table.questId')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {t('table.title')}
+                {t('table.userId')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {t('table.type')}
+                {t('table.status')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {t('table.chapter')}
+                {t('table.progress')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {t('table.prerequisites')}
+                {t('table.status')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {t('table.rewards')}
+                {t('table.progress')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                 {t('table.actions')}
@@ -71,42 +67,26 @@ export default async function QuestsPage({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                   {quest.questId}
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-white max-w-xs truncate">
-                    {quest.title}
-                  </div>
-                  <div className="text-sm text-gray-500 max-w-xs truncate">
-                    {quest.description}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {quest.userId}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    quest.questType === 'main' ? 'bg-purple-900 text-purple-200' :
-                    quest.questType === 'side' ? 'bg-blue-900 text-blue-200' :
-                    'bg-green-900 text-green-200'
-                  }`}>
-                    {quest.questType}
+                  <span
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      quest.status === 'completed'
+                        ? 'bg-green-900 text-green-200'
+                        : quest.status === 'in_progress'
+                          ? 'bg-blue-900 text-blue-200'
+                          : quest.status === 'failed'
+                            ? 'bg-red-900 text-red-200'
+                            : 'bg-gray-900 text-gray-200'
+                    }`}
+                  >
+                    {quest.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                  {t('chapter', { number: quest.chapter })}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                  {quest.prerequisiteQuests && Array.isArray(quest.prerequisiteQuests)
-                    ? quest.prerequisiteQuests.length
-                    : 0}
-                </td>
                 <td className="px-6 py-4 text-sm text-gray-400">
-                  {quest.rewards && typeof quest.rewards === 'object' && (
-                    <div className="space-y-1">
-                      {(quest.rewards as any).experience && (
-                        <div>EXP: {(quest.rewards as any).experience}</div>
-                      )}
-                      {(quest.rewards as any).skills?.length > 0 && (
-                        <div>Skills: {(quest.rewards as any).skills.length}</div>
-                      )}
-                    </div>
-                  )}
+                  {quest.currentStep} / {quest.totalSteps}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <Link
@@ -115,9 +95,7 @@ export default async function QuestsPage({
                   >
                     {t('actions.edit')}
                   </Link>
-                  <button className="text-red-400 hover:text-red-300">
-                    {t('actions.delete')}
-                  </button>
+                  <button className="text-red-400 hover:text-red-300">{t('actions.delete')}</button>
                 </td>
               </tr>
             ))}
@@ -125,9 +103,7 @@ export default async function QuestsPage({
         </table>
 
         {allQuests.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            {t('empty')}
-          </div>
+          <div className="text-center py-12 text-gray-500">{t('empty')}</div>
         )}
       </div>
 
@@ -138,21 +114,21 @@ export default async function QuestsPage({
           <div className="text-2xl font-bold text-white mt-1">{allQuests.length}</div>
         </div>
         <div className="bg-gray-800 p-4 rounded-lg">
-          <div className="text-gray-400 text-sm">{t('stats.main')}</div>
-          <div className="text-2xl font-bold text-purple-400 mt-1">
-            {allQuests.filter(q => q.questType === 'main').length}
-          </div>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <div className="text-gray-400 text-sm">{t('stats.side')}</div>
-          <div className="text-2xl font-bold text-blue-400 mt-1">
-            {allQuests.filter(q => q.questType === 'side').length}
-          </div>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <div className="text-gray-400 text-sm">{t('stats.tutorial')}</div>
+          <div className="text-gray-400 text-sm">{t('stats.completed')}</div>
           <div className="text-2xl font-bold text-green-400 mt-1">
-            {allQuests.filter(q => q.questType === 'tutorial').length}
+            {allQuests.filter((q) => q.status === 'completed').length}
+          </div>
+        </div>
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="text-gray-400 text-sm">{t('stats.inProgress')}</div>
+          <div className="text-2xl font-bold text-blue-400 mt-1">
+            {allQuests.filter((q) => q.status === 'in_progress').length}
+          </div>
+        </div>
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="text-gray-400 text-sm">{t('stats.notStarted')}</div>
+          <div className="text-2xl font-bold text-gray-400 mt-1">
+            {allQuests.filter((q) => q.status === 'not_started').length}
           </div>
         </div>
       </div>

@@ -31,18 +31,14 @@ export async function createUser(email: string, password: string, username?: str
     await db.insert(gameProgress).values({
       userId: newUser.id,
       playerName: username || email.split('@')[0],
-      level: 1,
-      experience: 0,
       currentMap: 'daoguan_scene',
       currentX: 0,
       currentY: 0,
       currentChapter: 1,
       completedTasks: [],
-      unlockedSkills: [],
-      skillLevels: {},
-      totalGames: 0,
-      wins: 0,
-      losses: 0,
+      activeQuests: [],
+      completedQuests: [],
+      skillPoints: 0,
     });
   }
 

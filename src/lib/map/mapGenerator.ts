@@ -1,7 +1,7 @@
-import { db } from "@/src/db";
-import { mapTiles, maps } from "@/src/db/schema";
-// @ts-ignore
-const Noise = require("noisejs");
+import { db } from '@/src/db';
+import { mapTiles, maps } from '@/src/db/schema';
+// @ts-expect-error - noisejs doesn't have TypeScript types
+import Noise from 'noisejs';
 
 /**
  * 生成并保存地图瓦片
@@ -16,7 +16,7 @@ export async function generateAndSaveMapTiles(
   height = 32,
   seed?: number
 ) {
-  // @ts-ignore
+  // @ts-expect-error - noisejs API
   const noise = new Noise.Noise(seed || Math.random());
   const tiles = [];
 
@@ -26,11 +26,15 @@ export async function generateAndSaveMapTiles(
       let tileType: string;
 
       // 根据噪声值确定地形类型
-      if (value < -0.2) tileType = "water"; // 20% water
-      else if (value < -0.05) tileType = "gold"; // 15% gold
-      else if (value < 0.15) tileType = "wood"; // 20% wood
-      else if (value < 0.3) tileType = "fire"; // 15% fire
-      else tileType = "dirt"; // 30% dirt
+      if (value < -0.2)
+        tileType = 'water'; // 20% water
+      else if (value < -0.05)
+        tileType = 'gold'; // 15% gold
+      else if (value < 0.15)
+        tileType = 'wood'; // 20% wood
+      else if (value < 0.3)
+        tileType = 'fire'; // 15% fire
+      else tileType = 'dirt'; // 30% dirt
 
       tiles.push({
         mapId,
@@ -60,9 +64,9 @@ export async function generateWuxiaSceneMap(
   mapId: number,
   width = 32,
   height = 32,
-  theme: "mountain" | "forest" | "village" | "river" = "forest"
+  theme: 'mountain' | 'forest' | 'village' | 'river' = 'forest'
 ) {
-  // @ts-ignore
+  // @ts-expect-error - noisejs API
   const noise = new Noise.Noise(Math.random());
   const tiles = [];
 
@@ -72,49 +76,61 @@ export async function generateWuxiaSceneMap(
       let tileType: string;
 
       switch (theme) {
-        case "mountain":
+        case 'mountain':
           // 山地主题 - 更多石头和山路
-          if (value < -0.3) tileType = "water"; // 山涧
-          else if (value < -0.1) tileType = "gold"; // 岩石
-          else if (value < 0.2) tileType = "dirt"; // 山路
-          else if (value < 0.4) tileType = "wood"; // 树木
-          else tileType = "gold"; // 山峰
+          if (value < -0.3)
+            tileType = 'water'; // 山涧
+          else if (value < -0.1)
+            tileType = 'gold'; // 岩石
+          else if (value < 0.2)
+            tileType = 'dirt'; // 山路
+          else if (value < 0.4)
+            tileType = 'wood'; // 树木
+          else tileType = 'gold'; // 山峰
           break;
 
-        case "forest":
+        case 'forest':
           // 森林主题 - 更多树木
-          if (value < -0.25) tileType = "water"; // 小溪
-          else if (value < 0.0) tileType = "wood"; // 密林
-          else if (value < 0.3) tileType = "wood"; // 树林
-          else if (value < 0.5) tileType = "dirt"; // 空地
-          else tileType = "wood"; // 树木
+          if (value < -0.25)
+            tileType = 'water'; // 小溪
+          else if (value < 0.0)
+            tileType = 'wood'; // 密林
+          else if (value < 0.3)
+            tileType = 'wood'; // 树林
+          else if (value < 0.5)
+            tileType = 'dirt'; // 空地
+          else tileType = 'wood'; // 树木
           break;
 
-        case "village":
+        case 'village':
           // 村庄主题 - 更多平地
-          if (value < -0.3) tileType = "water"; // 池塘
-          else if (value < -0.1) tileType = "wood"; // 树木
-          else if (value < 0.4) tileType = "dirt"; // 土地
-          else if (value < 0.6) tileType = "dirt"; // 空地
-          else tileType = "gold"; // 石路
+          if (value < -0.3)
+            tileType = 'water'; // 池塘
+          else if (value < -0.1)
+            tileType = 'wood'; // 树木
+          else if (value < 0.4)
+            tileType = 'dirt'; // 土地
+          else if (value < 0.6)
+            tileType = 'dirt'; // 空地
+          else tileType = 'gold'; // 石路
           break;
 
-        case "river":
+        case 'river':
           // 河流主题
           const distanceFromCenter = Math.abs(y - height / 2);
           if (distanceFromCenter < 5) {
-            tileType = "water"; // 河流
+            tileType = 'water'; // 河流
           } else if (distanceFromCenter < 8) {
-            tileType = value < 0 ? "water" : "dirt"; // 河岸
+            tileType = value < 0 ? 'water' : 'dirt'; // 河岸
           } else {
-            if (value < -0.2) tileType = "wood";
-            else if (value < 0.2) tileType = "dirt";
-            else tileType = "gold";
+            if (value < -0.2) tileType = 'wood';
+            else if (value < 0.2) tileType = 'dirt';
+            else tileType = 'gold';
           }
           break;
 
         default:
-          tileType = "dirt";
+          tileType = 'dirt';
       }
 
       tiles.push({
@@ -141,12 +157,8 @@ export async function generateWuxiaSceneMap(
 /**
  * 生成世界地图（更大的尺寸，用于全局导航）
  */
-export async function generateWorldMap(
-  mapId: number,
-  width = 64,
-  height = 64
-) {
-  // @ts-ignore
+export async function generateWorldMap(mapId: number, width = 64, height = 64) {
+  // @ts-expect-error - noisejs API
   const noise = new Noise.Noise(Date.now());
   const tiles = [];
 
@@ -157,11 +169,15 @@ export async function generateWorldMap(
       let tileType: string;
 
       // 世界地图使用不同的分布
-      if (value < -0.3) tileType = "water"; // 湖泊/海洋
-      else if (value < -0.1) tileType = "dirt"; // 平原
-      else if (value < 0.15) tileType = "wood"; // 森林
-      else if (value < 0.35) tileType = "gold"; // 山地
-      else tileType = "dirt"; // 平原
+      if (value < -0.3)
+        tileType = 'water'; // 湖泊/海洋
+      else if (value < -0.1)
+        tileType = 'dirt'; // 平原
+      else if (value < 0.15)
+        tileType = 'wood'; // 森林
+      else if (value < 0.35)
+        tileType = 'gold'; // 山地
+      else tileType = 'dirt'; // 平原
 
       tiles.push({
         mapId,
@@ -180,6 +196,6 @@ export async function generateWorldMap(
     tilesGenerated: tiles.length,
     width,
     height,
-    mapType: "world",
+    mapType: 'world',
   };
 }

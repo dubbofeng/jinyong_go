@@ -1,24 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/src/db";
-import { mapItems, maps } from "@/src/db/schema";
-import { eq, and } from "drizzle-orm";
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/src/db';
+import { mapItems, maps } from '@/src/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 // GET: Retrieve all items for a specific map
-export async function GET(
-  req: NextRequest,
-  context: { params: { mapId: string } }
-) {
+export async function GET(req: NextRequest, context: { params: { mapId: string } }) {
   const { params } = context;
   const mapId = params.mapId;
 
   if (!mapId) {
-    return NextResponse.json({ error: "Invalid map ID" }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid map ID' }, { status: 400 });
   }
 
   try {
     // Check if mapId is a number (database ID) or a string (mapId)
     const isNumericId = /^\d+$/.test(mapId);
-    
+
     let map;
     if (isNumericId) {
       // Query by database ID
@@ -28,37 +25,33 @@ export async function GET(
         .where(eq(maps.id, parseInt(mapId)));
     } else {
       // Query by mapId string
-      [map] = await db
-        .select()
-        .from(maps)
-        .where(eq(maps.mapId, mapId));
+      [map] = await db.select().from(maps).where(eq(maps.mapId, mapId));
     }
 
     if (!map) {
-      return NextResponse.json({ error: "Map not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Map not found' }, { status: 404 });
     }
 
     // Get all items for the map
-    const items = await db
-      .select()
-      .from(mapItems)
-      .where(eq(mapItems.mapId, map.id));
+    const items = await db.select().from(mapItems).where(eq(mapItems.mapId, map.id));
 
     return NextResponse.json({ items });
   } catch (error) {
-    console.error("Error fetching items:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error fetching items:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 // POST: Add a new item to the map
-export async function POST(
-  req: NextRequest,
-  context: { params: { mapId: string } }
-) {
+// Note: This endpoint needs to be updated to work with the new schema
+// that requires itemId instead of item details
+export async function POST(req: NextRequest, context: { params: { mapId: string } }) {
+  return NextResponse.json(
+    { error: 'This endpoint is currently disabled and needs schema migration' },
+    { status: 501 }
+  );
+
+  /* TODO: Update this to work with new schema
   const { params } = context;
   const mapId = params.mapId;
 
@@ -69,7 +62,7 @@ export async function POST(
   try {
     // Check if mapId is a number (database ID) or a string (mapId)
     const isNumericId = /^\d+$/.test(mapId);
-    
+
     let map;
     if (isNumericId) {
       // Query by database ID
@@ -89,6 +82,12 @@ export async function POST(
       return NextResponse.json({ error: "Map not found" }, { status: 404 });
     }
 
+  return NextResponse.json(
+    { error: "This endpoint is currently disabled and needs schema migration" },
+    { status: 501 }
+  );
+
+  /* TODO: Update this to work with new schema
     // Parse the request body
     const body = await req.json();
     const {
@@ -139,6 +138,7 @@ export async function POST(
       .returning();
 
     return NextResponse.json({ item: newItem }, { status: 201 });
+  */ /*
   } catch (error) {
     console.error("Error adding item:", error);
     return NextResponse.json(
@@ -146,29 +146,24 @@ export async function POST(
       { status: 500 }
     );
   }
+  */
 }
 
 // DELETE: Remove an item from the map
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { mapId: string } }
-) {
+export async function DELETE(req: NextRequest, context: { params: { mapId: string } }) {
   const { params } = context;
   const mapId = params.mapId;
   const { searchParams } = new URL(req.url);
-  const itemId = searchParams.get("itemId");
+  const itemId = searchParams.get('itemId');
 
   if (!mapId || !itemId) {
-    return NextResponse.json(
-      { error: "Invalid map ID or item ID" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid map ID or item ID' }, { status: 400 });
   }
 
   try {
     // Check if mapId is a number (database ID) or a string (mapId)
     const isNumericId = /^\d+$/.test(mapId);
-    
+
     let map;
     if (isNumericId) {
       // Query by database ID
@@ -178,29 +173,21 @@ export async function DELETE(
         .where(eq(maps.id, parseInt(mapId)));
     } else {
       // Query by mapId string
-      [map] = await db
-        .select()
-        .from(maps)
-        .where(eq(maps.mapId, mapId));
+      [map] = await db.select().from(maps).where(eq(maps.mapId, mapId));
     }
 
     if (!map) {
-      return NextResponse.json({ error: "Map not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Map not found' }, { status: 404 });
     }
 
     // Delete the item
     await db
       .delete(mapItems)
-      .where(
-        and(eq(mapItems.mapId, map.id), eq(mapItems.id, parseInt(itemId)))
-      );
+      .where(and(eq(mapItems.mapId, map.id), eq(mapItems.id, parseInt(itemId))));
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting item:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error deleting item:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

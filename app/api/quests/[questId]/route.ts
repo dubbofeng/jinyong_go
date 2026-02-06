@@ -19,10 +19,7 @@ export async function GET(
     const questDefinition = getQuestById(questId);
 
     if (!questDefinition) {
-      return NextResponse.json(
-        { success: false, error: 'Quest not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Quest not found' }, { status: 404 });
     }
 
     // 尝试获取用户session，如果有则加载进度
@@ -43,7 +40,7 @@ export async function GET(
         .limit(1);
 
       // 合并定义和进度
-      quest = mergeQuestWithProgress(questDefinition, progressData);
+      quest = mergeQuestWithProgress(questDefinition, progressData as any);
     } else {
       // 未登录，只返回定义
       quest = mergeQuestWithProgress(questDefinition);
@@ -55,10 +52,7 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching quest:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch quest' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch quest' }, { status: 500 });
   }
 }
 
@@ -70,10 +64,7 @@ export async function PATCH(
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { questId } = await params;
@@ -82,10 +73,7 @@ export async function PATCH(
     // 验证quest定义存在
     const questDefinition = getQuestById(questId);
     if (!questDefinition) {
-      return NextResponse.json(
-        { success: false, error: 'Quest not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Quest not found' }, { status: 404 });
     }
 
     const userId = parseInt(session.user.id);
@@ -94,12 +82,7 @@ export async function PATCH(
     const [existing] = await db
       .select()
       .from(questProgress)
-      .where(
-        and(
-          eq(questProgress.userId, userId),
-          eq(questProgress.questId, questId)
-        )
-      )
+      .where(and(eq(questProgress.userId, userId), eq(questProgress.questId, questId)))
       .limit(1);
 
     let result;
@@ -114,7 +97,7 @@ export async function PATCH(
       if (body.progress !== undefined) updateData.progress = body.progress;
       if (body.currentStep !== undefined) updateData.currentStep = body.currentStep;
       if (body.totalSteps !== undefined) updateData.totalSteps = body.totalSteps;
-      
+
       if (body.status === 'in_progress' && !existing.startedAt) {
         updateData.startedAt = new Date();
       }
@@ -144,7 +127,7 @@ export async function PATCH(
     }
 
     // 合并并返回完整quest
-    const quest = mergeQuestWithProgress(questDefinition, result);
+    const quest = mergeQuestWithProgress(questDefinition, result as any);
 
     return NextResponse.json({
       success: true,

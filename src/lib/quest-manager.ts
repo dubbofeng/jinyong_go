@@ -27,7 +27,13 @@ export interface QuestDefinition {
 
 export interface QuestObjective {
   id: string;
-  type: 'defeat_npc' | 'meet_npc' | 'dialogue' | 'complete_tutorial' | 'collect_item' | 'reach_level';
+  type:
+    | 'defeat_npc'
+    | 'meet_npc'
+    | 'dialogue'
+    | 'complete_tutorial'
+    | 'collect_item'
+    | 'reach_level';
   target?: string;
   count?: number;
   description: {
@@ -92,7 +98,7 @@ export function getQuestById(questId: string): QuestDefinition | null {
  */
 export function getQuestsByChapter(chapter: number): QuestDefinition[] {
   const quests = getAllQuests();
-  return Object.values(quests).filter(q => q.chapter === chapter);
+  return Object.values(quests).filter((q) => q.chapter === chapter);
 }
 
 /**
@@ -100,7 +106,7 @@ export function getQuestsByChapter(chapter: number): QuestDefinition[] {
  */
 export function getQuestByNpc(npcId: string): QuestDefinition | null {
   const quests = getAllQuests();
-  return Object.values(quests).find(q => q.npcId === npcId) || null;
+  return Object.values(quests).find((q) => q.npcId === npcId) || null;
 }
 
 /**
@@ -108,23 +114,18 @@ export function getQuestByNpc(npcId: string): QuestDefinition | null {
  */
 export function getQuestsByType(questType: QuestDefinition['questType']): QuestDefinition[] {
   const quests = getAllQuests();
-  return Object.values(quests).filter(q => q.questType === questType);
+  return Object.values(quests).filter((q) => q.questType === questType);
 }
 
 /**
  * 检查玩家是否满足quest的前置条件
  */
-export function checkQuestPrerequisites(
-  questId: string,
-  completedQuests: string[]
-): boolean {
+export function checkQuestPrerequisites(questId: string, completedQuests: string[]): boolean {
   const quest = getQuestById(questId);
   if (!quest) return false;
 
   // 检查所有前置任务是否完成
-  return quest.prerequisiteQuests.every(preQuestId => 
-    completedQuests.includes(preQuestId)
-  );
+  return quest.prerequisiteQuests.every((preQuestId) => completedQuests.includes(preQuestId));
 }
 
 /**
@@ -141,9 +142,9 @@ export function canAcceptQuest(
 
   // 检查章节
   if (quest.chapter > playerProgress.currentChapter) {
-    return { 
-      canAccept: false, 
-      reason: `Need to reach chapter ${quest.chapter}` 
+    return {
+      canAccept: false,
+      reason: `Need to reach chapter ${quest.chapter}`,
     };
   }
 
@@ -151,11 +152,11 @@ export function canAcceptQuest(
   const completedQuests = playerProgress.completedTasks || [];
   if (!checkQuestPrerequisites(questId, completedQuests)) {
     const missingQuests = quest.prerequisiteQuests.filter(
-      preQuestId => !completedQuests.includes(preQuestId)
+      (preQuestId) => !completedQuests.includes(preQuestId)
     );
     return {
       canAccept: false,
-      reason: `Complete prerequisite quests: ${missingQuests.join(', ')}`
+      reason: `Complete prerequisite quests: ${missingQuests.join(', ')}`,
     };
   }
 
@@ -167,11 +168,11 @@ export function canAcceptQuest(
  */
 export function mergeQuestWithProgress(
   questDefinition: QuestDefinition,
-  questProgress?: QuestProgress
+  questProgress?: any
 ): Quest {
   return {
     ...questDefinition,
-    status: questProgress?.status || 'not_started',
+    status: (questProgress?.status as QuestProgress['status']) || 'not_started',
     progress: questProgress?.progress || {},
     currentStep: questProgress?.currentStep || 0,
     totalSteps: questProgress?.totalSteps || questDefinition.objectives.length,
@@ -200,7 +201,7 @@ export function getQuestDescription(quest: QuestDefinition, locale: 'zh' | 'en')
 export function calculateQuestProgress(quest: Quest): number {
   if (quest.status === 'completed') return 100;
   if (quest.status === 'not_started') return 0;
-  
+
   return Math.round((quest.currentStep / quest.totalSteps) * 100);
 }
 
@@ -234,7 +235,7 @@ export function checkObjectiveCompletion(
  */
 export function getNextMainQuest(completedQuests: string[]): QuestDefinition | null {
   const mainQuests = getQuestsByType('main');
-  
+
   // 按chapter和id排序
   const sortedQuests = mainQuests.sort((a, b) => {
     if (a.chapter !== b.chapter) return a.chapter - b.chapter;
@@ -243,8 +244,7 @@ export function getNextMainQuest(completedQuests: string[]): QuestDefinition | n
 
   // 找到第一个未完成且满足前置条件的任务
   for (const quest of sortedQuests) {
-    if (!completedQuests.includes(quest.id) && 
-        checkQuestPrerequisites(quest.id, completedQuests)) {
+    if (!completedQuests.includes(quest.id) && checkQuestPrerequisites(quest.id, completedQuests)) {
       return quest;
     }
   }
@@ -260,11 +260,12 @@ export function getAvailableSideQuests(
   currentChapter: number
 ): QuestDefinition[] {
   const sideQuests = getQuestsByType('side');
-  
-  return sideQuests.filter(quest => 
-    !completedQuests.includes(quest.id) &&
-    quest.chapter <= currentChapter &&
-    checkQuestPrerequisites(quest.id, completedQuests)
+
+  return sideQuests.filter(
+    (quest) =>
+      !completedQuests.includes(quest.id) &&
+      quest.chapter <= currentChapter &&
+      checkQuestPrerequisites(quest.id, completedQuests)
   );
 }
 
@@ -274,12 +275,12 @@ export function getAvailableSideQuests(
 export function getChapterNpcIds(chapter: number): string[] {
   const quests = Object.values(questsData as any) as QuestDefinition[];
   const npcIds = new Set<string>();
-  
-  quests.forEach(quest => {
+
+  quests.forEach((quest) => {
     if (quest.chapter === chapter && quest.npcId) {
       npcIds.add(quest.npcId);
     }
   });
-  
+
   return Array.from(npcIds);
 }

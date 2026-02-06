@@ -14,13 +14,21 @@ interface TsumegoModalProps {
   rewardSource?: 'tree' | 'bamboo' | 'rock';
 }
 
-export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rewardSource }: TsumegoModalProps) {
+export default function TsumegoModal({
+  isOpen,
+  problem,
+  onClose,
+  onComplete,
+  rewardSource,
+}: TsumegoModalProps) {
   const t = useTranslations();
   const [isVisible, setIsVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [attemptsRemaining, setAttemptsRemaining] = useState(3);
   const [showSolution, setShowSolution] = useState(false);
-  const [playerMoves, setPlayerMoves] = useState<Array<{row: number; col: number; color: 'black' | 'white'}>>([]);
+  const [playerMoves, setPlayerMoves] = useState<
+    Array<{ row: number; col: number; color: 'black' | 'white' }>
+  >([]);
   const [startTime, setStartTime] = useState<number>(0);
   const [alertState, setAlertState] = useState<{
     isOpen: boolean;
@@ -32,7 +40,11 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
   }>({ isOpen: false, type: 'info', message: '' });
 
   // CustomAlert 辅助方法
-  const showAlert = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info', title?: string): Promise<void> => {
+  const showAlert = (
+    message: string,
+    type: 'info' | 'success' | 'warning' | 'error' = 'info',
+    title?: string
+  ): Promise<void> => {
     return new Promise((resolve) => {
       setAlertState({
         isOpen: true,
@@ -40,7 +52,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
         message,
         title,
         onConfirm: () => {
-          setAlertState(prev => ({ ...prev, isOpen: false }));
+          setAlertState((prev) => ({ ...prev, isOpen: false }));
           resolve();
         },
       });
@@ -55,11 +67,11 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
         message,
         title,
         onConfirm: () => {
-          setAlertState(prev => ({ ...prev, isOpen: false }));
+          setAlertState((prev) => ({ ...prev, isOpen: false }));
           resolve(true);
         },
         onCancel: () => {
-          setAlertState(prev => ({ ...prev, isOpen: false }));
+          setAlertState((prev) => ({ ...prev, isOpen: false }));
           resolve(false);
         },
       });
@@ -104,16 +116,16 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
   };
 
   const handlePlayerMove = useCallback((row: number, col: number, color: 'black' | 'white') => {
-    setPlayerMoves(prev => [...prev, { row, col, color }]);
+    setPlayerMoves((prev) => [...prev, { row, col, color }]);
     console.log(`Player move: ${color} at (${row}, ${col})`);
   }, []);
 
   const handleCorrectMove = useCallback(() => {
     if (!problem) return;
-    
+
     const timeSpent = Math.floor((Date.now() - startTime) / 1000); // 秒
     const actualAttempts = 4 - attemptsRemaining; // 实际使用的尝试次数
-    
+
     // 调用奖励API
     fetch('/api/tsumego/reward', {
       method: 'POST',
@@ -126,8 +138,8 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
         source: rewardSource,
       }),
     })
-      .then(res => res.json())
-      .then(async data => {
+      .then((res) => res.json())
+      .then(async (data) => {
         if (data.success) {
           // 显示奖励信息
           const rewardText = [
@@ -136,7 +148,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
             `✨ 获得经验：+${data.rewards.experience}`,
             `💰 获得银两：+${data.rewards.silver}`,
           ];
-          
+
           if (data.rewards.items && data.rewards.items.length > 0) {
             const itemText = data.rewards.items
               .map((item: any) => {
@@ -149,16 +161,16 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
               .join('、');
             rewardText.push(`🎁 获得物品：${itemText}`);
           }
-          
+
           await showAlert(rewardText.join('\n'), 'success', '挑战成功');
         } else {
           await showAlert('🎉 正确！你成功解决了这道死活题！', 'success', '挑战成功');
         }
-        
+
         handleClose();
         onComplete(true);
       })
-      .catch(async error => {
+      .catch(async (error) => {
         console.error('Failed to claim reward:', error);
         await showAlert('🎉 正确！你成功解决了这道死活题！', 'success', '挑战成功');
         handleClose();
@@ -168,8 +180,8 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
 
   const handleWrongMove = useCallback(() => {
     if (!problem) return;
-    
-    setAttemptsRemaining(prev => {
+
+    setAttemptsRemaining((prev) => {
       const newAttempts = prev - 1;
       if (newAttempts <= 0) {
         // 失败时也记录
@@ -183,8 +195,8 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
             attempts: 3,
             timeSpent,
           }),
-        }).catch(error => console.error('Failed to record failure:', error));
-        
+        }).catch((error) => console.error('Failed to record failure:', error));
+
         showAlert('❌ 挑战失败！已用完所有尝试次数。', 'error', '挑战失败').then(() => {
           handleClose();
           onComplete(false);
@@ -199,13 +211,13 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
   const handleSubmit = async () => {
     // TODO: 验证答案
     const isCorrect = false; // 暂时假设错误
-    
+
     if (isCorrect) {
       await showAlert('✅ 答案正确！', 'success', '挑战成功');
       handleClose();
       onComplete(true);
     } else {
-      setAttemptsRemaining(prev => {
+      setAttemptsRemaining((prev) => {
         const newAttempts = prev - 1;
         if (newAttempts <= 0) {
           showAlert('❌ 挑战失败！已用完所有尝试次数。', 'error', '挑战失败').then(() => {
@@ -224,11 +236,16 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
 
   // 获取难度星级
   const difficultyStars = '★'.repeat(Math.min(problem.difficulty, 10));
-  
+
   // 获取小怪名称（根据难度）
-  const monsterName = problem.difficulty <= 3 ? '棋魔·初阶' :
-                      problem.difficulty <= 6 ? '棋魔·中阶' :
-                      problem.difficulty <= 8 ? '棋魔·高阶' : '棋魔·宗师';
+  const monsterName =
+    problem.difficulty <= 3
+      ? '棋魔·初阶'
+      : problem.difficulty <= 6
+        ? '棋魔·中阶'
+        : problem.difficulty <= 8
+          ? '棋魔·高阶'
+          : '棋魔·宗师';
 
   const modalContent = (
     <div
@@ -305,24 +322,26 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
               <div className="mb-4 bg-purple-900 border-2 border-purple-500 rounded-lg p-3">
                 <div className="text-purple-200 font-semibold mb-2">💡 正解提示</div>
                 <div className="text-sm text-purple-100">
-                  {problem.solution.length > 0 && (() => {
-                    const sgf = problem.solution[0][1];
-                    if (sgf && sgf.length === 2) {
-                      // 将SGF坐标转换为围棋坐标 (例如: 'ea' -> 'E1')
-                      const col = sgf.charCodeAt(0) - 97; // 'a' = 0
-                      const row = problem.boardSize - (sgf.charCodeAt(1) - 97); // 'a' = boardSize
-                      // GTP坐标系统跳过字母I: A-H, J-T
-                      const colIndex = col >= 8 ? col + 1 : col;
-                      const colLetter = String.fromCharCode(65 + colIndex);
-                      return (
-                        <div>
-                          第一手：{problem.solution[0][0] === 'B' ? '⚫ 黑' : '⚪ 白'} 
-                          {colLetter}{row}
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()}
+                  {problem.solution.length > 0 &&
+                    (() => {
+                      const sgf = problem.solution[0][1];
+                      if (sgf && sgf.length === 2) {
+                        // 将SGF坐标转换为围棋坐标 (例如: 'ea' -> 'E1')
+                        const col = sgf.charCodeAt(0) - 97; // 'a' = 0
+                        const row = problem.boardSize - (sgf.charCodeAt(1) - 97); // 'a' = boardSize
+                        // GTP坐标系统跳过字母I: A-H, J-T
+                        const colIndex = col >= 8 ? col + 1 : col;
+                        const colLetter = String.fromCharCode(65 + colIndex);
+                        return (
+                          <div>
+                            第一手：{problem.solution[0][0] === 'B' ? '⚫ 黑' : '⚪ 白'}
+                            {colLetter}
+                            {row}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                 </div>
               </div>
             )}
@@ -353,9 +372,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
             </div>
 
             {/* 提示文字 */}
-            <div className="mt-4 text-xs text-center text-gray-400">
-              按 ESC 键可快速逃跑
-            </div>
+            <div className="mt-4 text-xs text-center text-gray-400">按 ESC 键可快速逃跑</div>
           </div>
         </div>
 
@@ -367,6 +384,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
 
   // 使用 Portal 渲染到 body
   if (typeof document !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createPortal } = require('react-dom');
     return (
       <>
@@ -379,7 +397,7 @@ export default function TsumegoModal({ isOpen, problem, onClose, onComplete, rew
             title={alertState.title}
             onConfirm={alertState.onConfirm}
             onCancel={alertState.onCancel}
-            onClose={() => setAlertState(prev => ({ ...prev, isOpen: false }))}
+            onClose={() => setAlertState((prev) => ({ ...prev, isOpen: false }))}
           />
         )}
       </>

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-// @ts-ignore
-const Noise = require("noisejs");
-import Image from "next/image";
+import { useState, useEffect } from 'react';
+// @ts-expect-error - noisejs doesn't have TypeScript types
+import Noise from 'noisejs';
+import Image from 'next/image';
 
-const TILE_TYPES = ["gold", "wood", "dirt", "fire", "water"];
+const TILE_TYPES = ['gold', 'wood', 'dirt', 'fire', 'water'];
 
 const TILE_SPRITE_POSITIONS: Record<string, [number, number]> = {
   wood_center: [0, 0],
@@ -58,21 +58,20 @@ interface MapItem {
 export default function MapEditor() {
   const [editorMode, setEditorMode] = useState<EditorMode>('terrain');
   const [itemMode, setItemMode] = useState<ItemType>('decoration');
-  const [selectedTile, setSelectedTile] = useState("gold");
-  const [mapData, setMapData] = useState(
-    Array.from({ length: 32 }, () => Array(32).fill("gold"))
-  );
-  const [mapName, setMapName] = useState("");
-  const [mapId, setMapId] = useState("");
-  const [mapType, setMapType] = useState<"world" | "scene">("scene");
+  const [selectedTile, setSelectedTile] = useState('gold');
+  const [mapData, setMapData] = useState(Array.from({ length: 32 }, () => Array(32).fill('gold')));
+  const [mapName, setMapName] = useState('');
+  const [mapId, setMapId] = useState('');
+  const [mapType, setMapType] = useState<'world' | 'scene'>('scene');
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // 物品相关状态
   const [mapItems, setMapItems] = useState<MapItem[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<keyof typeof DECORATION_CATEGORIES>('outdoor');
+  const [selectedCategory, setSelectedCategory] =
+    useState<keyof typeof DECORATION_CATEGORIES>('outdoor');
   const [selectedDecoration, setSelectedDecoration] = useState(DECORATION_CATEGORIES.outdoor[0]);
   const [isLoadingItems, setIsLoadingItems] = useState(false);
-  
+
   // 传送门配置
   const [portalConfig, setPortalConfig] = useState({
     targetMapId: '',
@@ -83,7 +82,7 @@ export default function MapEditor() {
   // 加载地图物品
   const loadMapItems = async () => {
     if (!mapId) return;
-    
+
     setIsLoadingItems(true);
     try {
       const response = await fetch(`/api/maps/${mapId}/items`);
@@ -202,34 +201,33 @@ export default function MapEditor() {
     const json = JSON.stringify(mapData);
     console.log(json);
     navigator.clipboard.writeText(json);
-    window.alert("Map exported to clipboard as JSON");
+    window.alert('Map exported to clipboard as JSON');
   };
 
-  const autoGenerate = (theme: string = "balanced") => {
-    // @ts-ignore
+  const autoGenerate = (theme: string = 'balanced') => {
     const noise = new Noise.Noise(Math.random());
     const newMap = mapData.map((row, y) =>
       row.map((tile, x) => {
         const value = noise.perlin2(x / 10, y / 10);
 
-        if (theme === "mountain") {
-          if (value < -0.3) return "water";
-          if (value < -0.1) return "gold";
-          if (value < 0.2) return "dirt";
-          if (value < 0.4) return "wood";
-          return "gold";
-        } else if (theme === "forest") {
-          if (value < -0.25) return "water";
-          if (value < 0.3) return "wood";
-          if (value < 0.5) return "dirt";
-          return "wood";
+        if (theme === 'mountain') {
+          if (value < -0.3) return 'water';
+          if (value < -0.1) return 'gold';
+          if (value < 0.2) return 'dirt';
+          if (value < 0.4) return 'wood';
+          return 'gold';
+        } else if (theme === 'forest') {
+          if (value < -0.25) return 'water';
+          if (value < 0.3) return 'wood';
+          if (value < 0.5) return 'dirt';
+          return 'wood';
         } else {
           // balanced
-          if (value < -0.2) return "water";
-          if (value < -0.05) return "gold";
-          if (value < 0.15) return "wood";
-          if (value < 0.3) return "fire";
-          return "dirt";
+          if (value < -0.2) return 'water';
+          if (value < -0.05) return 'gold';
+          if (value < 0.15) return 'wood';
+          if (value < 0.3) return 'fire';
+          return 'dirt';
         }
       })
     );
@@ -238,17 +236,17 @@ export default function MapEditor() {
 
   const saveMap = async () => {
     if (!mapId || !mapName) {
-      alert("Please enter both Map ID and Map Name");
+      alert('Please enter both Map ID and Map Name');
       return;
     }
 
     setIsSaving(true);
 
     try {
-      const response = await fetch("/api/maps/generate", {
-        method: "POST",
+      const response = await fetch('/api/maps/generate', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           mapId,
@@ -261,14 +259,14 @@ export default function MapEditor() {
       });
 
       if (response.ok) {
-        alert("Map saved successfully!");
+        alert('Map saved successfully!');
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error || "Failed to save map"}`);
+        alert(`Error: ${error.error || 'Failed to save map'}`);
       }
     } catch (error) {
-      console.error("Error saving map:", error);
-      alert("Error saving map");
+      console.error('Error saving map:', error);
+      alert('Error saving map');
     } finally {
       setIsSaving(false);
     }
@@ -285,9 +283,7 @@ export default function MapEditor() {
       <div className="flex gap-2 mb-4">
         <button
           className={`px-6 py-3 rounded font-bold ${
-            editorMode === 'terrain'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 hover:bg-gray-300'
+            editorMode === 'terrain' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'
           }`}
           onClick={() => setEditorMode('terrain')}
         >
@@ -295,9 +291,7 @@ export default function MapEditor() {
         </button>
         <button
           className={`px-6 py-3 rounded font-bold ${
-            editorMode === 'items'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 hover:bg-gray-300'
+            editorMode === 'items' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'
           }`}
           onClick={() => setEditorMode('items')}
         >
@@ -331,7 +325,7 @@ export default function MapEditor() {
           <label className="block text-sm font-medium mb-1">Map Type</label>
           <select
             value={mapType}
-            onChange={(e) => setMapType(e.target.value as "world" | "scene")}
+            onChange={(e) => setMapType(e.target.value as 'world' | 'scene')}
             className="border rounded px-3 py-2"
           >
             <option value="world">World Map</option>
@@ -356,9 +350,7 @@ export default function MapEditor() {
             <button
               key={tile}
               className={`px-4 py-2 rounded ${
-                selectedTile === tile
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                selectedTile === tile ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
               }`}
               onClick={() => setSelectedTile(tile)}
             >
@@ -367,19 +359,19 @@ export default function MapEditor() {
           ))}
           <button
             className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
-            onClick={() => autoGenerate("balanced")}
+            onClick={() => autoGenerate('balanced')}
           >
             Auto Generate (Balanced)
           </button>
           <button
             className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
-            onClick={() => autoGenerate("forest")}
+            onClick={() => autoGenerate('forest')}
           >
             Generate Forest
           </button>
           <button
             className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
-            onClick={() => autoGenerate("mountain")}
+            onClick={() => autoGenerate('mountain')}
           >
             Generate Mountain
           </button>
@@ -394,7 +386,7 @@ export default function MapEditor() {
             onClick={saveMap}
             disabled={isSaving}
           >
-            {isSaving ? "Saving..." : "Save to Database"}
+            {isSaving ? 'Saving...' : 'Save to Database'}
           </button>
         </div>
       )}
@@ -416,9 +408,7 @@ export default function MapEditor() {
             </button>
             <button
               className={`px-4 py-2 rounded ${
-                itemMode === 'portal'
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-200 hover:bg-gray-300'
+                itemMode === 'portal' ? 'bg-purple-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
               }`}
               onClick={() => setItemMode('portal')}
             >
@@ -426,9 +416,7 @@ export default function MapEditor() {
             </button>
             <button
               className={`px-4 py-2 rounded ${
-                itemMode === 'npc'
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-gray-200 hover:bg-gray-300'
+                itemMode === 'npc' ? 'bg-orange-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
               }`}
               onClick={() => setItemMode('npc')}
             >
@@ -450,7 +438,9 @@ export default function MapEditor() {
                     }`}
                     onClick={() => {
                       setSelectedCategory(category as keyof typeof DECORATION_CATEGORIES);
-                      setSelectedDecoration(DECORATION_CATEGORIES[category as keyof typeof DECORATION_CATEGORIES][0]);
+                      setSelectedDecoration(
+                        DECORATION_CATEGORIES[category as keyof typeof DECORATION_CATEGORIES][0]
+                      );
                     }}
                   >
                     {category === 'outdoor' ? '户外' : category === 'plants' ? '植物' : '中式建筑'}
@@ -483,7 +473,9 @@ export default function MapEditor() {
                 <input
                   type="text"
                   value={portalConfig.targetMapId}
-                  onChange={(e) => setPortalConfig({...portalConfig, targetMapId: e.target.value})}
+                  onChange={(e) =>
+                    setPortalConfig({ ...portalConfig, targetMapId: e.target.value })
+                  }
                   placeholder="e.g., world_map"
                   className="border rounded px-3 py-2 w-48"
                 />
@@ -493,7 +485,9 @@ export default function MapEditor() {
                 <input
                   type="number"
                   value={portalConfig.targetX}
-                  onChange={(e) => setPortalConfig({...portalConfig, targetX: parseInt(e.target.value)})}
+                  onChange={(e) =>
+                    setPortalConfig({ ...portalConfig, targetX: parseInt(e.target.value) })
+                  }
                   className="border rounded px-3 py-2 w-24"
                 />
               </div>
@@ -502,7 +496,9 @@ export default function MapEditor() {
                 <input
                   type="number"
                   value={portalConfig.targetY}
-                  onChange={(e) => setPortalConfig({...portalConfig, targetY: parseInt(e.target.value)})}
+                  onChange={(e) =>
+                    setPortalConfig({ ...portalConfig, targetY: parseInt(e.target.value) })
+                  }
                   className="border rounded px-3 py-2 w-24"
                 />
               </div>
@@ -514,7 +510,10 @@ export default function MapEditor() {
             <h3 className="font-bold mb-2">当前地图物品 ({mapItems.length})</h3>
             <div className="max-h-40 overflow-y-auto border rounded p-2">
               {mapItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-center py-1 px-2 hover:bg-gray-100">
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center py-1 px-2 hover:bg-gray-100"
+                >
                   <span className="text-sm">
                     {item.itemName} ({item.x}, {item.y}) - {item.itemType}
                     {item.targetMapId && ` → ${item.targetMapId}`}
@@ -527,9 +526,7 @@ export default function MapEditor() {
                   </button>
                 </div>
               ))}
-              {mapItems.length === 0 && (
-                <p className="text-gray-400 text-sm">暂无物品</p>
-              )}
+              {mapItems.length === 0 && <p className="text-gray-400 text-sm">暂无物品</p>}
             </div>
           </div>
         </div>
@@ -539,9 +536,9 @@ export default function MapEditor() {
       <div
         className="relative"
         style={{
-          width: "2048px",
-          height: "1024px",
-          marginLeft: "1024px",
+          width: '2048px',
+          height: '1024px',
+          marginLeft: '1024px',
         }}
       >
         {mapData.map((row, y) =>
@@ -558,41 +555,42 @@ export default function MapEditor() {
                   top: offsetY,
                   width: 128,
                   height: 64,
-                  backgroundImage: "url(/game/isometric/autotiles/center.png)",
-                  backgroundSize: "640px 64px",
+                  backgroundImage: 'url(/game/isometric/autotiles/center.png)',
+                  backgroundSize: '640px 64px',
                   backgroundPosition: getBackgroundPosition(tile),
                 }}
               ></div>
             );
           })
         )}
-        
+
         {/* 渲染地图物品 */}
-        {editorMode === 'items' && mapItems.map((item) => {
-          const offsetX = (item.x - item.y) * 64 + 1024 / 2 - 64;
-          const offsetY = ((item.x + item.y) * 64) / 2;
-          return (
-            <div
-              key={item.id}
-              className="absolute pointer-events-none"
-              style={{
-                left: offsetX,
-                top: offsetY - 64,
-                width: 128,
-                height: 128,
-              }}
-            >
-              <img
-                src={item.itemPath}
-                alt={item.itemName}
-                className="w-full h-full object-contain"
-              />
-              <div className="absolute -top-4 left-0 right-0 text-center text-xs bg-black bg-opacity-50 text-white rounded px-1">
-                {item.itemName}
+        {editorMode === 'items' &&
+          mapItems.map((item) => {
+            const offsetX = (item.x - item.y) * 64 + 1024 / 2 - 64;
+            const offsetY = ((item.x + item.y) * 64) / 2;
+            return (
+              <div
+                key={item.id}
+                className="absolute pointer-events-none"
+                style={{
+                  left: offsetX,
+                  top: offsetY - 64,
+                  width: 128,
+                  height: 128,
+                }}
+              >
+                <img
+                  src={item.itemPath}
+                  alt={item.itemName}
+                  className="w-full h-full object-contain"
+                />
+                <div className="absolute -top-4 left-0 right-0 text-center text-xs bg-black bg-opacity-50 text-white rounded px-1">
+                  {item.itemName}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );
