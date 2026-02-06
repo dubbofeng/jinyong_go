@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllQuests, getQuestsByChapter, getQuestsByType } from '@/src/lib/quest-manager';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/quests - 获取所有任务
 // GET /api/quests?chapter=1 - 获取指定章节的任务
 // GET /api/quests?type=main - 获取指定类型的任务
@@ -33,22 +35,19 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching quests:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch quests' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch quests' }, { status: 500 });
   }
 }
 
 /**
  * 使用示例：
- * 
+ *
  * // 获取第一章的所有任务
  * fetch('/api/quests?chapter=1')
- * 
+ *
  * // 获取所有主线任务
  * fetch('/api/quests?type=main')
- * 
+ *
  * // 获取特定任务
  * fetch('/api/quests/first_battle')
  */

@@ -29,11 +29,13 @@ const listSgfFiles = async (dir: string, baseDir: string): Promise<string[]> => 
   return results;
 };
 
-const pickRandom = <T,>(items: T[]): T | null => {
+const pickRandom = <T>(items: T[]): T | null => {
   if (!items.length) return null;
   const idx = Math.floor(Math.random() * items.length);
   return items[idx];
 };
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
@@ -66,7 +68,9 @@ export async function GET(request: NextRequest) {
         .where(eq(gameProgress.userId, userId));
 
       if (progress?.completedTasks) {
-        completed = (progress.completedTasks as string[]).filter((task) => task.startsWith(`sgf_practice:${set}:`));
+        completed = (progress.completedTasks as string[]).filter((task) =>
+          task.startsWith(`sgf_practice:${set}:`)
+        );
       }
     }
 
@@ -106,6 +110,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Failed to load SGF practice:', error);
-    return NextResponse.json({ success: false, error: 'Failed to load SGF practice' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Failed to load SGF practice' },
+      { status: 500 }
+    );
   }
 }

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import SgfTestClient from '@/src/components/SgfTestClient';
 import { parseSgfRoot } from '@/src/lib/sgf-server';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'SGF 演示 - 金庸围棋',
   description: 'SGF 初始棋盘配置演示页',
@@ -34,7 +36,36 @@ export default function SgfTestPage({
   params?: { locale?: string };
 }) {
   const sgfDir = path.join(process.cwd(), 'tmp/go-tutorial-sgf/sgf');
+
+  // Check if directory exists, if not show error message
+  if (!fs.existsSync(sgfDir)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold text-center text-white mb-4">
+            SGF Test Directory Not Found
+          </h1>
+          <p className="text-center text-gray-400">
+            The directory {sgfDir} does not exist. Please create it and add SGF files.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const allFiles = listSgfFiles(sgfDir, sgfDir).sort();
+
+  if (allFiles.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold text-center text-white mb-4">No SGF Files Found</h1>
+          <p className="text-center text-gray-400">Please add SGF files to {sgfDir}</p>
+        </div>
+      </div>
+    );
+  }
+
   const selectedFile = allFiles.includes(searchParams?.file || '')
     ? (searchParams?.file as string)
     : allFiles[0];
@@ -47,12 +78,8 @@ export default function SgfTestPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center text-white mb-4">
-          SGF 演示：{selectedFile}
-        </h1>
-        <p className="text-center text-slate-300 mb-8">
-          展示 problems 仓库中的 SGF 文件。
-        </p>
+        <h1 className="text-3xl font-bold text-center text-white mb-4">SGF 演示：{selectedFile}</h1>
+        <p className="text-center text-slate-300 mb-8">展示 problems 仓库中的 SGF 文件。</p>
 
         <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 shadow-lg mb-6">
           <div className="text-slate-200 font-semibold mb-3">选择 SGF 文件</div>

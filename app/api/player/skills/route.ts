@@ -10,24 +10,20 @@ import { playerSkills } from '../../../../src/db/schema';
 import { eq } from 'drizzle-orm';
 import { SKILL_DEFINITIONS } from '../../../../src/data/skill-definitions';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: '未登录' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '未登录' }, { status: 401 });
     }
 
     const userId = parseInt(session.user.id);
 
     // 获取玩家技能
-    const skills = await db
-      .select()
-      .from(playerSkills)
-      .where(eq(playerSkills.userId, userId));
+    const skills = await db.select().from(playerSkills).where(eq(playerSkills.userId, userId));
 
     const skillMap = new Map(skills.map((skill: any) => [skill.skillId, skill]));
 
@@ -56,9 +52,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('获取技能失败:', error);
-    return NextResponse.json(
-      { error: '服务器错误' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '服务器错误' }, { status: 500 });
   }
 }

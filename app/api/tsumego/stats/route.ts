@@ -2,16 +2,15 @@ import { NextResponse } from 'next/server';
 import { db, playerTsumegoRecords, tsumegoProblems } from '@/src/db';
 import { eq, and, sql, desc } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Missing userId parameter' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing userId parameter' }, { status: 400 });
     }
 
     const userIdNum = parseInt(userId);
@@ -40,10 +39,7 @@ export async function GET(request: Request) {
         solved: sql<number>`SUM(CASE WHEN ${playerTsumegoRecords.solved} THEN 1 ELSE 0 END)`,
       })
       .from(playerTsumegoRecords)
-      .innerJoin(
-        tsumegoProblems,
-        eq(playerTsumegoRecords.problemId, tsumegoProblems.id)
-      )
+      .innerJoin(tsumegoProblems, eq(playerTsumegoRecords.problemId, tsumegoProblems.id))
       .where(eq(playerTsumegoRecords.userId, userIdNum))
       .groupBy(tsumegoProblems.difficulty)
       .orderBy(tsumegoProblems.difficulty);
@@ -100,10 +96,7 @@ export async function GET(request: Request) {
       })
       .from(playerTsumegoRecords)
       .where(
-        and(
-          eq(playerTsumegoRecords.userId, userIdNum),
-          eq(playerTsumegoRecords.solved, true)
-        )
+        and(eq(playerTsumegoRecords.userId, userIdNum), eq(playerTsumegoRecords.solved, true))
       );
 
     const avgAttempts = avgAttemptsResult[0]?.avgAttempts || 0;
@@ -129,9 +122,7 @@ export async function GET(request: Request) {
         attempted: Number(d.attempted),
         solved: Number(d.solved),
         solveRate:
-          Number(d.attempted) > 0
-            ? Math.round((Number(d.solved) / Number(d.attempted)) * 100)
-            : 0,
+          Number(d.attempted) > 0 ? Math.round((Number(d.solved) / Number(d.attempted)) * 100) : 0,
       })),
       streaks: {
         current: currentStreak,
@@ -140,9 +131,6 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('获取死活题统计失败:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch tsumego statistics' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch tsumego statistics' }, { status: 500 });
   }
 }

@@ -10,6 +10,8 @@ import { mapItems, maps, items } from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { checkRequirements, loadPlayerContext } from '@/src/lib/requirement-checker';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/portals/check?mapId=xxx&portalId=xxx
  * 检查传送门是否解锁
@@ -17,12 +19,9 @@ import { checkRequirements, loadPlayerContext } from '@/src/lib/requirement-chec
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: '未登录' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '未登录' }, { status: 401 });
     }
 
     const userId = parseInt(session.user.id);
@@ -31,10 +30,7 @@ export async function GET(request: NextRequest) {
     const portalId = searchParams.get('portalId');
 
     if (!portalId) {
-      return NextResponse.json(
-        { error: '缺少portalId参数' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '缺少portalId参数' }, { status: 400 });
     }
 
     // 查询传送门信息
@@ -51,18 +47,13 @@ export async function GET(request: NextRequest) {
       .limit(1);
 
     if (portal.length === 0) {
-      return NextResponse.json(
-        { error: '传送门不存在' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: '传送门不存在' }, { status: 404 });
     }
 
     const portalData = portal[0];
 
     const targetMapId = portalData.sceneLinkMapId;
-    const baseRequirements = Array.isArray(portalData.requirements)
-      ? portalData.requirements
-      : [];
+    const baseRequirements = Array.isArray(portalData.requirements) ? portalData.requirements : [];
 
     const combinedRequirements = [...baseRequirements];
 
@@ -101,16 +92,12 @@ export async function GET(request: NextRequest) {
         portalName: portalData.itemName,
         targetMapId: targetMapId,
         unlocked: unlockedResult.satisfied,
-        reason: unlockedResult.satisfied ? '已解锁' : (unlockedResult.reason || '未满足解锁条件'),
+        reason: unlockedResult.satisfied ? '已解锁' : unlockedResult.reason || '未满足解锁条件',
         requirements: combinedRequirements,
       },
     });
-
   } catch (error) {
     console.error('检查传送门状态失败:', error);
-    return NextResponse.json(
-      { error: '服务器错误' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '服务器错误' }, { status: 500 });
   }
 }

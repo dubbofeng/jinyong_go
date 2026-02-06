@@ -11,7 +11,9 @@ const levelToDifficulty = (level: number): number => {
   return clamp(Math.ceil(normalizedLevel / 4), 1, 9);
 };
 
-const parseDifficultyRange = (difficultyParam: string | null): { min: number; max: number } | null => {
+const parseDifficultyRange = (
+  difficultyParam: string | null
+): { min: number; max: number } | null => {
   if (!difficultyParam) return null;
 
   const numeric = Number(difficultyParam);
@@ -28,6 +30,8 @@ const parseDifficultyRange = (difficultyParam: string | null): { min: number; ma
 
   return difficultyMap[difficultyParam] || null;
 };
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -57,7 +61,7 @@ export async function GET(request: Request) {
     if (!range) {
       range = { min: 1, max: 3 };
     }
-    
+
     // 随机获取一道题目
     const problems = await db
       .select()
@@ -70,20 +74,14 @@ export async function GET(request: Request) {
       )
       .orderBy(sql`RANDOM()`)
       .limit(1);
-    
+
     if (problems.length === 0) {
-      return NextResponse.json(
-        { error: 'No problems found for this difficulty' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'No problems found for this difficulty' }, { status: 404 });
     }
-    
+
     return NextResponse.json(problems[0]);
   } catch (error) {
     console.error('Error fetching random tsumego:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch tsumego problem' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch tsumego problem' }, { status: 500 });
   }
 }
