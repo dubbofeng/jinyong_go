@@ -1,62 +1,32 @@
-# VS Code settings
-.vscode/
-
-# Editor config
-.editorconfig
-
-# ESLint and Prettier config
-.eslintrc.json
-.prettierrc
-.prettierignore
-
-# Git
-.gitignore
-.gitattributes
+# Build outputs
+.next
+out
+dist
+build
 
 # Dependencies
-node_modules/
+node_modules
 pnpm-lock.yaml
-package-lock.json
-yarn.lock
-
-# Build outputs
-.next/
-out/
-dist/
-build/
 
 # Scripts (deprecated/testing)
-scripts/
+scripts
 
-# RPG unused code
-src/rpg/
+# RPG unused code  
+src/rpg
 
 # Environment files
 .env*
 
-# Logs
-*.log
-
-# OS files
-.DS_Store
-Thumbs.db
-
 # Test results
-coverage/
-.playwright/
-test-results/
-playwright-report/
+test-results
+playwright-report
 
 # Temporary files
-tmp/
-*.tmp
-*.temp
+tmp
 
 # Generated files
-public/generated/
-drizzle/
-next-env.d.ts
-*.tsbuildinfo
+public/generated
+drizzle
 
 # Database
 *.db

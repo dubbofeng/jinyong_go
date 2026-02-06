@@ -1,0 +1,8 @@
+scripts
+src/rpg
+tmp
+test-results
+e2e
+*.log
+.env*
+!.env.example
