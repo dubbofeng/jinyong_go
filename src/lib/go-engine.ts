@@ -24,7 +24,9 @@ export class GoEngine {
 
   constructor(size: number) {
     this.size = size;
-    this.board = Array(size).fill(null).map(() => Array(size).fill(null));
+    this.board = Array(size)
+      .fill(null)
+      .map(() => Array(size).fill(null));
   }
 
   /**
@@ -188,6 +190,27 @@ export class GoEngine {
   }
 
   /**
+   * 移除棋子（用于撤销错误的落子）
+   */
+  removeStone(position: BoardPosition): void {
+    const { row, col } = position;
+    this.board[row][col] = null;
+
+    // 清除劫争状态
+    if (this.koPosition && this.koPosition.row === row && this.koPosition.col === col) {
+      this.koPosition = null;
+    }
+
+    // 从历史记录中移除最后一步（如果匹配）
+    if (this.moveHistory.length > 0) {
+      const lastMove = this.moveHistory[this.moveHistory.length - 1];
+      if (lastMove.position.row === row && lastMove.position.col === col) {
+        this.moveHistory.pop();
+      }
+    }
+  }
+
+  /**
    * 获取指定位置的相邻位置（上下左右）
    */
   public getNeighbors(position: BoardPosition): BoardPosition[] {
@@ -195,9 +218,9 @@ export class GoEngine {
     const neighbors: BoardPosition[] = [];
     const directions = [
       [-1, 0], // 上
-      [1, 0],  // 下
+      [1, 0], // 下
       [0, -1], // 左
-      [0, 1],  // 右
+      [0, 1], // 右
     ];
 
     for (const [dr, dc] of directions) {
@@ -272,7 +295,7 @@ export class GoEngine {
    * 获取棋盘状态
    */
   getBoard(): StoneColor[][] {
-    return this.board.map(row => [...row]);
+    return this.board.map((row) => [...row]);
   }
 
   /**
@@ -282,7 +305,7 @@ export class GoEngine {
     if (board.length !== this.size || board[0].length !== this.size) {
       throw new Error('Invalid board size');
     }
-    this.board = board.map(row => [...row]);
+    this.board = board.map((row) => [...row]);
     this.koPosition = null;
   }
 
@@ -302,19 +325,19 @@ export class GoEngine {
     }
 
     const lastMove = this.moveHistory.pop()!;
-    
+
     // 移除落子
     this.board[lastMove.position.row][lastMove.position.col] = null;
-    
+
     // 恢复被提的子
     const opponentColor: StoneColor = lastMove.color === 'black' ? 'white' : 'black';
     for (const captured of lastMove.capturedStones) {
       this.board[captured.row][captured.col] = opponentColor;
     }
-    
+
     // 清除劫争状态
     this.koPosition = null;
-    
+
     return true;
   }
 
@@ -328,7 +351,11 @@ export class GoEngine {
   /**
    * 获取最后一步
    */
-  getLastMove(): { position: BoardPosition; color: StoneColor; capturedStones: BoardPosition[] } | null {
+  getLastMove(): {
+    position: BoardPosition;
+    color: StoneColor;
+    capturedStones: BoardPosition[];
+  } | null {
     if (this.moveHistory.length === 0) {
       return null;
     }
@@ -339,7 +366,9 @@ export class GoEngine {
    * 清空棋盘
    */
   clear(): void {
-    this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
+    this.board = Array(this.size)
+      .fill(null)
+      .map(() => Array(this.size).fill(null));
     this.koPosition = null;
     this.moveHistory = [];
   }
@@ -429,7 +458,7 @@ export class GoEngine {
    * 获取棋盘状态的副本
    */
   getBoardState(): StoneColor[][] {
-    return this.board.map(row => [...row]);
+    return this.board.map((row) => [...row]);
   }
 
   /**
@@ -446,7 +475,7 @@ export class GoEngine {
     const result = this.countTerritoryDetailed();
     return {
       blackTerritory: result.black,
-      whiteTerritory: result.white
+      whiteTerritory: result.white,
     };
   }
 
@@ -475,7 +504,7 @@ export class GoEngine {
         if (this.board[row][col] === null && !visited.has(key)) {
           const region = this.getEmptyRegion({ row, col }, visited);
           const owner = this.determineRegionOwner(region);
-          
+
           if (owner === 'black') {
             blackTerritory += region.length;
           } else if (owner === 'white') {

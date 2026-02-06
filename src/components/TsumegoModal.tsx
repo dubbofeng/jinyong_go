@@ -386,9 +386,9 @@ export default function TsumegoModal({
   if (typeof document !== 'undefined') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createPortal } = require('react-dom');
-    return (
+    return createPortal(
       <>
-        {createPortal(modalContent, document.body)}
+        {modalContent}
         {alertState.isOpen && (
           <CustomAlert
             isOpen={alertState.isOpen}
@@ -400,7 +400,8 @@ export default function TsumegoModal({
             onClose={() => setAlertState((prev) => ({ ...prev, isOpen: false }))}
           />
         )}
-      </>
+      </>,
+      document.body
     );
   }
 
