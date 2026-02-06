@@ -14,10 +14,14 @@ const GameLayout = dynamicImport(() => import('../../../src/components/GameLayou
   ssr: false,
 });
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'game' });
-  
+
   return {
     title: t('title'),
     description: t('description'),
@@ -52,9 +56,8 @@ export default async function GamePage({ params }: { params: Promise<{ locale: s
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 to-slate-800">
+    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
       <GameLayout mapId={initialMapId} userId={session.user.id!} />
     </div>
   );
 }
-

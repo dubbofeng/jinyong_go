@@ -58,14 +58,16 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
   };
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 h-full w-full">
       {/* 左侧游戏区域 */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <IsometricGame mapId={mapId} userId={userId} />
       </div>
-      
+
       {/* 右侧信息面板 */}
-      <div className={`relative transition-all duration-300 ${isPanelCollapsed ? 'w-0' : 'w-80'}`}>
+      <div
+        className={`relative transition-all duration-300 flex-shrink-0 ${isPanelCollapsed ? 'w-0' : 'w-80 md:w-80 sm:w-64'}`}
+      >
         {/* 收起/展开按钮 */}
         <button
           onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
@@ -122,16 +124,16 @@ export default function GameLayout({ mapId, userId }: GameLayoutProps) {
                   <InventoryPanel />
                 </>
               )}
-              
+
               {activeTab === 'stats' && <TsumegoStatsPanel />}
-              
+
               {activeTab === 'achievements' && <AchievementsPanel />}
             </div>
-            
+
             {/* 退出登录按钮 */}
             <div className="p-4 space-y-2 border-t border-gray-300 bg-white">
               <SaveButton onSave={handleManualSave} />
-              
+
               <a
                 href="/api/auth/signout"
                 className="block w-full text-center px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition-colors"
