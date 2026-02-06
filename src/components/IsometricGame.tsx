@@ -49,13 +49,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const engineRef = useRef<IsometricEngine | null>(null);
   const animationFrameRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(initialMap || null);
   const [showInfo, setShowInfo] = useState(false);
   const [playerPosition, setPlayerPosition] = useState<{ x: number; y: number } | null>(null);
-  
+
   // 对话系统状态
   const [dialogueEngine, setDialogueEngine] = useState<DialogueEngine | null>(null);
   const [currentDialogueNode, setCurrentDialogueNode] = useState<DialogueNode | null>(null);
@@ -63,11 +63,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [isDialogueVisible, setIsDialogueVisible] = useState(false);
   const [currentNpcAvatar, setCurrentNpcAvatar] = useState<string | null>(null);
   const [isUniversalChallenge, setIsUniversalChallenge] = useState(false); // 标记是否为通用挑战
-  
+
   // 围棋对弈状态
   const [showGoGame, setShowGoGame] = useState(false);
   const [goOpponentName, setGoOpponentName] = useState(t('opponent'));
-  const [goOpponentDifficulty, setGoOpponentDifficulty] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>(5);
+  const [goOpponentDifficulty, setGoOpponentDifficulty] = useState<
+    1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+  >(5);
   const [showGoChallenge, setShowGoChallenge] = useState(false);
   const [pendingGoOpponent, setPendingGoOpponent] = useState<string | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
@@ -98,16 +100,18 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [storySceneIndex, setStorySceneIndex] = useState(0);
   const [storyLineIndex, setStoryLineIndex] = useState(0);
   const [isStoryVisible, setIsStoryVisible] = useState(false);
-  
+
   // 传送门状态
   const [showPortalConfirm, setShowPortalConfirm] = useState(false);
   const [pendingPortal, setPendingPortal] = useState<any>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  
+
   // 死活题系统
   const [showTsumegoEncounter, setShowTsumegoEncounter] = useState(false);
   const [currentTsumegoProblem, setCurrentTsumegoProblem] = useState<any>(null);
-  const [tsumegoRewardSource, setTsumegoRewardSource] = useState<'tree' | 'bamboo' | 'rock' | null>(null);
+  const [tsumegoRewardSource, setTsumegoRewardSource] = useState<'tree' | 'bamboo' | 'rock' | null>(
+    null
+  );
   const [showWorkshop, setShowWorkshop] = useState(false);
   const [workshopBusy, setWorkshopBusy] = useState(false);
   const [workshopError, setWorkshopError] = useState<string | null>(null);
@@ -116,10 +120,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [pharmacyBusy, setPharmacyBusy] = useState(false);
   const [pharmacyError, setPharmacyError] = useState<string | null>(null);
   const [pharmacyInventory, setPharmacyInventory] = useState({ herb: 0 });
-  
+
   // Hotel modal state
   const [showHotel, setShowHotel] = useState(false);
-  
+
   // 自定义Alert/Confirm系统
   const [alertState, setAlertState] = useState<{
     isOpen: boolean;
@@ -131,7 +135,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     onConfirm?: () => void;
     onCancel?: () => void;
   }>({ isOpen: false, type: 'info', message: '' });
-  
+
   // 技能解锁Toast状态
   const [skillUnlockToast, setSkillUnlockToast] = useState<{
     visible: boolean;
@@ -141,7 +145,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     description: string;
   } | null>(null);
   const skillToastTimerRef = useRef<number | null>(null);
-  
+
   // WASD移动状态
   const pressedKeysRef = useRef<Set<string>>(new Set());
 
@@ -202,49 +206,49 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   // 加载玩家的NPC关系数据（包括defeated状态和dialogue flags）
   useEffect(() => {
     if (!userId) return;
-    
+
     const loadPlayerNpcData = async () => {
       try {
         const response = await fetch(`/api/npc-relationships?userId=${userId}`);
         if (!response.ok) return;
-        
+
         const data = await response.json();
         if (!data.success || !Array.isArray(data.data)) return;
-        
+
         const defeatedNpcs: string[] = [];
         const flagsMap: Record<string, string[]> = {};
-        
+
         for (const relationship of data.data) {
           const npcId = relationship.npcId;
-          
+
           // 收集defeated状态
           if (relationship.defeated) {
             defeatedNpcs.push(`defeated_${npcId}`);
           }
-          
+
           // 收集dialogue flags
           if (relationship.dialogueFlags && Array.isArray(relationship.dialogueFlags)) {
             flagsMap[npcId] = relationship.dialogueFlags;
           }
         }
-        
+
         // 更新状态
         if (defeatedNpcs.length > 0) {
           setCompletedQuests(defeatedNpcs);
           completedQuestsRef.current = defeatedNpcs;
         }
-        
+
         if (Object.keys(flagsMap).length > 0) {
           setNpcDialogueFlags(flagsMap);
           npcDialogueFlagsRef.current = flagsMap;
         }
-        
+
         console.log('✅ Loaded NPC data:', { defeatedNpcs, flagsMap });
       } catch (error) {
         console.error('Failed to load NPC relationships:', error);
       }
     };
-    
+
     loadPlayerNpcData();
   }, [userId]);
 
@@ -271,53 +275,66 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     return bestNodeId;
   };
 
+  const getStoryByNpcId = useCallback(
+    (npcId: string) => {
+      return (
+        stories.find((story) => Array.isArray(story.npcIds) && story.npcIds.includes(npcId)) || null
+      );
+    },
+    [stories]
+  );
 
-  const getStoryByNpcId = useCallback((npcId: string) => {
-    return stories.find((story) => Array.isArray(story.npcIds) && story.npcIds.includes(npcId)) || null;
-  }, [stories]);
+  const saveStoryProgress = useCallback(
+    async (payload: {
+      storyId: string;
+      sceneId?: string | null;
+      lineIndex?: number;
+      backgroundId?: string | null;
+      completed?: boolean;
+      choiceId?: string | null;
+    }) => {
+      try {
+        await fetch('/api/stories/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch (error) {
+        console.warn('保存故事进度失败:', error);
+      }
+    },
+    []
+  );
 
-  const saveStoryProgress = useCallback(async (payload: {
-    storyId: string;
-    sceneId?: string | null;
-    lineIndex?: number;
-    backgroundId?: string | null;
-    completed?: boolean;
-    choiceId?: string | null;
-  }) => {
-    try {
-      await fetch('/api/stories/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+  const openStory = useCallback(
+    async (story: any, progress?: any | null) => {
+      const defaultSceneIndex = 0;
+      const sceneIndex = progress?.sceneId
+        ? Math.max(
+            0,
+            story.scenes.findIndex((scene: any) => scene.sceneId === progress.sceneId)
+          )
+        : defaultSceneIndex;
+      const normalizedSceneIndex = sceneIndex >= 0 ? sceneIndex : defaultSceneIndex;
+      const scene = story.scenes[normalizedSceneIndex];
+      const maxLineIndex = Math.max(0, scene.lines.length - 1);
+      const normalizedLineIndex = Math.min(progress?.lineIndex ?? 0, maxLineIndex);
+
+      setActiveStory(story);
+      setStorySceneIndex(normalizedSceneIndex);
+      setStoryLineIndex(normalizedLineIndex);
+      setIsStoryVisible(true);
+
+      await saveStoryProgress({
+        storyId: story.storyId,
+        sceneId: scene.sceneId,
+        lineIndex: normalizedLineIndex,
+        backgroundId: scene.backgroundId,
+        completed: false,
       });
-    } catch (error) {
-      console.warn('保存故事进度失败:', error);
-    }
-  }, []);
-
-  const openStory = useCallback(async (story: any, progress?: any | null) => {
-    const defaultSceneIndex = 0;
-    const sceneIndex = progress?.sceneId
-      ? Math.max(0, story.scenes.findIndex((scene: any) => scene.sceneId === progress.sceneId))
-      : defaultSceneIndex;
-    const normalizedSceneIndex = sceneIndex >= 0 ? sceneIndex : defaultSceneIndex;
-    const scene = story.scenes[normalizedSceneIndex];
-    const maxLineIndex = Math.max(0, scene.lines.length - 1);
-    const normalizedLineIndex = Math.min(progress?.lineIndex ?? 0, maxLineIndex);
-
-    setActiveStory(story);
-    setStorySceneIndex(normalizedSceneIndex);
-    setStoryLineIndex(normalizedLineIndex);
-    setIsStoryVisible(true);
-
-    await saveStoryProgress({
-      storyId: story.storyId,
-      sceneId: scene.sceneId,
-      lineIndex: normalizedLineIndex,
-      backgroundId: scene.backgroundId,
-      completed: false,
-    });
-  }, [saveStoryProgress]);
+    },
+    [saveStoryProgress]
+  );
 
   const closeStory = useCallback(() => {
     setIsStoryVisible(false);
@@ -332,54 +349,68 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   };
 
   // ==================== 自定义Alert/Confirm系统 ====================
-  
+
   /**
    * 显示提示框
    */
-  const showAlert = useCallback((message: string, type: AlertType = 'info', title?: string): Promise<void> => {
-    return new Promise((resolve) => {
-      setAlertState({
-        isOpen: true,
-        type,
-        title,
-        message,
-        onConfirm: () => resolve(),
+  const showAlert = useCallback(
+    (message: string, type: AlertType = 'info', title?: string): Promise<void> => {
+      return new Promise((resolve) => {
+        setAlertState({
+          isOpen: true,
+          type,
+          title,
+          message,
+          onConfirm: () => resolve(),
+        });
       });
-    });
-  }, []);
+    },
+    []
+  );
 
   /**
    * 显示确认框
    */
-  const showConfirm = useCallback((message: string, title?: string, confirmText?: string, cancelText?: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setAlertState({
-        isOpen: true,
-        type: 'confirm',
-        title,
-        message,
-        confirmText,
-        cancelText,
-        onConfirm: () => resolve(true),
-        onCancel: () => resolve(false),
+  const showConfirm = useCallback(
+    (
+      message: string,
+      title?: string,
+      confirmText?: string,
+      cancelText?: string
+    ): Promise<boolean> => {
+      return new Promise((resolve) => {
+        setAlertState({
+          isOpen: true,
+          type: 'confirm',
+          title,
+          message,
+          confirmText,
+          cancelText,
+          onConfirm: () => resolve(true),
+          onCancel: () => resolve(false),
+        });
       });
-    });
-  }, []);
+    },
+    []
+  );
 
   // ==================== 死活题系统 ====================
-  
+
   /**
    * 处理树木碰撞 - 触发死活题挑战
    */
-  const handleTreeCollision = async (resourceName?: string, resourceType?: 'tree' | 'bamboo' | 'rock') => {
+  const handleTreeCollision = async (
+    resourceName?: string,
+    resourceType?: 'tree' | 'bamboo' | 'rock'
+  ) => {
     // 显示挑战提示
     const shouldChallenge = await showConfirm(
-      `从${resourceName || '树后'}跳出一个蒙面人，拦住了你的去路！\n\n"想要通过，就接受死活题挑战吧！"\n\n要死要活。`,
-      '⚔️ 遭遇挑战',
-      '接受挑战',
-      '逃跑'
+      t('tsumego.treeChallenge', { resourceName: resourceName || t('tsumego.behindTree') }),
+      t('tsumego.encounterTitle'),
+      t('tsumego.acceptChallenge'),
+      t('tsumego.flee')
     );
-    
+
     if (shouldChallenge) {
       setTsumegoRewardSource(resourceType || 'tree');
       // 根据玩家等级自动匹配难度
@@ -413,19 +444,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       if (response.ok) {
         // 触发全局属性更新事件
         window.dispatchEvent(new Event('player-stats-update'));
-        
+
         // 显示扣除提示
         await showAlert(
-          `你选择了逃跑！\n\n💰 银两 -${silverPenalty}\n❤️ 体力 -${staminaPenalty}`,
+          t('tsumego.fleeMessage', { silver: silverPenalty, stamina: staminaPenalty }),
           'warning',
-          '⚠️ 逃跑惩罚'
+          t('tsumego.fleePenalty')
         );
       }
     } catch (error) {
       console.warn('逃跑扣除体力/金钱失败:', error);
     }
   };
-  
+
   /**
    * 触发死活题挑战
    * @param mapId 地图ID
@@ -435,18 +466,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     try {
       const difficulty = forceDifficulty ?? null;
       console.log('🎯 Triggering tsumego encounter with difficulty:', difficulty ?? 'auto');
-      
+
       // 获取随机题目
-      const query = difficulty != null ? `?difficulty=${encodeURIComponent(String(difficulty))}` : '';
+      const query =
+        difficulty != null ? `?difficulty=${encodeURIComponent(String(difficulty))}` : '';
       const response = await fetch(`/api/tsumego/random${query}`);
       if (!response.ok) {
         console.error('❌ Failed to fetch tsumego problem, status:', response.status);
         return;
       }
-      
+
       const problem = await response.json();
       console.log('📚 Received tsumego problem:', problem);
-      
+
       if (problem && problem.id) {
         setCurrentTsumegoProblem(problem);
         setShowTsumegoEncounter(true);
@@ -465,9 +497,15 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     const plantType = item.plantType || item.properties?.plantType;
     const isTree = item.itemType === 'plant' && (plantType === 'tree' || name.includes('树'));
     const isBamboo = item.itemType === 'plant' && (plantType === 'bamboo' || name.includes('竹'));
-    const isRock = item.itemType === 'decoration'
-      && (name.includes('岩') || name.includes('石') || itemId.includes('rock') || itemId.includes('rocks'));
-    const isHerb = item.itemType === 'plant' && (plantType === 'herb' || name.includes('草药') || name.includes('草'));
+    const isRock =
+      item.itemType === 'decoration' &&
+      (name.includes('岩') ||
+        name.includes('石') ||
+        itemId.includes('rock') ||
+        itemId.includes('rocks'));
+    const isHerb =
+      item.itemType === 'plant' &&
+      (plantType === 'herb' || name.includes('草药') || name.includes('草'));
     return { isTree, isBamboo, isRock, isHerb };
   };
 
@@ -505,91 +543,136 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     }
   }, []);
 
-  const handleCraft = useCallback(async (recipeId: 'go_bowl_1' | 'go_bowl_2' | 'go_bowl_3' | 'go_bowl_4' | 'go_bowl_5' | 'go_board_1' | 'go_board_2' | 'go_board_3' | 'go_board_4' | 'go_board_5' | 'go_stones') => {
-    if (workshopBusy) return;
-    setWorkshopBusy(true);
-    setWorkshopError(null);
-    try {
-      const response = await fetch('/api/player/inventory/craft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipeId }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error || '制作失败');
+  const handleCraft = useCallback(
+    async (
+      recipeId:
+        | 'go_bowl_1'
+        | 'go_bowl_2'
+        | 'go_bowl_3'
+        | 'go_bowl_4'
+        | 'go_bowl_5'
+        | 'go_board_1'
+        | 'go_board_2'
+        | 'go_board_3'
+        | 'go_board_4'
+        | 'go_board_5'
+        | 'go_stones'
+    ) => {
+      if (workshopBusy) return;
+      setWorkshopBusy(true);
+      setWorkshopError(null);
+      try {
+        const response = await fetch('/api/player/inventory/craft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipeId }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data?.error || t('workshop.craftingFailed'));
+        }
+        await showAlert(
+          data?.message || t('workshop.craftingSuccess'),
+          'success',
+          t('workshop.title')
+        );
+        await loadWorkshopInventory();
+        window.dispatchEvent(new Event('player-inventory-update'));
+      } catch (error) {
+        setWorkshopError(
+          error instanceof Error ? error.message : locale === 'en' ? 'Crafting failed' : '制作失败'
+        );
+      } finally {
+        setWorkshopBusy(false);
       }
-      await showAlert(data?.message || '制作成功！', 'success', '工坊制作');
-      await loadWorkshopInventory();
-      window.dispatchEvent(new Event('player-inventory-update'));
-    } catch (error) {
-      setWorkshopError(error instanceof Error ? error.message : '制作失败');
-    } finally {
-      setWorkshopBusy(false);
-    }
-  }, [loadWorkshopInventory, showAlert, workshopBusy]);
+    },
+    [loadWorkshopInventory, showAlert, workshopBusy]
+  );
 
-  const handlePharmacyCraft = useCallback(async (recipeId: 'herb_stamina_small' | 'herb_stamina_medium' | 'herb_stamina_large' | 'herb_qi_small' | 'herb_qi_large') => {
-    if (pharmacyBusy) return;
-    setPharmacyBusy(true);
-    setPharmacyError(null);
-    try {
-      const response = await fetch('/api/player/inventory/craft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipeId }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error || '炼制失败');
+  const handlePharmacyCraft = useCallback(
+    async (
+      recipeId:
+        | 'herb_stamina_small'
+        | 'herb_stamina_medium'
+        | 'herb_stamina_large'
+        | 'herb_qi_small'
+        | 'herb_qi_large'
+    ) => {
+      if (pharmacyBusy) return;
+      setPharmacyBusy(true);
+      setPharmacyError(null);
+      try {
+        const response = await fetch('/api/player/inventory/craft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipeId }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data?.error || t('pharmacy.refiningFailed'));
+        }
+        await showAlert(
+          data?.message || t('pharmacy.refiningSuccess'),
+          'success',
+          t('pharmacy.title')
+        );
+        await loadPharmacyInventory();
+        window.dispatchEvent(new Event('player-inventory-update'));
+      } catch (error) {
+        setPharmacyError(
+          error instanceof Error ? error.message : locale === 'en' ? 'Refining failed' : '炼制失败'
+        );
+      } finally {
+        setPharmacyBusy(false);
       }
-      await showAlert(data?.message || '炼制成功！', 'success', '药铺制药');
-      await loadPharmacyInventory();
-      window.dispatchEvent(new Event('player-inventory-update'));
-    } catch (error) {
-      setPharmacyError(error instanceof Error ? error.message : '炼制失败');
-    } finally {
-      setPharmacyBusy(false);
-    }
-  }, [loadPharmacyInventory, pharmacyBusy, showAlert]);
+    },
+    [loadPharmacyInventory, pharmacyBusy, showAlert]
+  );
 
   // ==================== 客栈功能 ====================
 
   /**
    * 处理点菜
    */
-  const handleHotelOrder = useCallback(async (item: any) => {
-    try {
-      const response = await fetch('/api/player/stats', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          silver: -item.price,
-          stamina: item.staminaRestore,
-          qi: item.qiRestore,
-        }),
-      });
+  const handleHotelOrder = useCallback(
+    async (item: any) => {
+      try {
+        const response = await fetch('/api/player/stats', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            silver: -item.price,
+            stamina: item.staminaRestore,
+            qi: item.qiRestore,
+          }),
+        });
 
-      const data = await response.json();
-      
-      if (!response.ok || !data.success) {
-        await showAlert(data.error || '银两不足或操作失败', 'error');
-        return;
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          await showAlert(data.error || t('hotel.orderFailed'), 'error');
+          return;
+        }
+
+        // 触发UI更新
+        window.dispatchEvent(new Event('player-stats-update'));
+
+        await showAlert(
+          t('hotel.orderSuccess', {
+            item: item.name,
+            stamina: item.staminaRestore,
+            qi: item.qiRestore,
+          }),
+          'success',
+          t('hotel.dining')
+        );
+      } catch (error) {
+        console.error('点菜失败:', error);
+        await showAlert(locale === 'en' ? 'Ordering failed' : '点菜失败', 'error');
       }
-
-      // 触发UI更新
-      window.dispatchEvent(new Event('player-stats-update'));
-      
-      await showAlert(
-        `享用了${item.name}！\n体力 +${item.staminaRestore}\n内力 +${item.qiRestore}`,
-        'success',
-        '用餐'
-      );
-    } catch (error) {
-      console.error('点菜失败:', error);
-      await showAlert('点菜失败', 'error');
-    }
-  }, [showAlert]);
+    },
+    [showAlert]
+  );
 
   /**
    * 处理住店休息
@@ -606,25 +689,21 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       });
 
       const data = await response.json();
-      
+
       if (!response.ok || !data.success) {
-        await showAlert(data.error || '银两不足或操作失败', 'error');
+        await showAlert(data.error || t('hotel.restFailed'), 'error');
         return;
       }
 
       // 触发UI更新
       window.dispatchEvent(new Event('player-stats-update'));
-      
-      await showAlert(
-        '美美地睡了一觉！\n体力和内力已全部恢复！',
-        'success',
-        '住店休息'
-      );
-      
+
+      await showAlert(t('hotel.restSuccess'), 'success', t('hotel.rest'));
+
       setShowHotel(false);
     } catch (error) {
       console.error('住店休息失败:', error);
-      await showAlert('住店休息失败', 'error');
+      await showAlert(locale === 'en' ? 'Rest failed' : '住店休息失败', 'error');
     }
   }, [showAlert]);
 
@@ -637,14 +716,14 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await fetch(`/api/maps/${id}`);
       if (!response.ok) {
         throw new Error('Failed to load map');
       }
-      
+
       const data = await response.json();
-      
+
       // 转换为MapData格式
       const mapData: MapData = {
         id: data.id,
@@ -654,17 +733,17 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         tiles: data.tiles, // API已经返回二维数组格式，直接使用
         items: data.items || [],
       };
-      
+
       // 对于传送门和建筑，查找关联地图的等距图
       await enrichItemsWithMapImages(mapData.items);
-      
+
       console.log('🗺️ 加载地图数据:', {
         id: mapData.id,
         name: mapData.name,
         itemsCount: mapData.items.length,
         firstItem: mapData.items[0],
       });
-      
+
       setMapData(mapData);
       return mapData;
     } catch (err) {
@@ -694,7 +773,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     // 批量查询所有关联地图的信息
     try {
       const mapImageCache: Record<string, string | null> = {};
-      
+
       await Promise.all(
         Array.from(targetMapIds).map(async (targetMapId) => {
           try {
@@ -794,12 +873,12 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     // 加载地图
     const initMap = async () => {
       let data = mapData;
-      
+
       // 如果没有初始地图，从API加载
       if (!data && mapId) {
         data = await loadMapData(mapId);
       }
-      
+
       // 如果有地图数据，加载到引擎
       if (data) {
         const resolvedMap = ensureE2EMapData(data);
@@ -885,7 +964,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
   // 强制重新渲染Canvas，修复modal关闭后的灰屏问题
   useEffect(() => {
-    if (!isDialogueVisible && !showPharmacy && !showWorkshop && engineRef.current && canvasRef.current) {
+    if (
+      !isDialogueVisible &&
+      !showPharmacy &&
+      !showWorkshop &&
+      engineRef.current &&
+      canvasRef.current
+    ) {
       // Modal关闭后，强制清理和重新渲染Canvas
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
@@ -924,15 +1009,15 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       const keys = pressedKeysRef.current;
       let dx = 0;
       let dy = 0;
-      
+
       if (keys.has('w') || keys.has('W')) dy -= 1;
       if (keys.has('s') || keys.has('S')) dy += 1;
       if (keys.has('a') || keys.has('A')) dx -= 1;
       if (keys.has('d') || keys.has('D')) dx += 1;
-      
+
       // deltaTime已经是毫秒，需要转换为秒
       const deltaSeconds = deltaTime / 1000;
-      
+
       // 如果有键盘输入，使用键盘移动
       if (dx !== 0 || dy !== 0) {
         engineRef.current.movePlayerByKeyboard(dx, dy, deltaSeconds);
@@ -940,10 +1025,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         // 没有键盘输入时，停止键盘移动状态
         engineRef.current.stopKeyboardMovement();
       }
-      
+
       // 更新玩家（移动动画等）
       engineRef.current.updatePlayer(deltaSeconds);
-      
+
       // 摄像机始终跟随玩家（保持玩家在屏幕中心）
       engineRef.current.centerCameraOnPlayer();
     }
@@ -1002,7 +1087,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
     // 检查是否悬停在可交互物品上
     const item = engine.getItemAtPixel(x, y);
-    
+
     if (item) {
       // 鼠标悬停在NPC、传送门或建筑物上时，显示为手型
       canvas.style.cursor = 'pointer';
@@ -1029,14 +1114,14 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     const item = engine.getItemAtPixel(x, y);
     if (item) {
       console.log(`📦 Clicked item:`, item);
-      
+
       // 处理NPC点击
       if (item.itemType === 'npc') {
         console.log(`🗣️ Interacting with NPC: ${item.itemName}`);
         await startDialogue(item);
         return;
       }
-      
+
       // 处理建筑点击 - 仅棋馆触发死活题挑战
       if (item.itemType === 'building') {
         console.log(`🏛️ Clicked building:`, item);
@@ -1055,11 +1140,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setShowWorkshop(true);
           await loadWorkshopInventory();
         }
-        if (item.itemId === 'pharmacy' || item.itemName?.includes('药') || item.itemName?.includes('药铺')) {
+        if (
+          item.itemId === 'pharmacy' ||
+          item.itemName?.includes('药') ||
+          item.itemName?.includes('药铺')
+        ) {
           setShowPharmacy(true);
           await loadPharmacyInventory();
         }
-        if (item.itemId === 'hotel' || item.itemName?.includes('客栈') || item.itemName?.includes('Inn')) {
+        if (
+          item.itemId === 'hotel' ||
+          item.itemName?.includes('客栈') ||
+          item.itemName?.includes('Inn')
+        ) {
           setShowHotel(true);
         }
         if (item.itemId === 'go_pavilion') {
@@ -1070,7 +1163,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               : currentMapId === 'huashan_scene'
                 ? 'huashan'
                 : 'gop';
-          
+
           // 恢复10点体力和10点内力
           try {
             await fetch('/api/player/stats/update', {
@@ -1082,34 +1175,40 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           } catch (error) {
             console.error('恢复体力内力失败:', error);
           }
-          
+
           setSgfPracticeSet(practiceSet);
           setShowSgfPractice(true);
         }
-        
+
         // 处理特殊建筑的NPC对局挑战
-        const buildingToNpcMap: Record<string, { tier: string; difficultyRange: [number, number] }> = {
-          'small_2stories': { tier: 'tier1', difficultyRange: [8, 9] },
-          'old_house': { tier: 'tier2', difficultyRange: [6, 7] },
-          'stable': { tier: 'tier3', difficultyRange: [4, 5] },
-          'house': { tier: 'tier4', difficultyRange: [1, 3] },
-          'repair_building': { tier: 'special', difficultyRange: [1, 9] },
+        const buildingToNpcMap: Record<
+          string,
+          { tier: string; difficultyRange: [number, number] }
+        > = {
+          small_2stories: { tier: 'tier1', difficultyRange: [8, 9] },
+          old_house: { tier: 'tier2', difficultyRange: [6, 7] },
+          stable: { tier: 'tier3', difficultyRange: [4, 5] },
+          house: { tier: 'tier4', difficultyRange: [1, 3] },
+          repair_building: { tier: 'special', difficultyRange: [1, 9] },
         };
-        
+
         const buildingConfig = item.itemId ? buildingToNpcMap[item.itemId] : undefined;
         if (buildingConfig) {
           try {
             // 直接使用导入的NPC数据
             const npcs = (otherNpcsData as any)[buildingConfig.tier] || [];
-            
+
             if (npcs.length === 0) {
-              await showAlert('这里似乎没有人...', 'info');
+              await showAlert(
+                locale === 'en' ? 'There seems to be no one here...' : '这里似乎没有人...',
+                'info'
+              );
               return;
             }
-            
+
             // 随机选择一个NPC
             const randomNpc = npcs[Math.floor(Math.random() * npcs.length)];
-            
+
             // 处理动态难度NPC（如小亮）
             let npcDifficulty = randomNpc.difficulty;
             if (randomNpc.dynamicDifficulty) {
@@ -1125,13 +1224,15 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
                 npcDifficulty = 1;
               }
             }
-            
+
             // 确认是否挑战
+            const npcName = locale === 'en' ? randomNpc.name.en : randomNpc.name.zh;
+            const npcDesc = locale === 'en' ? randomNpc.description.en : randomNpc.description.zh;
             const shouldChallenge = await showConfirm(
-              `遇到了 ${randomNpc.name.zh}（${randomNpc.name.en}）\n${randomNpc.description.zh}\n难度: ${npcDifficulty}\n\n是否与其对弈？`,
-              '武林高手'
+              t('npcChallenge.question', { npcName, npcDesc, difficulty: npcDifficulty }),
+              t('npcChallenge.title')
             );
-            
+
             if (shouldChallenge) {
               setCurrentBattleNpcId(randomNpc.id);
               setGoOpponentName(randomNpc.name.zh);
@@ -1140,7 +1241,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             }
           } catch (error) {
             console.error('加载NPC配置失败:', error);
-            await showAlert('系统错误', 'error');
+            await showAlert(t('npcChallenge.systemError'), 'error');
           }
         }
         return;
@@ -1150,7 +1251,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       if (item.itemId === 'chest01' || item.itemId === 'chest02') {
         const isOpened = item.collected || item.properties?.state === 'opened';
         if (isOpened) {
-          await showAlert('宝箱已经打开过了。', 'info');
+          await showAlert(t('chest.alreadyOpened'), 'info');
           return;
         }
 
@@ -1159,7 +1260,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           const result = await response.json();
 
           if (!response.ok || !result?.success) {
-            await showAlert(result?.error || '打开宝箱失败', 'error');
+            await showAlert(result?.error || t('chest.openFailed'), 'error');
             return;
           }
 
@@ -1193,21 +1294,21 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           }
 
           if (reward?.name) {
-            await showAlert(`宝箱打开：获得「${reward.name}」！`, 'success');
+            await showAlert(t('chest.openSuccessItem', { item: reward.name }), 'success');
           } else {
-            await showAlert('宝箱打开：获得宝物！', 'success');
+            await showAlert(t('chest.openSuccess'), 'success');
           }
         } catch (error) {
           console.error('打开宝箱失败:', error);
-          await showAlert('打开宝箱失败', 'error');
+          await showAlert(t('chest.openFailed'), 'error');
         }
         return;
       }
-      
+
       // 处理传送门点击
       if (item.itemType === 'portal') {
         console.log(`🌀 Clicked portal to ${item.targetMapId}`);
-        
+
         if (!item.targetMapId) {
           console.error('❌ Portal has no targetMapId');
           return;
@@ -1215,9 +1316,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
         // 检查传送门是否解锁
         try {
-          const response = await fetch(`/api/portals/check?portalId=${item.id}&mapId=${mapData?.id}`);
+          const response = await fetch(
+            `/api/portals/check?portalId=${item.id}&mapId=${mapData?.id}`
+          );
           const result = await response.json();
-          
+
           if (result.success && result.data) {
             if (result.data.unlocked) {
               // 传送门已解锁，显示确认对话框
@@ -1226,18 +1329,20 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             } else {
               // 传送门未解锁，显示条件提示
               const requirements = result.data.requirements;
-              const targetMapName = item.targetMapId ? getMapName(item.targetMapId) : '未知地点';
-              let hint = `通往【${targetMapName}】的传送门尚未解锁\n\n解锁条件：\n`;
-              
+              const targetMapName = item.targetMapId
+                ? getMapName(item.targetMapId)
+                : t('portalLock.unknownLocation');
+              let hint = t('portalLock.message', { target: targetMapName });
+
               if (requirements && Array.isArray(requirements)) {
                 requirements.forEach((req: any, index: number) => {
                   hint += `${index + 1}. ${getRequirementHint(req)}\n`;
                 });
               } else {
-                hint += '未知条件';
+                hint += t('portalLock.unknownCondition');
               }
-              
-              await showAlert(hint, 'warning', '🔒 传送门未解锁');
+
+              await showAlert(hint, 'warning', t('portalLock.title'));
             }
           }
         } catch (error) {
@@ -1246,10 +1351,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setPendingPortal(item);
           setShowPortalConfirm(true);
         }
-        
+
         return;
       }
-      
+
       if (item.itemType === 'plant' && !item.collected) {
         const resource = isResourceItem(item);
         if (resource.isHerb) {
@@ -1271,7 +1376,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               if (!prev) return prev;
               const nextItems = prev.items.map((entry) =>
                 entry.id === item.id
-                  ? { ...entry, itemPath: '', blocking: false, interactable: false, collected: true }
+                  ? {
+                      ...entry,
+                      itemPath: '',
+                      blocking: false,
+                      interactable: false,
+                      collected: true,
+                    }
                   : entry
               );
               return { ...prev, items: nextItems };
@@ -1299,7 +1410,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           return;
         }
       }
-      
+
       // 点击到其他物品后不继续执行移动逻辑
       return;
     }
@@ -1344,479 +1455,526 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     setActionConsumedNodeId(null);
   }, []);
 
-  const recordDialogueFlags = useCallback(async (flags: string[]): Promise<void> => {
-    if (!flags.length) return;
-    if (isE2EEnabled()) return;
-    const npcId = currentNpcIdRef.current;
-    if (!npcId) return;
+  const recordDialogueFlags = useCallback(
+    async (flags: string[]): Promise<void> => {
+      if (!flags.length) return;
+      if (isE2EEnabled()) return;
+      const npcId = currentNpcIdRef.current;
+      if (!npcId) return;
 
-    try {
-      const response = await fetch(`/api/npcs/${npcId}/dialogue`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flags, increment: false }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data?.success && Array.isArray(data?.data?.dialogueFlags)) {
-          setNpcDialogueFlags((prev) => {
-            const next = { ...prev, [npcId]: data.data.dialogueFlags };
-            npcDialogueFlagsRef.current = next;
-            return next;
-          });
+      try {
+        const response = await fetch(`/api/npcs/${npcId}/dialogue`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ flags, increment: false }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.success && Array.isArray(data?.data?.dialogueFlags)) {
+            setNpcDialogueFlags((prev) => {
+              const next = { ...prev, [npcId]: data.data.dialogueFlags };
+              npcDialogueFlagsRef.current = next;
+              return next;
+            });
+          }
         }
+      } catch (error) {
+        console.warn('记录对话标记失败:', error);
       }
-    } catch (error) {
-      console.warn('记录对话标记失败:', error);
-    }
-  }, [isE2EEnabled]);
+    },
+    [isE2EEnabled]
+  );
 
   /**
    * 处理对话中的 action
    */
-  const handleDialogueAction = useCallback((action: { type: string; value: any }) => {
-    console.log('🎬 Handling dialogue action:', action);
-    
-    switch (action.type) {
-      case 'battle':
-        // 触发对战
-        setBattleResult(null);
-        if (dialogueEngine) {
-          dialogueEngine.updatePlayerState({ battleResult: null });
-        }
-        const opponentId = action.value;
-        const npcName = getTranslatedNpcName(opponentId, locale);
-        
-        // 获取 NPC 的难度
-        fetch(`/api/npcs/${opponentId}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.success && data.data?.difficulty) {
-              setGoOpponentDifficulty(data.data.difficulty as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
-            } else {
-              setGoOpponentDifficulty(5); // 默认难度
-            }
-          })
-          .catch(err => {
-            console.error('获取NPC难度失败:', err);
-            setGoOpponentDifficulty(5); // 默认难度
-          });
-        
-        // 关闭对话，显示对战挑战
-        setTimeout(() => {
-          setPendingGoOpponent(npcName);
-          setShowGoChallenge(true);
-          setIsDialogueVisible(false);
-        }, 500);
-        break;
-      
-      case 'quest':
-        // 处理任务相关的 action（如解锁技能）
-        console.log('📜 Quest action:', action.value);
-        // TODO: 实现技能解锁逻辑
-        if (typeof action.value === 'string') {
-          recordDialogueFlags([`quest:${action.value}`]);
-        }
-        break;
-      
-      case 'skill':
-        // 处理技能学习
-        const { skillId } = action.value;
-        console.log('✨ 学习技能:', skillId);
+  const handleDialogueAction = useCallback(
+    (action: { type: string; value: any }) => {
+      console.log('🎬 Handling dialogue action:', action);
 
-        const questId = action.value?.questId as string | undefined;
-        const flagsToRecord = [skillId ? `skill:${skillId}` : null, questId ? `quest:${questId}` : null].filter(Boolean) as string[];
-        if (flagsToRecord.length) {
-          recordDialogueFlags(flagsToRecord);
-        }
-        
-        // 调用API学习技能
-        fetch('/api/player/skills/learn', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ skillId }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              console.log('✅ 技能学习成功:', data.message);
-              
-              // 只有首次学会时才显示动画
-              if (data.isNew) {
-                // 技能ID到图标的映射
-                const skillIcons: Record<string, string> = {
-                  kanglong_youhui: '/generated/skill/kanglongyouhui.png',
-                  dugu_jiujian: '/generated/skill/dugujiujian.png',
-                  fuyu_chuanyin: '/generated/skill/fuyuchuanyin.png',
-                  jiguan_suanjin: '/generated/skill/jiguansuanjin.png',
-                  qizi_anqi: '/generated/skill/qizi_anqi.png',
-                  qiankun_danuo: '/generated/skill/qiankun_danuo.png',
-                  yiyang_zhi: '/generated/skill/yiyang_zhi.png',
-                  zuoyou_hubo: '/generated/skill/zuoyou_hubo.png',
-                  beiming_shengong: '/generated/skill/beiming_shengong.png',
-                };
-                
-                // 显示Toast
-                setSkillUnlockToast({
-                  visible: true,
-                  skillName: data.data.name,
-                  skillIcon: skillIcons[skillId] || '✨',
-                  character: data.data.character,
-                  description: data.data.description,
-                });
+      switch (action.type) {
+        case 'battle':
+          // 触发对战
+          setBattleResult(null);
+          if (dialogueEngine) {
+            dialogueEngine.updatePlayerState({ battleResult: null });
+          }
+          const opponentId = action.value;
+          const npcName = getTranslatedNpcName(opponentId, locale);
+
+          // 获取 NPC 的难度
+          fetch(`/api/npcs/${opponentId}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && data.data?.difficulty) {
+                setGoOpponentDifficulty(data.data.difficulty as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
+              } else {
+                setGoOpponentDifficulty(5); // 默认难度
               }
-            } else {
-              console.warn('⚠️ 技能学习失败:', data.error);
-            }
-          })
-          .catch(err => {
-            console.error('❌ 技能学习API错误:', err);
-          });
-        break;
-      
-      case 'reward':
-        // 处理奖励
-        console.log('🎁 Reward action:', action.value);
-        {
-          const reward = action.value || {};
-          const rewardItems = Array.isArray(reward.items)
-            ? reward.items
-            : reward.itemId
-              ? [{ itemId: reward.itemId, quantity: reward.quantity ?? 1 }]
-              : [];
-          const questId = reward.questId as string | undefined;
-
-          if (questId) {
-            recordDialogueFlags([`quest:${questId}`]);
-          }
-
-          if (rewardItems.length > 0) {
-            fetch('/api/player/inventory/add', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ items: rewardItems }),
             })
-              .then((res) => res.json())
-              .then((data) => {
-                if (!data?.success) {
-                  console.warn('⚠️ 发放奖励失败:', data?.error);
-                }
-              })
-              .catch((error) => {
-                console.error('❌ 发放奖励失败:', error);
-              });
+            .catch((err) => {
+              console.error('获取NPC难度失败:', err);
+              setGoOpponentDifficulty(5); // 默认难度
+            });
+
+          // 关闭对话，显示对战挑战
+          setTimeout(() => {
+            setPendingGoOpponent(npcName);
+            setShowGoChallenge(true);
+            setIsDialogueVisible(false);
+          }, 500);
+          break;
+
+        case 'quest':
+          // 处理任务相关的 action（如解锁技能）
+          console.log('📜 Quest action:', action.value);
+          // TODO: 实现技能解锁逻辑
+          if (typeof action.value === 'string') {
+            recordDialogueFlags([`quest:${action.value}`]);
           }
-        }
-        break;
-      
-      case 'tutorial_board': {
-        const tutorialId = action.value as string;
-        const tutorial = tutorialBoards[tutorialId];
-        if (tutorial) {
-          setTutorialBoard(tutorial);
-          setShowTutorialBoard(true);
-          setIsDialogueVisible(false);
-        } else {
-          console.warn('Unknown tutorial board:', tutorialId);
-        }
-        break;
-      }
+          break;
 
-      case 'tutorial_sgf': {
-        const lessonId = typeof action.value === 'string' ? action.value : action.value?.lessonId;
-        const progressFlag = action.value?.progressFlag || (lessonId ? `sgf_lesson:${lessonId}` : null);
-        if (lessonId) {
-          setSgfLessonId(lessonId);
-          setSgfProgressFlag(progressFlag);
-          setShowSgfTutorial(true);
-          setIsDialogueVisible(false);
-        } else {
-          console.warn('Unknown SGF lesson:', action.value);
-        }
-        break;
-      }
+        case 'skill':
+          // 处理技能学习
+          const { skillId } = action.value;
+          console.log('✨ 学习技能:', skillId);
 
-      case 'go_proverb': {
-        setShowGoProverb(true);
-        setIsDialogueVisible(false);
-        break;
+          const questId = action.value?.questId as string | undefined;
+          const flagsToRecord = [
+            skillId ? `skill:${skillId}` : null,
+            questId ? `quest:${questId}` : null,
+          ].filter(Boolean) as string[];
+          if (flagsToRecord.length) {
+            recordDialogueFlags(flagsToRecord);
+          }
+
+          // 调用API学习技能
+          fetch('/api/player/skills/learn', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ skillId }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                console.log('✅ 技能学习成功:', data.message);
+
+                // 只有首次学会时才显示动画
+                if (data.isNew) {
+                  // 技能ID到图标的映射
+                  const skillIcons: Record<string, string> = {
+                    kanglong_youhui: '/generated/skill/kanglongyouhui.png',
+                    dugu_jiujian: '/generated/skill/dugujiujian.png',
+                    fuyu_chuanyin: '/generated/skill/fuyuchuanyin.png',
+                    jiguan_suanjin: '/generated/skill/jiguansuanjin.png',
+                    qizi_anqi: '/generated/skill/qizi_anqi.png',
+                    qiankun_danuo: '/generated/skill/qiankun_danuo.png',
+                    yiyang_zhi: '/generated/skill/yiyang_zhi.png',
+                    zuoyou_hubo: '/generated/skill/zuoyou_hubo.png',
+                    beiming_shengong: '/generated/skill/beiming_shengong.png',
+                  };
+
+                  // 显示Toast
+                  setSkillUnlockToast({
+                    visible: true,
+                    skillName: data.data.name,
+                    skillIcon: skillIcons[skillId] || '✨',
+                    character: data.data.character,
+                    description: data.data.description,
+                  });
+                }
+              } else {
+                console.warn('⚠️ 技能学习失败:', data.error);
+              }
+            })
+            .catch((err) => {
+              console.error('❌ 技能学习API错误:', err);
+            });
+          break;
+
+        case 'reward':
+          // 处理奖励
+          console.log('🎁 Reward action:', action.value);
+          {
+            const reward = action.value || {};
+            const rewardItems = Array.isArray(reward.items)
+              ? reward.items
+              : reward.itemId
+                ? [{ itemId: reward.itemId, quantity: reward.quantity ?? 1 }]
+                : [];
+            const questId = reward.questId as string | undefined;
+
+            if (questId) {
+              recordDialogueFlags([`quest:${questId}`]);
+            }
+
+            if (rewardItems.length > 0) {
+              fetch('/api/player/inventory/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: rewardItems }),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (!data?.success) {
+                    console.warn('⚠️ 发放奖励失败:', data?.error);
+                  }
+                })
+                .catch((error) => {
+                  console.error('❌ 发放奖励失败:', error);
+                });
+            }
+          }
+          break;
+
+        case 'tutorial_board': {
+          const tutorialId = action.value as string;
+          const tutorial = tutorialBoards[tutorialId];
+          if (tutorial) {
+            setTutorialBoard(tutorial);
+            setShowTutorialBoard(true);
+            setIsDialogueVisible(false);
+          } else {
+            console.warn('Unknown tutorial board:', tutorialId);
+          }
+          break;
+        }
+
+        case 'tutorial_sgf': {
+          const lessonId = typeof action.value === 'string' ? action.value : action.value?.lessonId;
+          const progressFlag =
+            action.value?.progressFlag || (lessonId ? `sgf_lesson:${lessonId}` : null);
+          if (lessonId) {
+            setSgfLessonId(lessonId);
+            setSgfProgressFlag(progressFlag);
+            setShowSgfTutorial(true);
+            setIsDialogueVisible(false);
+          } else {
+            console.warn('Unknown SGF lesson:', action.value);
+          }
+          break;
+        }
+
+        case 'go_proverb': {
+          setShowGoProverb(true);
+          setIsDialogueVisible(false);
+          break;
+        }
+
+        default:
+          console.warn('Unknown action type:', action.type);
       }
-      
-      default:
-        console.warn('Unknown action type:', action.type);
-    }
-  }, [dialogueEngine, recordDialogueFlags]);
+    },
+    [dialogueEngine, recordDialogueFlags]
+  );
 
   /**
    * 更新对话状态
    */
-  const updateDialogueState = useCallback((engine: DialogueEngine, battleResultOverride?: 'win' | 'lose' | null) => {
-    const node = engine.getCurrentNode();
-    const options = engine.getAvailableOptions();
-    const effectiveBattleResult = battleResultOverride ?? battleResult;
+  const updateDialogueState = useCallback(
+    (engine: DialogueEngine, battleResultOverride?: 'win' | 'lose' | null) => {
+      const node = engine.getCurrentNode();
+      const options = engine.getAvailableOptions();
+      const effectiveBattleResult = battleResultOverride ?? battleResult;
 
-    const npcId = currentNpcIdRef.current;
-    const defeatedFlag = npcId ? `defeated_${npcId}` : '';
-    const hasDefeated = defeatedFlag ? completedQuestsRef.current.includes(defeatedFlag) : false;
-    
-    console.log('📊 updateDialogueState:', {
-      npcId,
-      nodeId: node?.id,
-      defeatedFlag,
-      hasDefeated,
-      completedQuests: completedQuestsRef.current,
-      optionsCount: options.length,
-      isCompleted: engine.isCompleted(),
-      options: options.map(o => o.text)
-    });
-    
-    const isRepeatableNode = (nodeId?: string) => {
-      if (!nodeId) return false;
-      // 对话循环节点和说明类节点可以重复访问
-      if (nodeId === 'daily_chat' || nodeId === 'daily_chat_2' || nodeId === 'rematch_challenge' || nodeId === 'proverb_intro') {
-        return true;
-      }
-      // 说明类节点可以重复访问
-      if (nodeId === 'explain_go' || nodeId === 'explain_venues' || nodeId === 'not_ready' || nodeId === 'farewell') {
-        return true;
-      }
-      // 挑战类节点在未击败时可以重复访问（允许多次尝试），击败后需要隐藏
-      if (nodeId === 'challenge_condition' || nodeId === 'start_battle' || nodeId === 'challenge_intro' || nodeId === 'try_again') {
-        return !hasDefeated;
-      }
-      return false;
-    };
-
-    if (node?.id && !isRepeatableNode(node.id) && (!node.options || node.options.length === 0)) {
-      const flags = npcId ? new Set(npcDialogueFlagsRef.current[npcId] || []) : new Set<string>();
-      if (flags.has(`dialogue_node:${node.id}`)) {
-        const advanced = engine.continue();
-        if (advanced) {
-          updateDialogueState(engine);
-          return;
-        }
-      }
-    }
-
-    if (node?.action?.type === 'battle' && effectiveBattleResult && options.length === 1) {
-      const moved = engine.selectOption(0);
-      if (moved) {
-        updateDialogueState(engine, battleResultOverride);
-        return;
-      }
-    }
-    
-    setCurrentDialogueNode(node);
-    
-    // 为所有NPC对话添加通用的"切磋对局"选项
-    const enhancedOptions = [...options];
-    
-    // 只在有选项且对话未结束时添加通用挑战选项
-    // 对于有剧情对局的NPC，必须先完成剧情对局（hasDefeated = true）才能使用通用挑战
-    if (npcId && options.length > 0 && !engine.isCompleted()) {
-      console.log('🎯 Checking universal challenge for NPC:', npcId);
-      console.log('🎯 hasDefeated:', hasDefeated);
-      console.log('🎯 Available options:', options.map(opt => opt.text));
-      
-      const alreadyHasChallenge = options.some(opt => 
-        opt.text.includes('切磋') || 
-        opt.text.includes('挑战') || 
-        opt.text.includes('对局')
-      );
-      
-      console.log('🎯 alreadyHasChallenge:', alreadyHasChallenge);
-      
-      // 如果原选项中没有挑战相关选项，且已经击败过该NPC（或NPC没有剧情对局），添加通用选项
-      if (!alreadyHasChallenge && hasDefeated) {
-        console.log('✅ Adding universal challenge option');
-        enhancedOptions.push({
-          text: '我想和您切磋一局围棋',
-          nextNodeId: '__universal_challenge__', // 特殊标记
-        });
-      } else {
-        console.log('❌ Not adding universal challenge:', { alreadyHasChallenge, hasDefeated });
-      }
-    }
-    
-    setDialogueOptions(enhancedOptions);
-
-    if (actionConsumedNodeId && node?.id && node.id !== actionConsumedNodeId) {
-      setActionConsumedNodeId(null);
-    }
-    
-    // 处理节点的 action，但跳过已处理的 action
-    if (node?.action && !(actionConsumedNodeId && node?.id === actionConsumedNodeId)) {
-      const shouldDelayAction =
-        node.action.type === 'tutorial_board' ||
-        node.action.type === 'tutorial_sgf' ||
-        node.action.type === 'go_proverb';
-      if (!shouldDelayAction) {
-        // 对于 battle action，立即标记为已处理，避免重复触发
-        if (node.action.type === 'battle' && node.id) {
-          setActionConsumedNodeId(node.id);
-        }
-        handleDialogueAction(node.action);
-      }
-    }
-
-    if (node?.id) {
       const npcId = currentNpcIdRef.current;
-      if (npcId) {
-        const flags = new Set(npcDialogueFlagsRef.current[npcId] || []);
-        const visitFlag = `dialogue_node:${node.id}`;
-        if (!flags.has(visitFlag)) {
-          recordDialogueFlags([visitFlag]);
-        }
+      const defeatedFlag = npcId ? `defeated_${npcId}` : '';
+      const hasDefeated = defeatedFlag ? completedQuestsRef.current.includes(defeatedFlag) : false;
 
-        if (node.action?.type === 'tutorial_board' || node.action?.type === 'tutorial_sgf') {
-          const lastNode = tutorialNodeCacheRef.current[npcId];
-          if (lastNode !== node.id) {
-            const flag = `tutorial_progress:${npcId}:${Date.now()}:${node.id}`;
-            tutorialNodeCacheRef.current[npcId] = node.id;
-            tutorialProgressCacheRef.current[npcId] = flag;
-            recordDialogueFlags([flag]);
+      console.log('📊 updateDialogueState:', {
+        npcId,
+        nodeId: node?.id,
+        defeatedFlag,
+        hasDefeated,
+        completedQuests: completedQuestsRef.current,
+        optionsCount: options.length,
+        isCompleted: engine.isCompleted(),
+        options: options.map((o) => o.text),
+      });
+
+      const isRepeatableNode = (nodeId?: string) => {
+        if (!nodeId) return false;
+        // 对话循环节点和说明类节点可以重复访问
+        if (
+          nodeId === 'daily_chat' ||
+          nodeId === 'daily_chat_2' ||
+          nodeId === 'rematch_challenge' ||
+          nodeId === 'proverb_intro'
+        ) {
+          return true;
+        }
+        // 说明类节点可以重复访问
+        if (
+          nodeId === 'explain_go' ||
+          nodeId === 'explain_venues' ||
+          nodeId === 'not_ready' ||
+          nodeId === 'farewell'
+        ) {
+          return true;
+        }
+        // 挑战类节点在未击败时可以重复访问（允许多次尝试），击败后需要隐藏
+        if (
+          nodeId === 'challenge_condition' ||
+          nodeId === 'start_battle' ||
+          nodeId === 'challenge_intro' ||
+          nodeId === 'try_again'
+        ) {
+          return !hasDefeated;
+        }
+        return false;
+      };
+
+      if (node?.id && !isRepeatableNode(node.id) && (!node.options || node.options.length === 0)) {
+        const flags = npcId ? new Set(npcDialogueFlagsRef.current[npcId] || []) : new Set<string>();
+        if (flags.has(`dialogue_node:${node.id}`)) {
+          const advanced = engine.continue();
+          if (advanced) {
+            updateDialogueState(engine);
+            return;
           }
         }
       }
-    }
-    
-    // 如果对话结束，自动关闭
-    if (engine.isCompleted()) {
-      setTimeout(() => {
-        closeDialogue();
-      }, 1000);
-    }
-  }, [actionConsumedNodeId, battleResult, closeDialogue, handleDialogueAction, recordDialogueFlags]);
+
+      if (node?.action?.type === 'battle' && effectiveBattleResult && options.length === 1) {
+        const moved = engine.selectOption(0);
+        if (moved) {
+          updateDialogueState(engine, battleResultOverride);
+          return;
+        }
+      }
+
+      setCurrentDialogueNode(node);
+
+      // 为所有NPC对话添加通用的"切磋对局"选项
+      const enhancedOptions = [...options];
+
+      // 只在有选项且对话未结束时添加通用挑战选项
+      // 对于有剧情对局的NPC，必须先完成剧情对局（hasDefeated = true）才能使用通用挑战
+      if (npcId && options.length > 0 && !engine.isCompleted()) {
+        console.log('🎯 Checking universal challenge for NPC:', npcId);
+        console.log('🎯 hasDefeated:', hasDefeated);
+        console.log(
+          '🎯 Available options:',
+          options.map((opt) => opt.text)
+        );
+
+        const alreadyHasChallenge = options.some(
+          (opt) =>
+            opt.text.includes('切磋') || opt.text.includes('挑战') || opt.text.includes('对局')
+        );
+
+        console.log('🎯 alreadyHasChallenge:', alreadyHasChallenge);
+
+        // 如果原选项中没有挑战相关选项，且已经击败过该NPC（或NPC没有剧情对局），添加通用选项
+        if (!alreadyHasChallenge && hasDefeated) {
+          console.log('✅ Adding universal challenge option');
+          enhancedOptions.push({
+            text: '我想和您切磋一局围棋',
+            nextNodeId: '__universal_challenge__', // 特殊标记
+          });
+        } else {
+          console.log('❌ Not adding universal challenge:', { alreadyHasChallenge, hasDefeated });
+        }
+      }
+
+      setDialogueOptions(enhancedOptions);
+
+      if (actionConsumedNodeId && node?.id && node.id !== actionConsumedNodeId) {
+        setActionConsumedNodeId(null);
+      }
+
+      // 处理节点的 action，但跳过已处理的 action
+      if (node?.action && !(actionConsumedNodeId && node?.id === actionConsumedNodeId)) {
+        const shouldDelayAction =
+          node.action.type === 'tutorial_board' ||
+          node.action.type === 'tutorial_sgf' ||
+          node.action.type === 'go_proverb';
+        if (!shouldDelayAction) {
+          // 对于 battle action，立即标记为已处理，避免重复触发
+          if (node.action.type === 'battle' && node.id) {
+            setActionConsumedNodeId(node.id);
+          }
+          handleDialogueAction(node.action);
+        }
+      }
+
+      if (node?.id) {
+        const npcId = currentNpcIdRef.current;
+        if (npcId) {
+          const flags = new Set(npcDialogueFlagsRef.current[npcId] || []);
+          const visitFlag = `dialogue_node:${node.id}`;
+          if (!flags.has(visitFlag)) {
+            recordDialogueFlags([visitFlag]);
+          }
+
+          if (node.action?.type === 'tutorial_board' || node.action?.type === 'tutorial_sgf') {
+            const lastNode = tutorialNodeCacheRef.current[npcId];
+            if (lastNode !== node.id) {
+              const flag = `tutorial_progress:${npcId}:${Date.now()}:${node.id}`;
+              tutorialNodeCacheRef.current[npcId] = node.id;
+              tutorialProgressCacheRef.current[npcId] = flag;
+              recordDialogueFlags([flag]);
+            }
+          }
+        }
+      }
+
+      // 如果对话结束，自动关闭
+      if (engine.isCompleted()) {
+        setTimeout(() => {
+          closeDialogue();
+        }, 1000);
+      }
+    },
+    [actionConsumedNodeId, battleResult, closeDialogue, handleDialogueAction, recordDialogueFlags]
+  );
 
   /**
    * 开始与NPC对话
    */
-  const getNpcIdFromItem = useCallback((item: any) => {
-    let npcId = '';
-    if (item.itemId && item.itemId.startsWith('npc_')) {
-      npcId = item.itemId.substring(4);
-    }
+  const getNpcIdFromItem = useCallback(
+    (item: any) => {
+      let npcId = '';
+      if (item.itemId && item.itemId.startsWith('npc_')) {
+        npcId = item.itemId.substring(4);
+      }
 
-    if (!npcId) {
-      npcId = npcNameToIdMap[item.itemName] || '';
-    }
-
-    return npcId;
-  }, [npcNameToIdMap]);
-
-  const startDialogueInternal = useCallback(async (item: any) => {
-    try {
-      const npcId = getNpcIdFromItem(item);
       if (!npcId) {
-        console.warn(`未找到 NPC ${item.itemName} 的ID`);
-        await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
-        return;
+        npcId = npcNameToIdMap[item.itemName] || '';
       }
 
-      currentNpcIdRef.current = npcId;
+      return npcId;
+    },
+    [npcNameToIdMap]
+  );
 
-      if (!isE2EEnabled()) {
-        try {
-          const response = await fetch(`/api/npcs/${npcId}/dialogue`, { method: 'POST' });
-          if (response.ok) {
-            const data = await response.json();
-            if (data?.success && typeof data?.data?.dialoguesCount === 'number') {
-              setNpcDialogueCounts((prev) => {
-                const next = { ...prev, [npcId]: data.data.dialoguesCount };
-                npcDialogueCountsRef.current = next;
-                return next;
-              });
-            }
-            if (data?.success && Array.isArray(data?.data?.dialogueFlags)) {
-              setNpcDialogueFlags((prev) => {
-                const next = { ...prev, [npcId]: data.data.dialogueFlags };
-                npcDialogueFlagsRef.current = next;
-                return next;
-              });
-            }
-          }
-        } catch (error) {
-          console.warn('记录NPC对话次数失败:', error);
-        }
-      }
-
-      let learnedSkills: string[] = [];
-      if (!isE2EEnabled()) {
-        try {
-          const skillResponse = await fetch('/api/player/skills');
-          if (skillResponse.ok) {
-            const skillData = await skillResponse.json();
-            learnedSkills = Array.isArray(skillData?.data)
-              ? skillData.data.filter((skill: any) => skill?.unlocked).map((skill: any) => String(skill.skillId))
-              : [];
-          }
-        } catch (error) {
-          console.warn('获取玩家技能失败:', error);
-        }
-      }
-
-      const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
-
-      const playerState = {
-        completedQuests: completedQuestsRef.current,
-        npcDialoguesCount: npcDialogueCountsRef.current,
-        npcDialogueFlags: npcDialogueFlagsRef.current,
-        learnedSkills,
-      };
-      const engine = new DialogueEngine(dialogueTree, playerState);
-
-      setDialogueEngine(engine);
-
-      const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
-      setCurrentNpcAvatar(avatarPath);
-
-      updateDialogueState(engine);
-      setIsDialogueVisible(true);
-    } catch (error) {
-      console.error('启动对话失败:', error);
-      await showAlert(`无法与 ${item.itemName} 对话`, 'error');
-    }
-  }, [getNpcIdFromItem, isE2EEnabled, locale, showAlert, updateDialogueState]);
-
-  const startDialogue = useCallback(async (item: any) => {
-    if (isE2EEnabled() && !isE2EStoryEnabled()) {
-      await startDialogueInternal(item);
-      return;
-    }
-
-    const npcId = getNpcIdFromItem(item);
-    if (!npcId) {
-      await startDialogueInternal(item);
-      return;
-    }
-
-    const story = getStoryByNpcId(npcId);
-    if (!story) {
-      await startDialogueInternal(item);
-      return;
-    }
-
-    try {
-      const progressResponse = await fetch(`/api/stories/progress?storyId=${story.storyId}`);
-      if (progressResponse.ok) {
-        const progressData = await progressResponse.json();
-        if (progressData?.data?.completed) {
-          await startDialogueInternal(item);
+  const startDialogueInternal = useCallback(
+    async (item: any) => {
+      try {
+        const npcId = getNpcIdFromItem(item);
+        if (!npcId) {
+          console.warn(`未找到 NPC ${item.itemName} 的ID`);
+          await showAlert(`${item.itemName}：还没有准备好对话内容...`, 'warning');
           return;
         }
 
-        pendingStoryNpcRef.current = item;
-        await openStory(story, progressData?.data || null);
+        currentNpcIdRef.current = npcId;
+
+        if (!isE2EEnabled()) {
+          try {
+            const response = await fetch(`/api/npcs/${npcId}/dialogue`, { method: 'POST' });
+            if (response.ok) {
+              const data = await response.json();
+              if (data?.success && typeof data?.data?.dialoguesCount === 'number') {
+                setNpcDialogueCounts((prev) => {
+                  const next = { ...prev, [npcId]: data.data.dialoguesCount };
+                  npcDialogueCountsRef.current = next;
+                  return next;
+                });
+              }
+              if (data?.success && Array.isArray(data?.data?.dialogueFlags)) {
+                setNpcDialogueFlags((prev) => {
+                  const next = { ...prev, [npcId]: data.data.dialogueFlags };
+                  npcDialogueFlagsRef.current = next;
+                  return next;
+                });
+              }
+            }
+          } catch (error) {
+            console.warn('记录NPC对话次数失败:', error);
+          }
+        }
+
+        let learnedSkills: string[] = [];
+        if (!isE2EEnabled()) {
+          try {
+            const skillResponse = await fetch('/api/player/skills');
+            if (skillResponse.ok) {
+              const skillData = await skillResponse.json();
+              learnedSkills = Array.isArray(skillData?.data)
+                ? skillData.data
+                    .filter((skill: any) => skill?.unlocked)
+                    .map((skill: any) => String(skill.skillId))
+                : [];
+            }
+          } catch (error) {
+            console.warn('获取玩家技能失败:', error);
+          }
+        }
+
+        const dialogueTree = await loadDialogueTree(npcId, locale as 'zh' | 'en');
+
+        const playerState = {
+          completedQuests: completedQuestsRef.current,
+          npcDialoguesCount: npcDialogueCountsRef.current,
+          npcDialogueFlags: npcDialogueFlagsRef.current,
+          learnedSkills,
+        };
+        const engine = new DialogueEngine(dialogueTree, playerState);
+
+        setDialogueEngine(engine);
+
+        const avatarPath = item.imagePath || `/game/isometric/characters/npc_${npcId}.png`;
+        setCurrentNpcAvatar(avatarPath);
+
+        updateDialogueState(engine);
+        setIsDialogueVisible(true);
+      } catch (error) {
+        console.error('启动对话失败:', error);
+        await showAlert(`无法与 ${item.itemName} 对话`, 'error');
+      }
+    },
+    [getNpcIdFromItem, isE2EEnabled, locale, showAlert, updateDialogueState]
+  );
+
+  const startDialogue = useCallback(
+    async (item: any) => {
+      if (isE2EEnabled() && !isE2EStoryEnabled()) {
+        await startDialogueInternal(item);
         return;
       }
-    } catch (error) {
-      console.warn('获取故事进度失败:', error);
-    }
 
-    pendingStoryNpcRef.current = item;
-    await openStory(story, null);
-  }, [getNpcIdFromItem, getStoryByNpcId, isE2EEnabled, isE2EStoryEnabled, openStory, startDialogueInternal]);
+      const npcId = getNpcIdFromItem(item);
+      if (!npcId) {
+        await startDialogueInternal(item);
+        return;
+      }
 
+      const story = getStoryByNpcId(npcId);
+      if (!story) {
+        await startDialogueInternal(item);
+        return;
+      }
+
+      try {
+        const progressResponse = await fetch(`/api/stories/progress?storyId=${story.storyId}`);
+        if (progressResponse.ok) {
+          const progressData = await progressResponse.json();
+          if (progressData?.data?.completed) {
+            await startDialogueInternal(item);
+            return;
+          }
+
+          pendingStoryNpcRef.current = item;
+          await openStory(story, progressData?.data || null);
+          return;
+        }
+      } catch (error) {
+        console.warn('获取故事进度失败:', error);
+      }
+
+      pendingStoryNpcRef.current = item;
+      await openStory(story, null);
+    },
+    [
+      getNpcIdFromItem,
+      getStoryByNpcId,
+      isE2EEnabled,
+      isE2EStoryEnabled,
+      openStory,
+      startDialogueInternal,
+    ]
+  );
 
   const handleStoryAdvance = useCallback(async () => {
     if (!activeStory) return;
@@ -1870,77 +2028,98 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       pendingStoryNpcRef.current = null;
       await startDialogueInternal(npcItem);
     }
-  }, [activeStory, storyLineIndex, storySceneIndex, saveStoryProgress, closeStory, startDialogueInternal]);
+  }, [
+    activeStory,
+    storyLineIndex,
+    storySceneIndex,
+    saveStoryProgress,
+    closeStory,
+    startDialogueInternal,
+  ]);
 
-  const applyStoryRewards = useCallback(async (rewards?: {
-    exp?: number;
-    silver?: number;
-    items?: Array<{ itemId: string; quantity?: number }>;
-  }) => {
-    if (!rewards) return;
+  const applyStoryRewards = useCallback(
+    async (rewards?: {
+      exp?: number;
+      silver?: number;
+      items?: Array<{ itemId: string; quantity?: number }>;
+    }) => {
+      if (!rewards) return;
 
-    const tasks: Array<Promise<Response>> = [];
+      const tasks: Array<Promise<Response>> = [];
 
-    if (rewards.exp || rewards.silver) {
-      tasks.push(
-        fetch('/api/player/stats/update', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            experienceDelta: rewards.exp || 0,
-            silverDelta: rewards.silver || 0,
-          }),
-        })
-      );
-    }
+      if (rewards.exp || rewards.silver) {
+        tasks.push(
+          fetch('/api/player/stats/update', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              experienceDelta: rewards.exp || 0,
+              silverDelta: rewards.silver || 0,
+            }),
+          })
+        );
+      }
 
-    if (rewards.items && rewards.items.length > 0) {
-      tasks.push(
-        fetch('/api/player/inventory/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: rewards.items.map((item) => ({
-              itemId: item.itemId,
-              quantity: item.quantity ?? 1,
-            })),
-          }),
-        })
-      );
-    }
+      if (rewards.items && rewards.items.length > 0) {
+        tasks.push(
+          fetch('/api/player/inventory/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: rewards.items.map((item) => ({
+                itemId: item.itemId,
+                quantity: item.quantity ?? 1,
+              })),
+            }),
+          })
+        );
+      }
 
-    if (tasks.length === 0) return;
+      if (tasks.length === 0) return;
 
-    try {
-      await Promise.all(tasks);
-      // 触发全局属性更新事件
-      window.dispatchEvent(new Event('player-stats-update'));
-    } catch (error) {
-      console.warn('发放故事奖励失败:', error);
-    }
-  }, []);
+      try {
+        await Promise.all(tasks);
+        // 触发全局属性更新事件
+        window.dispatchEvent(new Event('player-stats-update'));
+      } catch (error) {
+        console.warn('发放故事奖励失败:', error);
+      }
+    },
+    []
+  );
 
-  const handleStoryChoice = useCallback(async (choice: any) => {
-    if (!activeStory) return;
-    const scene = activeStory.scenes[storySceneIndex];
-    await applyStoryRewards(choice?.rewards);
-    await saveStoryProgress({
-      storyId: activeStory.storyId,
-      sceneId: scene.sceneId,
-      lineIndex: storyLineIndex,
-      backgroundId: scene.backgroundId,
-      completed: true,
-      choiceId: choice?.choiceId || null,
-    });
+  const handleStoryChoice = useCallback(
+    async (choice: any) => {
+      if (!activeStory) return;
+      const scene = activeStory.scenes[storySceneIndex];
+      await applyStoryRewards(choice?.rewards);
+      await saveStoryProgress({
+        storyId: activeStory.storyId,
+        sceneId: scene.sceneId,
+        lineIndex: storyLineIndex,
+        backgroundId: scene.backgroundId,
+        completed: true,
+        choiceId: choice?.choiceId || null,
+      });
 
-    closeStory();
+      closeStory();
 
-    if (pendingStoryNpcRef.current) {
-      const npcItem = pendingStoryNpcRef.current;
-      pendingStoryNpcRef.current = null;
-      await startDialogueInternal(npcItem);
-    }
-  }, [activeStory, storyLineIndex, storySceneIndex, applyStoryRewards, saveStoryProgress, closeStory, startDialogueInternal]);
+      if (pendingStoryNpcRef.current) {
+        const npcItem = pendingStoryNpcRef.current;
+        pendingStoryNpcRef.current = null;
+        await startDialogueInternal(npcItem);
+      }
+    },
+    [
+      activeStory,
+      storyLineIndex,
+      storySceneIndex,
+      applyStoryRewards,
+      saveStoryProgress,
+      closeStory,
+      startDialogueInternal,
+    ]
+  );
 
   /**
    * E2E测试辅助方法（通过window.__e2e暴露）
@@ -1980,57 +2159,60 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   /**
    * 选择对话选项
    */
-  const handleSelectOption = useCallback((optionIndex: number) => {
-    if (!dialogueEngine) return;
-    
-    const options = dialogueEngine.getAvailableOptions();
-    const selectedOption = options[optionIndex];
-    
-    // 处理通用挑战选项
-    if (selectedOption?.nextNodeId === '__universal_challenge__') {
-      const npcId = currentNpcIdRef.current;
-      if (npcId) {
-        // 标记为通用挑战
-        setIsUniversalChallenge(true);
-        
-        // 关闭对话框
-        setIsDialogueVisible(false);
-        
-        // 获取NPC信息并启动对局
-        fetch(`/api/npcs/${npcId}`)
-          .then(res => res.json())
-          .then(data => {
-            const difficulty = data.difficulty || 5;
-            setGoOpponentDifficulty(difficulty);
-            setGoOpponentName(data.name || '神秘高手');
-            setShowGoGame(true);
-          })
-          .catch(err => {
-            console.error('Failed to fetch NPC data:', err);
-            // 使用默认值
-            setGoOpponentDifficulty(5);
-            setGoOpponentName('神秘高手');
-            setShowGoGame(true);
-          });
-      }
-      return;
-    }
-    
-    // 如果选项有 action，先处理 action
-    if (selectedOption?.action) {
-      const shouldSkipBattleAction =
-        selectedOption.action.type === 'battle' && selectedOption.nextNodeId === 'start_battle';
+  const handleSelectOption = useCallback(
+    (optionIndex: number) => {
+      if (!dialogueEngine) return;
 
-      if (!shouldSkipBattleAction) {
-        handleDialogueAction(selectedOption.action);
+      const options = dialogueEngine.getAvailableOptions();
+      const selectedOption = options[optionIndex];
+
+      // 处理通用挑战选项
+      if (selectedOption?.nextNodeId === '__universal_challenge__') {
+        const npcId = currentNpcIdRef.current;
+        if (npcId) {
+          // 标记为通用挑战
+          setIsUniversalChallenge(true);
+
+          // 关闭对话框
+          setIsDialogueVisible(false);
+
+          // 获取NPC信息并启动对局
+          fetch(`/api/npcs/${npcId}`)
+            .then((res) => res.json())
+            .then((data) => {
+              const difficulty = data.difficulty || 5;
+              setGoOpponentDifficulty(difficulty);
+              setGoOpponentName(data.name || '神秘高手');
+              setShowGoGame(true);
+            })
+            .catch((err) => {
+              console.error('Failed to fetch NPC data:', err);
+              // 使用默认值
+              setGoOpponentDifficulty(5);
+              setGoOpponentName('神秘高手');
+              setShowGoGame(true);
+            });
+        }
+        return;
       }
-    }
-    
-    const success = dialogueEngine.selectOption(optionIndex);
-    if (success) {
-      updateDialogueState(dialogueEngine);
-    }
-  }, [dialogueEngine, handleDialogueAction, updateDialogueState]);
+
+      // 如果选项有 action，先处理 action
+      if (selectedOption?.action) {
+        const shouldSkipBattleAction =
+          selectedOption.action.type === 'battle' && selectedOption.nextNodeId === 'start_battle';
+
+        if (!shouldSkipBattleAction) {
+          handleDialogueAction(selectedOption.action);
+        }
+      }
+
+      const success = dialogueEngine.selectOption(optionIndex);
+      if (success) {
+        updateDialogueState(dialogueEngine);
+      }
+    },
+    [dialogueEngine, handleDialogueAction, updateDialogueState]
+  );
 
   /**
    * 继续对话（无选项时）
@@ -2059,7 +2241,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     } else {
       closeDialogue();
     }
-  }, [actionConsumedNodeId, closeDialogue, dialogueEngine, handleDialogueAction, updateDialogueState]);
+  }, [
+    actionConsumedNodeId,
+    closeDialogue,
+    dialogueEngine,
+    handleDialogueAction,
+    updateDialogueState,
+  ]);
 
   /**
    * 处理键盘事件（WASD移动 + 空格交互 + ESC关闭对话）
@@ -2080,7 +2268,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           }
           return;
         }
-        
+
         // 数字键1-9选择对话选项
         const numKey = parseInt(e.key);
         if (!isNaN(numKey) && numKey >= 1 && numKey <= dialogueOptions.length) {
@@ -2088,23 +2276,23 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           handleSelectOption(numKey - 1);
           return;
         }
-        
+
         // ESC键关闭对话
         if (e.key === 'Escape') {
           e.preventDefault();
           closeDialogue();
           return;
         }
-        
+
         // 对话框显示时，阻止其他按键（如WASD移动）
         return;
       }
-      
+
       // 空格键触发附近NPC/传送门交互（仅在对话框未显示时）
       if (e.key === ' ' && engineRef.current) {
         e.preventDefault(); // 防止页面滚动
         const nearbyItem = engineRef.current.getNearbyInteractableItem();
-        
+
         if (nearbyItem) {
           if (nearbyItem.itemType === 'npc') {
             // 触发NPC对话
@@ -2121,27 +2309,34 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         }
         return;
       }
-      
+
       // WASD移动（仅在对话框未显示时）
       if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
         pressedKeysRef.current.add(e.key);
       }
     };
-    
+
     const handleKeyUp = (e: KeyboardEvent) => {
       if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(e.key)) {
         pressedKeysRef.current.delete(e.key);
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [closeDialogue, dialogueOptions, handleContinueDialogue, handleSelectOption, isDialogueVisible, startDialogue]);
+  }, [
+    closeDialogue,
+    dialogueOptions,
+    handleContinueDialogue,
+    handleSelectOption,
+    isDialogueVisible,
+    startDialogue,
+  ]);
 
   // ==================== 围棋挑战系统函数 ====================
 
@@ -2165,8 +2360,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     setPendingGoOpponent(null);
     // 如果在对话中拒绝挑战，恢复对话
     if (dialogueEngine) {
-      const fallbackNodeId = ['not_ready', 'farewell', 'daily_chat', 'daily_chat_2']
-        .find((nodeId) => dialogueEngine.getCurrentNode()?.id !== nodeId && dialogueEngine.hasNode(nodeId));
+      const fallbackNodeId = ['not_ready', 'farewell', 'daily_chat', 'daily_chat_2'].find(
+        (nodeId) => dialogueEngine.getCurrentNode()?.id !== nodeId && dialogueEngine.hasNode(nodeId)
+      );
       if (fallbackNodeId) {
         dialogueEngine.setCurrentNodeId(fallbackNodeId);
         updateDialogueState(dialogueEngine);
@@ -2174,42 +2370,45 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       setIsDialogueVisible(true);
     }
   };
-  
+
   /**
    * 围棋对战结束处理
    */
-  const handleGoGameComplete = async (result: { winner: 'black' | 'white' | 'draw'; playerWon: boolean }) => {
+  const handleGoGameComplete = async (result: {
+    winner: 'black' | 'white' | 'draw';
+    playerWon: boolean;
+  }) => {
     console.log('🎯 Go game completed:', result);
     console.log('🎯 Dialogue engine:', dialogueEngine);
     console.log('🎯 Pending opponent:', pendingGoOpponent);
     console.log('🎯 Go opponent name:', goOpponentName);
     console.log('🎯 Is universal challenge:', isUniversalChallenge);
-    
+
     // 记录对战结果
     const battleOutcome = result.playerWon ? 'win' : 'lose';
     setBattleResult(battleOutcome);
-    
+
     // ⚠️ 不要在这里关闭对战界面！让 GameResultModal 显示后用户手动关闭
     // setShowGoGame(false); // 已移除
-    
+
     // 如果是通用挑战（不在对话流程中的挑战），等待 GameResultModal 显示
     if (isUniversalChallenge) {
       setIsUniversalChallenge(false);
-      
+
       // GameResultModal 会自动显示奖励信息
       // 用户点击关闭按钮后会自动关闭 GoGameModal
-      
+
       // 不再使用 alert，让 GameResultModal 正常显示
       // 恢复对话框的逻辑移到 GoGameModal 关闭时处理
       return;
     }
-    
+
     // 记录首次战胜NPC的状态（仅用于解锁通用挑战）
     const defeatedNpcId = currentNpcIdRef.current ? `defeated_${currentNpcIdRef.current}` : null;
-    
+
     // 检查是否为rematch战斗（如果已经战胜过该NPC，则为rematch）
     const isRematchBattle = defeatedNpcId && completedQuestsRef.current.includes(defeatedNpcId);
-    
+
     // 更新对话引擎的战斗结果
     if (dialogueEngine) {
       dialogueEngine.updatePlayerState({ battleResult: battleOutcome });
@@ -2232,13 +2431,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
         console.log(`✅ Player defeated ${defeatedNpcId}, updated dialogue state`);
       }
-      
+
       // 如果是对话流程中的rematch战斗，显示通用胜利提示和奖励
       if (isRematchBattle && dialogueEngine) {
         // 发放通用奖励
         const rewardExp = 100;
         const rewardSilver = 50;
-        
+
         try {
           const response = await fetch('/api/player/stats', {
             method: 'PATCH',
@@ -2248,16 +2447,18 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               silver: rewardSilver,
             }),
           });
-          
+
           if (response.ok) {
             // 触发玩家状态更新事件
-            window.dispatchEvent(new CustomEvent('player-stats-update', {
-              detail: {
-                experience: rewardExp,
-                silver: rewardSilver,
-              }
-            }));
-            
+            window.dispatchEvent(
+              new CustomEvent('player-stats-update', {
+                detail: {
+                  experience: rewardExp,
+                  silver: rewardSilver,
+                },
+              })
+            );
+
             // 显示胜利提示
             setAlertState({
               isOpen: true,
@@ -2266,7 +2467,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               message: `恭喜你战胜了${goOpponentName || '对手'}！\n\n获得奖励：\n经验 +${rewardExp}\n银两 +${rewardSilver}`,
               confirmText: '太好了！',
               onConfirm: () => {
-                setAlertState(prev => ({ ...prev, isOpen: false }));
+                setAlertState((prev) => ({ ...prev, isOpen: false }));
                 // 跳转到 daily_chat 节点并立即更新对话状态
                 if (dialogueEngine && dialogueEngine.hasNode('daily_chat')) {
                   dialogueEngine.setCurrentNodeId('daily_chat');
@@ -2285,11 +2486,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           }
           setIsDialogueVisible(true);
         }
-        
+
         setPendingGoOpponent(null);
         return;
       }
-      
+
       // 首次剧情战斗胜利（只对有对话流程的 NPC）：不在这里更新对话，等 modal 关闭时更新
       if (dialogueEngine) {
         // updateDialogueState(dialogueEngine);
@@ -2310,7 +2511,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           message: '这次失败了，多练练再来吧！',
           confirmText: '好的',
           onConfirm: () => {
-            setAlertState(prev => ({ ...prev, isOpen: false }));
+            setAlertState((prev) => ({ ...prev, isOpen: false }));
             // 跳转到 try_again 或 daily_chat 节点
             if (dialogueEngine) {
               const fallbackNode = dialogueEngine.hasNode('try_again') ? 'try_again' : 'daily_chat';
@@ -2325,7 +2526,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         setPendingGoOpponent(null);
         return;
       }
-      
+
       // 剧情战斗失败或 other NPC 失败：不在这里更新对话，等 modal 关闭时更新
       if (dialogueEngine) {
         setPendingGoOpponent(null);
@@ -2345,35 +2546,35 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
    */
   const confirmPortal = async () => {
     console.log('🚪 confirmPortal called, pendingPortal:', pendingPortal);
-    
+
     if (!pendingPortal || !pendingPortal.targetMapId) {
       console.error('❌ No pending portal or targetMapId');
       return;
     }
-    
+
     console.log(`🎯 Teleporting to ${pendingPortal.targetMapId}...`);
-    
+
     setShowPortalConfirm(false);
     setIsTransitioning(true);
-    
+
     try {
       // 淡出效果（500ms）
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // 加载目标地图
       console.log(`📥 Loading map: ${pendingPortal.targetMapId}`);
       const newMapData = await loadMapData(pendingPortal.targetMapId);
-      
+
       if (newMapData && engineRef.current) {
         console.log(`✅ Map loaded: ${newMapData.name} (${newMapData.width}x${newMapData.height})`);
-        
+
         // 重新加载地图
         await engineRef.current.loadMap(newMapData);
-        
+
         // 确定玩家出现位置
         let targetX: number;
         let targetY: number;
-        
+
         // 如果传送到世界地图，需要找到当前地图在世界地图上的坐标
         if (pendingPortal.targetMapId === 'world_map' && mapData?.id) {
           console.log(`🗺️ Teleporting back to world map from ${mapData.id}`);
@@ -2411,10 +2612,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           targetX = pendingPortal.targetX ?? Math.floor(newMapData.width / 2);
           targetY = pendingPortal.targetY ?? Math.floor(newMapData.height / 2);
         }
-        
+
         console.log(`🧍 Spawning player at (${targetX}, ${targetY})`);
         await engineRef.current.spawnPlayer(targetX, targetY);
-        
+
         console.log(`✅ Teleported to ${pendingPortal.targetMapId} at (${targetX}, ${targetY})`);
 
         if (userId) {
@@ -2436,10 +2637,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       } else {
         console.error('❌ Failed to load map or engine not ready');
       }
-      
+
       // 淡入效果（500ms）
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
       console.error('❌ 传送失败:', error);
       await showAlert('传送失败，请重试', 'error');
@@ -2465,7 +2665,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const createDefaultMap = (): MapData => {
     const width = 50;
     const height = 50;
-    
+
     console.log('🗺️ Creating default map...');
     const tiles: any[][] = [];
 
@@ -2474,7 +2674,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       tiles[y] = [];
       for (let x = 0; x < width; x++) {
         let tileType = 'wood';
-        
+
         // 创建几个大的地形区域
         // 左上角 - 大片水域 (15x15)
         if (x < 15 && y < 15) {
@@ -2500,7 +2700,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         else {
           tileType = 'wood';
         }
-        
+
         tiles[y][x] = {
           x,
           y,
@@ -2542,9 +2742,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       {/* 加载提示 */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
-          <div className="text-white text-xl">
-            {t('loading')}
-          </div>
+          <div className="text-white text-xl">{t('loading')}</div>
         </div>
       )}
 
@@ -2569,13 +2767,17 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
       {/* 调试信息 - 左下角 */}
       {showInfo && mapData && (
-        <div 
+        <div
           className="absolute bg-black/70 text-white p-3 rounded-lg text-sm max-w-xs z-20"
           style={{ bottom: '1rem', left: '1rem' }}
         >
           <div className="font-bold mb-2 text-xs">{mapData.name}</div>
-          <div className="text-xs">{t('info.mapSize')}: {mapData.width} × {mapData.height}</div>
-          <div className="text-xs">{t('info.itemCount')}: {mapData.items.length}</div>
+          <div className="text-xs">
+            {t('info.mapSize')}: {mapData.width} × {mapData.height}
+          </div>
+          <div className="text-xs">
+            {t('info.itemCount')}: {mapData.items.length}
+          </div>
           {playerPosition && (
             <div className="text-xs mt-1">
               {t('info.playerPosition')}: ({playerPosition.x}, {playerPosition.y})
@@ -2583,12 +2785,13 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             </div>
           )}
           <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
-            {t('info.clickToMove')}<br />
+            {t('info.clickToMove')}
+            <br />
             {t('info.cameraFollow')}
           </div>
         </div>
       )}
-      
+
       {/* 对话框 */}
       <StoryModal
         isOpen={isStoryVisible}
@@ -2705,15 +2908,15 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
       {/* 传送门确认对话框 */}
       {showPortalConfirm && pendingPortal && (
-        <div 
+        <div
           className="fixed inset-0 flex items-center justify-center p-4"
-          style={{ 
+          style={{
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             zIndex: 60,
           }}
           onClick={cancelPortal}
         >
-          <div 
+          <div
             className="bg-gradient-to-br from-purple-900 to-purple-800 border-4 border-purple-500 rounded-xl shadow-2xl p-6 max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
@@ -2721,12 +2924,16 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               <div className="text-4xl mb-3">🌀</div>
               <h3 className="text-xl font-bold text-white mb-3">{t('portal.title')}</h3>
               <p className="text-white">
-                {t('portal.question')} <span className="font-bold text-yellow-300">
-                  {pendingPortal.targetMapId ? getMapName(pendingPortal.targetMapId) : t('unknownLocation')}
-                </span>？
+                {t('portal.question')}{' '}
+                <span className="font-bold text-yellow-300">
+                  {pendingPortal.targetMapId
+                    ? getMapName(pendingPortal.targetMapId)
+                    : t('unknownLocation')}
+                </span>
+                ？
               </p>
             </div>
-            
+
             <div className="flex gap-3">
               <button
                 onClick={confirmPortal}
@@ -2759,9 +2966,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           if (success) {
             console.log('✅ Tsumego completed successfully!');
             // 触发UI更新事件，刷新玩家状态和背包
-            window.dispatchEvent(new CustomEvent('player-stats-update', {
-              detail: { forceRefresh: true }
-            }));
+            window.dispatchEvent(
+              new CustomEvent('player-stats-update', {
+                detail: { forceRefresh: true },
+              })
+            );
             window.dispatchEvent(new Event('player-inventory-update'));
           } else {
             console.log('❌ Tsumego failed or escaped');
@@ -2952,12 +3161,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
             </div>
 
             <div className="mt-4 text-xs text-slate-400">
-              当前材料：竹子 {workshopInventory.bamboo} · 木材 {workshopInventory.wood} · 石子 {workshopInventory.stone}
+              当前材料：竹子 {workshopInventory.bamboo} · 木材 {workshopInventory.wood} · 石子{' '}
+              {workshopInventory.stone}
             </div>
 
-            {workshopError && (
-              <div className="mt-3 text-xs text-red-300">{workshopError}</div>
-            )}
+            {workshopError && <div className="mt-3 text-xs text-red-300">{workshopError}</div>}
 
             <div className="mt-5 flex justify-end">
               <button
@@ -3062,13 +3270,9 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               </div>
             </div>
 
-            <div className="mt-4 text-xs text-slate-400">
-              当前草药：{pharmacyInventory.herb}
-            </div>
+            <div className="mt-4 text-xs text-slate-400">当前草药：{pharmacyInventory.herb}</div>
 
-            {pharmacyError && (
-              <div className="mt-3 text-xs text-red-300">{pharmacyError}</div>
-            )}
+            {pharmacyError && <div className="mt-3 text-xs text-red-300">{pharmacyError}</div>}
 
             <div className="mt-5 flex justify-end">
               <button
@@ -3084,16 +3288,16 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
       {/* 围棋挑战确认对话框 */}
       {showGoChallenge && pendingGoOpponent && (
-        <div 
+        <div
           className="fixed inset-0 flex items-center justify-center p-4"
-          style={{ 
+          style={{
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             zIndex: 60,
           }}
           data-testid="go-challenge-overlay"
           onClick={declineGoChallenge}
         >
-          <div 
+          <div
             className="bg-gradient-to-br from-amber-900 to-amber-800 border-4 border-amber-500 rounded-xl shadow-2xl p-6 max-w-md"
             data-testid="go-challenge-dialog"
             onClick={(e) => e.stopPropagation()}
@@ -3102,15 +3306,19 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               <div className="text-4xl mb-3">☯️</div>
               <h3 className="text-xl font-bold text-white mb-3">{t('goChallenge.title')}</h3>
               <p className="text-white text-lg">
-                {t('goChallenge.question', { 
-                  name: pendingGoOpponent === '洪七公' ? t('npcs.hong_qigong') :
-                        pendingGoOpponent === '令狐冲' ? t('npcs.linghu_chong') :
-                        pendingGoOpponent === '郭靖' ? t('npcs.guo_jing') :
-                        pendingGoOpponent
+                {t('goChallenge.question', {
+                  name:
+                    pendingGoOpponent === '洪七公'
+                      ? t('npcs.hong_qigong')
+                      : pendingGoOpponent === '令狐冲'
+                        ? t('npcs.linghu_chong')
+                        : pendingGoOpponent === '郭靖'
+                          ? t('npcs.guo_jing')
+                          : pendingGoOpponent,
                 })}
               </p>
             </div>
-            
+
             <div className="flex gap-3">
               <button
                 onClick={acceptGoChallenge}
@@ -3133,7 +3341,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
       {/* 传送过渡效果 */}
       {isTransitioning && (
-        <div 
+        <div
           className="fixed inset-0 z-[60] bg-black flex items-center justify-center"
           style={{
             animation: 'fadeInOut 1s ease-in-out',

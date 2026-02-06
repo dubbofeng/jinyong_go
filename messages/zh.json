@@ -146,6 +146,7 @@
     },
     "dialogue": {
       "continue": "继续",
+      "continueEllipsis": "继续...",
       "close": "关闭",
       "selectOption": "选择选项",
       "skipPrompt": "点击文本跳过动画",
@@ -191,7 +192,48 @@
       "encounterTitle": "⛔️ 遭遇挑战",
       "hallChallenge": "你来到了{name}门前。\n\n馆主：“欢迎光临！敢不敢来挑战一下本馆的死活题？”",
       "hallTitle": "🏛️ 棋馆挑战",
-      "defaultHall": "棋馆"    },
+      "defaultHall": "棋馆",
+      "acceptChallenge": "接受挑战",
+      "flee": "逃跑",
+      "fleePenalty": "⚠️ 逃跑惩罚",
+      "fleeMessage": "你选择了逃跑！\n\n💰 银两 -{silver}\n❤️ 体力 -{stamina}"
+    },
+    "workshop": {
+      "title": "工坊制作",
+      "craftingSuccess": "制作成功！",
+      "craftingFailed": "制作失败"
+    },
+    "pharmacy": {
+      "title": "药铺制药",
+      "refiningSuccess": "炼制成功！",
+      "refiningFailed": "炼制失败"
+    },
+    "hotel": {
+      "dining": "用餐",
+      "orderSuccess": "享用了{item}！\n体力 +{stamina}\n内力 +{qi}",
+      "orderFailed": "点菜失败",
+      "insufficientFunds": "银两不足或操作失败",
+      "rest": "住店休息",
+      "restSuccess": "美美地睡了一觉！\n体力和内力已全部恢复！",
+      "restFailed": "住店休息失败"
+    },
+    "npcChallenge": {
+      "noOne": "这里似乎没有人...",
+      "title": "武林高手",
+      "question": "遇到了 {npcName}\n{npcDesc}\n难度: {difficulty}\n\n是否与其对弈？",
+      "systemError": "系统错误"
+    },
+    "chest": {
+      "alreadyOpened": "宝箱已经打开过了。",
+      "openFailed": "打开宝箱失败",
+      "openSuccess": "宝箱打开：获得宝物！",
+      "openSuccessItem": "宝箱打开：获得「{item}」！"
+    },
+    "portalLock": {
+      "title": "🔒 传送门未解锁",
+      "message": "通往【{target}】的传送门尚未解锁\n\n解锁条件：\n",
+      "unknownCondition": "未知条件"
+    },
     "goboard": {
       "nigiri": {
         "odd": "奇数",
@@ -342,6 +384,9 @@
     "welcome": "欢迎",
     "level": "等级",
     "experience": "经验",
+    "exp": "经验",
+    "silver": "银两",
+    "items": "物品",
     "skills": "技能",
     "quests": "任务",
     "settings": "设置",
@@ -368,7 +413,8 @@
     "nextRank": "下一段位",
     "maxRank": "已达最高段位",
     "loadFailed": "加载失败，请刷新页面"
-  },  "quest": {
+  },
+  "quest": {
     "tracker": "任务追踪",
     "loading": "加载中...",
     "error": "错误",
@@ -441,7 +487,8 @@
       "quest": "任务",
       "social": "社交"
     }
-  },  "admin": {
+  },
+  "admin": {
     "title": "管理后台",
     "subtitle": "游戏内容管理系统",
     "brand": "金庸棋侠传 - 管理后台",

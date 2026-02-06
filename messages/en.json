@@ -146,6 +146,7 @@
     },
     "dialogue": {
       "continue": "Continue",
+      "continueEllipsis": "Continue...",
       "close": "Close",
       "selectOption": "Select Option",
       "skipPrompt": "Click text to skip animation",
@@ -191,7 +192,47 @@
       "encounterTitle": "⛔️ Encounter",
       "hallChallenge": "You arrive at {name}.\n\nMaster: \"Welcome! Dare to challenge our hall's Tsumego problems?\"",
       "hallTitle": "🏛️ Hall Challenge",
-      "defaultHall": "Go Hall"
+      "defaultHall": "Go Hall",
+      "acceptChallenge": "Accept Challenge",
+      "flee": "Flee",
+      "fleePenalty": "⚠️ Flee Penalty",
+      "fleeMessage": "You chose to flee!\n\n💰 Silver -{silver}\n❤️ Stamina -{stamina}"
+    },
+    "workshop": {
+      "title": "Workshop",
+      "craftingSuccess": "Crafting successful!",
+      "craftingFailed": "Crafting failed"
+    },
+    "pharmacy": {
+      "title": "Pharmacy",
+      "refiningSuccess": "Refining successful!",
+      "refiningFailed": "Refining failed"
+    },
+    "hotel": {
+      "dining": "Dining",
+      "orderSuccess": "Enjoyed {item}!\nStamina +{stamina}\nQi +{qi}",
+      "orderFailed": "Ordering failed",
+      "insufficientFunds": "Insufficient silver or operation failed",
+      "rest": "Rest at Inn",
+      "restSuccess": "Had a good sleep!\nStamina and Qi fully restored!",
+      "restFailed": "Rest failed"
+    },
+    "npcChallenge": {
+      "noOne": "There seems to be no one here...",
+      "title": "Martial Arts Master",
+      "question": "Encountered {npcName}\n{npcDesc}\nDifficulty: {difficulty}\n\nChallenge to a game?",
+      "systemError": "System error"
+    },
+    "chest": {
+      "alreadyOpened": "The chest has already been opened.",
+      "openFailed": "Failed to open chest",
+      "openSuccess": "Chest opened: Got treasure!",
+      "openSuccessItem": "Chest opened: Got \"{item}\"!"
+    },
+    "portalLock": {
+      "title": "🔒 Portal Locked",
+      "message": "Portal to 【{target}】 is not unlocked yet\n\nUnlock conditions:\n",
+      "unknownCondition": "Unknown conditions"
     },
     "goboard": {
       "nigiri": {
@@ -326,10 +367,12 @@
     "passwordPlaceholder": "Enter password",
     "usernamePlaceholder": "Enter username",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?",    "registerNow": "Sign up for free",
+    "hasAccount": "Already have an account?",
+    "registerNow": "Sign up for free",
     "loginNow": "Sign in now",
     "loginPrompt": "Login to your account to start playing",
-    "registerPrompt": "Create an account and begin your Wuxia Go adventure",    "registerLink": "Register now",
+    "registerPrompt": "Create an account and begin your Wuxia Go adventure",
+    "registerLink": "Register now",
     "loginLink": "Login now",
     "errors": {
       "invalidCredentials": "Invalid email or password",
@@ -341,6 +384,9 @@
     "welcome": "Welcome",
     "level": "Level",
     "experience": "Experience",
+    "exp": "EXP",
+    "silver": "Silver",
+    "items": "Items",
     "skills": "Skills",
     "quests": "Quests",
     "settings": "Settings",

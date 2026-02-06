@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface StoryChoiceRewardItem {
   itemId: string;
@@ -67,6 +67,8 @@ export default function StoryModal({
 }: StoryModalProps) {
   const locale = useLocale();
   const isEnglish = locale === 'en';
+  const t = useTranslations('common');
+  const tDialogue = useTranslations('game.dialogue');
 
   useEffect(() => {
     if (isOpen) {
@@ -87,7 +89,8 @@ export default function StoryModal({
   const showChoices = isLastLine && hasChoices;
   const backgroundUrl = `/generated/story/${scene.backgroundId}.png`;
 
-  const resolveText = (text?: string, textEn?: string) => (isEnglish ? textEn || text : text || textEn);
+  const resolveText = (text?: string, textEn?: string) =>
+    isEnglish ? textEn || text : text || textEn;
   const resolveSpeaker = (speaker?: string, speakerEn?: string) =>
     isEnglish ? speakerEn || speaker : speaker || speakerEn;
 
@@ -103,12 +106,11 @@ export default function StoryModal({
         <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-white z-10">
           <div>
             <div className="text-2xl font-bold">{resolveText(story.title, story.titleEn)}</div>
-            {story.titleEn && <div className="text-sm text-white/70">{resolveText(story.titleEn, story.title)}</div>}
+            {story.titleEn && (
+              <div className="text-sm text-white/70">{resolveText(story.titleEn, story.title)}</div>
+            )}
           </div>
-          <button
-            onClick={onClose}
-            className="text-white/80 hover:text-white text-2xl font-bold"
-          >
+          <button onClick={onClose} className="text-white/80 hover:text-white text-2xl font-bold">
             ✕
           </button>
         </div>
@@ -135,15 +137,15 @@ export default function StoryModal({
                     <div className="font-semibold">{resolveText(choice.text, choice.textEn)}</div>
                     {choice.rewards && (
                       <div className="mt-1 text-xs text-amber-100">
-                        {choice.rewards.exp ? `经验 +${choice.rewards.exp} ` : ''}
-                        {choice.rewards.silver ? `银两 +${choice.rewards.silver}` : ''}
+                        {choice.rewards.exp ? `${t('exp')} +${choice.rewards.exp} ` : ''}
+                        {choice.rewards.silver ? `${t('silver')} +${choice.rewards.silver}` : ''}
                         {choice.rewards.items && choice.rewards.items.length > 0 && (
                           <span>
                             {' '}
-                            · 物品{' '}
+                            · {t('items')}{' '}
                             {choice.rewards.items
                               .map((i) => (isEnglish ? i.nameEn || i.name : i.name || i.nameEn))
-                              .join('、')}
+                              .join(isEnglish ? ', ' : '、')}
                           </span>
                         )}
                       </div>
@@ -157,7 +159,7 @@ export default function StoryModal({
                   onClick={onAdvance}
                   className="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg text-sm"
                 >
-                  {isLastLine ? '继续' : '继续...'}
+                  {isLastLine ? tDialogue('continue') : tDialogue('continueEllipsis')}
                 </button>
               </div>
             )}
