@@ -46,6 +46,7 @@ export interface QuestRewards {
   experience?: number;
   silver?: number;
   skill?: string;
+  skills?: string[];
   items?: string[];
 }
 

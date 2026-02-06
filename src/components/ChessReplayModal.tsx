@@ -96,7 +96,13 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRecord, setIsLoadingRecord] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { engine, isReady, isLoading: isKataGoLoading, initialize, error: kataGoError } = useKataGoBrowser();
+  const {
+    engine,
+    isReady,
+    isLoading: isKataGoLoading,
+    initialize,
+    error: kataGoError,
+  } = useKataGoBrowser();
   const katagoRef = useRef<KataGoBrowserEngineV2 | null>(null);
 
   useEffect(() => {
@@ -127,7 +133,9 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/chess-records?userId=${encodeURIComponent(userId)}&limit=20&locale=${locale}`);
+      const response = await fetch(
+        `/api/chess-records?userId=${encodeURIComponent(userId)}&limit=20&locale=${locale}`
+      );
       const data = await response.json();
       if (!response.ok || !data?.records) {
         throw new Error(data?.error || '加载记录失败');
@@ -140,23 +148,26 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     }
   }, [userId, locale]);
 
-  const loadRecordDetail = useCallback(async (recordId: number) => {
-    setIsLoadingRecord(true);
-    setParsed(null);
-    setError(null);
-    try {
-      const response = await fetch(`/api/chess-records/${recordId}/sgf?locale=${locale}`);
-      const data = (await response.json()) as RecordDetailResponse;
-      if (!response.ok || !data?.parsed) {
-        throw new Error((data as any)?.error || '加载SGF失败');
+  const loadRecordDetail = useCallback(
+    async (recordId: number) => {
+      setIsLoadingRecord(true);
+      setParsed(null);
+      setError(null);
+      try {
+        const response = await fetch(`/api/chess-records/${recordId}/sgf?locale=${locale}`);
+        const data = (await response.json()) as RecordDetailResponse;
+        if (!response.ok || !data?.parsed) {
+          throw new Error((data as any)?.error || '加载SGF失败');
+        }
+        setParsed(data.parsed);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '加载SGF失败');
+      } finally {
+        setIsLoadingRecord(false);
       }
-      setParsed(data.parsed);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '加载SGF失败');
-    } finally {
-      setIsLoadingRecord(false);
-    }
-  }, [locale]);
+    },
+    [locale]
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -187,9 +198,8 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     if (!prev || !current) return null;
     const move = parsed.moves[index - 1];
     if (!move) return null;
-    const delta = move.color === 'black'
-      ? current.winrate - prev.winrate
-      : prev.winrate - current.winrate;
+    const delta =
+      move.color === 'black' ? current.winrate - prev.winrate : prev.winrate - current.winrate;
 
     if (delta >= 0.08) return { label: '妙手', delta };
     if (delta <= -0.08) return { label: '俗手', delta };
@@ -227,7 +237,7 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
     setAnalysisProgress(0);
 
     try {
-        const costResponse = await fetch('/api/player/inventory/deduct', {
+      const costResponse = await fetch('/api/player/inventory/deduct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -276,11 +286,8 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
 
         const state = engine.getBoardState();
         const stones = buildStonesFromBoard(state);
-        const nextColor = i === 0
-          ? 'black'
-          : parsed.moves[i - 1].color === 'black'
-            ? 'white'
-            : 'black';
+        const nextColor =
+          i === 0 ? 'black' : parsed.moves[i - 1].color === 'black' ? 'white' : 'black';
 
         const shouldAnalyze = i % ANALYSIS_INTERVAL === 0 || i === totalSteps - 1 || !lastResult;
         if (shouldAnalyze) {
@@ -379,7 +386,8 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                     对手：{record.opponentName}
                   </div>
                   <div className="text-xs text-slate-400">
-                    {record.boardSize}路 · {formatResult(record.result)} · {new Date(record.playedAt).toLocaleString()}
+                    {record.boardSize}路 · {formatResult(record.result)} ·{' '}
+                    {new Date(record.playedAt).toLocaleString()}
                   </div>
                 </button>
               ))}
@@ -399,7 +407,9 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
             {parsed && (
               <div className="flex flex-col gap-3 border border-slate-700 rounded-lg p-4 bg-slate-900/60">
                 <div className="text-sm text-slate-200 font-semibold">请Sai帮忙复盘</div>
-                <p className="text-xs text-slate-400">每次复盘消耗 10 玄铁棋子（黑）+ 10 白玉棋子（白）。</p>
+                <p className="text-xs text-slate-400">
+                  每次复盘消耗 10 玄铁棋子（黑）+ 10 白玉棋子（白）。
+                </p>
                 <div className="flex flex-wrap gap-3 items-center">
                   <button
                     onClick={runReplayAnalysis}
@@ -412,16 +422,10 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                   >
                     {isAnalyzing ? 'Sai分析中...' : '请Sai开始复盘'}
                   </button>
-                  {isKataGoLoading && (
-                    <span className="text-xs text-slate-400">Sai准备中...</span>
-                  )}
-                  {kataGoError && (
-                    <span className="text-xs text-red-300">{kataGoError}</span>
-                  )}
+                  {isKataGoLoading && <span className="text-xs text-slate-400">Sai准备中...</span>}
+                  {kataGoError && <span className="text-xs text-red-300">{kataGoError}</span>}
                 </div>
-                {analysisError && (
-                  <div className="text-xs text-red-300">{analysisError}</div>
-                )}
+                {analysisError && <div className="text-xs text-red-300">{analysisError}</div>}
                 {isAnalyzing && (
                   <div className="w-full h-2 bg-slate-800 rounded">
                     <div
@@ -451,43 +455,37 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                 {analysis?.[moveIndex] && (
                   <div className="border border-slate-700 rounded-lg p-4 bg-slate-900/60 text-sm text-slate-200">
                     <div className="flex flex-wrap gap-4">
-                      <div>
-                        胜率（黑）：{(analysis[moveIndex].winrate * 100).toFixed(1)}%
-                      </div>
-                      <div>
-                        胜率（白）：{((1 - analysis[moveIndex].winrate) * 100).toFixed(1)}%
-                      </div>
+                      <div>胜率（黑）：{(analysis[moveIndex].winrate * 100).toFixed(1)}%</div>
+                      <div>胜率（白）：{((1 - analysis[moveIndex].winrate) * 100).toFixed(1)}%</div>
                       {analysis[moveIndex].bestMove && (
                         <div>
                           最佳落子：
                           {positionToWestern(
-                            analysis[moveIndex].bestMove.row,
-                            analysis[moveIndex].bestMove.col,
+                            analysis[moveIndex].bestMove!.row,
+                            analysis[moveIndex].bestMove!.col,
                             parsed.boardSize
                           )}
                         </div>
                       )}
                     </div>
-                    {moveIndex > 0 && (() => {
-                      const labelInfo = getAnalysisLabel(moveIndex);
-                      if (!labelInfo) return null;
-                      return (
-                        <div className="mt-2 text-xs text-slate-400">
-                          第 {moveIndex} 手：{labelInfo.label}（胜率变化 {(labelInfo.delta * 100).toFixed(1)}%）
-                        </div>
-                      );
-                    })()}
+                    {moveIndex > 0 &&
+                      (() => {
+                        const labelInfo = getAnalysisLabel(moveIndex);
+                        if (!labelInfo) return null;
+                        return (
+                          <div className="mt-2 text-xs text-slate-400">
+                            第 {moveIndex} 手：{labelInfo.label}（胜率变化{' '}
+                            {(labelInfo.delta * 100).toFixed(1)}%）
+                          </div>
+                        );
+                      })()}
                   </div>
                 )}
                 {analysis && analysis.length > 1 && (
                   <div className="border border-slate-700 rounded-lg p-4 bg-slate-900/60">
                     <div className="text-xs text-slate-400 mb-2">胜率走势（黑）</div>
                     <div className="w-full overflow-x-auto">
-                      <svg
-                        viewBox="0 0 560 120"
-                        className="w-full h-28"
-                        preserveAspectRatio="none"
-                      >
+                      <svg viewBox="0 0 560 120" className="w-full h-28" preserveAspectRatio="none">
                         <defs>
                           <linearGradient id="winrateLine" x1="0" y1="0" x2="1" y2="0">
                             <stop offset="0%" stopColor="#34d399" />
@@ -495,7 +493,14 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                           </linearGradient>
                         </defs>
                         <rect x="0" y="0" width="560" height="120" fill="none" />
-                        <line x1="16" y1="60" x2="544" y2="60" stroke="#475569" strokeDasharray="4 4" />
+                        <line
+                          x1="16"
+                          y1="60"
+                          x2="544"
+                          y2="60"
+                          stroke="#475569"
+                          strokeDasharray="4 4"
+                        />
                         {(() => {
                           const width = 560;
                           const height = 120;
@@ -510,7 +515,8 @@ export default function ChessReplayModal({ isOpen, userId, onClose }: ChessRepla
                           });
                           const currentIndex = Math.min(moveIndex, analysis.length - 1);
                           const currentX = padding + (usableWidth * currentIndex) / maxIndex;
-                          const currentY = padding + usableHeight * (1 - analysis[currentIndex].winrate);
+                          const currentY =
+                            padding + usableHeight * (1 - analysis[currentIndex].winrate);
                           return (
                             <>
                               <polyline

@@ -21,16 +21,17 @@ export default function VariationBoardModal({
   onClose,
   boardSize,
   currentStones,
-  nextPlayer
+  nextPlayer,
 }: VariationBoardModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boardRef = useRef<GoBoard | null>(null);
   const engineRef = useRef<GoEngine | null>(null);
-  const currentColorRef = useRef<StoneColor>(nextPlayer); // 使用ref保存当前颜色
+  const validInitialColor = nextPlayer === 'black' || nextPlayer === 'white' ? nextPlayer : 'black';
+  const currentColorRef = useRef<'black' | 'white'>(validInitialColor); // 使用ref保存当前颜色
   const moveNumbersRef = useRef<Map<string, number>>(new Map()); // 记录每个位置的试下步数
   const moveCountRef = useRef<number>(0); // 使用ref保存移动计数
   const [isVisible, setIsVisible] = useState(false);
-  const [currentColor, setCurrentColor] = useState<StoneColor>(nextPlayer);
+  const [currentColor, setCurrentColor] = useState<'black' | 'white'>(validInitialColor);
   const [moveCount, setMoveCount] = useState(0);
   const [lastMessage, setLastMessage] = useState<string>('');
   const [capturedCount, setCapturedCount] = useState({ black: 0, white: 0 });
@@ -82,10 +83,10 @@ export default function VariationBoardModal({
       ctx.font = 'bold 16px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      
+
       // 根据棋子颜色选择数字颜色（黑子用白字，白子用黑字）
       ctx.fillStyle = stoneColor === 'black' ? '#FFFFFF' : '#000000';
-      
+
       // 绘制数字
       ctx.fillText(String(moveNum), x, y);
     });
@@ -106,7 +107,7 @@ export default function VariationBoardModal({
     // 创建棋盘实例
     const board = new GoBoard(canvas, boardSize);
     boardRef.current = board;
-    
+
     // 包装棋盘的render方法，让它在渲染后自动绘制数字
     const originalRender = board.render.bind(board);
     board.render = () => {
@@ -127,14 +128,17 @@ export default function VariationBoardModal({
 
     // 复制当前棋局到试下棋盘
     for (const stone of currentStones) {
-      engine.placeStone(stone, stone.color);
-      board.placeStone(stone, stone.color);
+      if (stone.color === 'black' || stone.color === 'white') {
+        engine.placeStone(stone, stone.color);
+        board.placeStone(stone, stone.color);
+      }
     }
 
     // 设置下一手颜色
-    setCurrentColor(nextPlayer);
-    currentColorRef.current = nextPlayer;
-    board.setNextStoneColor(nextPlayer);
+    const validNextPlayer = nextPlayer === 'black' || nextPlayer === 'white' ? nextPlayer : 'black';
+    setCurrentColor(validNextPlayer);
+    currentColorRef.current = validNextPlayer;
+    board.setNextStoneColor(validNextPlayer);
 
     // 设置落子回调
     board.setOnStonePlace((position) => {
@@ -143,7 +147,7 @@ export default function VariationBoardModal({
       if (result.success) {
         // 增加移动计数
         moveCountRef.current++;
-        
+
         // 在棋盘上显示落子
         board.placeStone(position, currentColorRef.current);
 
@@ -160,9 +164,9 @@ export default function VariationBoardModal({
             moveNumbersRef.current.delete(capturedKey);
           }
 
-          setCapturedCount(prev => ({
+          setCapturedCount((prev) => ({
             ...prev,
-            [currentColorRef.current]: prev[currentColorRef.current] + result.capturedStones.length
+            [currentColorRef.current]: prev[currentColorRef.current] + result.capturedStones.length,
           }));
 
           setLastMessage(`提取了${result.capturedStones.length}子！`);
@@ -216,7 +220,7 @@ export default function VariationBoardModal({
     if (success) {
       // 找到并删除最后一步的数字标记
       const lastMoveNum = moveCountRef.current;
-      for (const [key, num] of moveNumbersRef.current.entries()) {
+      for (const [key, num] of Array.from(moveNumbersRef.current.entries())) {
         if (num === lastMoveNum) {
           moveNumbersRef.current.delete(key);
           break;
@@ -270,14 +274,17 @@ export default function VariationBoardModal({
 
     // 恢复到初始棋局
     for (const stone of currentStones) {
-      engine.placeStone(stone, stone.color);
-      board.placeStone(stone, stone.color);
+      if (stone.color === 'black' || stone.color === 'white') {
+        engine.placeStone(stone, stone.color);
+        board.placeStone(stone, stone.color);
+      }
     }
 
     board.render();
-    currentColorRef.current = nextPlayer;
-    setCurrentColor(nextPlayer);
-    board.setNextStoneColor(nextPlayer);
+    const resetColor = nextPlayer === 'black' || nextPlayer === 'white' ? nextPlayer : 'black';
+    currentColorRef.current = resetColor;
+    setCurrentColor(resetColor);
+    board.setNextStoneColor(resetColor);
     setMoveCount(0);
     setCapturedCount({ black: 0, white: 0 });
     setLastMessage('已重置到初始状态');
@@ -292,10 +299,7 @@ export default function VariationBoardModal({
       }`}
     >
       {/* 背景遮罩 */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-80 -z-10"
-        onClick={handleClose}
-      />
+      <div className="fixed inset-0 bg-black bg-opacity-80 -z-10" onClick={handleClose} />
 
       {/* 棋盘容器 */}
       <div className="min-h-screen flex items-center justify-center py-8">
@@ -308,12 +312,8 @@ export default function VariationBoardModal({
           {/* 标题栏 */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <h2 className="text-3xl font-bold text-white">
-                🧩 机关算尽 · 试下棋盘
-              </h2>
-              <span className="text-blue-300 text-sm">
-                在这里尝试不同走法，不会影响实际对局
-              </span>
+              <h2 className="text-3xl font-bold text-white">🧩 机关算尽 · 试下棋盘</h2>
+              <span className="text-blue-300 text-sm">在这里尝试不同走法，不会影响实际对局</span>
             </div>
             <button
               onClick={handleClose}
@@ -336,18 +336,12 @@ export default function VariationBoardModal({
                   {currentColor === 'black' ? '黑方' : '白方'}落子
                 </span>
               </div>
-              <div className="text-sm text-gray-300">
-                试下手数: {moveCount}
-              </div>
+              <div className="text-sm text-gray-300">试下手数: {moveCount}</div>
               <div className="text-sm text-gray-300">
                 提子: 黑{capturedCount.black} 白{capturedCount.white}
               </div>
             </div>
-            {lastMessage && (
-              <div className="mt-2 text-sm text-yellow-300">
-                {lastMessage}
-              </div>
-            )}
+            {lastMessage && <div className="mt-2 text-sm text-yellow-300">{lastMessage}</div>}
           </div>
 
           {/* 棋盘 */}
@@ -387,7 +381,8 @@ export default function VariationBoardModal({
 
           {/* 提示文字 */}
           <div className="mt-6 text-center text-blue-200 text-sm">
-            💡 提示：这是一个独立的试下棋盘，你可以自由尝试各种走法。<br />
+            💡 提示：这是一个独立的试下棋盘，你可以自由尝试各种走法。
+            <br />
             完成试下后，点击&ldquo;完成试下&rdquo;返回实战棋盘。
           </div>
         </div>

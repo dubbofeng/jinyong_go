@@ -16,7 +16,6 @@ export async function generateAndSaveMapTiles(
   height = 32,
   seed?: number
 ) {
-  // @ts-expect-error - noisejs API
   const noise = new Noise.Noise(seed || Math.random());
   const tiles = [];
 
@@ -66,7 +65,6 @@ export async function generateWuxiaSceneMap(
   height = 32,
   theme: 'mountain' | 'forest' | 'village' | 'river' = 'forest'
 ) {
-  // @ts-expect-error - noisejs API
   const noise = new Noise.Noise(Math.random());
   const tiles = [];
 
@@ -158,7 +156,6 @@ export async function generateWuxiaSceneMap(
  * 生成世界地图（更大的尺寸，用于全局导航）
  */
 export async function generateWorldMap(mapId: number, width = 64, height = 64) {
-  // @ts-expect-error - noisejs API
   const noise = new Noise.Noise(Date.now());
   const tiles = [];
 

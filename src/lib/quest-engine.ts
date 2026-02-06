@@ -5,7 +5,14 @@
  */
 
 import { db } from '@/app/db';
-import { questProgress, gameProgress, users, playerStats, playerSkills, npcRelationships } from '@/src/db/schema';
+import {
+  questProgress,
+  gameProgress,
+  users,
+  playerStats,
+  playerSkills,
+  npcRelationships,
+} from '@/src/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { addRewards } from '@/src/lib/experience-manager';
 import {
@@ -91,12 +98,13 @@ export async function checkQuestRequirementsFromProgress(
   // 检查前置任务
   const completedQuestIds = (progress.completedQuests as string[]) || [];
   const prerequisiteCheck = checkQuestPrerequisites(questId, completedQuestIds);
-  
+
   if (!prerequisiteCheck) {
-    const missingQuests = questDef.prerequisiteQuests?.filter(
-      (preQuestId) => !completedQuestIds.includes(preQuestId)
-    ) || [];
-    
+    const missingQuests =
+      questDef.prerequisiteQuests?.filter(
+        (preQuestId) => !completedQuestIds.includes(preQuestId)
+      ) || [];
+
     if (missingQuests.length > 0) {
       return {
         met: false,
@@ -144,12 +152,7 @@ export async function startQuest(
     const [existingProgress] = await db
       .select()
       .from(questProgress)
-      .where(
-        and(
-          eq(questProgress.userId, userId),
-          eq(questProgress.questId, questId)
-        )
-      )
+      .where(and(eq(questProgress.userId, userId), eq(questProgress.questId, questId)))
       .limit(1);
 
     if (existingProgress && existingProgress.status === 'completed') {
@@ -219,12 +222,7 @@ export async function updateQuestProgress(
     const [existing] = await db
       .select()
       .from(questProgress)
-      .where(
-        and(
-          eq(questProgress.userId, userId),
-          eq(questProgress.questId, questId)
-        )
-      )
+      .where(and(eq(questProgress.userId, userId), eq(questProgress.questId, questId)))
       .limit(1);
 
     if (!existing) {
@@ -310,11 +308,11 @@ export async function completeQuest(
       .from(playerStats)
       .where(eq(playerStats.userId, userId))
       .limit(1);
-    
+
     if (!updatedStats) {
       return { success: false, message: 'Failed to get updated stats' };
     }
-    
+
     const newLevel = updatedStats.level;
     const newExperience = updatedStats.experience;
 
@@ -333,12 +331,7 @@ export async function completeQuest(
           completedAt: new Date(),
           updatedAt: new Date(),
         })
-        .where(
-          and(
-            eq(questProgress.userId, userId),
-            eq(questProgress.questId, questId)
-          )
-        );
+        .where(and(eq(questProgress.userId, userId), eq(questProgress.questId, questId)));
 
       // 只需要更新银两（经验已经由addRewards处理）
       if (rewards.silver) {
@@ -360,7 +353,7 @@ export async function completeQuest(
 
         const existingMap = new Map(existingSkills.map((s) => [s.skillId, s]));
 
-        for (const skillId of skillRewards) {
+        for (const skillId of Array.from(skillRewards)) {
           const existing = existingMap.get(skillId);
           if (existing) {
             if (!existing.unlocked) {
@@ -454,9 +447,7 @@ export async function getAvailableQuests(userId: number): Promise<any[]> {
       .from(questProgress)
       .where(eq(questProgress.userId, userId));
 
-    const progressMap = new Map(
-      progressRecords.map((p) => [p.questId, p])
-    );
+    const progressMap = new Map(progressRecords.map((p) => [p.questId, p]));
 
     const availableQuests = [];
 
@@ -484,11 +475,11 @@ export async function getAvailableQuests(userId: number): Promise<any[]> {
         ...quest,
         canStart: prerequisitesMet && levelMet && !isActive,
         isActive,
-        lockReason: !prerequisitesMet 
-          ? 'Prerequisites not met' 
-          : !levelMet 
-          ? `Level ${minLevel} required` 
-          : undefined,
+        lockReason: !prerequisitesMet
+          ? 'Prerequisites not met'
+          : !levelMet
+            ? `Level ${minLevel} required`
+            : undefined,
       });
     }
 
@@ -525,9 +516,7 @@ export async function getActiveQuests(userId: number): Promise<any[]> {
       .from(questProgress)
       .where(eq(questProgress.userId, userId));
 
-    const progressMap = new Map(
-      progressRecords.map((p) => [p.questId, p])
-    );
+    const progressMap = new Map(progressRecords.map((p) => [p.questId, p]));
 
     const activeQuests = [];
     for (const questId of activeQuestIds) {
@@ -567,12 +556,7 @@ export async function autoCompleteQuests(
     const activeQuestProgress = await db
       .select()
       .from(questProgress)
-      .where(
-        and(
-          eq(questProgress.userId, userId),
-          eq(questProgress.status, 'in_progress')
-        )
-      );
+      .where(and(eq(questProgress.userId, userId), eq(questProgress.status, 'in_progress')));
 
     if (activeQuestProgress.length === 0) {
       return completedQuests;
@@ -588,9 +572,7 @@ export async function autoCompleteQuests(
       .from(npcRelationships)
       .where(eq(npcRelationships.userId, userId));
 
-    const npcRelationsMap = new Map(
-      npcRelations.map((rel) => [rel.npcId, rel])
-    );
+    const npcRelationsMap = new Map(npcRelations.map((rel) => [rel.npcId, rel]));
 
     // 获取玩家等级（用于检查reach_level目标）
     const [stats] = await db
@@ -608,7 +590,7 @@ export async function autoCompleteQuests(
 
       // 构建完整的进度数据（合并当前上下文）
       const progressData = (progress.progress as Record<string, any>) || {};
-      
+
       if (context?.tutorialCompleted) {
         progressData.tutorial_completed = true;
       }
@@ -619,7 +601,11 @@ export async function autoCompleteQuests(
       // 检查所有目标是否都已完成
       const allObjectivesCompleted = quest.objectives.every((obj) => {
         // 特殊处理：如果当前操作刚完成某个目标
-        if (context?.defeatedNpc && obj.type === 'defeat_npc' && obj.target === context.defeatedNpc) {
+        if (
+          context?.defeatedNpc &&
+          obj.type === 'defeat_npc' &&
+          obj.target === context.defeatedNpc
+        ) {
           return true;
         }
         if (context?.npcId && obj.type === 'dialogue' && obj.target === context.npcId) {
