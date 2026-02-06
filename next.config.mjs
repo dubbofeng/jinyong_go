@@ -41,6 +41,15 @@ const nextConfig = {
       },
     ];
   },
+
+  // 排除不需要的目录
+  webpack: (config, { isServer }) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/node_modules', '**/scripts', '**/src/rpg', '**/tmp', '**/test-results'],
+    };
+    return config;
+  },
 };
 
 export default withNextIntl(nextConfig);

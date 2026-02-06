@@ -1,6 +1,5 @@
 # Dependencies
 node_modules
-.pnpm-store
 
 # Build outputs
 .next
@@ -8,40 +7,14 @@ out
 dist
 build
 
-# Env files
-.env
-.env.local
-.env.*.local
+# Generated files
+public/generated
+drizzle
 
-# Logs
-*.log
+# Test results
+test-results
+tmp
 
 # Database
 *.db
 *.sqlite
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode
-.idea
-
-# Lock files
-package-lock.json
-pnpm-lock.yaml
-yarn.lock
-
-# Generated files
-public/generated/
-drizzle/
-next-env.d.ts
-*.tsbuildinfo
-
-# Test results
-coverage/
-.playwright/
-test-results/
-playwright-report/
-tmp/
