@@ -32,3 +32,16 @@ Thumbs.db
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Generated files
+public/generated/
+drizzle/
+next-env.d.ts
+*.tsbuildinfo
+
+# Test results
+coverage/
+.playwright/
+test-results/
+playwright-report/
+tmp/

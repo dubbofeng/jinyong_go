@@ -83,7 +83,7 @@ export async function POST(
     }
 
     // 更新战斗统计
-    let updates: any = {
+    const updates: any = {
       lastInteractionAt: new Date(),
       updatedAt: new Date(),
     };

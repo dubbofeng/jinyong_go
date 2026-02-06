@@ -710,7 +710,7 @@ export class KataGoBrowserEngineV2 {
       let winrate = 0.5;
       let visits = 0;
       let scoreLead = 0;
-      let ownership: number[][] | undefined = undefined;
+      const ownership: number[][] | undefined = undefined;
       
       for (const line of lines) {
         if (line.includes('info move')) {

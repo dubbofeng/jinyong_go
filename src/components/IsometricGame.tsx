@@ -1609,7 +1609,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     setCurrentDialogueNode(node);
     
     // 为所有NPC对话添加通用的"切磋对局"选项
-    let enhancedOptions = [...options];
+    const enhancedOptions = [...options];
     
     // 只在有选项且对话未结束时添加通用挑战选项
     // 对于有剧情对局的NPC，必须先完成剧情对局（hasDefeated = true）才能使用通用挑战

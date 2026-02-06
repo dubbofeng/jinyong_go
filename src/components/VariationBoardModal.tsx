@@ -388,7 +388,7 @@ export default function VariationBoardModal({
           {/* 提示文字 */}
           <div className="mt-6 text-center text-blue-200 text-sm">
             💡 提示：这是一个独立的试下棋盘，你可以自由尝试各种走法。<br />
-            完成试下后，点击"完成试下"返回实战棋盘。
+            完成试下后，点击&ldquo;完成试下&rdquo;返回实战棋盘。
           </div>
         </div>
       </div>

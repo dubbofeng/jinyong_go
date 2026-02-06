@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Player not found' }, { status: 404 });
     }
 
-    let rewards = {
+    const rewards = {
       experience: 0,
       silver: 0,
       items: [] as Array<string | { itemId: string; name: string; quantity: number }>,
