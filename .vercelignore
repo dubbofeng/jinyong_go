@@ -6,3 +6,4 @@ e2e
 *.log
 .env*
 !.env.example
+.pnpm-store
