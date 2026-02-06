@@ -42,6 +42,19 @@ const nextConfig = {
     ];
   },
 
+  // 优化函数打包大小，排除不需要的依赖
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/@esbuild',
+      'node_modules/webpack',
+      'node_modules/rollup',
+      'node_modules/terser',
+    ],
+    '/api/**': ['node_modules/sharp', 'node_modules/@img'],
+  },
+
   // 排除不需要的目录
   webpack: (config, { isServer }) => {
     config.watchOptions = {
