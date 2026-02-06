@@ -908,9 +908,22 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     handleResize();
     window.addEventListener('resize', handleResize);
 
+    // 使用 ResizeObserver 监听容器大小变化（包括侧边栏切换）
+    let resizeObserver: ResizeObserver | null = null;
+    if (canvas.parentElement) {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(canvas.parentElement);
+    }
+
     // 清理
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (resizeObserver && canvas.parentElement) {
+        resizeObserver.unobserve(canvas.parentElement);
+        resizeObserver.disconnect();
+      }
       engine.dispose();
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
