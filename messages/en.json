@@ -239,7 +239,35 @@
         "odd": "Odd",
         "even": "Even",
         "guessCorrect": "{opponentName} grabbed {stones} stones ({parity}). You guessed correctly! You play Black (first move).",
-        "guessWrong": "{opponentName} grabbed {stones} stones ({parity}). You guessed wrong! {opponentName} plays Black (first move)."
+        "guessWrong": "{opponentName} grabbed {stones} stones ({parity}). You guessed wrong! {opponentName} plays Black (first move).",
+        "title": "🎲 Nigiri!",
+        "subtitle": "{opponentName} grabbed a handful of stones. Guess odd or even?"
+      },
+      "skillNames": {
+        "kanglong_youhui": "Overpowering Dragon",
+        "dugu_jiujian": "Nine Swords",
+        "fuyu_chuanyin": "Ventriloquism",
+        "jiguan_suanjin": "Strategic Planning",
+        "qizi_anqi": "Stone Projectile",
+        "qiankun_danuo": "Great Shift",
+        "yiyang_zhi": "Yang Finger",
+        "zuoyou_hubo": "Ambidexterity",
+        "beiming_shengong": "Energy Absorption"
+      },
+      "skillInfo": {
+        "remaining": "Remaining",
+        "qi": "Qi",
+        "cooldown": "Cooldown",
+        "moves": "moves",
+        "level": "Lv.",
+        "onlyMoves": "Only 11-40 moves",
+        "shortcutKey": "Shortcut"
+      },
+      "buttons": {
+        "pass": "Pass",
+        "resign": "Resign",
+        "reset": "Reset",
+        "testWin": "🎯 Test Win"
       },
       "messages": {
         "waitingForOpponent": "⏳ Waiting for {name} to move...",
@@ -352,7 +380,35 @@
         "moveCount": "Moves",
         "boardSize": "Board",
         "captured": "Captured",
-        "road": "x"
+        "road": "x",
+        "player": "Player",
+        "opponent": "Opponent",
+        "system": "System",
+        "yiyangCanceled": "Yang Finger canceled",
+        "jiguanExitMode": "Exited trial board",
+        "difficulty": "Difficulty",
+        "qi": "Qi",
+        "evaluationTitle": "⏔️ Nine Swords · Position Evaluation ⏔️",
+
+        "territory": "Territory",
+        "captures": "Captures",
+        "total": "Total",
+        "advantageScore": "Advantage Score",
+        "nigiriResultTitle": "Nigiri Result",
+        "stonesCount": "{count} stones in total",
+        "gameStartingSoon": "Game starting soon...",
+        "yiyangSelectTitle": "☀️ Yang Finger · Select Restriction Area",
+        "topHalf": "Top Half",
+        "bottomHalf": "Bottom Half",
+        "leftHalf": "Left Half",
+        "rightHalf": "Right Half",
+        "cancel": "Cancel",
+        "suggestionsTitle": "🗨️ Ventriloquism · AI Suggestions 🗨️",
+        "position": "Position",
+        "nigiriExplanation": "Winner plays Black (first), loser plays White (second)",
+        "nigiriAsk": "{opponentName} will grab a handful of white stones. Guess odd or even?",
+        "oddNumber": "Odd",
+        "evenNumber": "Even"
       }
     }
   },

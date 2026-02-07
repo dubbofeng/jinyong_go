@@ -239,7 +239,35 @@
         "odd": "奇数",
         "even": "偶数",
         "guessCorrect": "{opponentName}抓了{stones}颗棋子（{parity}），您猜对了！执黑先行。",
-        "guessWrong": "{opponentName}抓了{stones}颗棋子（{parity}），您猜错了！{opponentName}执黑先行。"
+        "guessWrong": "{opponentName}抓了{stones}颗棋子（{parity}），您猜错了！{opponentName}执黑先行。",
+        "title": "🎲 猜先！",
+        "subtitle": "{opponentName}抓了一把棋子，猜奇数还是偶数？"
+      },
+      "skillNames": {
+        "kanglong_youhui": "亢龙有悔",
+        "dugu_jiujian": "独孤九剑",
+        "fuyu_chuanyin": "腹语传音",
+        "jiguan_suanjin": "机关算尽",
+        "qizi_anqi": "棋子暗器",
+        "qiankun_danuo": "乾坤大挪移",
+        "yiyang_zhi": "一阳指",
+        "zuoyou_hubo": "左右互搏",
+        "beiming_shengong": "北冥神功"
+      },
+      "skillInfo": {
+        "remaining": "剩余",
+        "qi": "内力",
+        "cooldown": "冷却",
+        "moves": "手",
+        "level": "Lv.",
+        "onlyMoves": "仅限11-40手",
+        "shortcutKey": "快捷键"
+      },
+      "buttons": {
+        "pass": "停一手(Pass)",
+        "resign": "认输(Resign)",
+        "reset": "重新开始",
+        "testWin": "🎯 测试胜利"
       },
       "messages": {
         "waitingForOpponent": "⏳ 等待{name}落子...",
@@ -352,7 +380,36 @@
         "moveCount": "手数",
         "boardSize": "棋盘",
         "captured": "提子",
-        "road": "路"
+        "road": "路",
+        "player": "玩家",
+        "opponent": "对手",
+        "system": "系统",
+        "yiyangCanceled": "已取消一阳指",
+        "jiguanExitMode": "已退出试下棋盘",
+        "difficulty": "难度",
+        "qi": "内力",
+        "evaluationTitle": "⏔️ 独孤九剑 · 形势判断 ⏔️",
+        "blackSide": "黑方",
+        "whiteSide": "白方",
+        "territory": "地盘",
+        "captures": "提子",
+        "total": "总计",
+        "advantageScore": "优势分数",
+        "nigiriResultTitle": "猜先结果",
+        "stonesCount": "共 {count} 颗棋子",
+        "gameStartingSoon": "游戏即将开始...",
+        "yiyangSelectTitle": "☀️ 一阳指 · 选择限制区域",
+        "topHalf": "上半盘",
+        "bottomHalf": "下半盘",
+        "leftHalf": "左半盘",
+        "rightHalf": "右半盘",
+        "cancel": "取消",
+        "suggestionsTitle": "🗨️ 腹语传音 · AI建议 🗨️",
+        "position": "位置",
+        "nigiriExplanation": "猜对者执黑先行，猜错者执白后行",
+        "nigiriAsk": "{opponentName}将抓一把白子，请猜单数还是双数",
+        "oddNumber": "单数",
+        "evenNumber": "双数"
       }
     }
   },
