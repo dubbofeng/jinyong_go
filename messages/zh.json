@@ -270,6 +270,7 @@
         "testWin": "🎯 测试胜利"
       },
       "messages": {
+        "opponent": "对手",
         "waitingForOpponent": "⏳ 等待{name}落子...",
         "koRule": "❌ 劫争！不能立即回提",
         "suicide": "❌ 自杀手！不能自己没气",

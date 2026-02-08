@@ -270,6 +270,7 @@
         "testWin": "🎯 Test Win"
       },
       "messages": {
+        "opponent": "Opponent",
         "waitingForOpponent": "⏳ Waiting for {name} to move...",
         "koRule": "❌ Ko rule! Cannot recapture immediately",
         "suicide": "❌ Suicide move! Cannot place stone without liberties",

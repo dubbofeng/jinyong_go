@@ -1077,7 +1077,7 @@ export default function GoBoardGame({
     if (npcId && npcNameMap[npcId]) {
       return npcNameMap[npcId];
     }
-    return t('ui.opponent');
+    return t('messages.opponent');
   };
 
   const setSkillMessage = (skillId: string, message: string) => {
