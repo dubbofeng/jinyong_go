@@ -81,6 +81,7 @@ export default function GoBoardGame({
   const [skillLevels, setSkillLevels] = useState<Record<string, number>>({}); // 技能等级映射
   const [playerQi, setPlayerQi] = useState<number | null>(null);
   const [playerMaxQi, setPlayerMaxQi] = useState<number | null>(null);
+  const [goSkillRating, setGoSkillRating] = useState<number>(25); // 玩家围棋水平评分，用于自适应难度
   const [boardPixelSize, setBoardPixelSize] = useState(() => Math.min(width, height));
 
   const npcNameMap = useMemo(
@@ -265,6 +266,7 @@ export default function GoBoardGame({
         if (initData.success) {
           setPlayerQi(initData.data.qi);
           setPlayerMaxQi(initData.data.maxQi);
+          setGoSkillRating(initData.data.goSkillRating ?? 25);
         }
         return;
       }
@@ -274,6 +276,7 @@ export default function GoBoardGame({
         if (data.success) {
           setPlayerQi(data.data.qi);
           setPlayerMaxQi(data.data.maxQi);
+          setGoSkillRating(data.data.goSkillRating ?? 25);
         }
       }
     } catch (error) {
@@ -560,8 +563,12 @@ export default function GoBoardGame({
         });
         setLastMessage(t('messages.katagoThinking', { difficulty: aiDifficulty }));
 
-        // 设置难度
-        await katagoEngine.setDifficulty(aiDifficulty);
+        // 设置难度（使用自适应难度系统）
+        if (katagoEngine.setAdaptiveDifficulty) {
+          await katagoEngine.setAdaptiveDifficulty(aiDifficulty, goSkillRating);
+        } else {
+          await katagoEngine.setDifficulty(aiDifficulty);
+        }
 
         // 获取当前棋盘上的所有棋子
         const stones: Array<{ row: number; col: number; color: 'black' | 'white' }> = [];
@@ -683,7 +690,16 @@ export default function GoBoardGame({
       setIsAIThinking(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vsAI, aiDifficulty, katagoEngine, size, yiYangRestriction, aiColor, opponentName]);
+  }, [
+    vsAI,
+    aiDifficulty,
+    katagoEngine,
+    size,
+    yiYangRestriction,
+    aiColor,
+    opponentName,
+    goSkillRating,
+  ]);
 
   // 监听玩家切换，触发AI落子
   useEffect(() => {
@@ -907,6 +923,13 @@ export default function GoBoardGame({
             } else {
               const battleResultData = await battleResultResponse.json();
               console.log('✅ Battle result saved:', battleResultData);
+              // 更新本地围棋水平评分（自适应难度）
+              if (battleResultData.data?.goSkillRating !== undefined) {
+                setGoSkillRating(battleResultData.data.goSkillRating);
+                console.log(
+                  `🎯 围棋水平评分更新: ${goSkillRating} → ${battleResultData.data.goSkillRating}`
+                );
+              }
             }
           } catch (error) {
             console.error('Error saving battle result:', error);

@@ -1,7 +1,7 @@
 /**
  * KataGo浏览器版引擎封装 V2
  * 基于y-ich/KataGo的web/pre_pre.js示例实现
- * 
+ *
  * 与V1的区别：
  * - 不使用Web Worker，直接在主线程加载
  * - 使用Emscripten FS.init()重定向stdin/stdout
@@ -23,19 +23,19 @@ export interface BrowserAnalysis {
   winrate: number;
   visits: number;
   thinkingTime: number;
-  shouldResign?: boolean;       // KataGo 是否建议认输
+  shouldResign?: boolean; // KataGo 是否建议认输
   moveType?: 'move' | 'pass' | 'resign'; // 着法类型
   // 详细分析数据
-  scoreLead?: number;           // 分数差（正数=黑优，负数=白优）
-  scoreStdev?: number;          // 分数标准差
-  ownership?: number[][];       // 地盘归属（-1到1，-1=白方，1=黑方）
+  scoreLead?: number; // 分数差（正数=黑优，负数=白优）
+  scoreStdev?: number; // 分数标准差
+  ownership?: number[][]; // 地盘归属（-1到1，-1=白方，1=黑方）
   policy?: Map<string, number>; // 策略网络评估（位置 -> 概率）
-  winrateByMove?: number[];     // 每一手的胜率变化
+  winrateByMove?: number[]; // 每一手的胜率变化
 }
 
 // stdin输入处理类
 class KataGoInput {
-  private buffer: string = "";
+  private buffer: string = '';
   private resolveWaiting: (() => void) | null = null;
 
   // Emscripten会调用此方法读取stdin
@@ -47,16 +47,16 @@ class KataGoInput {
     this.buffer = this.buffer.substr(1);
     return c.charCodeAt(0);
   }
-  
+
   // 发送命令到KataGo
   sendCommand(command: string) {
-    this.buffer += command + "\n";
+    this.buffer += command + '\n';
     if (this.resolveWaiting) {
       this.resolveWaiting();
       this.resolveWaiting = null;
     }
   }
-  
+
   // 等待输入就绪
   wait(): Promise<void> {
     return new Promise((resolve) => {
@@ -67,7 +67,7 @@ class KataGoInput {
 
 // stdout输出处理类
 class KataGoOutput {
-  private buffer: string = "";
+  private buffer: string = '';
   private crFlag: boolean = false;
   private onMessage: (line: string) => void;
 
@@ -82,17 +82,17 @@ class KataGoOutput {
       if (line) {
         this.onMessage(line);
       }
-      this.buffer = "";
+      this.buffer = '';
       this.crFlag = false;
       return;
     }
     if (char === 0x0d) {
       this.crFlag = true;
       return;
-    } 
+    }
     if (this.crFlag) {
       this.crFlag = false;
-      this.buffer = "";
+      this.buffer = '';
     }
     this.buffer += String.fromCharCode(char);
   }
@@ -122,6 +122,8 @@ export class KataGoBrowserEngineV2 {
   private maxVisits: number = 100; // 默认访问次数（难度）
   private rootPolicyTemperature: number = 1.0; // 策略温度
   private analysisWideRootNoise: number = 0.0; // 根节点噪声
+  private randomMoveChance: number = 0; // 随机落子概率（让低级AI更弱）
+  private currentDifficulty: number = 5; // 当前难度等级
 
   constructor(config: KataGoBrowserConfig) {
     this.config = config;
@@ -143,7 +145,7 @@ export class KataGoBrowserEngineV2 {
 
     try {
       this.config.onLog?.('🚀 开始加载KataGo引擎...');
-      
+
       // 检查WASM文件是否存在
       const wasmPath = this.config.wasmPath.replace('.js', '.wasm');
       const wasmCheck = await fetch(wasmPath);
@@ -152,17 +154,17 @@ export class KataGoBrowserEngineV2 {
       }
 
       this.config.onLog?.('📦 配置Emscripten Module...');
-      
+
       // 配置Emscripten Module
       await this.setupModule();
 
       this.config.onLog?.('📥 加载WASM模块...');
-      
+
       // 加载katago.js脚本
       await this.loadScript(this.config.wasmPath);
 
       this.config.onLog?.('⏳ 等待引擎初始化...');
-      
+
       // 等待引擎就绪
       await this.waitForReady();
 
@@ -182,26 +184,20 @@ export class KataGoBrowserEngineV2 {
   private async setupModule(): Promise<void> {
     return new Promise((resolve, reject) => {
       // 初始化Module
-      if (typeof window.Module === "undefined") {
+      if (typeof window.Module === 'undefined') {
         window.Module = {};
       }
 
       const Module = window.Module;
-      
+
       // 清空现有配置
       Module.preRun = [];
       Module.print = undefined;
       Module.printErr = undefined;
-      
+
       // 提前设置命令行参数（必须在WASM加载前设置）
-      Module.arguments = [
-        'gtp',
-        '-model',
-        this.config.modelPath,
-        '-config',
-        'gtp_auto.cfg'
-      ];
-      
+      Module.arguments = ['gtp', '-model', this.config.modelPath, '-config', 'gtp_auto.cfg'];
+
       this.config.onLog?.(`📋 预设参数: ${Module.arguments.join(' ')}`);
 
       // 定义全局状态处理函数（KataGo需要）
@@ -221,7 +217,7 @@ export class KataGoBrowserEngineV2 {
       this.input = new KataGoInput();
       this.output = new KataGoOutput((line) => {
         this.config.onLog?.(`[KataGo] ${line}`);
-        
+
         // 检测GTP就绪信号
         if (line.includes('GTP ready') || line.includes('KataGo v')) {
           if (this.readyPromiseResolve) {
@@ -229,7 +225,7 @@ export class KataGoBrowserEngineV2 {
             this.readyPromiseResolve = null;
           }
         }
-        
+
         // 缓存响应
         if (line.startsWith('=') || line.startsWith('?')) {
           this.responseBuffer.push(line);
@@ -241,7 +237,7 @@ export class KataGoBrowserEngineV2 {
           this.responseBuffer.push(line);
         }
       });
-      
+
       // 将input/output实例赋值给Module（KataGo需要Module.input.wait()）
       Module.input = this.input;
       Module.output = this.output;
@@ -258,13 +254,7 @@ export class KataGoBrowserEngineV2 {
 
           // 预加载配置文件
           const cfgFileName = 'gtp_auto.cfg';
-          FS.createPreloadedFile(
-            FS.cwd(),
-            cfgFileName,
-            this.config.configPath,
-            true,
-            false
-          );
+          FS.createPreloadedFile(FS.cwd(), cfgFileName, this.config.configPath, true, false);
 
           this.config.onLog?.(`📁 预加载配置文件: ${cfgFileName}`);
 
@@ -312,16 +302,16 @@ export class KataGoBrowserEngineV2 {
       this.scriptElement = document.createElement('script');
       this.scriptElement.src = src;
       this.scriptElement.async = true;
-      
+
       this.scriptElement.onload = () => {
         this.config.onLog?.('✅ Script loaded');
         resolve();
       };
-      
+
       this.scriptElement.onerror = () => {
         reject(new Error('Failed to load script: ' + src));
       };
-      
+
       document.head.appendChild(this.scriptElement);
     });
   }
@@ -332,7 +322,7 @@ export class KataGoBrowserEngineV2 {
   private async waitForReady(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.readyPromiseResolve = resolve;
-      
+
       const timeout = setTimeout(() => {
         this.readyPromiseResolve = null;
         // 如果60秒内没有看到就绪消息，尝试发送name命令测试
@@ -433,40 +423,49 @@ export class KataGoBrowserEngineV2 {
    * @param difficulty 难度等级 1-9，数字越大越强
    */
   async setDifficulty(difficulty: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): Promise<void> {
-    // 难度配置：maxVisits, rootPolicyTemperature, analysisWideRootNoise
-    const difficultyConfig: Record<number, { visits: number; temp: number; noise: number }> = {
-        1: { visits: 1,   temp: 10, noise: 1 },  // 入门级 - 极弱，像初学者
-        2: { visits: 2,   temp: 9, noise: 0.9 },   // 初级 - 很弱，经常失误
-        3: { visits: 4,   temp: 8, noise: 0.8 },  // 进阶 - 较弱，有明显缺陷
-        4: { visits: 8,  temp: 7, noise: 0.7 },  // 中级 - 偶尔失误
-        5: { visits: 16,  temp: 6, noise: 0.6 },   // 中高级 - 较少失误
-        6: { visits: 32,  temp: 5, noise: 0.5 },  // 高级 - 接近完美
-        7: { visits: 64, temp: 4, noise: 0.4 },   // 专家级 - 完美发挥
-        8: { visits: 128, temp: 3, noise: 0.3 },   // 大师级 - 深度思考
-        9: { visits: 256, temp: 2, noise: 0.2 },    // 顶尖级 - 最强
-        10: { visits: 512, temp: 1, noise: 0.1 },   // 传奇级 - 极限挑战
-        11: { visits: 1024, temp: 0.5, noise: 0 }   // 神级 - 无随机性，最优着法
+    // 难度配置：maxVisits, rootPolicyTemperature, analysisWideRootNoise, randomMoveChance
+    // randomMoveChance: 随机落子概率，低难度AI有概率下随机位置而非最佳着法
+    // KataGo的神经网络即使visits=1也很强，必须加随机落子才能让新手赢
+    const difficultyConfig: Record<
+      number,
+      { visits: number; temp: number; noise: number; randomMoveChance: number }
+    > = {
+      1: { visits: 1, temp: 10, noise: 1.0, randomMoveChance: 0.6 }, // 入门级 - 60%随机落子，新手可轻松赢
+      2: { visits: 1, temp: 8, noise: 0.9, randomMoveChance: 0.5 }, // 初级 - 50%随机落子
+      3: { visits: 1, temp: 6, noise: 0.8, randomMoveChance: 0.4 }, // 进阶 - 40%随机落子
+      4: { visits: 2, temp: 5, noise: 0.6, randomMoveChance: 0.3 }, // 中级 - 30%随机落子
+      5: { visits: 4, temp: 4, noise: 0.4, randomMoveChance: 0.2 }, // 中高级 - 20%随机落子
+      6: { visits: 16, temp: 3, noise: 0.3, randomMoveChance: 0.1 }, // 高级 - 10%随机落子
+      7: { visits: 64, temp: 2, noise: 0.2, randomMoveChance: 0.05 }, // 专家级 - 5%随机落子
+      8: { visits: 128, temp: 1.5, noise: 0.1, randomMoveChance: 0.02 }, // 大师级 - 2%随机落子
+      9: { visits: 256, temp: 1, noise: 0, randomMoveChance: 0.01 }, // 顶尖级 - 1%随机落子
+      10: { visits: 512, temp: 1, noise: 0, randomMoveChance: 0.001 }, // 传奇级 - 0.1%随机落子
+      11: { visits: 1024, temp: 0.5, noise: 0, randomMoveChance: 0.0001 }, // 神级 - 0.01%随机落子
     };
-    
+
     const config = difficultyConfig[difficulty];
     this.maxVisits = config.visits;
     this.rootPolicyTemperature = config.temp;
     this.analysisWideRootNoise = config.noise;
-    
+    this.randomMoveChance = config.randomMoveChance;
+    this.currentDifficulty = difficulty;
+
     if (this.isReady) {
       try {
         // 设置最大访问次数
         await this.sendCommand(`kata-set-param maxVisits ${config.visits}`);
-        
+
         // 设置策略温度（增加随机性）
         await this.sendCommand(`kata-set-param rootPolicyTemperature ${config.temp}`);
-        
+
         // 设置根节点噪声（让AI下出"不完美"的棋）
         if (config.noise > 0) {
           await this.sendCommand(`kata-set-param analysisWideRootNoise ${config.noise}`);
         }
-        
-        this.config.onLog?.(`✅ 难度设置为 Lv.${difficulty} (visits=${config.visits}, temp=${config.temp}, noise=${config.noise})`);
+
+        this.config.onLog?.(
+          `✅ 难度设置为 Lv.${difficulty} (visits=${config.visits}, temp=${config.temp}, noise=${config.noise}, random=${(config.randomMoveChance * 100).toFixed(0)}%)`
+        );
       } catch (error) {
         console.error('设置难度失败:', error);
         this.config.onLog?.(`⚠️ 难度设置失败: ${error}`);
@@ -474,6 +473,77 @@ export class KataGoBrowserEngineV2 {
     } else {
       this.config.onLog?.(`🕒 难度将在引擎就绪后设置为 Lv.${difficulty}`);
     }
+  }
+
+  /**
+   * 基于玩家围棋水平评分设置自适应难度
+   * 结合 NPC 的固定难度等级和玩家的 goSkillRating 动态计算 randomMoveChance
+   * @param npcDifficulty NPC 的固定难度等级 1-9
+   * @param goSkillRating 玩家的围棋水平评分 0-100
+   */
+  async setAdaptiveDifficulty(
+    npcDifficulty: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9,
+    goSkillRating: number
+  ): Promise<void> {
+    // 先设置 NPC 的基础难度参数（visits, temp, noise）
+    await this.setDifficulty(npcDifficulty);
+
+    // 根据玩家水平动态调整 randomMoveChance
+    // goSkillRating: 0=完全新手, 25=默认新手, 50=中等, 75=高手, 100=顶尖
+    // rating 越低 → randomMoveChance 越高 → AI 越弱
+    // rating 越高 → randomMoveChance 越低 → AI 越强
+    const clampedRating = Math.max(0, Math.min(100, goSkillRating));
+
+    // 基础随机率由 NPC 难度决定上限
+    // 低难度NPC: 即使玩家很强，也不会变得比 Lv.6+ 更强
+    // 高难度NPC: 即使玩家很弱，也不会变得比 Lv.1 更弱
+    const maxRandomChance = Math.min(0.6, 0.1 * (10 - npcDifficulty)); // NPC越弱，允许的最大随机率越高
+
+    // 玩家水平对随机率的影响
+    // rating=0 → 使用 maxRandomChance（最弱）
+    // rating=100 → randomMoveChance=0（不随机）
+    const adaptiveRandomChance = maxRandomChance * Math.pow(1 - clampedRating / 100, 1.5);
+
+    this.randomMoveChance = Math.max(0, adaptiveRandomChance);
+
+    this.config.onLog?.(
+      `🎯 自适应难度: NPC Lv.${npcDifficulty}, 玩家评分=${goSkillRating}, randomMoveChance=${(this.randomMoveChance * 100).toFixed(1)}%`
+    );
+  }
+
+  /**
+   * 生成随机落子位置（用于低难度AI削弱）
+   * 避免第一线（边线），让随机落子看起来不那么离谱
+   */
+  private generateRandomMove(
+    boardSize: number,
+    stones: Array<{ row: number; col: number; color: 'black' | 'white' }>
+  ): BoardPosition | null {
+    const occupied = new Set(stones.map((s) => `${s.row},${s.col}`));
+    const candidates: BoardPosition[] = [];
+
+    // 优先选择非边线位置（第2-18线），看起来更自然
+    for (let row = 1; row < boardSize - 1; row++) {
+      for (let col = 1; col < boardSize - 1; col++) {
+        if (!occupied.has(`${row},${col}`)) {
+          candidates.push({ row, col });
+        }
+      }
+    }
+
+    // 如果内部没有空位，退而选择所有空位
+    if (candidates.length === 0) {
+      for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+          if (!occupied.has(`${row},${col}`)) {
+            candidates.push({ row, col });
+          }
+        }
+      }
+    }
+
+    if (candidates.length === 0) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
   /**
@@ -494,7 +564,7 @@ export class KataGoBrowserEngineV2 {
     try {
       // 设置棋盘大小
       await this.sendCommand(`boardsize ${boardSize}`);
-      
+
       // 清空棋盘
       await this.sendCommand('clear_board');
 
@@ -546,22 +616,48 @@ export class KataGoBrowserEngineV2 {
       } else {
         // 使用genmove获取最佳着法（利用maxVisits参数）
         const color = nextColor === 'black' ? 'B' : 'W';
-        console.log(`🎮 使用genmove获取AI着法 (visits=${this.maxVisits}, temp=${this.rootPolicyTemperature}, noise=${this.analysisWideRootNoise})`);
+        console.log(
+          `🎮 使用genmove获取AI着法 (Lv.${this.currentDifficulty}, visits=${this.maxVisits}, temp=${this.rootPolicyTemperature}, noise=${this.analysisWideRootNoise}, random=${(this.randomMoveChance * 100).toFixed(0)}%)`
+        );
         const response = await this.sendCommand(`genmove ${color}`);
         console.log('📥 genmove响应:', response);
-        
+
         // 解析响应
         const { move, type } = this.parseMove(response, boardSize);
-        
+
         const thinkingTime = Date.now() - startTime;
+
+        // 随机落子机制：低难度AI有一定概率下随机位置，让新手有机会赢
+        if (this.randomMoveChance > 0 && Math.random() < this.randomMoveChance && type === 'move') {
+          const randomMove = this.generateRandomMove(boardSize, stones);
+          if (randomMove) {
+            console.log(
+              `🎲 AI随机落子 (Lv.${this.currentDifficulty}, 概率${(this.randomMoveChance * 100).toFixed(0)}%): (${randomMove.row}, ${randomMove.col})`
+            );
+            return {
+              bestMove: randomMove,
+              winrate: 0.5,
+              visits: 1,
+              thinkingTime,
+              shouldResign: false,
+              moveType: 'move',
+            };
+          }
+        }
+
+        // 低难度（1-4级）禁止AI认输，否则AI太容易放弃
+        const suppressResign = this.currentDifficulty <= 4 && type === 'resign';
+        if (suppressResign) {
+          console.log(`🚫 低难度Lv.${this.currentDifficulty}禁止AI认输，改为继续下`);
+        }
 
         return {
           bestMove: move,
           winrate: 0.5,
           visits: 100,
           thinkingTime,
-          shouldResign: type === 'resign',
-          moveType: type,
+          shouldResign: suppressResign ? false : type === 'resign',
+          moveType: suppressResign ? 'pass' : type,
         };
       }
     } catch (error) {
@@ -576,7 +672,7 @@ export class KataGoBrowserEngineV2 {
   private parseKataAnalysis(response: string, boardSize: number): BrowserAnalysis {
     try {
       console.log('📊 开始解析kata-analyze响应...');
-      
+
       // kata-analyze 返回多行 "info move" 格式的数据
       // info move D4 visits 100 winrate 0.5234 scoreMean 1.2 ... ownership 0.9 -0.8 0.1 ...
       const lines = response.split('\n');
@@ -586,13 +682,13 @@ export class KataGoBrowserEngineV2 {
       let scoreLead = 0;
       let scoreStdev = 0;
       let ownership: number[][] | undefined = undefined;
-      
+
       console.log(`📝 响应包含 ${lines.length} 行`);
-      
+
       for (const line of lines) {
         if (line.includes('info move')) {
           console.log('🎯 找到info move行:', line.substring(0, 200));
-          
+
           // 解析着法
           const moveMatch = line.match(/move\s+([A-T])(\d+)/);
           if (moveMatch) {
@@ -605,33 +701,33 @@ export class KataGoBrowserEngineV2 {
             bestMove = { row, col };
             console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
           }
-          
+
           // 解析胜率
           const winrateMatch = line.match(/winrate\s+([\d.]+)/);
           if (winrateMatch) {
             winrate = parseFloat(winrateMatch[1]);
             console.log('📈 胜率:', winrate);
           }
-          
+
           // 解析访问次数
           const visitsMatch = line.match(/visits\s+(\d+)/);
           if (visitsMatch) {
             visits = parseInt(visitsMatch[1]);
           }
-          
+
           // 解析分数差
           const scoreMeanMatch = line.match(/scoreMean\s+([-\d.]+)/);
           if (scoreMeanMatch) {
             scoreLead = parseFloat(scoreMeanMatch[1]);
             console.log('🎲 分数差:', scoreLead);
           }
-          
+
           // 解析分数标准差
           const scoreStdevMatch = line.match(/scoreStdev\s+([\d.]+)/);
           if (scoreStdevMatch) {
             scoreStdev = parseFloat(scoreStdevMatch[1]);
           }
-          
+
           // 只取第一个推荐（最佳着法）
           break;
         }
@@ -666,7 +762,7 @@ export class KataGoBrowserEngineV2 {
       } else {
         console.warn('⚠️ 未找到ownership数据');
       }
-      
+
       const result = {
         bestMove,
         winrate,
@@ -676,15 +772,15 @@ export class KataGoBrowserEngineV2 {
         scoreStdev,
         ownership,
       };
-      
+
       console.log('✅ 解析完成:', {
         hasMove: !!bestMove,
         winrate,
         scoreLead,
         hasOwnership: !!ownership,
-        ownershipSize: ownership?.length
+        ownershipSize: ownership?.length,
       });
-      
+
       return result;
     } catch (error) {
       console.error('❌ 解析kata-analyze失败:', error);
@@ -700,10 +796,14 @@ export class KataGoBrowserEngineV2 {
   /**
    * 解析lz-analyze的分析结果
    */
-  private parseLzAnalysis(response: string, bestMove: BoardPosition | null, boardSize: number): BrowserAnalysis {
+  private parseLzAnalysis(
+    response: string,
+    bestMove: BoardPosition | null,
+    boardSize: number
+  ): BrowserAnalysis {
     try {
       console.log('📊 开始解析lz-analyze响应...');
-      
+
       // lz-analyze 返回格式:
       // info move D4 visits 100 winrate 5200 scoreMean 1.5 ...
       const lines = response.split('\n');
@@ -711,32 +811,32 @@ export class KataGoBrowserEngineV2 {
       let visits = 0;
       let scoreLead = 0;
       const ownership: number[][] | undefined = undefined;
-      
+
       for (const line of lines) {
         if (line.includes('info move')) {
           console.log('🎯 分析行:', line.substring(0, 200));
-          
+
           // 解析胜率（Leela Zero格式是0-10000，5000=50%）
           const winrateMatch = line.match(/winrate\s+(\d+)/);
           if (winrateMatch) {
             winrate = parseInt(winrateMatch[1]) / 10000;
             console.log('📈 胜率:', winrate);
           }
-          
+
           const visitsMatch = line.match(/visits\s+(\d+)/);
           if (visitsMatch) {
             visits = parseInt(visitsMatch[1]);
           }
-          
+
           const scoreMeanMatch = line.match(/scoreMean\s+([-\d.]+)/);
           if (scoreMeanMatch) {
             scoreLead = parseFloat(scoreMeanMatch[1]);
           }
-          
+
           break;
         }
       }
-      
+
       return {
         bestMove,
         winrate,
@@ -762,23 +862,23 @@ export class KataGoBrowserEngineV2 {
   private parseDetailedAnalysisJSON(response: string, boardSize: number): BrowserAnalysis {
     try {
       console.log('📊 开始解析kata-genmove_analyze JSON响应...');
-      
-      // kata-genmove_analyze 返回: 
+
+      // kata-genmove_analyze 返回:
       // = move
       // 然后是JSON数据
       const lines = response.split('\n');
       let moveStr = '';
       let jsonStr = '';
-      
+
       // 第一行是着法
       if (lines[0]?.startsWith('=')) {
         moveStr = lines[0].replace('=', '').trim();
         console.log('📍 最佳着法:', moveStr);
       }
-      
+
       // 后续行是JSON
       jsonStr = lines.slice(1).join('\n').trim();
-      
+
       if (!jsonStr) {
         console.warn('⚠️ 响应中没有找到JSON数据');
         // 降级到简单解析
@@ -790,13 +890,13 @@ export class KataGoBrowserEngineV2 {
           thinkingTime: 0,
         };
       }
-      
+
       console.log('📦 JSON数据长度:', jsonStr.length, '字符');
-      
+
       // 解析JSON
       const data = JSON.parse(jsonStr);
       console.log('✅ JSON解析成功，包含字段:', Object.keys(data));
-      
+
       // 解析着法
       let bestMove: BoardPosition | null = null;
       if (moveStr && moveStr !== 'pass' && moveStr !== 'resign') {
@@ -809,20 +909,20 @@ export class KataGoBrowserEngineV2 {
           bestMove = { row, col };
         }
       }
-      
+
       // 提取分析数据
       const winrate = data.rootInfo?.winrate ?? 0.5;
       const visits = data.rootInfo?.visits ?? 0;
       const scoreLead = data.rootInfo?.scoreLead ?? 0;
       const scoreStdev = data.rootInfo?.utility ?? 0;
-      
+
       console.log('📈 分析数据:', { winrate, visits, scoreLead });
-      
+
       // 提取ownership数据
       let ownership: number[][] | undefined = undefined;
       if (data.ownership && Array.isArray(data.ownership)) {
         console.log('🗺️ 找到ownership数据，长度:', data.ownership.length);
-        
+
         // ownership是一维数组，需要转换为二维
         ownership = [];
         for (let row = 0; row < boardSize; row++) {
@@ -832,13 +932,13 @@ export class KataGoBrowserEngineV2 {
             ownership[row][col] = data.ownership[index] ?? 0;
           }
         }
-        
+
         console.log('✅ ownership转换完成:', ownership.length, 'x', ownership[0]?.length);
         console.log('📊 ownership样本（前5个值）:', data.ownership.slice(0, 5));
       } else {
         console.warn('⚠️ 响应中没有ownership数据');
       }
-      
+
       const result = {
         bestMove,
         winrate,
@@ -848,15 +948,15 @@ export class KataGoBrowserEngineV2 {
         scoreStdev,
         ownership,
       };
-      
+
       console.log('✅ 解析完成:', {
         hasMove: !!bestMove,
         winrate,
         scoreLead,
         hasOwnership: !!ownership,
-        ownershipSize: ownership?.length
+        ownershipSize: ownership?.length,
       });
-      
+
       return result;
     } catch (error) {
       console.error('❌ 解析JSON失败:', error);
@@ -879,7 +979,7 @@ export class KataGoBrowserEngineV2 {
       console.log('📊 开始解析kata-analyze响应...');
       // kata-analyze返回JSON格式的分析结果
       // 示例: info move D4 visits 100 winrate 0.52 scoreMean 1.5 ...
-      
+
       const lines = response.split('\n');
       let bestMove: BoardPosition | null = null;
       let winrate = 0.5;
@@ -887,9 +987,9 @@ export class KataGoBrowserEngineV2 {
       let scoreLead = 0;
       let scoreStdev = 0;
       let ownership: number[][] | undefined = undefined;
-      
+
       console.log(`📝 响应包含 ${lines.length} 行`);
-      
+
       for (const line of lines) {
         if (line.includes('info move')) {
           console.log('🎯 找到info move行:', line.substring(0, 200));
@@ -904,29 +1004,29 @@ export class KataGoBrowserEngineV2 {
             bestMove = { row, col };
             console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
           }
-          
+
           const winrateMatch = line.match(/winrate\s+([\d.]+)/);
           if (winrateMatch) {
             winrate = parseFloat(winrateMatch[1]);
             console.log('📈 胜率:', winrate);
           }
-          
+
           const visitsMatch = line.match(/visits\s+(\d+)/);
           if (visitsMatch) {
             visits = parseInt(visitsMatch[1]);
           }
-          
+
           const scoreMeanMatch = line.match(/scoreMean\s+([-\d.]+)/);
           if (scoreMeanMatch) {
             scoreLead = parseFloat(scoreMeanMatch[1]);
             console.log('🎲 分数差:', scoreLead);
           }
-          
+
           const scoreStdevMatch = line.match(/scoreStdev\s+([\d.]+)/);
           if (scoreStdevMatch) {
             scoreStdev = parseFloat(scoreStdevMatch[1]);
           }
-          
+
           // 解析ownership数据（如果存在）
           const ownershipMatch = line.match(/ownership\s+(\[[\s\S]*?\])/);
           if (ownershipMatch) {
@@ -950,11 +1050,11 @@ export class KataGoBrowserEngineV2 {
           } else {
             console.warn('⚠️ 未找到ownership数据');
           }
-          
+
           break; // 只取第一个推荐
         }
       }
-      
+
       const result = {
         bestMove,
         winrate,
@@ -964,15 +1064,15 @@ export class KataGoBrowserEngineV2 {
         scoreStdev,
         ownership,
       };
-      
+
       console.log('✅ 解析完成:', {
         hasMove: !!bestMove,
         winrate,
         scoreLead,
         hasOwnership: !!ownership,
-        ownershipSize: ownership?.length
+        ownershipSize: ownership?.length,
       });
-      
+
       return result;
     } catch (error) {
       console.error('❌ 解析分析结果失败:', error);
@@ -990,17 +1090,20 @@ export class KataGoBrowserEngineV2 {
    * 解析GTP move响应
    * 返回 { move, type } 其中 type 可以是 'move', 'pass', 或 'resign'
    */
-  private parseMove(response: string, boardSize: number): { move: BoardPosition | null; type: 'move' | 'pass' | 'resign' } {
+  private parseMove(
+    response: string,
+    boardSize: number
+  ): { move: BoardPosition | null; type: 'move' | 'pass' | 'resign' } {
     // 检查是否是 resign
     if (response.toLowerCase().includes('resign')) {
       return { move: null, type: 'resign' };
     }
-    
+
     // 检查是否是 pass
     if (response.toLowerCase().includes('pass')) {
       return { move: null, type: 'pass' };
     }
-    
+
     const match = response.match(/=\s*([A-Z])(\d+)/);
     if (!match) {
       throw new Error('Invalid move response: ' + response);
@@ -1034,12 +1137,12 @@ export class KataGoBrowserEngineV2 {
       document.head.removeChild(this.scriptElement);
       this.scriptElement = null;
     }
-    
+
     // 清理Module
     if (window.Module) {
       window.Module = undefined;
     }
-    
+
     this.isReady = false;
     this.input = null;
     this.output = null;
@@ -1050,7 +1153,9 @@ export class KataGoBrowserEngineV2 {
 /**
  * 创建KataGo引擎实例
  */
-export function createKataGoBrowserV2(config?: Partial<KataGoBrowserConfig>): KataGoBrowserEngineV2 {
+export function createKataGoBrowserV2(
+  config?: Partial<KataGoBrowserConfig>
+): KataGoBrowserEngineV2 {
   return new KataGoBrowserEngineV2({
     modelPath: '/katago/web_model',
     wasmPath: '/katago/katago.js',

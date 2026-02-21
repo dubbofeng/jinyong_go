@@ -18,10 +18,7 @@ export async function POST(
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const userId = parseInt(session.user.id);
@@ -36,11 +33,7 @@ export async function POST(
     }
 
     // 验证NPC是否在数据库中（可选，other_npcs中的NPC可能不在数据库）
-    const [npc] = await db
-      .select()
-      .from(npcs)
-      .where(eq(npcs.npcId, npcId))
-      .limit(1);
+    const [npc] = await db.select().from(npcs).where(eq(npcs.npcId, npcId)).limit(1);
 
     // 如果NPC不在数据库中，仍然允许记录战斗结果（用于other_npcs.json中的NPC）
     // if (!npc) {
@@ -54,12 +47,7 @@ export async function POST(
     let [relationship] = await db
       .select()
       .from(npcRelationships)
-      .where(
-        and(
-          eq(npcRelationships.userId, userId),
-          eq(npcRelationships.npcId, npcId)
-        )
-      )
+      .where(and(eq(npcRelationships.userId, userId), eq(npcRelationships.npcId, npcId)))
       .limit(1);
 
     if (!relationship) {
@@ -92,11 +80,11 @@ export async function POST(
       // 玩家胜利
       updates.battlesWon = (relationship.battlesWon || 0) + 1;
       updates.defeated = true; // 标记为已击败
-      
+
       // 增加好感度（胜利后增加更多）
       const newAffection = Math.min(100, (relationship.affection || 0) + 10);
       updates.affection = newAffection;
-      
+
       // 更新好感等级
       if (newAffection >= 80) {
         updates.affectionLevel = 'master';
@@ -110,7 +98,7 @@ export async function POST(
     } else {
       // 玩家失败
       updates.battlesLost = (relationship.battlesLost || 0) + 1;
-      
+
       // 失败后好感度下降较少
       updates.affection = Math.max(0, (relationship.affection || 0) - 2);
     }
@@ -119,12 +107,7 @@ export async function POST(
     await db
       .update(npcRelationships)
       .set(updates)
-      .where(
-        and(
-          eq(npcRelationships.userId, userId),
-          eq(npcRelationships.npcId, npcId)
-        )
-      );
+      .where(and(eq(npcRelationships.userId, userId), eq(npcRelationships.npcId, npcId)));
 
     // 更新玩家经验值和等级
     let experienceResult;
@@ -132,27 +115,50 @@ export async function POST(
       experienceResult = await addExperience(userId, experienceGained);
     }
 
+    // 更新围棋水平评分（自适应难度系统）
+    // 赢了涨分，输了降分，涨降幅度根据当前评分动态调整
+    const [currentStats] = await db
+      .select({ goSkillRating: playerStats.goSkillRating })
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
+
+    if (currentStats) {
+      const currentRating = currentStats.goSkillRating;
+      let ratingDelta: number;
+
+      if (playerWon) {
+        // 赢了涨分：评分越高涨得越少（越难涨），最少涨1分
+        ratingDelta = Math.max(1, Math.round(8 * (1 - currentRating / 100)));
+      } else {
+        // 输了降分：评分越低降得越少（保护新手），最少降1分
+        ratingDelta = -Math.max(1, Math.round(5 * (currentRating / 100)));
+      }
+
+      const newRating = Math.max(0, Math.min(100, currentRating + ratingDelta));
+
+      await db
+        .update(playerStats)
+        .set({ goSkillRating: newRating, updatedAt: new Date() })
+        .where(eq(playerStats.userId, userId));
+    }
+
     // 获取更新后的关系信息
     const [updatedRelationship] = await db
       .select()
       .from(npcRelationships)
-      .where(
-        and(
-          eq(npcRelationships.userId, userId),
-          eq(npcRelationships.npcId, npcId)
-        )
-      )
+      .where(and(eq(npcRelationships.userId, userId), eq(npcRelationships.npcId, npcId)))
       .limit(1);
 
     // 自动完成相关任务（仅当玩家胜利时）
-    const completedQuests = playerWon 
+    const completedQuests = playerWon
       ? await autoCompleteQuests(userId, { defeatedNpc: npcId })
       : [];
 
     // 检查章节完成条件（仅当玩家胜利时）
     let chapterCompleted = false;
     let newChapter: number | undefined;
-    
+
     if (playerWon) {
       // 获取玩家当前章节
       const [progress] = await db
@@ -160,13 +166,13 @@ export async function POST(
         .from(gameProgress)
         .where(eq(gameProgress.userId, userId))
         .limit(1);
-      
+
       if (progress) {
         const currentChapter = progress.currentChapter;
-        
+
         // 获取本章所有NPC的ID
         const chapterNpcIds = getChapterNpcIds(currentChapter);
-        
+
         if (chapterNpcIds.length > 0) {
           // 查询本章所有NPC的defeated状态
           const chapterRelationships = await db
@@ -178,13 +184,13 @@ export async function POST(
                 inArray(npcRelationships.npcId, chapterNpcIds)
               )
             );
-          
+
           // 检查是否所有NPC都已被击败
-          const allDefeated = chapterNpcIds.every(npcId => {
-            const rel = chapterRelationships.find(r => r.npcId === npcId);
+          const allDefeated = chapterNpcIds.every((npcId) => {
+            const rel = chapterRelationships.find((r) => r.npcId === npcId);
             return rel && rel.defeated === true;
           });
-          
+
           // 如果所有NPC都被击败，升级章节
           if (allDefeated) {
             newChapter = currentChapter + 1;
@@ -195,12 +201,19 @@ export async function POST(
                 updatedAt: new Date(),
               })
               .where(eq(gameProgress.userId, userId));
-            
+
             chapterCompleted = true;
           }
         }
       }
     }
+
+    // 获取更新后的goSkillRating
+    const [updatedStats] = await db
+      .select({ goSkillRating: playerStats.goSkillRating })
+      .from(playerStats)
+      .where(eq(playerStats.userId, userId))
+      .limit(1);
 
     return NextResponse.json({
       success: true,
@@ -216,6 +229,7 @@ export async function POST(
         chapterCompleted,
         newChapter,
         completedQuests, // 返回自动完成的任务列表
+        goSkillRating: updatedStats?.goSkillRating ?? 25,
       },
     });
   } catch (error) {
