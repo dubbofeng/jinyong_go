@@ -547,6 +547,89 @@ export class KataGoBrowserEngineV2 {
   }
 
   /**
+   * 设置贴目（komi）
+   * 正常对局为7.5，让子棋通常为0.5
+   */
+  async setKomi(komi: number): Promise<void> {
+    if (this.isReady) {
+      await this.sendCommand(`komi ${komi}`);
+      this.config.onLog?.(`🎯 贴目设置为 ${komi}`);
+    }
+  }
+
+  /**
+   * 获取标准让子位置（19路棋盘星位）
+   * 返回按让子数量排列的黑棋位置
+   */
+  static getHandicapPositions(handicap: number, boardSize: number = 19): BoardPosition[] {
+    if (handicap < 2 || handicap > 9) return [];
+
+    // 19路棋盘标准让子位置（星位）
+    // 坐标使用0-indexed (row, col)
+    const starPoints: BoardPosition[] =
+      boardSize === 19
+        ? [
+            { row: 3, col: 15 }, // 右下
+            { row: 15, col: 3 }, // 左上
+            { row: 3, col: 3 }, // 右上（注意：row=3是第4行从下往上数）
+            { row: 15, col: 15 }, // 左下
+            { row: 9, col: 9 }, // 天元
+            { row: 3, col: 9 }, // 右边
+            { row: 15, col: 9 }, // 左边
+            { row: 9, col: 3 }, // 上边
+            { row: 9, col: 15 }, // 下边
+          ]
+        : boardSize === 13
+          ? [
+              { row: 3, col: 9 },
+              { row: 9, col: 3 },
+              { row: 3, col: 3 },
+              { row: 9, col: 9 },
+              { row: 6, col: 6 },
+              { row: 3, col: 6 },
+              { row: 9, col: 6 },
+              { row: 6, col: 3 },
+              { row: 6, col: 9 },
+            ]
+          : [
+              // 9路
+              { row: 2, col: 6 },
+              { row: 6, col: 2 },
+              { row: 2, col: 2 },
+              { row: 6, col: 6 },
+              { row: 4, col: 4 },
+            ];
+
+    // 标准让子取法：
+    // 2子: 右下+左上
+    // 3子: +右上
+    // 4子: +左下
+    // 5子: +天元（中间）
+    // 6子: 不含天元，+右边+左边
+    // 7子: +天元
+    // 8子: 不含天元，+上边+下边
+    // 9子: +天元
+    if (handicap <= 5) {
+      return starPoints.slice(0, handicap);
+    } else if (handicap === 6) {
+      return [...starPoints.slice(0, 4), starPoints[5], starPoints[6]];
+    } else if (handicap === 7) {
+      return [...starPoints.slice(0, 4), starPoints[4], starPoints[5], starPoints[6]];
+    } else if (handicap === 8) {
+      return [
+        ...starPoints.slice(0, 4),
+        starPoints[5],
+        starPoints[6],
+        starPoints[7],
+        starPoints[8],
+      ];
+    } else {
+      // 9子：所有星位
+      return starPoints.slice(0, 9);
+    }
+  }
+
+  /**
    * 分析局面（使用kata-analyze获取详细信息）
    */
   async analyzePosition(

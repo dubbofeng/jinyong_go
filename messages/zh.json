@@ -252,7 +252,8 @@
         "qiankun_danuo": "乾坤大挪移",
         "yiyang_zhi": "一阳指",
         "zuoyou_hubo": "左右互搏",
-        "beiming_shengong": "北冥神功"
+        "beiming_shengong": "北冥神功",
+        "duanzhi_zhengxian": "断趾争先"
       },
       "skillInfo": {
         "remaining": "剩余",
@@ -410,7 +411,18 @@
         "nigiriExplanation": "猜对者执黑先行，猜错者执白后行",
         "nigiriAsk": "{opponentName}将抓一把白子，请猜单数还是双数",
         "oddNumber": "单数",
-        "evenNumber": "双数"
+        "evenNumber": "双数",
+        "handicapTitle": "🦶 断趾争先",
+        "handicapDescription": "消耗体力和内力，让对方让子。每让一子消耗50体力和50内力。",
+        "handicapSkillLevel": "技能等级 Lv.{level}，最多可让{max}子",
+        "handicapCost": "让{count}子：消耗 {stamina} 体力 + {qi} 内力",
+        "handicapCurrentStats": "当前：体力 {stamina}/{maxStamina}　内力 {qi}/{maxQi}",
+        "handicapConfirm": "确认让{count}子",
+        "handicapSkip": "不让子，直接猜先",
+        "handicapNotEnoughStats": "体力或内力不足",
+        "handicapStones": "让{count}子",
+        "handicapApplied": "断趾争先！让{count}子，消耗了{stamina}体力和{qi}内力",
+        "handicapPlayerBlack": "让子棋：您执黑（已放置{count}颗让子），对方执白先行"
       }
     }
   },

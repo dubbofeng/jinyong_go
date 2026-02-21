@@ -216,7 +216,8 @@
     ],
     "rewards": {
       "experience": 300,
-      "silver": 150
+      "silver": 150,
+      "skill": "duanzhi_zhengxian"
     },
     "prerequisiteQuests": ["quest_006_duan_yu"]
   },

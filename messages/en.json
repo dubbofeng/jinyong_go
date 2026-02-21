@@ -252,7 +252,8 @@
         "qiankun_danuo": "Great Shift",
         "yiyang_zhi": "Yang Finger",
         "zuoyou_hubo": "Ambidexterity",
-        "beiming_shengong": "Energy Absorption"
+        "beiming_shengong": "Energy Absorption",
+        "duanzhi_zhengxian": "Sacrifice for Initiative"
       },
       "skillInfo": {
         "remaining": "Remaining",
@@ -409,7 +410,18 @@
         "nigiriExplanation": "Winner plays Black (first), loser plays White (second)",
         "nigiriAsk": "{opponentName} will grab a handful of white stones. Guess odd or even?",
         "oddNumber": "Odd",
-        "evenNumber": "Even"
+        "evenNumber": "Even",
+        "handicapTitle": "🦶 Sacrifice for Initiative",
+        "handicapDescription": "Spend stamina and qi to gain handicap stones. Each stone costs 50 stamina and 50 qi.",
+        "handicapSkillLevel": "Skill Level Lv.{level}, max {max} handicap stones",
+        "handicapCost": "{count} stones: costs {stamina} stamina + {qi} qi",
+        "handicapCurrentStats": "Current: Stamina {stamina}/{maxStamina}　Qi {qi}/{maxQi}",
+        "handicapConfirm": "Confirm {count} handicap stones",
+        "handicapSkip": "Skip, go to Nigiri",
+        "handicapNotEnoughStats": "Not enough stamina or qi",
+        "handicapStones": "{count} handicap stones",
+        "handicapApplied": "Sacrifice for Initiative! {count} handicap stones placed, spent {stamina} stamina and {qi} qi",
+        "handicapPlayerBlack": "Handicap game: You play Black ({count} stones placed), opponent plays White first"
       }
     }
   },

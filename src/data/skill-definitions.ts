@@ -115,4 +115,16 @@ export const SKILL_DEFINITIONS: Record<string, SkillDefinition> = {
     baseUsesPerGame: 1,
     maxLevel: 9,
   },
+  duanzhi_zhengxian: {
+    id: 'duanzhi_zhengxian',
+    name: '断趾争先',
+    nameEn: 'Sacrifice for Initiative',
+    character: '黄眉僧',
+    description:
+      '黄眉僧断趾争先的决心，对局前消耗体力和内力让对方让子，每让一子消耗50体力和50内力。技能等级决定最多可让几子（等级+1）。',
+    baseQiCost: 50,
+    baseCooldown: 0,
+    baseUsesPerGame: 1,
+    maxLevel: 8,
+  },
 };

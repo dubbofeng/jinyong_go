@@ -82,7 +82,14 @@ export default function GoBoardGame({
   const [playerQi, setPlayerQi] = useState<number | null>(null);
   const [playerMaxQi, setPlayerMaxQi] = useState<number | null>(null);
   const [goSkillRating, setGoSkillRating] = useState<number>(25); // 玩家围棋水平评分，用于自适应难度
+  const [playerStamina, setPlayerStamina] = useState<number | null>(null);
+  const [playerMaxStamina, setPlayerMaxStamina] = useState<number | null>(null);
   const [boardPixelSize, setBoardPixelSize] = useState(() => Math.min(width, height));
+
+  // 让子相关状态
+  const [showHandicapModal, setShowHandicapModal] = useState(false); // 显示让子选择Modal
+  const [handicapCount, setHandicapCount] = useState(0); // 让子数量
+  const [selectedHandicap, setSelectedHandicap] = useState(2); // 当前选择的让子数
 
   const npcNameMap = useMemo(
     (): Record<string, string> => ({
@@ -121,6 +128,7 @@ export default function GoBoardGame({
       yiyang_zhi: tNpcs('yideng_dashi'),
       zuoyou_hubo: tNpcs('zhou_botong'),
       beiming_shengong: tNpcs('duan_yu'),
+      duanzhi_zhengxian: tNpcs('huangmei_seng'),
     }),
     [tNpcs]
   );
@@ -135,6 +143,7 @@ export default function GoBoardGame({
     yiyang_zhi: '/generated/skill/yiyang_zhi.png',
     zuoyou_hubo: '/generated/skill/zuoyou_hubo.png',
     beiming_shengong: '/generated/skill/beiming_shengong.png',
+    duanzhi_zhengxian: '/generated/skill/duanzhi_zhengxian.png',
   };
 
   const renderSkillIcon = (skillId: string) => {
@@ -183,6 +192,88 @@ export default function GoBoardGame({
     }, 2500);
   };
 
+  // 断趾争先：让子确认
+  const handleHandicapConfirm = async () => {
+    const count = selectedHandicap;
+    const staminaCost = count * 50;
+    const qiCost = count * 50;
+
+    // 检查体力和内力是否足够
+    if (
+      playerStamina === null ||
+      playerQi === null ||
+      playerStamina < staminaCost ||
+      playerQi < qiCost
+    ) {
+      setLastMessage(t('ui.handicapNotEnoughStats'));
+      return;
+    }
+
+    // 扣除体力和内力
+    try {
+      const res = await fetch('/api/player/stats/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staminaDelta: -staminaCost, qiDelta: -qiCost }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setPlayerStamina(data.data.stamina);
+          setPlayerQi(data.data.qi);
+          setPlayerMaxStamina(data.data.maxStamina);
+          setPlayerMaxQi(data.data.maxQi);
+          window.dispatchEvent(new Event('player-stats-update'));
+        }
+      }
+    } catch (error) {
+      console.error('扣除让子费用失败:', error);
+      return;
+    }
+
+    // 设置让子数量
+    setHandicapCount(count);
+
+    // 让子棋：玩家执黑，AI执白，白先行
+    setAiColor('white');
+    setCurrentPlayer('white'); // 让子棋白先
+
+    setLastMessage(t('ui.handicapApplied', { count, stamina: staminaCost, qi: qiCost }));
+
+    // 关闭让子Modal，准备开始游戏
+    setShowHandicapModal(false);
+
+    // 放置让子棋子到棋盘上
+    const positions = KataGoBrowserEngineV2.getHandicapPositions(count, size);
+    const board = boardRef.current;
+    const engine = engineRef.current;
+
+    if (board && engine && positions.length > 0) {
+      for (const pos of positions) {
+        engine.placeStone(pos, 'black');
+        board.placeStone(pos, 'black');
+      }
+      board.render();
+
+      // 设置KataGo贴目为0.5（让子棋标准）
+      if (katagoEngine?.isEngineReady()) {
+        await katagoEngine.setKomi(0.5);
+      }
+
+      console.log(`🦶 断趾争先：让${count}子，已放置黑棋星位`);
+    }
+
+    // 直接开始游戏（跳过猜先）
+    setGameStarted(true);
+  };
+
+  // 跳过让子，进入猜先
+  const handleHandicapSkip = () => {
+    setShowHandicapModal(false);
+    setShowNigiriModal(true);
+  };
+
   // 一阳指：限制对手落子区域
   const [yiYangRestriction, setYiYangRestriction] = useState<null | {
     restrictedColor: 'black' | 'white';
@@ -228,6 +319,12 @@ export default function GoBoardGame({
             setSkillLevels(levels);
             console.log('✅ 已学习技能:', unlockedSkillIds, '等级:', levels);
 
+            // 如果学了断趾争先，先显示让子选择，暂不猜先
+            if (unlockedSkillIds.includes('duanzhi_zhengxian')) {
+              setShowHandicapModal(true);
+              setShowNigiriModal(false);
+            }
+
             // 根据技能等级重新初始化技能管理器
             if (skillManagerRef.current) {
               skillManagerRef.current.updateSkillLevels(levels);
@@ -266,6 +363,8 @@ export default function GoBoardGame({
         if (initData.success) {
           setPlayerQi(initData.data.qi);
           setPlayerMaxQi(initData.data.maxQi);
+          setPlayerStamina(initData.data.stamina);
+          setPlayerMaxStamina(initData.data.maxStamina);
           setGoSkillRating(initData.data.goSkillRating ?? 25);
         }
         return;
@@ -276,6 +375,8 @@ export default function GoBoardGame({
         if (data.success) {
           setPlayerQi(data.data.qi);
           setPlayerMaxQi(data.data.maxQi);
+          setPlayerStamina(data.data.stamina);
+          setPlayerMaxStamina(data.data.maxStamina);
           setGoSkillRating(data.data.goSkillRating ?? 25);
         }
       }
@@ -429,103 +530,100 @@ export default function GoBoardGame({
       // 落子后重置连续Pass计数
       setConsecutivePasses(0);
 
-      // 使用函数式更新来避免闭包问题
-      setCurrentPlayer((prevPlayer) => {
-        console.log('🔄 setCurrentPlayer内部:', { prevPlayer, aiColor, vsAI });
+      // 获取当前玩家颜色
+      const prevPlayer = currentPlayer;
 
-        // 双重检查：再次确认不是AI回合
-        if (vsAI && prevPlayer === aiColor) {
-          console.log('🚫 setCurrentPlayer内部：AI回合，阻止');
-          setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
-          return prevPlayer;
-        }
+      // 双重检查：再次确认不是AI回合
+      if (vsAI && prevPlayer === aiColor) {
+        console.log('🚫 双重检查：AI回合，阻止');
+        setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
+        return;
+      }
 
-        if (
-          yiYangRestriction &&
-          yiYangRestriction.restrictedColor === prevPlayer &&
-          !isPositionAllowed(position, yiYangRestriction, size)
-        ) {
-          setLastMessage(t('skills.yiyangRestricted'));
-          return prevPlayer;
-        }
+      if (
+        yiYangRestriction &&
+        yiYangRestriction.restrictedColor === prevPlayer &&
+        !isPositionAllowed(position, yiYangRestriction, size)
+      ) {
+        setLastMessage(t('skills.yiyangRestricted'));
+        return;
+      }
 
-        // 尝试通过规则引擎落子
-        const result = engine.placeStone(position, prevPlayer);
-        console.log('🎮 落子结果:', { position, color: prevPlayer, success: result.success });
+      // 尝试通过规则引擎落子（副作用，不能放在setState回调里）
+      const result = engine.placeStone(position, prevPlayer);
+      console.log('🎮 落子结果:', { position, color: prevPlayer, success: result.success });
 
-        if (result.success) {
-          // 在棋盘上显示落子
-          board.placeStone(position, prevPlayer);
+      if (result.success) {
+        // 在棋盘上显示落子
+        board.placeStone(position, prevPlayer);
 
-          // 处理提子
-          if (result.capturedStones.length > 0) {
-            for (const captured of result.capturedStones) {
-              board.removeStone(captured);
-            }
-
-            // 更新提子数
-            setCapturedCount((prev) => ({
-              ...prev,
-              [prevPlayer]: prev[prevPlayer] + result.capturedStones.length,
-            }));
-
-            setLastMessage(t('messages.captured', { count: result.capturedStones.length }));
-          } else {
-            setLastMessage('');
+        // 处理提子
+        if (result.capturedStones.length > 0) {
+          for (const captured of result.capturedStones) {
+            board.removeStone(captured);
           }
 
-          // 立即渲染棋盘，确保黑棋显示
-          board.render();
+          // 更新提子数
+          setCapturedCount((prev) => ({
+            ...prev,
+            [prevPlayer]: prev[prevPlayer] + result.capturedStones.length,
+          }));
 
-          const nextPlayer =
-            doubleMoveState &&
-            doubleMoveState.color === prevPlayer &&
-            doubleMoveState.remainingMoves > 0
-              ? prevPlayer
-              : prevPlayer === 'black'
-                ? 'white'
-                : 'black';
-
-          // 更新手数
-          setMoveCount((prev) => prev + 1);
-
-          // 更新技能冷却
-          if (skillManagerRef.current) {
-            skillManagerRef.current.updateCooldowns();
-            setSkillsRefreshKey((k) => k + 1); // 刷新技能UI
-          }
-
-          setYiYangRestriction((prev) => {
-            if (!prev || prev.restrictedColor !== prevPlayer) return prev;
-            const remaining = prev.remainingMoves - 1;
-            return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
-          });
-
-          setDoubleMoveState((prev) => {
-            if (!prev || prev.color !== prevPlayer) return prev;
-            const remaining = prev.remainingMoves - 1;
-            return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
-          });
-
-          // 更新悬停提示的颜色
-          board.setNextStoneColor(nextPlayer);
-
-          return nextPlayer;
+          setLastMessage(t('messages.captured', { count: result.capturedStones.length }));
         } else {
-          // 落子失败
-          if (result.isKo) {
-            setLastMessage(t('messages.koRule'));
-          } else if (result.error === 'Suicide move') {
-            setLastMessage(t('messages.suicide'));
-          } else if (vsAI && prevPlayer !== aiColor) {
-            // 如果是AI回合点击，显示等待而不是错误
-            setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
-          } else {
-            setLastMessage(t('messages.invalidMove'));
-          }
-          return prevPlayer;
+          setLastMessage('');
         }
-      });
+
+        // 立即渲染棋盘，确保黑棋显示
+        board.render();
+
+        const nextPlayer =
+          doubleMoveState &&
+          doubleMoveState.color === prevPlayer &&
+          doubleMoveState.remainingMoves > 0
+            ? prevPlayer
+            : prevPlayer === 'black'
+              ? 'white'
+              : 'black';
+
+        // 更新手数
+        setMoveCount((prev) => prev + 1);
+
+        // 更新技能冷却
+        if (skillManagerRef.current) {
+          skillManagerRef.current.updateCooldowns();
+          setSkillsRefreshKey((k) => k + 1); // 刷新技能UI
+        }
+
+        setYiYangRestriction((prev) => {
+          if (!prev || prev.restrictedColor !== prevPlayer) return prev;
+          const remaining = prev.remainingMoves - 1;
+          return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
+        });
+
+        setDoubleMoveState((prev) => {
+          if (!prev || prev.color !== prevPlayer) return prev;
+          const remaining = prev.remainingMoves - 1;
+          return remaining > 0 ? { ...prev, remainingMoves: remaining } : null;
+        });
+
+        // 更新悬停提示的颜色
+        board.setNextStoneColor(nextPlayer);
+
+        // 切换到下一个玩家
+        setCurrentPlayer(nextPlayer);
+      } else {
+        // 落子失败
+        if (result.isKo) {
+          setLastMessage(t('messages.koRule'));
+        } else if (result.error === 'Suicide move') {
+          setLastMessage(t('messages.suicide'));
+        } else if (vsAI && prevPlayer !== aiColor) {
+          setLastMessage(t('messages.waitingForOpponent', { name: resolvedOpponentName }));
+        } else {
+          setLastMessage(t('messages.invalidMove'));
+        }
+      }
     },
     [
       currentPlayer,
@@ -770,7 +868,8 @@ export default function GoBoardGame({
         if (engine) {
           const territory = engine.countTerritory();
           const blackScore = territory.blackTerritory + capturedCount.black;
-          const whiteScore = territory.whiteTerritory + capturedCount.white + 7.5; // 贴目
+          const komi = handicapCount > 0 ? 0.5 : 7.5;
+          const whiteScore = territory.whiteTerritory + capturedCount.white + komi; // 贴目
 
           const winner =
             blackScore > whiteScore ? 'black' : blackScore < whiteScore ? 'white' : 'draw';
@@ -819,7 +918,8 @@ export default function GoBoardGame({
       // 计算双方得分
       const territory = engine.countTerritory();
       const blackScore = territory.blackTerritory + capturedCount.black;
-      const whiteScore = territory.whiteTerritory + capturedCount.white + 7.5; // 贴目
+      const komi = handicapCount > 0 ? 0.5 : 7.5;
+      const whiteScore = territory.whiteTerritory + capturedCount.white + komi; // 贴目
 
       // 计算游戏时长
       const duration = Math.floor((Date.now() - gameStartTime.current) / 1000);
@@ -878,7 +978,7 @@ export default function GoBoardGame({
           blackPlayer,
           whitePlayer,
           result: toSgfResult(winner),
-          komi: 7.5,
+          komi: handicapCount > 0 ? 0.5 : 7.5,
         });
 
         const recordResponse = await fetch('/api/chess-records', {
@@ -1028,7 +1128,18 @@ export default function GoBoardGame({
       setGameResult(result);
       setShowResultModal(true);
     },
-    [session, capturedCount, moveCount, npcId, aiDifficulty, size, onGameEnd, isE2E, npcNameMap]
+    [
+      session,
+      capturedCount,
+      moveCount,
+      npcId,
+      aiDifficulty,
+      size,
+      onGameEnd,
+      isE2E,
+      npcNameMap,
+      handicapCount,
+    ]
   );
 
   const handleResign = useCallback(() => {
@@ -2349,6 +2460,102 @@ export default function GoBoardGame({
           )}
         </div>
       </div>
+
+      {/* 断趾争先：让子选择Modal */}
+      {vsAI && showHandicapModal && (
+        <div className="fixed inset-0 bg-black/80 z-[10001] flex items-center justify-center">
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-4 border-orange-500 rounded-2xl p-8 w-[520px] text-white shadow-2xl">
+            <h2 className="text-center font-bold text-2xl mb-2 text-orange-400">
+              {t('ui.handicapTitle')}
+            </h2>
+            <p className="text-center text-gray-300 mb-2 text-sm">{t('ui.handicapDescription')}</p>
+            <p className="text-center text-orange-300 mb-4 text-sm">
+              {t('ui.handicapSkillLevel', {
+                level: skillLevels['duanzhi_zhengxian'] || 1,
+                max: Math.min(9, (skillLevels['duanzhi_zhengxian'] || 1) + 1),
+              })}
+            </p>
+
+            {/* 让子数量选择 */}
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <button
+                className="bg-gray-700 hover:bg-gray-600 rounded-full w-10 h-10 text-2xl font-bold disabled:opacity-30"
+                onClick={() => setSelectedHandicap((h) => Math.max(2, h - 1))}
+                disabled={selectedHandicap <= 2}
+              >
+                −
+              </button>
+              <div className="text-center">
+                <div className="text-5xl font-bold text-orange-400">{selectedHandicap}</div>
+                <div className="text-sm text-gray-400">
+                  {t('ui.handicapStones', { count: selectedHandicap })}
+                </div>
+              </div>
+              <button
+                className="bg-gray-700 hover:bg-gray-600 rounded-full w-10 h-10 text-2xl font-bold disabled:opacity-30"
+                onClick={() =>
+                  setSelectedHandicap((h) =>
+                    Math.min(Math.min(9, (skillLevels['duanzhi_zhengxian'] || 1) + 1), h + 1)
+                  )
+                }
+                disabled={
+                  selectedHandicap >= Math.min(9, (skillLevels['duanzhi_zhengxian'] || 1) + 1)
+                }
+              >
+                +
+              </button>
+            </div>
+
+            {/* 费用和当前状态 */}
+            <div className="bg-black/40 rounded-xl p-3 mb-4 text-sm">
+              <div className="text-center text-orange-300 mb-1">
+                {t('ui.handicapCost', {
+                  count: selectedHandicap,
+                  stamina: selectedHandicap * 50,
+                  qi: selectedHandicap * 50,
+                })}
+              </div>
+              <div className="text-center text-gray-400">
+                {t('ui.handicapCurrentStats', {
+                  stamina: playerStamina ?? 0,
+                  maxStamina: playerMaxStamina ?? 100,
+                  qi: playerQi ?? 0,
+                  maxQi: playerMaxQi ?? 100,
+                })}
+              </div>
+              {playerStamina !== null &&
+                playerQi !== null &&
+                (playerStamina < selectedHandicap * 50 || playerQi < selectedHandicap * 50) && (
+                  <div className="text-center text-red-400 mt-1 font-bold">
+                    ⚠️ {t('ui.handicapNotEnoughStats')}
+                  </div>
+                )}
+            </div>
+
+            {/* 按钮 */}
+            <div className="flex flex-col gap-3">
+              <button
+                className="bg-gradient-to-br from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all disabled:opacity-40 disabled:hover:scale-100"
+                onClick={handleHandicapConfirm}
+                disabled={
+                  playerStamina === null ||
+                  playerQi === null ||
+                  playerStamina < selectedHandicap * 50 ||
+                  playerQi < selectedHandicap * 50
+                }
+              >
+                {t('ui.handicapConfirm', { count: selectedHandicap })}
+              </button>
+              <button
+                className="bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-6 rounded-xl transition-all"
+                onClick={handleHandicapSkip}
+              >
+                {t('ui.handicapSkip')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 猜先Modal */}
       {vsAI && showNigiriModal && (
