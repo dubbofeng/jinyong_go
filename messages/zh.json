@@ -316,6 +316,7 @@
         "jiguanFailed": "❌ 无法使用【机关算尽】",
         "jiguanOpened": "机关算尽已开启试下棋盘",
         "qiziUsedUp": "❌ 【棋子暗器】使用次数已用完",
+        "qiziNotEnoughStones": "❌ 白子不足（需要{need}颗，当前{have}颗）",
         "qiziActivated": "【棋子暗器】已激活",
         "qiziFailed": "❌ 无法使用【棋子暗器】",
         "qiziInvalidPosition": "❌ 【棋子暗器】落点异常",
@@ -413,15 +414,16 @@
         "oddNumber": "单数",
         "evenNumber": "双数",
         "handicapTitle": "🦶 断趾争先",
-        "handicapDescription": "消耗体力和内力，让对方让子。每让一子消耗50体力和50内力。",
+        "handicapDescription": "消耗体力、内力和黑子，让对方让子。每让一子消耗50体力、50内力和1颗黑子。",
         "handicapSkillLevel": "技能等级 Lv.{level}，最多可让{max}子",
-        "handicapCost": "让{count}子：消耗 {stamina} 体力 + {qi} 内力",
-        "handicapCurrentStats": "当前：体力 {stamina}/{maxStamina}　内力 {qi}/{maxQi}",
+        "handicapCost": "让{count}子：消耗 {stamina} 体力 + {qi} 内力 + {stones} 黑子",
+        "handicapCurrentStats": "当前：体力 {stamina}/{maxStamina}　内力 {qi}/{maxQi}　黑子 {blackStones}",
         "handicapConfirm": "确认让{count}子",
         "handicapSkip": "不让子，直接猜先",
         "handicapNotEnoughStats": "体力或内力不足",
+        "handicapNotEnoughStones": "黑子不足（需要{need}颗，当前{have}颗）",
         "handicapStones": "让{count}子",
-        "handicapApplied": "断趾争先！让{count}子，消耗了{stamina}体力和{qi}内力",
+        "handicapApplied": "断趾争先！让{count}子，消耗了{stamina}体力、{qi}内力和{stones}颗黑子",
         "handicapPlayerBlack": "让子棋：您执黑（已放置{count}颗让子），对方执白先行"
       }
     }

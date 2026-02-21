@@ -316,6 +316,7 @@
         "jiguanFailed": "❌ Cannot use [Strategic Planning]",
         "jiguanOpened": "Strategic Planning trial board opened",
         "qiziUsedUp": "❌ [Stone Projectile] uses exhausted",
+        "qiziNotEnoughStones": "❌ Not enough white stones (need {need}, have {have})",
         "qiziActivated": "[Stone Projectile] activated",
         "qiziFailed": "❌ Cannot use [Stone Projectile]",
         "qiziInvalidPosition": "❌ [Stone Projectile] invalid position",
@@ -412,15 +413,16 @@
         "oddNumber": "Odd",
         "evenNumber": "Even",
         "handicapTitle": "🦶 Sacrifice for Initiative",
-        "handicapDescription": "Spend stamina and qi to gain handicap stones. Each stone costs 50 stamina and 50 qi.",
+        "handicapDescription": "Spend stamina, qi, and black stones for handicap. Each stone costs 50 stamina, 50 qi, and 1 black stone.",
         "handicapSkillLevel": "Skill Level Lv.{level}, max {max} handicap stones",
-        "handicapCost": "{count} stones: costs {stamina} stamina + {qi} qi",
-        "handicapCurrentStats": "Current: Stamina {stamina}/{maxStamina}　Qi {qi}/{maxQi}",
+        "handicapCost": "{count} stones: costs {stamina} stamina + {qi} qi + {stones} black stones",
+        "handicapCurrentStats": "Current: Stamina {stamina}/{maxStamina}　Qi {qi}/{maxQi}　Black Stones {blackStones}",
         "handicapConfirm": "Confirm {count} handicap stones",
         "handicapSkip": "Skip, go to Nigiri",
         "handicapNotEnoughStats": "Not enough stamina or qi",
+        "handicapNotEnoughStones": "Not enough black stones (need {need}, have {have})",
         "handicapStones": "{count} handicap stones",
-        "handicapApplied": "Sacrifice for Initiative! {count} handicap stones placed, spent {stamina} stamina and {qi} qi",
+        "handicapApplied": "Sacrifice for Initiative! {count} handicap stones placed, spent {stamina} stamina, {qi} qi, and {stones} black stones",
         "handicapPlayerBlack": "Handicap game: You play Black ({count} stones placed), opponent plays White first"
       }
     }

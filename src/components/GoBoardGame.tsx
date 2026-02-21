@@ -91,6 +91,10 @@ export default function GoBoardGame({
   const [handicapCount, setHandicapCount] = useState(0); // 让子数量
   const [selectedHandicap, setSelectedHandicap] = useState(2); // 当前选择的让子数
 
+  // 棋子物品数量
+  const [blackStoneCount, setBlackStoneCount] = useState<number>(0); // 黑子数量
+  const [whiteStoneCount, setWhiteStoneCount] = useState<number>(0); // 白子数量
+
   const npcNameMap = useMemo(
     (): Record<string, string> => ({
       musang_daoren: tNpcs('musang_daoren'),
@@ -209,6 +213,32 @@ export default function GoBoardGame({
       return;
     }
 
+    // 检查黑子是否足够
+    if (blackStoneCount < count) {
+      setLastMessage(t('ui.handicapNotEnoughStones', { need: count, have: blackStoneCount }));
+      return;
+    }
+
+    // 扣除黑子
+    try {
+      const deductRes = await fetch('/api/player/inventory/deduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ itemId: 'black_go_stone', quantity: count }] }),
+      });
+      if (!deductRes.ok) {
+        const errData = await deductRes.json();
+        setLastMessage(
+          errData.error || t('ui.handicapNotEnoughStones', { need: count, have: blackStoneCount })
+        );
+        return;
+      }
+      setBlackStoneCount((prev) => prev - count);
+    } catch (error) {
+      console.error('扣除黑子失败:', error);
+      return;
+    }
+
     // 扣除体力和内力
     try {
       const res = await fetch('/api/player/stats/update', {
@@ -239,7 +269,9 @@ export default function GoBoardGame({
     setAiColor('white');
     setCurrentPlayer('white'); // 让子棋白先
 
-    setLastMessage(t('ui.handicapApplied', { count, stamina: staminaCost, qi: qiCost }));
+    setLastMessage(
+      t('ui.handicapApplied', { count, stamina: staminaCost, qi: qiCost, stones: count })
+    );
 
     // 关闭让子Modal，准备开始游戏
     setShowHandicapModal(false);
@@ -385,21 +417,45 @@ export default function GoBoardGame({
     }
   }, []);
 
+  // 获取玩家棋子物品数量
+  const fetchItemCounts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/player/inventory');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          const blackItem = data.data.find(
+            (inv: { itemId: string }) => inv.itemId === 'black_go_stone'
+          );
+          const whiteItem = data.data.find(
+            (inv: { itemId: string }) => inv.itemId === 'white_go_stone'
+          );
+          setBlackStoneCount(blackItem?.quantity ?? 0);
+          setWhiteStoneCount(whiteItem?.quantity ?? 0);
+        }
+      }
+    } catch (error) {
+      console.error('获取棋子数量失败:', error);
+    }
+  }, []);
+
   // 监听玩家属性更新事件（例如使用物品后）
   useEffect(() => {
     const handleStatsUpdate = () => {
       fetchPlayerStats();
+      fetchItemCounts();
     };
 
     window.addEventListener('player-stats-update', handleStatsUpdate);
     return () => window.removeEventListener('player-stats-update', handleStatsUpdate);
-  }, [fetchPlayerStats]);
+  }, [fetchPlayerStats, fetchItemCounts]);
 
   useEffect(() => {
     if (session?.user) {
       fetchPlayerStats();
+      fetchItemCounts();
     }
-  }, [session, fetchPlayerStats]);
+  }, [session, fetchPlayerStats, fetchItemCounts]);
 
   const applyQiDelta = useCallback(async (delta: number) => {
     try {
@@ -1666,6 +1722,15 @@ export default function GoBoardGame({
       return;
     }
 
+    // 检查白子是否足够（消耗数 = NPC等级）
+    const whiteStoneCost = aiDifficulty;
+    if (whiteStoneCount < whiteStoneCost) {
+      setLastMessage(
+        t('skills.qiziNotEnoughStones', { need: whiteStoneCost, have: whiteStoneCount })
+      );
+      return;
+    }
+
     const result = (skill as any).use(engine, currentPlayer) as {
       from: BoardPosition;
       to: BoardPosition;
@@ -1682,6 +1747,20 @@ export default function GoBoardGame({
       board.placeStone(result.from, result.color);
       setLastMessage(t('skills.qiziInvalidPosition'));
       return;
+    }
+
+    // 扣除白子
+    try {
+      const deductRes = await fetch('/api/player/inventory/deduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ itemId: 'white_go_stone', quantity: whiteStoneCost }] }),
+      });
+      if (deductRes.ok) {
+        setWhiteStoneCount((prev) => prev - whiteStoneCost);
+      }
+    } catch (error) {
+      console.error('扣除白子失败:', error);
     }
 
     await applyQiDelta(-skill.qiCost);
@@ -2513,6 +2592,7 @@ export default function GoBoardGame({
                   count: selectedHandicap,
                   stamina: selectedHandicap * 50,
                   qi: selectedHandicap * 50,
+                  stones: selectedHandicap,
                 })}
               </div>
               <div className="text-center text-gray-400">
@@ -2521,6 +2601,7 @@ export default function GoBoardGame({
                   maxStamina: playerMaxStamina ?? 100,
                   qi: playerQi ?? 0,
                   maxQi: playerMaxQi ?? 100,
+                  blackStones: blackStoneCount,
                 })}
               </div>
               {playerStamina !== null &&
@@ -2530,6 +2611,15 @@ export default function GoBoardGame({
                     ⚠️ {t('ui.handicapNotEnoughStats')}
                   </div>
                 )}
+              {blackStoneCount < selectedHandicap && (
+                <div className="text-center text-red-400 mt-1 font-bold">
+                  ⚠️{' '}
+                  {t('ui.handicapNotEnoughStones', {
+                    need: selectedHandicap,
+                    have: blackStoneCount,
+                  })}
+                </div>
+              )}
             </div>
 
             {/* 按钮 */}
@@ -2541,7 +2631,8 @@ export default function GoBoardGame({
                   playerStamina === null ||
                   playerQi === null ||
                   playerStamina < selectedHandicap * 50 ||
-                  playerQi < selectedHandicap * 50
+                  playerQi < selectedHandicap * 50 ||
+                  blackStoneCount < selectedHandicap
                 }
               >
                 {t('ui.handicapConfirm', { count: selectedHandicap })}
