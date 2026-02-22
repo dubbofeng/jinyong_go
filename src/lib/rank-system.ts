@@ -1,6 +1,6 @@
 /**
  * 野狐围棋段位系统
- * 
+ *
  * 等级范围：18k (level 1) → 1k (level 18) → 1d (level 19) → 9d (level 27)
  * 总共27个等级
  */
@@ -33,7 +33,7 @@ export function levelToRank(level: number): RankInfo {
       kyuLevel,
     };
   }
-  
+
   // 等级19-27 对应 1d-9d
   if (level >= 19 && level <= 27) {
     const danLevel = level - 18; // level 19 = 1d, level 27 = 9d
@@ -47,7 +47,7 @@ export function levelToRank(level: number): RankInfo {
       danLevel,
     };
   }
-  
+
   // 超出范围，返回最高段位
   return {
     level: 27,
@@ -69,44 +69,27 @@ export function rankToLevel(rank: string): number {
     const kyuLevel = parseInt(kyuMatch[1]);
     return 19 - kyuLevel; // 18k = 1, 1k = 18
   }
-  
+
   const danMatch = rank.match(/^(\d+)d$/);
   if (danMatch) {
     const danLevel = parseInt(danMatch[1]);
     return 18 + danLevel; // 1d = 19, 9d = 27
   }
-  
+
   return 1; // 默认18k
 }
 
 /**
  * 计算升级所需经验
- * 
+ *
  * 经验公式：
- * - 18k-10k (level 1-9): 1000 * level
- * - 9k-1k (level 10-18): 1500 * (level - 8)
- * - 1d-9d (level 19-27): 3000 * (level - 18)
+ * level^1.2 * 1000
  */
 export function getExperienceForLevel(level: number): number {
   if (level <= 0) return 0;
   if (level > 27) return 0; // 已达最高等级
-  
-  // 18k-10k: 1000 * level
-  if (level >= 1 && level <= 9) {
-    return 1000 * level;
-  }
-  
-  // 9k-1k: 1500 * (level - 8)
-  if (level >= 10 && level <= 18) {
-    return 1500 * (level - 8);
-  }
-  
-  // 1d-9d: 3000 * (level - 18)
-  if (level >= 19 && level <= 27) {
-    return 3000 * (level - 18);
-  }
-  
-  return 0;
+
+  return Math.round(Math.pow(level, 1.2)) * 1000;
 }
 
 /**
@@ -136,27 +119,27 @@ export function getRankColor(level: number): string {
   if (level >= 1 && level <= 9) {
     return 'text-gray-400';
   }
-  
+
   // 9k-1k: 棕色
   if (level >= 10 && level <= 18) {
     return 'text-amber-600';
   }
-  
+
   // 1d-3d: 蓝色
   if (level >= 19 && level <= 21) {
     return 'text-blue-500';
   }
-  
+
   // 4d-6d: 紫色
   if (level >= 22 && level <= 24) {
     return 'text-purple-500';
   }
-  
+
   // 7d-9d: 金色
   if (level >= 25 && level <= 27) {
     return 'text-yellow-500';
   }
-  
+
   return 'text-gray-400';
 }
 
