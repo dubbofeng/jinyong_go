@@ -102,11 +102,11 @@ async function initItems() {
       itemId: 'exp_scroll',
       name: '经验卷轴',
       nameEn: 'Experience Scroll',
-      description: '获得200点经验',
+      description: '获得1000点经验',
       itemType: 'consumable',
       category: 'scroll',
       rarity: 'rare',
-      effects: { experience: 200 },
+      effects: { experience: 1000 },
       price: 500,
       sellPrice: 250,
       stackable: true,
@@ -155,7 +155,8 @@ async function initItems() {
       itemType: 'material',
       category: 'crafting',
       rarity: 'common',
-      prompt: 'Bundle of fresh bamboo sticks, traditional Chinese crafting material, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Bundle of fresh bamboo sticks, traditional Chinese crafting material, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -175,7 +176,8 @@ async function initItems() {
       itemType: 'material',
       category: 'crafting',
       rarity: 'common',
-      prompt: 'Stack of wooden planks, traditional woodworking material, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Stack of wooden planks, traditional woodworking material, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -195,7 +197,8 @@ async function initItems() {
       itemType: 'material',
       category: 'crafting',
       rarity: 'common',
-      prompt: 'Pile of smooth river stones, crafting material for go stones, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Pile of smooth river stones, crafting material for go stones, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -215,7 +218,8 @@ async function initItems() {
       itemType: 'material',
       category: 'crafting',
       rarity: 'common',
-      prompt: 'Bundle of medicinal herbs, traditional Chinese medicine ingredient, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Bundle of medicinal herbs, traditional Chinese medicine ingredient, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -237,7 +241,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'common',
       effects: { maxStamina: 8 },
-      prompt: 'Traditional bamboo go bowl, woven texture, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Traditional bamboo go bowl, woven texture, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -259,7 +264,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'uncommon',
       effects: { maxStamina: 12 },
-      prompt: 'Green bamboo go bowl, polished bamboo texture, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Green bamboo go bowl, polished bamboo texture, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -281,7 +287,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'uncommon',
       effects: { maxStamina: 16 },
-      prompt: 'Go bowl with elegant cloud pattern engraving, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Go bowl with elegant cloud pattern engraving, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -303,7 +310,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'rare',
       effects: { maxStamina: 22 },
-      prompt: 'Black jade inlaid go bowl, luxurious yet traditional, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Black jade inlaid go bowl, luxurious yet traditional, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -325,7 +333,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'epic',
       effects: { maxStamina: 30 },
-      prompt: 'Masterwork go bowl, exquisite craftsmanship, traditional Chinese style, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Masterwork go bowl, exquisite craftsmanship, traditional Chinese style, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -347,7 +356,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'common',
       effects: { maxQi: 8 },
-      prompt: 'Traditional pine go board, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Traditional pine go board, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -369,7 +379,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'uncommon',
       effects: { maxQi: 12 },
-      prompt: 'Go board with bamboo grain pattern, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Go board with bamboo grain pattern, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -391,7 +402,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'uncommon',
       effects: { maxQi: 16 },
-      prompt: 'Go board with elegant cloud pattern engraving, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Go board with elegant cloud pattern engraving, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -413,7 +425,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'rare',
       effects: { maxQi: 22 },
-      prompt: 'Go board with gold inlay, luxurious yet traditional, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Go board with gold inlay, luxurious yet traditional, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -435,7 +448,8 @@ async function initItems() {
       category: 'treasure',
       rarity: 'epic',
       effects: { maxQi: 30 },
-      prompt: 'Masterwork go board symbolizing tengen, exquisite craftsmanship, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
+      prompt:
+        'Masterwork go board symbolizing tengen, exquisite craftsmanship, clean game icon, top-down, isolated on transparent background, crisp edges, high detail',
       negativePrompt: 'text, watermark, logo, people, background, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1234,8 +1248,10 @@ async function initItems() {
       category: 'chinese_buildings',
       rarity: 'uncommon',
       imagePath: '/game/isometric/chinese_buildings/go_hall.png',
-      prompt: 'Ancient Chinese Go hall, wooden building with hanging signboard, scholars playing Go inside, stone tables and Go boards, traditional tiled roof, elegant atmosphere, isometric view, game asset, plaque should say "奕馆", clean edges, standalone building on neutral background',
-      negativePrompt: 'modern, western, vehicles, people close-up, text, watermark, logo, blurry, low quality',
+      prompt:
+        'Ancient Chinese Go hall, wooden building with hanging signboard, scholars playing Go inside, stone tables and Go boards, traditional tiled roof, elegant atmosphere, isometric view, game asset, plaque should say "奕馆", clean edges, standalone building on neutral background',
+      negativePrompt:
+        'modern, western, vehicles, people close-up, text, watermark, logo, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
       size: 3,
@@ -1251,8 +1267,10 @@ async function initItems() {
       category: 'chinese_buildings',
       rarity: 'common',
       imagePath: '/game/isometric/chinese_buildings/go_pavilion.png',
-      prompt: 'Stone Go pavilion with a single stone table and Go board, small open-air pavilion or stone desk in a corner, traditional Chinese style, isometric view, game asset, clean edges, standalone object',
-      negativePrompt: 'modern, western, people close-up, text, watermark, logo, blurry, low quality',
+      prompt:
+        'Stone Go pavilion with a single stone table and Go board, small open-air pavilion or stone desk in a corner, traditional Chinese style, isometric view, game asset, clean edges, standalone object',
+      negativePrompt:
+        'modern, western, people close-up, text, watermark, logo, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
       size: 2,
@@ -1331,7 +1349,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_go_manual.png',
-      prompt: 'Ancient stitched booklet for Go study, jade clasp, elegant Chinese style, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Ancient stitched booklet for Go study, jade clasp, elegant Chinese style, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1353,7 +1372,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_talisman.png',
-      prompt: 'Traditional Chinese talisman charm, red and gold thread, small jade pendant, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Traditional Chinese talisman charm, red and gold thread, small jade pendant, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1375,7 +1395,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_pine_tea.png',
-      prompt: 'Small tea bundle wrapped in paper, pine needle tea, bamboo string, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Small tea bundle wrapped in paper, pine needle tea, bamboo string, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1397,7 +1418,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_monk_blessing.png',
-      prompt: 'Buddhist meditation sachet, saffron pouch with silk cord, subtle incense glow, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Buddhist meditation sachet, saffron pouch with silk cord, subtle incense glow, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1419,7 +1441,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_iron_staff_token.png',
-      prompt: 'Iron staff token medallion, dark metal with etched pattern, rugged wuxia style, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Iron staff token medallion, dark metal with etched pattern, rugged wuxia style, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1441,7 +1464,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_weighted_stone.png',
-      prompt: 'Smooth weighted training stone, dark slate color, subtle carving, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Smooth weighted training stone, dark slate color, subtle carving, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1463,7 +1487,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_scatter_pouch.png',
-      prompt: 'Small cloth pouch with scattered stones inside, tied with cord, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Small cloth pouch with scattered stones inside, tied with cord, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1485,7 +1510,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_calm_chord.png',
-      prompt: 'Ancient qin music sheet, silk scroll with string motif, elegant and calm, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Ancient qin music sheet, silk scroll with string motif, elegant and calm, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1507,7 +1533,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_edge_charm.png',
-      prompt: 'Wuxia talisman of resolve, sharp-edged charm with metallic sheen, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Wuxia talisman of resolve, sharp-edged charm with metallic sheen, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1529,7 +1556,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_blood_manual.png',
-      prompt: 'Rubbing of an ancient Go manual, inked paper with seal, rolled edges, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Rubbing of an ancient Go manual, inked paper with seal, rolled edges, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1551,7 +1579,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_inkstone.png',
-      prompt: 'Elegant inkstone with ink stick, scholar tools, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Elegant inkstone with ink stick, scholar tools, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1573,7 +1602,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_clear_mind.png',
-      prompt: 'Small jade pill bottle with a single luminous pill, calming aura, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Small jade pill bottle with a single luminous pill, calming aura, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1595,7 +1625,8 @@ async function initItems() {
       stackable: false,
       maxStack: 1,
       imagePath: '/game/generated/equipments/item_story_zhenlong_notes.png',
-      prompt: 'Zhenlong puzzle notes, folded paper with binding cord, elegant scholar style, game item icon, top-down isometric, clean background, high detail, no text',
+      prompt:
+        'Zhenlong puzzle notes, folded paper with binding cord, elegant scholar style, game item icon, top-down isometric, clean background, high detail, no text',
       negativePrompt: 'text, watermark, logo, people, blurry, low quality',
       imageWidth: 512,
       imageHeight: 512,
@@ -1630,12 +1661,8 @@ async function initItems() {
   for (const item of itemsToInsert) {
     try {
       // 检查是否已存在（使用eq比较器）
-      const {eq} = await import('drizzle-orm');
-      const existing = await db
-        .select()
-        .from(items)
-        .where(eq(items.itemId, item.itemId))
-        .limit(1);
+      const { eq } = await import('drizzle-orm');
+      const existing = await db.select().from(items).where(eq(items.itemId, item.itemId)).limit(1);
 
       if (existing.length > 0) {
         console.log(`⏭️  跳过已存在: ${item.name} (${item.itemId})`);
@@ -1656,12 +1683,12 @@ async function initItems() {
   console.log(`  ⏭️  跳过重复: ${skipCount} 个`);
   console.log(`  📊 总计定义: ${itemsToInsert.length} 个`);
   console.log(`\n📊 分类统计:`);
-  console.log(`  💊 消耗品: ${itemsToInsert.filter(i => i.itemType === 'consumable').length} 个`);
-  console.log(`  🎨 装饰物: ${itemsToInsert.filter(i => i.itemType === 'decoration').length} 个`);
-  console.log(`  🌿 植物: ${itemsToInsert.filter(i => i.itemType === 'plant').length} 个`);
-  console.log(`  🏛️  建筑: ${itemsToInsert.filter(i => i.itemType === 'building').length} 个`);
-  console.log(`  📦 材料: ${itemsToInsert.filter(i => i.itemType === 'material').length} 个`);
-  console.log(`  🧿 装备: ${itemsToInsert.filter(i => i.itemType === 'equipment').length} 个`);
+  console.log(`  💊 消耗品: ${itemsToInsert.filter((i) => i.itemType === 'consumable').length} 个`);
+  console.log(`  🎨 装饰物: ${itemsToInsert.filter((i) => i.itemType === 'decoration').length} 个`);
+  console.log(`  🌿 植物: ${itemsToInsert.filter((i) => i.itemType === 'plant').length} 个`);
+  console.log(`  🏛️  建筑: ${itemsToInsert.filter((i) => i.itemType === 'building').length} 个`);
+  console.log(`  📦 材料: ${itemsToInsert.filter((i) => i.itemType === 'material').length} 个`);
+  console.log(`  🧿 装备: ${itemsToInsert.filter((i) => i.itemType === 'equipment').length} 个`);
 }
 
 initItems()

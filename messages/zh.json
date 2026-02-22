@@ -188,6 +188,7 @@
     "error": "出错了",
     "unknownLocation": "未知地点",
     "tsumego": {
+      "behindTree": "神秘宝物",
       "treeChallenge": "从树后跳出一个蒙面人，拦住了你的去路！\n\n“想要通过，就接受死活题挑战吧！”",
       "encounterTitle": "⛔️ 遭遇挑战",
       "hallChallenge": "你来到了{name}门前。\n\n馆主：“欢迎光临！敢不敢来挑战一下本馆的死活题？”",

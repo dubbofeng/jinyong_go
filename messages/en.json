@@ -188,6 +188,7 @@
     "error": "An error occurred",
     "unknownLocation": "Unknown Location",
     "tsumego": {
+      "behindTree": "mysterious treasure",
       "treeChallenge": "A masked figure jumps out from behind the tree!\n\n\"If you want to pass, accept my Tsumego challenge!\"",
       "encounterTitle": "⛔️ Encounter",
       "hallChallenge": "You arrive at {name}.\n\nMaster: \"Welcome! Dare to challenge our hall's Tsumego problems?\"",

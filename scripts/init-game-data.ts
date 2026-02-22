@@ -91,10 +91,10 @@ async function initGameData() {
       itemId: 'exp_scroll',
       name: '武学心得',
       nameEn: 'Martial Arts Scroll',
-      description: '获得200点经验值',
+      description: '获得1000点经验值',
       itemType: 'quest',
       rarity: 'uncommon',
-      effects: { experience: 200 },
+      effects: { experience: 1000 },
       price: 150,
       sellPrice: 60,
       stackable: true,
@@ -163,22 +163,19 @@ async function initGameData() {
     },
   ];
 
-  // 插入物品
-  console.log('📦 插入初始物品...');
+  // 插入或更新物品（upsert）
+  console.log('📦 插入/更新初始物品...');
   for (const item of initialItems) {
     try {
       // 检查是否已存在
-      const existing = await db
-        .select()
-        .from(items)
-        .where(eq(items.itemId, item.itemId))
-        .limit(1);
+      const existing = await db.select().from(items).where(eq(items.itemId, item.itemId)).limit(1);
 
       if (existing.length === 0) {
         await db.insert(items).values(item);
-        console.log(`  ✅ ${item.name} (${item.itemId})`);
+        console.log(`  ✅ 新增: ${item.name} (${item.itemId})`);
       } else {
-        console.log(`  ⏭️  ${item.name} (${item.itemId}) - 已存在`);
+        await db.update(items).set(item).where(eq(items.itemId, item.itemId));
+        console.log(`  🔄 更新: ${item.name} (${item.itemId})`);
       }
     } catch (error) {
       console.error(`  ❌ ${item.name} 失败:`, error);
