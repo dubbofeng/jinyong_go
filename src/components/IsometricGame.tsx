@@ -2239,7 +2239,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       currentNode?.action &&
       (currentNode.action.type === 'tutorial_board' ||
         currentNode.action.type === 'tutorial_sgf' ||
-        currentNode.action.type === 'go_proverb')
+        currentNode.action.type === 'go_proverb' ||
+        currentNode.action.type === 'skill' ||
+        currentNode.action.type === 'quest' ||
+        currentNode.action.type === 'reward')
     ) {
       if (actionConsumedNodeId !== currentNode.id) {
         setActionConsumedNodeId(currentNode.id);

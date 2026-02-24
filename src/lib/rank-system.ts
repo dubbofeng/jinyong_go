@@ -89,7 +89,7 @@ export function getExperienceForLevel(level: number): number {
   if (level <= 0) return 0;
   if (level > 27) return 0; // 已达最高等级
 
-  return Math.round(Math.pow(level, 1.2)) * 1000;
+  return Math.round(Math.pow(level, 1.2) * 10) * 100;
 }
 
 /**

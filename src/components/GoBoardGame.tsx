@@ -84,6 +84,7 @@ export default function GoBoardGame({
   const [goSkillRating, setGoSkillRating] = useState<number>(25); // 玩家围棋水平评分，用于自适应难度
   const [playerStamina, setPlayerStamina] = useState<number | null>(null);
   const [playerMaxStamina, setPlayerMaxStamina] = useState<number | null>(null);
+  const [playerLevel, setPlayerLevel] = useState<number>(1); // 玩家等级
   const [boardPixelSize, setBoardPixelSize] = useState(() => Math.min(width, height));
 
   // 让子相关状态
@@ -398,6 +399,7 @@ export default function GoBoardGame({
           setPlayerStamina(initData.data.stamina);
           setPlayerMaxStamina(initData.data.maxStamina);
           setGoSkillRating(initData.data.goSkillRating ?? 25);
+          setPlayerLevel(initData.data.level ?? 1);
         }
         return;
       }
@@ -410,6 +412,7 @@ export default function GoBoardGame({
           setPlayerStamina(data.data.stamina);
           setPlayerMaxStamina(data.data.maxStamina);
           setGoSkillRating(data.data.goSkillRating ?? 25);
+          setPlayerLevel(data.data.level ?? 1);
         }
       }
     } catch (error) {
@@ -1003,13 +1006,23 @@ export default function GoBoardGame({
 
       // 计算经验值和体力变化
       // 基础经验值根据NPC难度计算：难度越高，经验值越多
-      const difficultyBonus = aiDifficulty * 50;
+      const difficultyBonus = aiDifficulty * 100;
       const moveBonus = Math.floor(moveCount / 10) * 5;
-      const baseExperienceGained = playerWon
+      let baseExperienceGained = playerWon
         ? difficultyBonus + moveBonus
         : Math.floor(difficultyBonus * 0.2);
+
+      // 根据玩家等级与NPC等级的差异调整经验值
+      // 玩家等级最高27，除以3后映射到0-9范围与NPC等级对比
+      // 如果玩家等级（除以3后）低于NPC等级，则低几级就翻几倍
+      const playerLevelAdjusted = Math.floor(playerLevel / 3);
+      const levelDifference = Math.max(0, aiDifficulty - playerLevelAdjusted);
+      const levelMultiplier = Math.max(1, levelDifference);
+      baseExperienceGained = baseExperienceGained * levelMultiplier;
       const questRewards = playerWon && npcId ? getQuestByNpc(npcId)?.rewards : null;
-      const experienceGained = questRewards?.experience ?? baseExperienceGained;
+      const experienceGained = questRewards?.experience
+        ? questRewards?.experience * levelMultiplier
+        : baseExperienceGained;
       const staminaChange = playerWon ? 0 : -20; // 失败扣体力
 
       // 保存对战记录和NPC关系
@@ -1137,33 +1150,94 @@ export default function GoBoardGame({
       const questUpdates: Array<{ questId: string; questTitle: string; progress: string }> = [];
       if (playerWon && npcId) {
         try {
-          // TODO: 任务系统暂未实现，注释掉以避免 405 错误
-          /*
-        // TODO: 根据npcId确定任务ID
-        const questId = npcId === 'hong_qigong' ? 'quest_002_hong_qigong' : null;
+          // 根据npcId获取对应任务
+          const quest = getQuestByNpc(npcId);
 
-        if (questId) {
-          const questResponse = await fetch(`/api/quests/progress`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: session.user.id,
-              questId,
-              objectiveId: 'obj_2', // 战胜NPC的目标
-              increment: 1,
-            }),
-          });
-
-          if (questResponse.ok) {
-            const questData = await questResponse.json();
-            questUpdates.push({
-              questId,
-              questTitle: tNpcs('hong_qigong'),
-              progress: `战胜洪七公 (${questData.progress}/3)`,
+          if (quest) {
+            // 更新任务完成状态
+            const progressResponse = await fetch('/api/player/progress/tasks', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                add: [quest.id],
+              }),
             });
+
+            if (progressResponse.ok) {
+              questUpdates.push({
+                questId: quest.id,
+                questTitle: quest.name.zh,
+                progress: '任务完成',
+              });
+
+              // 如果任务有技能奖励，解锁技能
+              if (quest.rewards.skill) {
+                const skillId = quest.rewards.skill;
+                const unlockResponse = await fetch('/api/player/skills/unlock', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    skillId,
+                    questId: quest.id,
+                  }),
+                });
+
+                if (unlockResponse.ok) {
+                  console.log(`✅ 技能解锁: ${skillId} (来自任务: ${quest.id})`);
+                  // 刷新已学技能列表
+                  const skillResponse = await fetch('/api/player/skills');
+                  if (skillResponse.ok) {
+                    const skillData = await skillResponse.json();
+                    if (skillData.success && Array.isArray(skillData.data)) {
+                      const unlockedSkillIds = skillData.data
+                        .filter((skill: any) => skill.unlocked)
+                        .map((skill: any) => skill.skillId);
+                      const levels: Record<string, number> = {};
+                      skillData.data.forEach((skill: any) => {
+                        if (skill.unlocked) {
+                          levels[skill.skillId] = skill.level || 1;
+                        }
+                      });
+                      setLearnedSkills(unlockedSkillIds);
+                      setSkillLevels(levels);
+                    }
+                  }
+                }
+              }
+
+              // 如果任务有多个技能奖励，解锁所有技能
+              if (quest.rewards.skills && Array.isArray(quest.rewards.skills)) {
+                for (const skillId of quest.rewards.skills) {
+                  await fetch('/api/player/skills/unlock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      skillId,
+                      questId: quest.id,
+                    }),
+                  });
+                }
+                // 刷新已学技能列表
+                const skillResponse = await fetch('/api/player/skills');
+                if (skillResponse.ok) {
+                  const skillData = await skillResponse.json();
+                  if (skillData.success && Array.isArray(skillData.data)) {
+                    const unlockedSkillIds = skillData.data
+                      .filter((skill: any) => skill.unlocked)
+                      .map((skill: any) => skill.skillId);
+                    const levels: Record<string, number> = {};
+                    skillData.data.forEach((skill: any) => {
+                      if (skill.unlocked) {
+                        levels[skill.skillId] = skill.level || 1;
+                      }
+                    });
+                    setLearnedSkills(unlockedSkillIds);
+                    setSkillLevels(levels);
+                  }
+                }
+              }
+            }
           }
-        }
-        */
         } catch (error) {
           console.error('Error updating quest progress:', error);
         }

@@ -10,7 +10,10 @@ import { playerSkills } from '../../../../../src/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 // 技能定义
-const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; character: string; description: string }> = {
+const SKILL_DEFINITIONS: Record<
+  string,
+  { name: string; nameEn: string; character: string; description: string }
+> = {
   kanglong_youhui: {
     name: '亢龙有悔',
     nameEn: 'Kanglong Youhui',
@@ -65,6 +68,13 @@ const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; characte
     character: '段誉',
     description: '北冥神功，恢复内力并清除技能冷却',
   },
+  duanzhi_zhengxian: {
+    name: '断趾争先',
+    nameEn: 'Sacrifice for the First Move',
+    character: '黄眉僧',
+    description:
+      '黄眉僧断趾争先的决心，对局前消耗体力和内力让对方让子，每让一子消耗50体力和50内力。技能等级决定最多可让几子（等级+1）。',
+  },
 };
 
 /**
@@ -74,43 +84,29 @@ const SKILL_DEFINITIONS: Record<string, { name: string; nameEn: string; characte
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: '未登录' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '未登录' }, { status: 401 });
     }
 
     const userId = parseInt(session.user.id);
     const body = await request.json();
-    const { skillId, npcId } = body;
+    const { skillId, npcId, questId } = body;
 
     if (!skillId) {
-      return NextResponse.json(
-        { error: '缺少skillId参数' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '缺少skillId参数' }, { status: 400 });
     }
 
     // 验证技能ID是否有效
     if (!SKILL_DEFINITIONS[skillId]) {
-      return NextResponse.json(
-        { error: '无效的技能ID' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '无效的技能ID' }, { status: 400 });
     }
 
     // 检查是否已经学习
     const existing = await db
       .select()
       .from(playerSkills)
-      .where(
-        and(
-          eq(playerSkills.userId, userId),
-          eq(playerSkills.skillId, skillId)
-        )
-      )
+      .where(and(eq(playerSkills.userId, userId), eq(playerSkills.skillId, skillId)))
       .limit(1);
 
     if (existing.length > 0) {
@@ -125,6 +121,27 @@ export async function POST(request: NextRequest) {
           })
           .where(eq(playerSkills.id, existing[0].id))
           .returning();
+
+        // 如果有questId，标记任务为完成
+        if (questId) {
+          // 获取玩家的进度，添加完成的任务
+          const { gameProgress } = await import('../../../../../src/db/schema');
+          const progressData = await db
+            .select({ completedTasks: gameProgress.completedTasks })
+            .from(gameProgress)
+            .where(eq(gameProgress.userId, userId));
+
+          if (progressData.length > 0) {
+            const currentTasks = (progressData[0].completedTasks as string[]) || [];
+            if (!currentTasks.includes(questId)) {
+              currentTasks.push(questId);
+              await db
+                .update(gameProgress)
+                .set({ completedTasks: currentTasks, updatedAt: new Date() })
+                .where(eq(gameProgress.userId, userId));
+            }
+          }
+        }
 
         return NextResponse.json({
           success: true,
@@ -162,6 +179,27 @@ export async function POST(request: NextRequest) {
       })
       .returning();
 
+    // 如果有questId，标记任务为完成
+    if (questId) {
+      // 获取玩家的进度，添加完成的任务
+      const { gameProgress } = await import('../../../../../src/db/schema');
+      const progressData = await db
+        .select({ completedTasks: gameProgress.completedTasks })
+        .from(gameProgress)
+        .where(eq(gameProgress.userId, userId));
+
+      if (progressData.length > 0) {
+        const currentTasks = (progressData[0].completedTasks as string[]) || [];
+        if (!currentTasks.includes(questId)) {
+          currentTasks.push(questId);
+          await db
+            .update(gameProgress)
+            .set({ completedTasks: currentTasks, updatedAt: new Date() })
+            .where(eq(gameProgress.userId, userId));
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -171,12 +209,8 @@ export async function POST(request: NextRequest) {
       message: `学会了【${SKILL_DEFINITIONS[skillId].name}】！`,
       isNew: true, // 首次学会
     });
-
   } catch (error) {
     console.error('学习技能失败:', error);
-    return NextResponse.json(
-      { error: '服务器错误' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '服务器错误' }, { status: 500 });
   }
 }

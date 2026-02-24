@@ -9,7 +9,14 @@ export interface DialogueNodeFlow {
   nextNodeId?: string;
   options?: DialogueOptionFlow[];
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf' | 'go_proverb';
+    type:
+      | 'quest'
+      | 'reward'
+      | 'battle'
+      | 'skill'
+      | 'tutorial_board'
+      | 'tutorial_sgf'
+      | 'go_proverb';
     value: any;
   };
 }
@@ -18,11 +25,26 @@ export interface DialogueOptionFlow {
   optionId: string; // 对应对话文件中options数组的索引或标识
   nextNodeId: string;
   action?: {
-    type: 'quest' | 'reward' | 'battle' | 'skill' | 'tutorial_board' | 'tutorial_sgf' | 'go_proverb';
+    type:
+      | 'quest'
+      | 'reward'
+      | 'battle'
+      | 'skill'
+      | 'tutorial_board'
+      | 'tutorial_sgf'
+      | 'go_proverb';
     value: any;
   };
   condition?: {
-    type: 'level' | 'quest' | 'item' | 'playerWon' | 'playerLost' | 'repeatable' | 'first_time' | 'dialogue_flag';
+    type:
+      | 'level'
+      | 'quest'
+      | 'item'
+      | 'playerWon'
+      | 'playerLost'
+      | 'repeatable'
+      | 'first_time'
+      | 'dialogue_flag';
     value?: string | number;
     npcId?: string;
     inverse?: boolean;
@@ -52,17 +74,17 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'teach_intro',
-            condition: { type: 'quest', value: 'learned_go_basics', inverse: true }
+            condition: { type: 'quest', value: 'learned_go_basics', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'skip_tutorial',
-            condition: { type: 'quest', value: 'learned_go_basics', inverse: true }
+            condition: { type: 'quest', value: 'learned_go_basics', inverse: true },
           },
           { optionId: '2', nextNodeId: 'explain_world' },
           { optionId: '3', nextNodeId: 'daily_wisdom' },
-          { optionId: '4', nextNodeId: 'explain_venues' }
-        ]
+          { optionId: '4', nextNodeId: 'explain_venues' },
+        ],
       },
       { id: 'explain_venues', nextNodeId: 'check_status' },
       { id: 'explain_world', nextNodeId: 'explain_world_2' },
@@ -73,9 +95,9 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '1',
             nextNodeId: 'skip_tutorial',
-            condition: { type: 'quest', value: 'learned_go_basics', inverse: true }
-          }
-        ]
+            condition: { type: 'quest', value: 'learned_go_basics', inverse: true },
+          },
+        ],
       },
       { id: 'teach_intro', nextNodeId: 'teach_basics' },
       { id: 'teach_basics', nextNodeId: 'lesson_1' },
@@ -88,105 +110,105 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'after_practice_1',
-            action: { type: 'tutorial_board', value: 'musang_liberties' }
-          }
-        ]
+            action: { type: 'tutorial_board', value: 'musang_liberties' },
+          },
+        ],
       },
       { id: 'after_practice_1', nextNodeId: 'lesson_alive_eyes' },
       {
         id: 'lesson_alive_eyes',
         nextNodeId: 'lesson_true_eye',
-        action: { type: 'tutorial_board', value: 'musang_two_eyes' }
+        action: { type: 'tutorial_board', value: 'musang_two_eyes' },
       },
       {
         id: 'lesson_true_eye',
         nextNodeId: 'lesson_false_eye',
-        action: { type: 'tutorial_board', value: 'musang_true_eye' }
+        action: { type: 'tutorial_board', value: 'musang_true_eye' },
       },
       {
         id: 'lesson_false_eye',
         nextNodeId: 'lesson_tiger_mouth',
-        action: { type: 'tutorial_board', value: 'musang_false_eye' }
+        action: { type: 'tutorial_board', value: 'musang_false_eye' },
       },
       {
         id: 'lesson_tiger_mouth',
         nextNodeId: 'lesson_atari',
-        action: { type: 'tutorial_board', value: 'musang_tiger_mouth' }
+        action: { type: 'tutorial_board', value: 'musang_tiger_mouth' },
       },
       {
         id: 'lesson_atari',
         nextNodeId: 'lesson_double_atari',
-        action: { type: 'tutorial_board', value: 'musang_atari' }
+        action: { type: 'tutorial_board', value: 'musang_atari' },
       },
       {
         id: 'lesson_double_atari',
         nextNodeId: 'lesson_ladder',
-        action: { type: 'tutorial_board', value: 'musang_double_atari' }
+        action: { type: 'tutorial_board', value: 'musang_double_atari' },
       },
       {
         id: 'lesson_ladder',
         nextNodeId: 'lesson_snapback',
-        action: { type: 'tutorial_board', value: 'musang_ladder' }
+        action: { type: 'tutorial_board', value: 'musang_ladder' },
       },
       {
         id: 'lesson_snapback',
         nextNodeId: 'lesson_net',
-        action: { type: 'tutorial_board', value: 'musang_snapback' }
+        action: { type: 'tutorial_board', value: 'musang_snapback' },
       },
       {
         id: 'lesson_net',
         nextNodeId: 'lesson_fly',
-        action: { type: 'tutorial_board', value: 'musang_net' }
+        action: { type: 'tutorial_board', value: 'musang_net' },
       },
       {
         id: 'lesson_fly',
         nextNodeId: 'lesson_jump',
-        action: { type: 'tutorial_board', value: 'musang_fly' }
+        action: { type: 'tutorial_board', value: 'musang_fly' },
       },
       {
         id: 'lesson_jump',
         nextNodeId: 'lesson_wedge',
-        action: { type: 'tutorial_board', value: 'musang_jump' }
+        action: { type: 'tutorial_board', value: 'musang_jump' },
       },
       {
         id: 'lesson_wedge',
         nextNodeId: 'lesson_attach',
-        action: { type: 'tutorial_board', value: 'musang_wedge' }
+        action: { type: 'tutorial_board', value: 'musang_wedge' },
       },
       {
         id: 'lesson_attach',
         nextNodeId: 'lesson_hane',
-        action: { type: 'tutorial_board', value: 'musang_attach' }
+        action: { type: 'tutorial_board', value: 'musang_attach' },
       },
       {
         id: 'lesson_hane',
         nextNodeId: 'lesson_connect',
-        action: { type: 'tutorial_board', value: 'musang_hane' }
+        action: { type: 'tutorial_board', value: 'musang_hane' },
       },
       {
         id: 'lesson_connect',
         nextNodeId: 'lesson_cut',
-        action: { type: 'tutorial_board', value: 'musang_connect' }
+        action: { type: 'tutorial_board', value: 'musang_connect' },
       },
       {
         id: 'lesson_cut',
         nextNodeId: 'lesson_extend',
-        action: { type: 'tutorial_board', value: 'musang_cut' }
+        action: { type: 'tutorial_board', value: 'musang_cut' },
       },
       {
         id: 'lesson_extend',
         nextNodeId: 'lesson_peep',
-        action: { type: 'tutorial_board', value: 'musang_extend' }
+        action: { type: 'tutorial_board', value: 'musang_extend' },
       },
       {
         id: 'lesson_peep',
         nextNodeId: 'lesson_double',
-        action: { type: 'tutorial_board', value: 'musang_peep' }
+        action: { type: 'tutorial_board', value: 'musang_peep' },
       },
       {
         id: 'lesson_double',
         nextNodeId: 'lesson_4',
-        action: { type: 'tutorial_board', value: 'musang_double' }
+        action: { type: 'tutorial_board', value: 'musang_double' },
       },
       { id: 'lesson_4', nextNodeId: 'lesson_5' },
       { id: 'lesson_5', nextNodeId: 'practice_2' },
@@ -196,9 +218,9 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'after_practice_2',
-            action: { type: 'tutorial_board', value: 'musang_ko' }
-          }
-        ]
+            action: { type: 'tutorial_board', value: 'musang_ko' },
+          },
+        ],
       },
       { id: 'after_practice_2', nextNodeId: 'lesson_6' },
       { id: 'lesson_6', nextNodeId: 'lesson_7' },
@@ -209,32 +231,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'after_final_test',
-            action: { type: 'tutorial_board', value: 'musang_scoring' }
-          }
-        ]
+            action: { type: 'tutorial_board', value: 'musang_scoring' },
+          },
+        ],
       },
       {
         id: 'after_final_test',
         nextNodeId: 'graduation',
-        action: { type: 'quest', value: 'learned_go_basics' }
+        action: { type: 'quest', value: 'learned_go_basics' },
       },
       { id: 'graduation', nextNodeId: 'graduation_2' },
       {
         id: 'graduation_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       {
         id: 'skip_tutorial',
         nextNodeId: 'farewell',
-        action: { type: 'quest', value: 'skipped_tutorial' }
+        action: { type: 'quest', value: 'skipped_tutorial' },
       },
       { id: 'daily_wisdom', nextNodeId: 'daily_wisdom_2' },
       {
         id: 'daily_wisdom_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   // ===== 第一章：中原风云 =====
@@ -249,22 +271,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_hong_qigong', inverse: true }
+            condition: { type: 'quest', value: 'defeated_hong_qigong', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_hong_qigong' }
+            condition: { type: 'quest', value: 'defeated_hong_qigong' },
           },
           {
             optionId: '2',
             nextNodeId: 'rematch_challenge',
-            condition: { type: 'quest', value: 'defeated_hong_qigong' }
+            condition: { type: 'quest', value: 'defeated_hong_qigong' },
           },
           { optionId: '3', nextNodeId: 'explain_go' },
           { optionId: '4', nextNodeId: 'not_ready' },
-          { optionId: '5', nextNodeId: 'explain_venues' }
-        ]
+          { optionId: '5', nextNodeId: 'explain_venues' },
+        ],
       },
       { id: 'explain_venues', nextNodeId: 'check_status' },
       { id: 'explain_go', nextNodeId: 'explain_go_2' },
@@ -272,8 +294,8 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         id: 'explain_go_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -282,10 +304,10 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'hong_qigong' }
+            action: { type: 'battle', value: 'hong_qigong' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
@@ -294,14 +316,14 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'teach_skill',
-            condition: { type: 'playerWon' }
+            condition: { type: 'playerWon' },
           },
           {
             optionId: '1',
             nextNodeId: 'try_again',
-            condition: { type: 'playerLost' }
-          }
-        ]
+            condition: { type: 'playerLost' },
+          },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -309,8 +331,8 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'kanglong_youhui', questId: 'quest_002_hong_qigong' }
-        }
+          value: { skillId: 'kanglong_youhui', questId: 'quest_002_hong_qigong' },
+        },
       },
       {
         id: 'teach_complete',
@@ -319,17 +341,17 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '1',
             nextNodeId: 'rematch_challenge',
-            condition: { type: 'repeatable' }
+            condition: { type: 'repeatable' },
           },
-          { optionId: '2', nextNodeId: 'daily_chat' }
-        ]
+          { optionId: '2', nextNodeId: 'daily_chat' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'rematch_challenge',
@@ -337,10 +359,10 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'daily_chat',
-            action: { type: 'battle', value: 'hong_qigong' }
+            action: { type: 'battle', value: 'hong_qigong' },
           },
-          { optionId: '1', nextNodeId: 'daily_chat' }
-        ]
+          { optionId: '1', nextNodeId: 'daily_chat' },
+        ],
       },
       {
         id: 'daily_chat',
@@ -349,16 +371,16 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '1',
             nextNodeId: 'rematch_challenge',
-            condition: { type: 'repeatable' }
-          }
-        ]
+            condition: { type: 'repeatable' },
+          },
+        ],
       },
       {
         id: 'not_ready',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   linghu_chong: {
@@ -372,34 +394,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'explain_skill',
-            condition: { type: 'quest', value: 'defeated_linghu_chong', inverse: true }
+            condition: { type: 'quest', value: 'defeated_linghu_chong', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_linghu_chong' }
+            condition: { type: 'quest', value: 'defeated_linghu_chong' },
           },
           {
             optionId: '2',
             nextNodeId: 'rematch_challenge',
-            condition: { type: 'quest', value: 'defeated_linghu_chong' }
+            condition: { type: 'quest', value: 'defeated_linghu_chong' },
           },
           { optionId: '3', nextNodeId: 'explain_connection' },
-          { optionId: '4', nextNodeId: 'farewell_early' }
-        ]
+          { optionId: '4', nextNodeId: 'farewell_early' },
+        ],
       },
       {
         id: 'explain_connection',
-        options: [
-          { optionId: '0', nextNodeId: 'check_status' }
-        ]
+        options: [{ optionId: '0', nextNodeId: 'check_status' }],
       },
       {
         id: 'explain_skill',
         options: [
           { optionId: '0', nextNodeId: 'challenge_condition' },
-          { optionId: '1', nextNodeId: 'think_again' }
-        ]
+          { optionId: '1', nextNodeId: 'think_again' },
+        ],
       },
       {
         id: 'challenge_condition',
@@ -407,10 +427,10 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'linghu_chong' }
+            action: { type: 'battle', value: 'linghu_chong' },
           },
-          { optionId: '1', nextNodeId: 'think_again' }
-        ]
+          { optionId: '1', nextNodeId: 'think_again' },
+        ],
       },
       {
         id: 'start_battle',
@@ -419,26 +439,26 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'teach_skill',
-            condition: { type: 'playerWon' }
+            condition: { type: 'playerWon' },
           },
           {
             optionId: '1',
             nextNodeId: 'try_again',
-            condition: { type: 'playerLost' }
-          }
-        ]
+            condition: { type: 'playerLost' },
+          },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
-      { 
-        id: 'teach_skill_detail', 
+      {
+        id: 'teach_skill_detail',
         nextNodeId: 'teach_complete',
-        action: { 
-          type: 'skill', 
-          value: { 
+        action: {
+          type: 'skill',
+          value: {
             skillId: 'dugu_jiujian',
-            questId: 'unlock_skill_dugu'
-          }
-        }
+            questId: 'unlock_skill_dugu',
+          },
+        },
       },
       {
         id: 'teach_complete',
@@ -447,17 +467,17 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '1',
             nextNodeId: 'rematch_challenge',
-            condition: { type: 'repeatable' }
+            condition: { type: 'repeatable' },
           },
-          { optionId: '2', nextNodeId: 'talk_sword' }
-        ]
+          { optionId: '2', nextNodeId: 'talk_sword' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'rematch_challenge',
@@ -465,10 +485,10 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'daily_chat',
-            action: { type: 'battle', value: 'linghu_chong' }
+            action: { type: 'battle', value: 'linghu_chong' },
           },
-          { optionId: '1', nextNodeId: 'daily_chat' }
-        ]
+          { optionId: '1', nextNodeId: 'daily_chat' },
+        ],
       },
       {
         id: 'daily_chat',
@@ -477,44 +497,44 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '1',
             nextNodeId: 'rematch_challenge',
-            condition: { type: 'repeatable' }
-          }
-        ]
+            condition: { type: 'repeatable' },
+          },
+        ],
       },
       {
         id: 'after_learn_chat',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'talk_sword' }
-        ]
+          { optionId: '1', nextNodeId: 'talk_sword' },
+        ],
       },
       {
         id: 'after_xiangyang',
         options: [
           { optionId: '0', nextNodeId: 'praise_response' },
-          { optionId: '1', nextNodeId: 'talk_sword' }
-        ]
+          { optionId: '1', nextNodeId: 'talk_sword' },
+        ],
       },
       {
         id: 'praise_response',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'talk_sword', nextNodeId: 'talk_sword_2' },
       {
         id: 'talk_sword_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       {
         id: 'think_again',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       {
         id: 'farewell_early',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'farewell', nextNodeId: 'end' },
-      { id: 'end' }
-    ]
+      { id: 'end' },
+    ],
   },
 
   guo_jing: {
@@ -528,8 +548,8 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '0', nextNodeId: 'learn_request' },
           { optionId: '1', nextNodeId: 'challenge', condition: { type: 'repeatable' } },
           { optionId: '2', nextNodeId: 'teach_wisdom' },
-          { optionId: '3', nextNodeId: 'just_visit' }
-        ]
+          { optionId: '3', nextNodeId: 'just_visit' },
+        ],
       },
       {
         id: 'ask_purpose',
@@ -537,70 +557,71 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '0', nextNodeId: 'respect_response' },
           { optionId: '1', nextNodeId: 'learn_request' },
           { optionId: '2', nextNodeId: 'challenge' },
-          { optionId: '3', nextNodeId: 'just_visit' }
-        ]
+          { optionId: '3', nextNodeId: 'just_visit' },
+        ],
       },
       { id: 'respect_response', nextNodeId: 'talk_rong' },
       {
         id: 'talk_rong',
         options: [
           { optionId: '0', nextNodeId: 'teach_wisdom' },
-          { optionId: '1', nextNodeId: 'challenge' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge' },
+        ],
       },
-      { id: 'learn_request', 
+      {
+        id: 'learn_request',
         options: [
           { optionId: '0', nextNodeId: 'eye_intro' },
           { optionId: '1', nextNodeId: 'teach_wisdom' },
-          { optionId: '2', nextNodeId: 'challenge' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge' },
+        ],
       },
       {
         id: 'eye_intro',
         options: [
           { optionId: '0', nextNodeId: 'eye_straight_three' },
-          { optionId: '1', nextNodeId: 'teach_wisdom' }
-        ]
+          { optionId: '1', nextNodeId: 'teach_wisdom' },
+        ],
       },
       {
         id: 'eye_straight_three',
         nextNodeId: 'eye_bent_three',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_straight_three' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_straight_three' },
       },
       {
         id: 'eye_bent_three',
         nextNodeId: 'eye_t_four',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_bent_three' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_bent_three' },
       },
       {
         id: 'eye_t_four',
         nextNodeId: 'eye_knife_five',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_t_four' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_t_four' },
       },
       {
         id: 'eye_knife_five',
         nextNodeId: 'eye_plum_five',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_knife_five' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_knife_five' },
       },
       {
         id: 'eye_plum_five',
         nextNodeId: 'eye_straight_four',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_plum_five' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_plum_five' },
       },
       {
         id: 'eye_straight_four',
         nextNodeId: 'eye_bent_four',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_straight_four' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_straight_four' },
       },
       {
         id: 'eye_bent_four',
         nextNodeId: 'eye_grape_six',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_bent_four' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_bent_four' },
       },
       {
         id: 'eye_grape_six',
         nextNodeId: 'teach_wisdom',
-        action: { type: 'tutorial_board', value: 'guo_jing_eye_grape_six' }
+        action: { type: 'tutorial_board', value: 'guo_jing_eye_grape_six' },
       },
       { id: 'teach_wisdom', nextNodeId: 'teach_skill' },
       { id: 'teach_skill', nextNodeId: 'after_teach' },
@@ -608,8 +629,8 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         id: 'after_teach',
         options: [
           { optionId: '0', nextNodeId: 'thank_you' },
-          { optionId: '1', nextNodeId: 'challenge' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge' },
+        ],
       },
       { id: 'challenge', nextNodeId: 'challenge_condition' },
       {
@@ -618,43 +639,43 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '0', nextNodeId: 'accept_challenge' },
           {
             optionId: '1',
-            nextNodeId: 'ready_challenge'
-          }
-        ]
+            nextNodeId: 'ready_challenge',
+          },
+        ],
       },
       { id: 'accept_challenge', nextNodeId: 'farewell' },
       {
         id: 'ready_challenge',
-        action: { type: 'battle', value: 'guo_jing' }
+        action: { type: 'battle', value: 'guo_jing' },
       },
       {
         id: 'just_visit',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'learn_request' }
-        ]
+          { optionId: '1', nextNodeId: 'learn_request' },
+        ],
       },
       { id: 'thank_you', nextNodeId: 'farewell' },
       {
         id: 'after_learn_chat',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'talk_strategy' }
-        ]
+          { optionId: '1', nextNodeId: 'talk_strategy' },
+        ],
       },
       {
         id: 'talk_strategy',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       {
         id: 'final_chapter',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'talk_strategy' }
-        ]
+          { optionId: '1', nextNodeId: 'talk_strategy' },
+        ],
       },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   huang_rong: {
@@ -669,30 +690,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_huang_rong', inverse: true }
+            condition: { type: 'quest', value: 'defeated_huang_rong', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_huang_rong' }
+            condition: { type: 'quest', value: 'defeated_huang_rong' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_huang_rong' },
-            action: { type: 'battle', value: 'huang_rong' }
+            action: { type: 'battle', value: 'huang_rong' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -701,18 +722,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'huang_rong' }
+            action: { type: 'battle', value: 'huang_rong' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'huang_rong' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       { id: 'teach_skill_detail', nextNodeId: 'teach_skill_practice' },
@@ -721,8 +742,8 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'jiguan_suanjin', questId: 'quest_005_huang_rong' }
-        }
+          value: { skillId: 'jiguan_suanjin', questId: 'quest_005_huang_rong' },
+        },
       },
       {
         id: 'teach_complete',
@@ -732,25 +753,25 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '2',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'huang_rong' }
-          }
-        ]
+            action: { type: 'battle', value: 'huang_rong' },
+          },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   // ===== 第二章：大理佛缘 =====
@@ -766,30 +787,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_duan_yu', inverse: true }
+            condition: { type: 'quest', value: 'defeated_duan_yu', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_duan_yu' }
+            condition: { type: 'quest', value: 'defeated_duan_yu' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_duan_yu' },
-            action: { type: 'battle', value: 'duan_yu' }
+            action: { type: 'battle', value: 'duan_yu' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -798,18 +819,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'duan_yu' }
+            action: { type: 'battle', value: 'duan_yu' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'duan_yu' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -817,32 +838,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'beiming_shengong', questId: 'quest_006_duan_yu' }
-        }
+          value: { skillId: 'beiming_shengong', questId: 'quest_006_duan_yu' },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   huangmei_seng: {
@@ -854,62 +875,46 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
       {
         id: 'check_status',
         options: [
-          { optionId: '0', nextNodeId: 'challenge_intro' },
+          { optionId: '0', nextNodeId: 'story_intro' },
           { optionId: '1', nextNodeId: 'challenge_intro' },
-          { optionId: '2', nextNodeId: 'start_battle' },
-          { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' },
-          { optionId: '5', nextNodeId: 'proverb_intro' }
-        ]
+          { optionId: '2', nextNodeId: 'not_ready' },
+        ],
       },
+      { id: 'story_intro', nextNodeId: 'story_battle' },
+      { id: 'story_battle', nextNodeId: 'story_turning' },
+      { id: 'story_turning', nextNodeId: 'story_sacrifice' },
+      { id: 'story_sacrifice', nextNodeId: 'story_result' },
+      { id: 'story_result', nextNodeId: 'story_wisdom' },
+      { id: 'story_wisdom', nextNodeId: 'teach_skill' },
       {
-        id: 'proverb_intro',
-        nextNodeId: 'check_status',
-        action: { type: 'go_proverb', value: true }
+        id: 'teach_skill',
+        nextNodeId: 'teach_skill_detail',
+        action: {
+          type: 'skill',
+          value: { skillId: 'duanzhi_zhengxian', questId: 'quest_007_huangmei_seng' },
+        },
       },
-      { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
+      { id: 'teach_skill_detail', nextNodeId: 'teach_complete' },
       {
-        id: 'explain_skill_2',
+        id: 'teach_complete',
         options: [
-          { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '0', nextNodeId: 'farewell' },
+          { optionId: '1', nextNodeId: 'challenge_intro' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
         id: 'challenge_condition',
         options: [
           { optionId: '0', nextNodeId: 'start_battle' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
-      { id: 'start_battle', nextNodeId: 'teach_skill' },
-      { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
-      { id: 'teach_skill_detail', nextNodeId: 'teach_skill_practice' },
-      { id: 'teach_skill_practice', nextNodeId: 'teach_complete' },
-      {
-        id: 'teach_complete',
-        options: [
-          { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'start_battle' }
-        ]
-      },
-      {
-        id: 'try_again',
-        options: [
-          { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
-      },
-      { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
-      {
-        id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
-      },
+      { id: 'start_battle', nextNodeId: 'farewell' },
+      { id: 'daily_chat', nextNodeId: 'farewell' },
       { id: 'not_ready', nextNodeId: 'farewell' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   duan_yanqing: {
@@ -924,30 +929,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_duan_yanqing', inverse: true }
+            condition: { type: 'quest', value: 'defeated_duan_yanqing', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_duan_yanqing' }
+            condition: { type: 'quest', value: 'defeated_duan_yanqing' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_duan_yanqing' },
-            action: { type: 'battle', value: 'duan_yanqing' }
+            action: { type: 'battle', value: 'duan_yanqing' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -956,18 +961,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'duan_yanqing' }
+            action: { type: 'battle', value: 'duan_yanqing' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'duan_yanqing' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -975,32 +980,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'fuyu_chuanyin', questId: 'quest_008_duan_yanqing' }
-        }
+          value: { skillId: 'fuyu_chuanyin', questId: 'quest_008_duan_yanqing' },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   yideng_dashi: {
@@ -1015,30 +1020,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_yideng_dashi', inverse: true }
+            condition: { type: 'quest', value: 'defeated_yideng_dashi', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_yideng_dashi' }
+            condition: { type: 'quest', value: 'defeated_yideng_dashi' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_yideng_dashi' },
-            action: { type: 'battle', value: 'yideng_dashi' }
+            action: { type: 'battle', value: 'yideng_dashi' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -1047,18 +1052,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'yideng_dashi' }
+            action: { type: 'battle', value: 'yideng_dashi' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'yideng_dashi' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -1066,32 +1071,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'yiyang_zhi', questId: 'quest_009_yideng_dashi' }
-        }
+          value: { skillId: 'yiyang_zhi', questId: 'quest_009_yideng_dashi' },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   // ===== 第三章：江南棋会 =====
@@ -1107,42 +1112,42 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_huang_yaoshi', inverse: true }
+            condition: { type: 'quest', value: 'defeated_huang_yaoshi', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_huang_yaoshi' }
+            condition: { type: 'quest', value: 'defeated_huang_yaoshi' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_huang_yaoshi' },
-            action: { type: 'battle', value: 'huang_yaoshi' }
+            action: { type: 'battle', value: 'huang_yaoshi' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
           { optionId: '4', nextNodeId: 'not_ready' },
           {
             optionId: '5',
             nextNodeId: 'sgf_teach_intro',
-            condition: { type: 'quest', value: 'defeated_huang_yaoshi' }
-          }
-        ]
+            condition: { type: 'quest', value: 'defeated_huang_yaoshi' },
+          },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'sgf_teach_intro',
         options: [
           { optionId: '0', nextNodeId: 'sgf_route_01' },
-          { optionId: '1', nextNodeId: 'farewell' }
-        ]
+          { optionId: '1', nextNodeId: 'farewell' },
+        ],
       },
       {
         id: 'sgf_route_01',
@@ -1150,22 +1155,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_01',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_01', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_01', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_02',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_01' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_01' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_01',
         nextNodeId: 'sgf_route_02',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_01', progressFlag: 'sgf_lesson:hy_layout_01' }
-        }
+          value: { lessonId: 'hy_layout_01', progressFlag: 'sgf_lesson:hy_layout_01' },
+        },
       },
       {
         id: 'sgf_route_02',
@@ -1173,22 +1178,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_02',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_02', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_02', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_03',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_02' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_02' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_02',
         nextNodeId: 'sgf_route_03',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_02', progressFlag: 'sgf_lesson:hy_layout_02' }
-        }
+          value: { lessonId: 'hy_layout_02', progressFlag: 'sgf_lesson:hy_layout_02' },
+        },
       },
       {
         id: 'sgf_route_03',
@@ -1196,22 +1201,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_03',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_03', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_03', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_04',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_03' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_03' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_03',
         nextNodeId: 'sgf_route_04',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_03', progressFlag: 'sgf_lesson:hy_layout_03' }
-        }
+          value: { lessonId: 'hy_layout_03', progressFlag: 'sgf_lesson:hy_layout_03' },
+        },
       },
       {
         id: 'sgf_route_04',
@@ -1219,22 +1224,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_04',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_04', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_04', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_05',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_04' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_04' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_04',
         nextNodeId: 'sgf_route_05',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_04', progressFlag: 'sgf_lesson:hy_layout_04' }
-        }
+          value: { lessonId: 'hy_layout_04', progressFlag: 'sgf_lesson:hy_layout_04' },
+        },
       },
       {
         id: 'sgf_route_05',
@@ -1242,22 +1247,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_05',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_05', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_05', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_06',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_05' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_05' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_05',
         nextNodeId: 'sgf_route_06',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_05', progressFlag: 'sgf_lesson:hy_layout_05' }
-        }
+          value: { lessonId: 'hy_layout_05', progressFlag: 'sgf_lesson:hy_layout_05' },
+        },
       },
       {
         id: 'sgf_route_06',
@@ -1265,22 +1270,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_06',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_06', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_06', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_07',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_06' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_06' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_06',
         nextNodeId: 'sgf_route_07',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_06', progressFlag: 'sgf_lesson:hy_layout_06' }
-        }
+          value: { lessonId: 'hy_layout_06', progressFlag: 'sgf_lesson:hy_layout_06' },
+        },
       },
       {
         id: 'sgf_route_07',
@@ -1288,22 +1293,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_07',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_07', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_07', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_08',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_07' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_07' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_07',
         nextNodeId: 'sgf_route_08',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_07', progressFlag: 'sgf_lesson:hy_layout_07' }
-        }
+          value: { lessonId: 'hy_layout_07', progressFlag: 'sgf_lesson:hy_layout_07' },
+        },
       },
       {
         id: 'sgf_route_08',
@@ -1311,22 +1316,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_08',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_08', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_08', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_09',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_08' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_08' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_08',
         nextNodeId: 'sgf_route_09',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_08', progressFlag: 'sgf_lesson:hy_layout_08' }
-        }
+          value: { lessonId: 'hy_layout_08', progressFlag: 'sgf_lesson:hy_layout_08' },
+        },
       },
       {
         id: 'sgf_route_09',
@@ -1334,22 +1339,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_09',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_09', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_09', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_10',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_09' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_09' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_09',
         nextNodeId: 'sgf_route_10',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_09', progressFlag: 'sgf_lesson:hy_layout_09' }
-        }
+          value: { lessonId: 'hy_layout_09', progressFlag: 'sgf_lesson:hy_layout_09' },
+        },
       },
       {
         id: 'sgf_route_10',
@@ -1357,29 +1362,29 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_10',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_10', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_10', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_pattern_intro',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_10' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_layout_10' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_10',
         nextNodeId: 'sgf_pattern_intro',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_layout_10', progressFlag: 'sgf_lesson:hy_layout_10' }
-        }
+          value: { lessonId: 'hy_layout_10', progressFlag: 'sgf_lesson:hy_layout_10' },
+        },
       },
       {
         id: 'sgf_pattern_intro',
         options: [
           { optionId: '0', nextNodeId: 'sgf_route_11' },
-          { optionId: '1', nextNodeId: 'sgf_all_done' }
-        ]
+          { optionId: '1', nextNodeId: 'sgf_all_done' },
+        ],
       },
       {
         id: 'sgf_route_11',
@@ -1387,22 +1392,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_11',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_01', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_01', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_12',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_01' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_01' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_11',
         nextNodeId: 'sgf_route_12',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_pattern_01', progressFlag: 'sgf_lesson:hy_pattern_01' }
-        }
+          value: { lessonId: 'hy_pattern_01', progressFlag: 'sgf_lesson:hy_pattern_01' },
+        },
       },
       {
         id: 'sgf_route_12',
@@ -1410,22 +1415,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_12',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_02', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_02', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_13',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_02' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_02' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_12',
         nextNodeId: 'sgf_route_13',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_pattern_02', progressFlag: 'sgf_lesson:hy_pattern_02' }
-        }
+          value: { lessonId: 'hy_pattern_02', progressFlag: 'sgf_lesson:hy_pattern_02' },
+        },
       },
       {
         id: 'sgf_route_13',
@@ -1433,22 +1438,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_13',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_03', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_03', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_14',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_03' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_03' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_13',
         nextNodeId: 'sgf_route_14',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_pattern_03', progressFlag: 'sgf_lesson:hy_pattern_03' }
-        }
+          value: { lessonId: 'hy_pattern_03', progressFlag: 'sgf_lesson:hy_pattern_03' },
+        },
       },
       {
         id: 'sgf_route_14',
@@ -1456,22 +1461,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_14',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_04', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_04', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_15',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_04' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_04' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_14',
         nextNodeId: 'sgf_route_15',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_pattern_04', progressFlag: 'sgf_lesson:hy_pattern_04' }
-        }
+          value: { lessonId: 'hy_pattern_04', progressFlag: 'sgf_lesson:hy_pattern_04' },
+        },
       },
       {
         id: 'sgf_route_15',
@@ -1479,22 +1484,22 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_15',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_05', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_05', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_route_16',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_05' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_05' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_15',
         nextNodeId: 'sgf_route_16',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_pattern_05', progressFlag: 'sgf_lesson:hy_pattern_05' }
-        }
+          value: { lessonId: 'hy_pattern_05', progressFlag: 'sgf_lesson:hy_pattern_05' },
+        },
       },
       {
         id: 'sgf_route_16',
@@ -1502,29 +1507,29 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'sgf_lesson_16',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_06', inverse: true }
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_06', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'sgf_all_done',
-            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_06' }
-          }
-        ]
+            condition: { type: 'dialogue_flag', value: 'sgf_lesson:hy_pattern_06' },
+          },
+        ],
       },
       {
         id: 'sgf_lesson_16',
         nextNodeId: 'sgf_all_done',
         action: {
           type: 'tutorial_sgf',
-          value: { lessonId: 'hy_pattern_06', progressFlag: 'sgf_lesson:hy_pattern_06' }
-        }
+          value: { lessonId: 'hy_pattern_06', progressFlag: 'sgf_lesson:hy_pattern_06' },
+        },
       },
       {
         id: 'sgf_all_done',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'daily_chat' }
-        ]
+          { optionId: '1', nextNodeId: 'daily_chat' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -1533,18 +1538,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'huang_yaoshi' }
+            action: { type: 'battle', value: 'huang_yaoshi' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'huang_yaoshi' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -1554,33 +1559,33 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           type: 'reward',
           value: {
             items: [{ itemId: 'qimen_dunjia', quantity: 1 }],
-            questId: 'quest_010_huang_yaoshi'
-          }
-        }
+            questId: 'quest_010_huang_yaoshi',
+          },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   hei_baizi: {
@@ -1596,24 +1601,24 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '1', nextNodeId: 'challenge_intro' },
           { optionId: '2', nextNodeId: 'start_battle' },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
         id: 'challenge_condition',
         options: [
           { optionId: '0', nextNodeId: 'start_battle' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'start_battle', nextNodeId: 'teach_skill' },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
@@ -1624,24 +1629,24 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'start_battle' }
-        ]
+          { optionId: '2', nextNodeId: 'start_battle' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready', nextNodeId: 'farewell' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   chen_jialuo: {
@@ -1656,30 +1661,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_chen_jialuo', inverse: true }
+            condition: { type: 'quest', value: 'defeated_chen_jialuo', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_chen_jialuo' }
+            condition: { type: 'quest', value: 'defeated_chen_jialuo' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_chen_jialuo' },
-            action: { type: 'battle', value: 'chen_jialuo' }
+            action: { type: 'battle', value: 'chen_jialuo' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -1688,18 +1693,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'chen_jialuo' }
+            action: { type: 'battle', value: 'chen_jialuo' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'chen_jialuo' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -1707,32 +1712,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'qizi_anqi', questId: 'quest_012_chen_jialuo' }
-        }
+          value: { skillId: 'qizi_anqi', questId: 'quest_012_chen_jialuo' },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   // ===== 第四章：西域争锋 =====
@@ -1749,24 +1754,24 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '1', nextNodeId: 'challenge_intro' },
           { optionId: '2', nextNodeId: 'start_battle' },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
         id: 'challenge_condition',
         options: [
           { optionId: '0', nextNodeId: 'start_battle' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'start_battle', nextNodeId: 'teach_skill' },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
@@ -1777,24 +1782,24 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'start_battle' }
-        ]
+          { optionId: '2', nextNodeId: 'start_battle' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready', nextNodeId: 'farewell' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   zhang_wuji: {
@@ -1809,30 +1814,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_zhang_wuji', inverse: true }
+            condition: { type: 'quest', value: 'defeated_zhang_wuji', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_zhang_wuji' }
+            condition: { type: 'quest', value: 'defeated_zhang_wuji' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_zhang_wuji' },
-            action: { type: 'battle', value: 'zhang_wuji' }
+            action: { type: 'battle', value: 'zhang_wuji' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -1841,18 +1846,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'zhang_wuji' }
+            action: { type: 'battle', value: 'zhang_wuji' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'zhang_wuji' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -1860,32 +1865,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'qiankun_danuo', questId: 'quest_014_zhang_wuji' }
-        }
+          value: { skillId: 'qiankun_danuo', questId: 'quest_014_zhang_wuji' },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   // ===== 第五章：华山论棋 =====
@@ -1901,30 +1906,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_zhou_botong', inverse: true }
+            condition: { type: 'quest', value: 'defeated_zhou_botong', inverse: true },
           },
           {
             optionId: '1',
             nextNodeId: 'teach_skill',
-            condition: { type: 'quest', value: 'defeated_zhou_botong' }
+            condition: { type: 'quest', value: 'defeated_zhou_botong' },
           },
           {
             optionId: '2',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_zhou_botong' },
-            action: { type: 'battle', value: 'zhou_botong' }
+            action: { type: 'battle', value: 'zhou_botong' },
           },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -1933,18 +1938,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'zhou_botong' }
+            action: { type: 'battle', value: 'zhou_botong' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'zhou_botong' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       {
@@ -1952,32 +1957,32 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         nextNodeId: 'teach_complete',
         action: {
           type: 'skill',
-          value: { skillId: 'zuoyou_hubo', questId: 'quest_015_zhou_botong' }
-        }
+          value: { skillId: 'zuoyou_hubo', questId: 'quest_015_zhou_botong' },
+        },
       },
       {
         id: 'teach_complete',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '2', nextNodeId: 'challenge_condition' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   xiao_longnv: {
@@ -1993,16 +1998,16 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           { optionId: '1', nextNodeId: 'challenge_intro' },
           { optionId: '2', nextNodeId: 'start_battle' },
           { optionId: '3', nextNodeId: 'explain_skill' },
-          { optionId: '4', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '4', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -2011,18 +2016,18 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'xiao_longnv' }
+            action: { type: 'battle', value: 'xiao_longnv' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'xiao_longnv' },
         options: [
           { optionId: '0', nextNodeId: 'teach_skill', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       { id: 'teach_skill', nextNodeId: 'teach_skill_detail' },
       { id: 'teach_skill_detail', nextNodeId: 'teach_skill_practice' },
@@ -2032,24 +2037,24 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
           { optionId: '1', nextNodeId: 'daily_chat' },
-          { optionId: '2', nextNodeId: 'start_battle' }
-        ]
+          { optionId: '2', nextNodeId: 'start_battle' },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready', nextNodeId: 'farewell' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   yang_guo: {
@@ -2065,11 +2070,11 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '1',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'yang_guo' }
+            action: { type: 'battle', value: 'yang_guo' },
           },
           { optionId: '2', nextNodeId: 'daily_chat' },
-          { optionId: '3', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '3', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -2078,34 +2083,34 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'yang_guo' }
+            action: { type: 'battle', value: 'yang_guo' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'yang_guo' },
         options: [
           { optionId: '0', nextNodeId: 'farewell', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready', nextNodeId: 'farewell' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   qiao_feng: {
@@ -2120,51 +2125,47 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_qiao_feng', inverse: true }
+            condition: { type: 'quest', value: 'defeated_qiao_feng', inverse: true },
           },
           {
             optionId: '0',
             nextNodeId: 'daily_chat',
-            condition: { type: 'quest', value: 'defeated_qiao_feng' }
+            condition: { type: 'quest', value: 'defeated_qiao_feng' },
           },
           {
             optionId: '1',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'qiao_feng' }
+            action: { type: 'battle', value: 'qiao_feng' },
           },
-          { optionId: '2', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '2', nextNodeId: 'not_ready' },
+        ],
       },
-      { id: 'challenge_intro', 
-        options: [
-          { optionId: '0', nextNodeId: 'challenge_condition' }
-        ]
-      },
+      { id: 'challenge_intro', options: [{ optionId: '0', nextNodeId: 'challenge_condition' }] },
       {
         id: 'challenge_condition',
         options: [
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'qiao_feng' }
+            action: { type: 'battle', value: 'qiao_feng' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'qiao_feng' },
         options: [
           { optionId: '0', nextNodeId: 'farewell', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
@@ -2175,13 +2176,13 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
             optionId: '1',
             nextNodeId: 'start_battle',
             condition: { type: 'repeatable' },
-            action: { type: 'battle', value: 'qiao_feng' }
-          }
-        ]
+            action: { type: 'battle', value: 'qiao_feng' },
+          },
+        ],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   xu_zhu: {
@@ -2196,30 +2197,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_xu_zhu', inverse: true }
+            condition: { type: 'quest', value: 'defeated_xu_zhu', inverse: true },
           },
           {
             optionId: '0',
             nextNodeId: 'daily_chat',
-            condition: { type: 'quest', value: 'defeated_xu_zhu' }
+            condition: { type: 'quest', value: 'defeated_xu_zhu' },
           },
           {
             optionId: '1',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_xu_zhu' },
-            action: { type: 'battle', value: 'xu_zhu' }
+            action: { type: 'battle', value: 'xu_zhu' },
           },
           { optionId: '2', nextNodeId: 'explain_skill' },
-          { optionId: '3', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '3', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -2228,34 +2229,34 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'xu_zhu' }
+            action: { type: 'battle', value: 'xu_zhu' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'xu_zhu' },
         options: [
           { optionId: '0', nextNodeId: 'farewell', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
+      { id: 'farewell' },
+    ],
   },
 
   murong_fu: {
@@ -2270,30 +2271,30 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'challenge_intro',
-            condition: { type: 'quest', value: 'defeated_murong_fu', inverse: true }
+            condition: { type: 'quest', value: 'defeated_murong_fu', inverse: true },
           },
           {
             optionId: '0',
             nextNodeId: 'daily_chat',
-            condition: { type: 'quest', value: 'defeated_murong_fu' }
+            condition: { type: 'quest', value: 'defeated_murong_fu' },
           },
           {
             optionId: '1',
             nextNodeId: 'start_battle',
             condition: { type: 'quest', value: 'defeated_murong_fu' },
-            action: { type: 'battle', value: 'murong_fu' }
+            action: { type: 'battle', value: 'murong_fu' },
           },
           { optionId: '2', nextNodeId: 'explain_skill' },
-          { optionId: '3', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '3', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'explain_skill', nextNodeId: 'explain_skill_2' },
       {
         id: 'explain_skill_2',
         options: [
           { optionId: '0', nextNodeId: 'challenge_intro' },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       { id: 'challenge_intro', nextNodeId: 'challenge_condition' },
       {
@@ -2302,35 +2303,35 @@ export const dialogueFlows: Record<string, DialogueFlow> = {
           {
             optionId: '0',
             nextNodeId: 'start_battle',
-            action: { type: 'battle', value: 'murong_fu' }
+            action: { type: 'battle', value: 'murong_fu' },
           },
-          { optionId: '1', nextNodeId: 'not_ready' }
-        ]
+          { optionId: '1', nextNodeId: 'not_ready' },
+        ],
       },
       {
         id: 'start_battle',
         action: { type: 'battle', value: 'murong_fu' },
         options: [
           { optionId: '0', nextNodeId: 'farewell', condition: { type: 'playerWon' } },
-          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } }
-        ]
+          { optionId: '1', nextNodeId: 'try_again', condition: { type: 'playerLost' } },
+        ],
       },
       {
         id: 'try_again',
         options: [
           { optionId: '0', nextNodeId: 'farewell' },
-          { optionId: '1', nextNodeId: 'challenge_condition' }
-        ]
+          { optionId: '1', nextNodeId: 'challenge_condition' },
+        ],
       },
       { id: 'daily_chat', nextNodeId: 'daily_chat_2' },
       {
         id: 'daily_chat_2',
-        options: [{ optionId: '0', nextNodeId: 'farewell' }]
+        options: [{ optionId: '0', nextNodeId: 'farewell' }],
       },
       { id: 'not_ready' },
-      { id: 'farewell' }
-    ]
-  }
+      { id: 'farewell' },
+    ],
+  },
 };
 
 /**
