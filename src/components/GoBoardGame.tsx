@@ -702,6 +702,12 @@ export default function GoBoardGame({
    */
   const makeAIMove = useCallback(async () => {
     if (!vsAI || !engineRef.current || !boardRef.current) {
+      console.warn('⚠️ makeAIMove 提前返回:', {
+        vsAI,
+        hasEngine: !!engineRef.current,
+        hasBoard: !!boardRef.current,
+      });
+      setIsAIThinking(false); // 重置AI思考状态，防止游戏锁死
       return;
     }
 
@@ -740,6 +746,11 @@ export default function GoBoardGame({
 
         const analysis = await katagoEngine.analyzePosition(size, stones, aiColor);
         bestMove = analysis.bestMove;
+        console.log('📊 KataGo分析结果:', {
+          bestMove,
+          moveType: analysis.moveType,
+          shouldResign: analysis.shouldResign,
+        });
 
         // 检查 KataGo 是否建议认输
         if (analysis.shouldResign || analysis.moveType === 'resign') {
@@ -778,10 +789,18 @@ export default function GoBoardGame({
         }
 
         // AI落子
+        console.log('🎯 AI尝试落子:', { position, aiColor });
         const result = engineRef.current.placeStone(position, aiColor);
+        console.log('🎮 AI落子结果:', {
+          success: result.success,
+          error: result.error,
+          captured: result.capturedStones.length,
+        });
 
         if (result.success) {
           boardRef.current.placeStone(position, aiColor);
+          // 立即渲染棋盘，确保AI棋子显示
+          boardRef.current.render();
 
           // 处理提子
           if (result.capturedStones.length > 0) {
@@ -858,6 +877,10 @@ export default function GoBoardGame({
     goSkillRating,
   ]);
 
+  // 使用ref保存最新的makeAIMove，避免useEffect依赖变化导致timer被清除
+  const makeAIMoveRef = useRef(makeAIMove);
+  makeAIMoveRef.current = makeAIMove;
+
   // 监听玩家切换，触发AI落子
   useEffect(() => {
     if (vsAI && gameStarted && currentPlayer === aiColor && !isAIThinking) {
@@ -866,14 +889,15 @@ export default function GoBoardGame({
 
       // AI的回合，添加短暂延迟确保对方棋子先渲染
       const timer = setTimeout(() => {
-        makeAIMove();
+        makeAIMoveRef.current();
       }, 100); // 100ms延迟，让对方棋子有时间显示
 
       return () => {
         clearTimeout(timer);
       };
     }
-  }, [vsAI, gameStarted, currentPlayer, aiColor, makeAIMove]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vsAI, gameStarted, currentPlayer, aiColor]);
 
   // 初始化棋盘
   useEffect(() => {

@@ -656,7 +656,8 @@ export class KataGoBrowserEngineV2 {
         // GTP坐标系统跳过字母I: A-H, J-T
         const col = stone.col >= 8 ? stone.col + 1 : stone.col; // 如果>=8(I位置)，则+1跳过I
         const x = String.fromCharCode(65 + col); // A-H, J-T
-        const y = stone.row + 1;
+        // 内部坐标系: row 0 = 棋盘顶部; GTP坐标系: row 1 = 棋盘底部
+        const y = boardSize - stone.row;
         const color = stone.color === 'black' ? 'B' : 'W';
         await this.sendCommand(`play ${color} ${x}${y}`);
       }
@@ -780,7 +781,8 @@ export class KataGoBrowserEngineV2 {
             // 列：A=0, B=1, ... (跳过I)
             let col = colLetter.charCodeAt(0) - 65;
             if (colLetter > 'I') col--; // 跳过I
-            const row = parseInt(rowNum) - 1;
+            // 内部坐标系: row 0 = 棋盘顶部; GTP坐标系: row 1 = 棋盘底部
+            const row = boardSize - parseInt(rowNum);
             bestMove = { row, col };
             console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
           }
@@ -987,7 +989,8 @@ export class KataGoBrowserEngineV2 {
         // GTP坐标系统跳过字母I: A-H, J-T
         let col = colLetter.charCodeAt(0) - 65;
         if (colLetter > 'I') col--; // 如果J-T，减1跳过I
-        const row = parseInt(moveStr.substring(1)) - 1;
+        // 内部坐标系: row 0 = 棋盘顶部; GTP坐标系: row 1 = 棋盘底部
+        const row = boardSize - parseInt(moveStr.substring(1));
         if (!isNaN(row) && !isNaN(col)) {
           bestMove = { row, col };
         }
@@ -1083,7 +1086,8 @@ export class KataGoBrowserEngineV2 {
             // GTP坐标系统跳过字母I: A-H, J-T
             let col = colLetter.charCodeAt(0) - 65;
             if (colLetter > 'I') col--; // 如果是J-T，减1跳过I
-            const row = parseInt(moveMatch[2]) - 1;
+            // 内部坐标系: row 0 = 棋盘顶部; GTP坐标系: row 1 = 棋盘底部
+            const row = boardSize - parseInt(moveMatch[2]);
             bestMove = { row, col };
             console.log('📍 最佳着法:', moveMatch[0], '→', { row, col });
           }
@@ -1196,7 +1200,8 @@ export class KataGoBrowserEngineV2 {
     // GTP坐标系统跳过字母I: A-H, J-T
     let col = colLetter.charCodeAt(0) - 65;
     if (colLetter > 'I') col--; // 如果是J-T，减1跳过I
-    const row = parseInt(match[2]) - 1;
+    // 内部坐标系: row 0 = 棋盘顶部; GTP坐标系: row 1 = 棋盘底部
+    const row = boardSize - parseInt(match[2]);
 
     if (col < 0 || col >= boardSize || row < 0 || row >= boardSize) {
       return { move: null, type: 'pass' };
