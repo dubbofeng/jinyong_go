@@ -15,7 +15,7 @@ import { addRewards } from '@/lib/experience-manager';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: '未登录' },
@@ -23,12 +23,30 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 获取玩家属性
-    const stats = await db
-      .select()
-      .from(playerStats)
-      .where(eq(playerStats.userId, parseInt(session.user.id)))
-      .limit(1);
+    const userId = parseInt(session.user.id);
+
+    // 并行获取玩家属性和装备物品
+    const [stats, equippedItems] = await Promise.all([
+      db
+        .select()
+        .from(playerStats)
+        .where(eq(playerStats.userId, userId))
+        .limit(1),
+
+      db
+        .select({
+          effects: items.effects,
+        })
+        .from(playerInventory)
+        .leftJoin(items, eq(playerInventory.itemId, items.itemId))
+        .where(
+          and(
+            eq(playerInventory.userId, userId),
+            eq(playerInventory.equipped, true),
+            eq(items.itemType, 'equipment')
+          )
+        )
+    ]);
 
     if (stats.length === 0) {
       return NextResponse.json(
@@ -36,20 +54,6 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
-
-    const equippedItems = await db
-      .select({
-        effects: items.effects,
-      })
-      .from(playerInventory)
-      .leftJoin(items, eq(playerInventory.itemId, items.itemId))
-      .where(
-        and(
-          eq(playerInventory.userId, parseInt(session.user.id)),
-          eq(playerInventory.equipped, true),
-          eq(items.itemType, 'equipment')
-        )
-      );
 
     const bonus = equippedItems.reduce(
       (acc, cur) => {
@@ -87,7 +91,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: '未登录' },
@@ -115,7 +119,7 @@ export async function POST(request: NextRequest) {
     // 创建新玩家属性 (从18k开始 = level 1)
     const initialLevel = 1; // 18k
     const expToNext = getExperienceForLevel(initialLevel);
-    
+
     const newStats = await db
       .insert(playerStats)
       .values({
@@ -154,7 +158,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: '未登录' },
@@ -163,12 +167,12 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { 
-      experience = 0, 
-      silver = 0, 
-      stamina = 0, 
+    const {
+      experience = 0,
+      silver = 0,
+      stamina = 0,
       qi = 0,
-      restoreAll = false 
+      restoreAll = false
     } = body;
 
     // 获取当前状态

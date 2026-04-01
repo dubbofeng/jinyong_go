@@ -30,26 +30,13 @@ export async function POST(request: NextRequest) {
       currentY,
       activeQuests,
       completedQuests,
-      
+
     } = body;
 
     if (!userId) {
       return NextResponse.json(
         { error: '缺少用户ID' },
         { status: 400 }
-      );
-    }
-
-    // 检查玩家进度是否存在
-    const [existingProgress] = await db
-      .select()
-      .from(gameProgress)
-      .where(eq(gameProgress.userId, userId));
-
-    if (!existingProgress) {
-      return NextResponse.json(
-        { error: '玩家进度不存在' },
-        { status: 404 }
       );
     }
 
@@ -65,11 +52,19 @@ export async function POST(request: NextRequest) {
     if (activeQuests !== undefined) updateData.activeQuests = activeQuests;
     if (completedQuests !== undefined) updateData.completedQuests = completedQuests;
 
-    // 更新进度
-    await db
+    // 直接更新进度，使用upsert以避免额外的SELECT查询
+    const result = await db
       .update(gameProgress)
       .set(updateData)
-      .where(eq(gameProgress.userId, userId));
+      .where(eq(gameProgress.userId, userId))
+      .returning();
+
+    if (result.length === 0) {
+      return NextResponse.json(
+        { error: '玩家进度不存在' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({
       success: true,

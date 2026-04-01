@@ -13,6 +13,14 @@ const practiceDirs: Record<string, string> = {
   gop: 'src/data/sgf-practice/gop',
 };
 
+// 文件列表缓存：set -> { files: string[], timestamp: number }
+const fileListCache = new Map<string, { files: string[]; timestamp: number }>();
+const FILE_LIST_CACHE_TTL = 10 * 60 * 1000; // 10分钟
+
+// SGF内容缓存：set_file -> { parsed: any, timestamp: number }
+const sgfContentCache = new Map<string, { parsed: any; timestamp: number }>();
+const SGF_CONTENT_CACHE_TTL = 30 * 60 * 1000; // 30分钟
+
 const listSgfFiles = async (dir: string, baseDir: string): Promise<string[]> => {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const results: string[] = [];
@@ -49,7 +57,17 @@ export async function GET(request: NextRequest) {
     }
 
     const baseDir = path.join(process.cwd(), relativeDir);
-    const allFiles = (await listSgfFiles(baseDir, baseDir)).sort();
+    const now = Date.now();
+
+    // 检查文件列表缓存
+    let allFiles: string[];
+    const cachedList = fileListCache.get(set);
+    if (cachedList && now - cachedList.timestamp < FILE_LIST_CACHE_TTL) {
+      allFiles = cachedList.files;
+    } else {
+      allFiles = (await listSgfFiles(baseDir, baseDir)).sort();
+      fileListCache.set(set, { files: allFiles, timestamp: now });
+    }
 
     if (allFiles.length === 0) {
       return NextResponse.json({ success: false, error: 'No SGF files found' }, { status: 404 });
@@ -65,7 +83,8 @@ export async function GET(request: NextRequest) {
       const [progress] = await db
         .select({ completedTasks: gameProgress.completedTasks })
         .from(gameProgress)
-        .where(eq(gameProgress.userId, userId));
+        .where(eq(gameProgress.userId, userId))
+        .limit(1);
 
       if (progress?.completedTasks) {
         completed = (progress.completedTasks as string[]).filter((task) =>
@@ -91,9 +110,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No SGF file selected' }, { status: 404 });
     }
 
-    const sgfPath = path.join(baseDir, selectedFile);
-    const sgfContent = await fs.readFile(sgfPath, 'utf8');
-    const parsed = parseSgfRoot(sgfContent);
+    // 检查SGF内容缓存
+    const contentCacheKey = `${set}_${selectedFile}`;
+    let parsed: any;
+    const cachedContent = sgfContentCache.get(contentCacheKey);
+    if (cachedContent && now - cachedContent.timestamp < SGF_CONTENT_CACHE_TTL) {
+      parsed = cachedContent.parsed;
+    } else {
+      const sgfPath = path.join(baseDir, selectedFile);
+      const sgfContent = await fs.readFile(sgfPath, 'utf8');
+      parsed = parseSgfRoot(sgfContent);
+      sgfContentCache.set(contentCacheKey, { parsed, timestamp: now });
+    }
 
     return NextResponse.json({
       success: true,

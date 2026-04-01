@@ -33,18 +33,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: '缺少portalId参数' }, { status: 400 });
     }
 
-    // 查询传送门信息
-    const portal = await db
-      .select({
-        id: mapItems.id,
-        requirements: mapItems.requirements,
-        sceneLinkMapId: mapItems.sceneLinkMapId,
-        itemName: items.name,
-      })
-      .from(mapItems)
-      .leftJoin(items, eq(mapItems.itemId, items.id))
-      .where(eq(mapItems.id, parseInt(portalId)))
-      .limit(1);
+    // 并行查询传送门信息和加载玩家上下文以提升性能
+    const [portal, playerContext] = await Promise.all([
+      db
+        .select({
+          id: mapItems.id,
+          requirements: mapItems.requirements,
+          sceneLinkMapId: mapItems.sceneLinkMapId,
+          itemName: items.name,
+        })
+        .from(mapItems)
+        .leftJoin(items, eq(mapItems.itemId, items.id))
+        .where(eq(mapItems.id, parseInt(portalId)))
+        .limit(1),
+
+      loadPlayerContext(userId)
+    ]);
 
     if (portal.length === 0) {
       return NextResponse.json({ error: '传送门不存在' }, { status: 404 });
@@ -79,10 +83,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 加载玩家上下文
-    const playerContext = await loadPlayerContext(userId);
-
-    // 检查requirements
+    // 检查requirements (playerContext已在前面并行加载)
     const unlockedResult = await checkRequirements(combinedRequirements, playerContext);
 
     return NextResponse.json({

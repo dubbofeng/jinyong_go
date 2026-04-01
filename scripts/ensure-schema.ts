@@ -53,6 +53,30 @@ async function ensureSchema() {
       CREATE INDEX IF NOT EXISTS idx_player_stats_user_id
       ON player_stats(user_id)
     `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_maps_map_id
+      ON maps(map_id)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_map_items_map_id
+      ON map_items(map_id)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_map_tiles_map_id
+      ON map_tiles(map_id)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_game_progress_user_id
+      ON game_progress(user_id)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_player_inventory_user_equipped
+      ON player_inventory(user_id, equipped)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_map_items_id
+      ON map_items(id)
+    `;
     console.log('✅ 性能索引已添加');
 
     console.log('✅ Schema 检查完成！');

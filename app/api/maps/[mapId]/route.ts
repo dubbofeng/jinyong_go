@@ -16,7 +16,7 @@ export async function GET(
   try {
     // Check if mapId is a number (database id) or string (mapId field)
     const isNumericId = /^\d+$/.test(mapId);
-    
+
     // Get map info
     const [map] = isNumericId
       ? await db.select().from(maps).where(eq(maps.id, parseInt(mapId)))
@@ -26,45 +26,47 @@ export async function GET(
       return NextResponse.json({ error: "Map not found" }, { status: 404 });
     }
 
-    // Get all tiles for this map
-    const tiles = await db
-      .select()
-      .from(mapTiles)
-      .where(eq(mapTiles.mapId, map.id))
-      .orderBy(mapTiles.y, mapTiles.x);
+    // 并行查询tiles和items以提升性能
+    const [tiles, itemsData] = await Promise.all([
+      // Get all tiles for this map
+      db
+        .select()
+        .from(mapTiles)
+        .where(eq(mapTiles.mapId, map.id))
+        .orderBy(mapTiles.y, mapTiles.x),
 
-    // Get all items for this map (NPCs, buildings, portals, decorations)
-    // JOIN with items table to get item details
-    const itemsData = await db
-      .select({
-        id: mapItems.id,
-        x: mapItems.x,
-        y: mapItems.y,
-        dialogueId: mapItems.dialogueId,
-        questId: mapItems.questId,
-        sceneLinkMapId: mapItems.sceneLinkMapId,
-        sceneLinkX: mapItems.sceneLinkX,
-        sceneLinkY: mapItems.sceneLinkY,
-        enabled: mapItems.enabled,
-        collected: mapItems.collected,
-        metadata: mapItems.metadata,
-        // Item details from items table
-        itemId: items.itemId,
-        itemName: items.name,
-        itemPath: items.imagePath,
-        itemType: items.itemType,
-        plantType: items.plantType,
-        harvestable: items.harvestable,
-        blocking: items.blocking,
-        interactable: items.interactable,
-        size: items.size,
-        animated: items.animated,
-        animationPath: items.animationPath,
-        frameCount: items.frameCount,
-      })
-      .from(mapItems)
-      .leftJoin(items, eq(mapItems.itemId, items.id))
-      .where(eq(mapItems.mapId, map.id));
+      // Get all items for this map (NPCs, buildings, portals, decorations)
+      db
+        .select({
+          id: mapItems.id,
+          x: mapItems.x,
+          y: mapItems.y,
+          dialogueId: mapItems.dialogueId,
+          questId: mapItems.questId,
+          sceneLinkMapId: mapItems.sceneLinkMapId,
+          sceneLinkX: mapItems.sceneLinkX,
+          sceneLinkY: mapItems.sceneLinkY,
+          enabled: mapItems.enabled,
+          collected: mapItems.collected,
+          metadata: mapItems.metadata,
+          // Item details from items table
+          itemId: items.itemId,
+          itemName: items.name,
+          itemPath: items.imagePath,
+          itemType: items.itemType,
+          plantType: items.plantType,
+          harvestable: items.harvestable,
+          blocking: items.blocking,
+          interactable: items.interactable,
+          size: items.size,
+          animated: items.animated,
+          animationPath: items.animationPath,
+          frameCount: items.frameCount,
+        })
+        .from(mapItems)
+        .leftJoin(items, eq(mapItems.itemId, items.id))
+        .where(eq(mapItems.mapId, map.id))
+    ]);
 
     // Convert tiles to 2D array for easier rendering
     const tilesArray: any[][] = Array.from({ length: map.height }, () =>
@@ -161,7 +163,7 @@ export async function PUT(
 
     // Check if mapId is a number (database id) or string (mapId field)
     const isNumericId = /^\d+$/.test(mapId);
-    
+
     // Get map info
     const [map] = isNumericId
       ? await db.select().from(maps).where(eq(maps.id, parseInt(mapId)))
