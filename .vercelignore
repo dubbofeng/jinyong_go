@@ -22,6 +22,4 @@ node_modules/tsx
 node_modules/webpack
 node_modules/terser
 node_modules/rollup
-public/generated
-public/katago
 .git
