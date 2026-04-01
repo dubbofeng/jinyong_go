@@ -758,15 +758,10 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
   /**
    * 为items添加关联地图的等距图路径
-   * 优化：跳过预加载以提升性能，传送门/建筑会使用默认itemPath
+   * 优化：使用批量API调用，一次请求获取所有地图信息
    */
   const enrichItemsWithMapImages = async (items: any[]) => {
-    // 禁用预加载以避免在world_map加载时触发大量API调用
-    // 传送门和建筑会使用默认的itemPath图片
-    // 如果未来需要等距图，可以实现按需懒加载
-    return;
-
-    /* 原预加载逻辑已禁用
+    // 收集所有需要查询的 targetMapId
     const targetMapIds = new Set<string>();
     for (const item of items) {
       if ((item.itemType === 'portal' || item.itemType === 'building') && item.targetMapId) {
@@ -777,30 +772,26 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     if (targetMapIds.size === 0) return;
 
     try {
+      // 批量查询所有地图信息（一次API调用）
+      const mapIds = Array.from(targetMapIds).join(',');
+      const response = await fetch(`/api/maps?mapIds=${mapIds}`);
+
+      if (!response.ok) {
+        console.warn('批量查询地图失败');
+        return;
+      }
+
+      const data = await response.json();
       const mapImageCache: Record<string, string | null> = {};
 
-      await Promise.all(
-        Array.from(targetMapIds).map(async (targetMapId) => {
-          try {
-            const response = await fetch(`/api/maps/${targetMapId}`);
-            if (response.ok) {
-              const mapInfo = await response.json();
-              const mapsResponse = await fetch(`/api/maps?mapId=${targetMapId}`);
-              if (mapsResponse.ok) {
-                const mapsData = await mapsResponse.json();
-                if (mapsData.maps && mapsData.maps.length > 0) {
-                  const linkedMap = mapsData.maps[0];
-                  mapImageCache[targetMapId] = linkedMap.isometricImage || null;
-                }
-              }
-            }
-          } catch (err) {
-            console.warn(`无法加载地图 ${targetMapId} 的图片信息:`, err);
-            mapImageCache[targetMapId] = null;
-          }
-        })
-      );
+      // 构建缓存映射
+      if (data.maps && Array.isArray(data.maps)) {
+        for (const map of data.maps) {
+          mapImageCache[map.mapId] = map.isometricImage || null;
+        }
+      }
 
+      // 将查询到的图片路径添加到items中
       for (const item of items) {
         if ((item.itemType === 'portal' || item.itemType === 'building') && item.targetMapId) {
           const linkedImage = mapImageCache[item.targetMapId];
@@ -813,7 +804,6 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
     } catch (err) {
       console.error('批量查询地图图片失败:', err);
     }
-    */
   };
 
   /**

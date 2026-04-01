@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/db';
 import { maps } from '@/src/db/schema';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, inArray } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,13 +9,66 @@ export const dynamic = 'force-dynamic';
 let allMapsCache: { data: any[]; timestamp: number } | null = null;
 const ALL_MAPS_CACHE_TTL = 10 * 60 * 1000; // 10分钟
 
-// GET: Get all maps or filter by mapId
+// 批量查询缓存：mapIds组合 -> { data: any[], timestamp: number }
+const batchCache = new Map<string, { data: any[]; timestamp: number }>();
+const BATCH_CACHE_TTL = 5 * 60 * 1000; // 5分钟
+
+// GET: Get all maps, filter by mapId, or batch query by mapIds
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const mapId = searchParams.get('mapId');
+    const mapIds = searchParams.get('mapIds'); // 支持批量查询: ?mapIds=map1,map2,map3
 
-    // 如果提供了 mapId，返回特定地图（不使用缓存，因为需要实时数据）
+    // 批量查询多个地图（一次API调用）
+    if (mapIds) {
+      const idList = mapIds.split(',').filter(Boolean);
+      if (idList.length === 0) {
+        return NextResponse.json({ error: 'Empty mapIds' }, { status: 400 });
+      }
+
+      const cacheKey = idList.sort().join(',');
+      const now = Date.now();
+
+      // 检查批量缓存
+      const cached = batchCache.get(cacheKey);
+      if (cached && now - cached.timestamp < BATCH_CACHE_TTL) {
+        return NextResponse.json(
+          {
+            maps: cached.data,
+            total: cached.data.length,
+          },
+          {
+            headers: {
+              'Cache-Control': 'public, max-age=300', // 浏览器缓存5分钟
+            },
+          }
+        );
+      }
+
+      // 批量查询数据库
+      const results = await db
+        .select()
+        .from(maps)
+        .where(inArray(maps.mapId, idList));
+
+      // 更新缓存
+      batchCache.set(cacheKey, { data: results, timestamp: now });
+
+      return NextResponse.json(
+        {
+          maps: results,
+          total: results.length,
+        },
+        {
+          headers: {
+            'Cache-Control': 'public, max-age=300', // 浏览器缓存5分钟
+          },
+        }
+      );
+    }
+
+    // 如果提供了单个 mapId，返回特定地图
     if (mapId) {
       const [map] = await db.select().from(maps).where(eq(maps.mapId, mapId)).limit(1);
 
