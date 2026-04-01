@@ -25,11 +25,39 @@ async function ensureSchema() {
     `;
     console.log('✅ player_stats.go_skill_rating 确保存在');
 
-    // 可以在这里添加其他 schema 检查...
+    // 添加 playerInventory 唯一约束（支持 upsert）
+    await client`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_player_inventory_user_item
+      ON player_inventory(user_id, item_id)
+    `;
+    console.log('✅ player_inventory 唯一约束已添加');
+
+    // 添加性能索引
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_player_tsumego_user_solved
+      ON player_tsumego_records(user_id, solved)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_player_tsumego_user_attempts
+      ON player_tsumego_records(user_id, solved, attempts)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_player_tsumego_last_attempted
+      ON player_tsumego_records(user_id, last_attempted_at DESC)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_player_achievements_user_unlocked
+      ON player_achievements(user_id, unlocked)
+    `;
+    await client`
+      CREATE INDEX IF NOT EXISTS idx_player_stats_user_id
+      ON player_stats(user_id)
+    `;
+    console.log('✅ 性能索引已添加');
 
     console.log('✅ Schema 检查完成！');
-  } catch (error) {
-    console.error('❌ Schema 检查失败:', error);
+  } catch (err) {
+    console.error('❌ Schema 检查失败:', err);
     // 不要让构建失败，只记录错误
   } finally {
     await client.end();

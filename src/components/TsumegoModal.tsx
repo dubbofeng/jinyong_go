@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import TsumegoBoard from './TsumegoBoard';
 import CustomAlert from './CustomAlert';
+import { useLoading } from '@/src/contexts/LoadingContext';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 
 interface TsumegoModalProps {
@@ -22,6 +23,7 @@ export default function TsumegoModal({
   rewardSource,
 }: TsumegoModalProps) {
   const t = useTranslations();
+  const { setLoading } = useLoading();
   const [isVisible, setIsVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [attemptsRemaining, setAttemptsRemaining] = useState(3);
@@ -127,6 +129,7 @@ export default function TsumegoModal({
     const actualAttempts = 4 - attemptsRemaining; // 实际使用的尝试次数
 
     // 调用奖励API
+    setLoading(true, '领取奖励中...');
     fetch('/api/tsumego/reward', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -140,6 +143,7 @@ export default function TsumegoModal({
     })
       .then((res) => res.json())
       .then(async (data) => {
+        setLoading(false);
         if (data.success) {
           // 显示奖励信息
           const rewardText = [
@@ -171,12 +175,13 @@ export default function TsumegoModal({
         onComplete(true);
       })
       .catch(async (error) => {
+        setLoading(false);
         console.error('Failed to claim reward:', error);
         await showAlert('🎉 正确！你成功解决了这道死活题！', 'success', '挑战成功');
         handleClose();
         onComplete(true);
       });
-  }, [problem, startTime, attemptsRemaining, onComplete]);
+  }, [problem, startTime, attemptsRemaining, onComplete, setLoading]);
 
   const handleWrongMove = useCallback(() => {
     if (!problem) return;
@@ -186,6 +191,7 @@ export default function TsumegoModal({
       if (newAttempts <= 0) {
         // 失败时也记录
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        setLoading(true, '记录挑战结果...');
         fetch('/api/tsumego/reward', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -195,7 +201,12 @@ export default function TsumegoModal({
             attempts: 3,
             timeSpent,
           }),
-        }).catch((error) => console.error('Failed to record failure:', error));
+        })
+          .then(() => setLoading(false))
+          .catch((error) => {
+            setLoading(false);
+            console.error('Failed to record failure:', error);
+          });
 
         showAlert('❌ 挑战失败！已用完所有尝试次数。', 'error', '挑战失败').then(() => {
           handleClose();
@@ -206,7 +217,7 @@ export default function TsumegoModal({
       }
       return newAttempts;
     });
-  }, [problem, startTime, onComplete]);
+  }, [problem, startTime, onComplete, setLoading]);
 
   const handleSubmit = async () => {
     // TODO: 验证答案

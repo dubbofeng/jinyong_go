@@ -1,24 +1,25 @@
 {
   "functions": {
     "app/[locale]/page.tsx": {
-      "maxDuration": 10,
-      "memory": 1024
+      "maxDuration": 10
     },
     "app/[locale]/game/page.tsx": {
-      "maxDuration": 10,
-      "memory": 1024
+      "maxDuration": 10
     },
     "app/[locale]/login/page.tsx": {
-      "maxDuration": 10,
-      "memory": 1024
+      "maxDuration": 10
     },
     "app/[locale]/register/page.tsx": {
-      "maxDuration": 10,
-      "memory": 1024
+      "maxDuration": 10
+    },
+    "app/api/achievements/**": {
+      "maxDuration": 10
+    },
+    "app/api/tsumego/reward/**": {
+      "maxDuration": 10
     },
     "app/api/**": {
-      "maxDuration": 10,
-      "memory": 1024
+      "maxDuration": 10
     }
   },
   "outputDirectory": ".next"
