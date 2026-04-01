@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { RegisterForm } from '../../../src/components/AuthForms';
-import { redirect } from 'next/navigation';
 import { createUser, getUser } from '../../db';
 import { SubmitButton } from '../../../src/components/SubmitButton';
 import { getTranslations } from 'next-intl/server';
@@ -32,7 +31,6 @@ export default async function Register({ params }: { params: Promise<{ locale: s
 
       // 创建用户和初始游戏进度
       await createUser(email, password, username);
-      redirect(`/${locale}/login`);
     } catch (error: any) {
       console.error('注册错误:', error);
 
@@ -46,6 +44,9 @@ export default async function Register({ params }: { params: Promise<{ locale: s
 
       return '注册失败，请稍后重试';
     }
+
+    // 返回成功标志
+    return 'success';
   }
 
   return (
@@ -58,7 +59,7 @@ export default async function Register({ params }: { params: Promise<{ locale: s
             {t('registerPrompt')}
           </p>
         </div>
-        <RegisterForm action={register}>
+        <RegisterForm action={register} locale={locale}>
           <SubmitButton>{t('register')}</SubmitButton>
           <p className="text-center text-sm text-gray-600">
             {t('hasAccount')}{' '}

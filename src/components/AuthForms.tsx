@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 export function LoginForm({
   action,
   children,
@@ -54,15 +57,38 @@ export function LoginForm({
 export function RegisterForm({
   action,
   children,
+  locale,
 }: {
   action: (formData: FormData) => Promise<void | string>;
   children: React.ReactNode;
+  locale: string;
 }) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (formData: FormData) => {
+    setError(null);
+    const result = await action(formData);
+
+    if (result === 'success') {
+      // 注册成功，跳转到登录页
+      router.push(`/${locale}/login`);
+    } else if (result) {
+      // 有错误消息
+      setError(result);
+    }
+  };
+
   return (
     <form
-      action={action}
+      action={handleSubmit}
       className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 sm:px-16"
     >
+      {error && (
+        <div className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-600">
+          {error}
+        </div>
+      )}
       <div>
         <label
           htmlFor="username"
