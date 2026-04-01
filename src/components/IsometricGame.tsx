@@ -18,6 +18,7 @@ import GoProverbModal from '@/src/components/GoProverbModal';
 import HotelModal from '@/src/components/HotelModal';
 import CustomAlert, { type AlertType } from '@/src/components/CustomAlert';
 import SkillUnlockToast from '@/src/components/SkillUnlockToast';
+import { useLoading } from '@/src/contexts/LoadingContext';
 import type { DialogueNode, DialogueOption } from '@/src/types/dialogue';
 import type { TsumegoProblem } from '@/src/types/tsumego';
 import { tutorialBoards, type TutorialBoardConfig } from '@/src/data/go-tutorials';
@@ -45,6 +46,7 @@ interface IsometricGameProps {
 export default function IsometricGame({ mapId, initialMap, userId }: IsometricGameProps) {
   const locale = useLocale(); // 获取当前语言环境
   const t = useTranslations('game'); // 获取游戏翻译
+  const { setLoading } = useLoading();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<IsometricEngine | null>(null);
   const animationFrameRef = useRef<number>(0);
@@ -1125,7 +1127,12 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       // 处理NPC点击
       if (item.itemType === 'npc') {
         console.log(`🗣️ Interacting with NPC: ${item.itemName}`);
-        await startDialogue(item);
+        setLoading(true, '与NPC对话中...');
+        try {
+          await startDialogue(item);
+        } finally {
+          setLoading(false);
+        }
         return;
       }
 
@@ -1139,21 +1146,36 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           );
 
           if (shouldChallenge) {
-            setTsumegoRewardSource(null);
-            await triggerTsumegoEncounter(mapData?.id);
+            setLoading(true, '加载死活题...');
+            try {
+              setTsumegoRewardSource(null);
+              await triggerTsumegoEncounter(mapData?.id);
+            } finally {
+              setLoading(false);
+            }
           }
         }
         if (item.itemId === 'mechanic' || item.itemName?.includes('工坊')) {
-          setShowWorkshop(true);
-          await loadWorkshopInventory();
+          setLoading(true, '打开工坊...');
+          try {
+            setShowWorkshop(true);
+            await loadWorkshopInventory();
+          } finally {
+            setLoading(false);
+          }
         }
         if (
           item.itemId === 'pharmacy' ||
           item.itemName?.includes('药') ||
           item.itemName?.includes('药铺')
         ) {
-          setShowPharmacy(true);
-          await loadPharmacyInventory();
+          setLoading(true, '打开药铺...');
+          try {
+            setShowPharmacy(true);
+            await loadPharmacyInventory();
+          } finally {
+            setLoading(false);
+          }
         }
         if (
           item.itemId === 'hotel' ||
@@ -1163,28 +1185,33 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           setShowHotel(true);
         }
         if (item.itemId === 'go_pavilion') {
-          const currentMapId = mapData?.id;
-          const practiceSet =
-            currentMapId === 'daoguan_scene'
-              ? 'daoguan'
-              : currentMapId === 'huashan_scene'
-                ? 'huashan'
-                : 'gop';
-
-          // 恢复10点体力和10点内力
+          setLoading(true, '打开棋亭...');
           try {
-            await fetch('/api/player/stats/update', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ staminaDelta: 10, qiDelta: 10 }),
-            });
-            window.dispatchEvent(new Event('player-stats-update'));
-          } catch (error) {
-            console.error('恢复体力内力失败:', error);
-          }
+            const currentMapId = mapData?.id;
+            const practiceSet =
+              currentMapId === 'daoguan_scene'
+                ? 'daoguan'
+                : currentMapId === 'huashan_scene'
+                  ? 'huashan'
+                  : 'gop';
 
-          setSgfPracticeSet(practiceSet);
-          setShowSgfPractice(true);
+            // 恢复10点体力和10点内力
+            try {
+              await fetch('/api/player/stats/update', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ staminaDelta: 10, qiDelta: 10 }),
+              });
+              window.dispatchEvent(new Event('player-stats-update'));
+            } catch (error) {
+              console.error('恢复体力内力失败:', error);
+            }
+
+            setSgfPracticeSet(practiceSet);
+            setShowSgfPractice(true);
+          } finally {
+            setLoading(false);
+          }
         }
 
         // 处理特殊建筑的NPC对局挑战
@@ -1201,6 +1228,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
 
         const buildingConfig = item.itemId ? buildingToNpcMap[item.itemId] : undefined;
         if (buildingConfig) {
+          setLoading(true, '寻找NPC...');
           try {
             // 直接使用导入的NPC数据
             const npcs = (otherNpcsData as any)[buildingConfig.tier] || [];
@@ -1249,6 +1277,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           } catch (error) {
             console.error('加载NPC配置失败:', error);
             await showAlert(t('npcChallenge.systemError'), 'error');
+          } finally {
+            setLoading(false);
           }
         }
         return;
@@ -1262,6 +1292,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           return;
         }
 
+        setLoading(true, '打开宝箱...');
         try {
           const response = await fetch(`/api/map-items/${item.id}/open`, { method: 'POST' });
           const result = await response.json();
@@ -1308,6 +1339,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         } catch (error) {
           console.error('打开宝箱失败:', error);
           await showAlert(t('chest.openFailed'), 'error');
+        } finally {
+          setLoading(false);
         }
         return;
       }
@@ -1322,6 +1355,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         }
 
         // 检查传送门是否解锁
+        setLoading(true, '检查传送门状态...');
         try {
           const response = await fetch(
             `/api/portals/check?portalId=${item.id}&mapId=${mapData?.id}`
@@ -1357,6 +1391,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           // 出错时允许传送（向后兼容）
           setPendingPortal(item);
           setShowPortalConfirm(true);
+        } finally {
+          setLoading(false);
         }
 
         return;
@@ -1365,6 +1401,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
       if (item.itemType === 'plant' && !item.collected) {
         const resource = isResourceItem(item);
         if (resource.isHerb) {
+          setLoading(true, '采摘草药...');
           try {
             const response = await fetch(`/api/map-items/${item.id}/harvest`, { method: 'POST' });
             const result = await response.json();
@@ -1401,6 +1438,8 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           } catch (error) {
             console.error('采摘草药失败:', error);
             await showAlert('采摘失败', 'error');
+          } finally {
+            setLoading(false);
           }
           return;
         }
