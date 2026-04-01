@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "app/[locale]/page.tsx": {
+      "maxDuration": 10,
+      "memory": 1024
+    },
+    "app/[locale]/game/page.tsx": {
+      "maxDuration": 10,
+      "memory": 1024
+    },
+    "app/[locale]/login/page.tsx": {
+      "maxDuration": 10,
+      "memory": 1024
+    },
+    "app/[locale]/register/page.tsx": {
+      "maxDuration": 10,
+      "memory": 1024
+    },
+    "app/api/**": {
+      "maxDuration": 10,
+      "memory": 1024
+    }
+  },
+  "outputDirectory": ".next"
+}

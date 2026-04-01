@@ -42,22 +42,39 @@ const nextConfig = {
     ];
   },
 
+  // 使用 standalone 输出模式减小部署大小
+  output: 'standalone',
+
   // 优化函数打包大小，排除不需要的依赖
   experimental: {
     outputFileTracingExcludes: {
-      '/api/**': [
+      '*': [
         '.pnpm-store/**',
         '.git/**',
         'node_modules/@swc/**',
         'node_modules/@esbuild/**',
         'node_modules/sharp/**',
         'node_modules/@img/**',
-        'public/generated/**',
-        'public/game/**',
-        'public/katago/**',
+        'node_modules/canvas/**',
         'node_modules/webpack/**',
         'node_modules/terser/**',
         'node_modules/rollup/**',
+        'node_modules/typescript/**',
+        'node_modules/eslint/**',
+        'node_modules/@typescript-eslint/**',
+        'node_modules/prettier/**',
+        'node_modules/@playwright/**',
+        'node_modules/playwright/**',
+        'node_modules/drizzle-kit/**',
+        'node_modules/tsx/**',
+        'public/generated/**',
+        'public/game/**',
+        'public/katago/**',
+        'scripts/**',
+        'src/rpg/**',
+        'tmp/**',
+        'test-results/**',
+        'e2e/**',
       ],
     },
   },

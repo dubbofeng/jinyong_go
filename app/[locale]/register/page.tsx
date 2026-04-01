@@ -17,21 +17,35 @@ export default async function Register({ params }: { params: Promise<{ locale: s
     const password = formData.get('password') as string;
     const username = formData.get('username') as string;
 
-    // 检查用户是否已存在
-    const existingUser = await getUser(email);
+    try {
+      // 检查用户是否已存在
+      const existingUser = await getUser(email);
 
-    if (existingUser.length > 0) {
-      return '该邮箱已被注册'; // TODO: Handle errors with useFormStatus
+      if (existingUser.length > 0) {
+        return '该邮箱已被注册'; // TODO: Handle errors with useFormStatus
+      }
+
+      // 验证密码长度
+      if (password.length < 6) {
+        return '密码至少需要6个字符';
+      }
+
+      // 创建用户和初始游戏进度
+      await createUser(email, password, username);
+      redirect(`/${locale}/login`);
+    } catch (error: any) {
+      console.error('注册错误:', error);
+
+      // 处理数据库约束错误
+      if (error?.code === '23505') {
+        if (error?.constraint_name === 'users_email_key') {
+          return '该邮箱已被注册';
+        }
+        return '注册失败：用户已存在';
+      }
+
+      return '注册失败，请稍后重试';
     }
-
-    // 验证密码长度
-    if (password.length < 6) {
-      return '密码至少需要6个字符';
-    }
-
-    // 创建用户和初始游戏进度
-    await createUser(email, password, username);
-    redirect(`/${locale}/login`);
   }
 
   return (
