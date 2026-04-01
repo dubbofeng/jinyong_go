@@ -798,9 +798,20 @@ export default function GoBoardGame({
         });
 
         if (result.success) {
-          boardRef.current.placeStone(position, aiColor);
+          // 检查棋盘渲染器是否已初始化
+          if (!boardRef.current) {
+            console.error('❌ boardRef.current 为 null，无法渲染AI棋子！');
+            setIsAIThinking(false);
+            return;
+          }
+
+          console.log('📍 在渲染器上放置AI棋子:', { position, aiColor });
+          const placed = boardRef.current.placeStone(position, aiColor);
+          console.log('🎨 placeStone 返回值:', placed);
+
           // 立即渲染棋盘，确保AI棋子显示
           boardRef.current.render();
+          console.log('✅ 棋盘已重新渲染');
 
           // 处理提子
           if (result.capturedStones.length > 0) {
@@ -2072,118 +2083,71 @@ export default function GoBoardGame({
 
   return (
     <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">
-      {/* 左侧：棋盘区域 */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
-        {/* 对手信息 - 左上角 */}
-        <div className="absolute top-4 left-4 bg-gradient-to-r from-amber-600 to-amber-700 text-white px-6 py-3 rounded-lg shadow-2xl border-2 border-amber-400">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">⚔️</span>
-            <div>
-              <div className="font-bold text-lg">{opponentName}</div>
-              <div className="text-sm text-amber-100 flex items-center gap-2">
-                <span>{t('ui.difficulty')}:</span>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 9 }, (_, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 rounded-full ${
-                        i < aiDifficulty ? 'bg-yellow-300' : 'bg-gray-500'
-                      }`}
-                    />
-                  ))}
+      {/* 左侧：信息面板区域 */}
+      <div className="w-[420px] bg-gray-800/50 backdrop-blur-sm overflow-y-auto flex-shrink-0">
+        <div className="p-4 flex flex-col gap-4">
+          {/* 对手信息 */}
+          <div className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-4 py-3 rounded-lg shadow-lg border-2 border-amber-400">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">⚔️</span>
+              <div>
+                <div className="font-bold text-lg">{opponentName}</div>
+                <div className="text-sm text-amber-100 flex items-center gap-2">
+                  <span>{t('ui.difficulty')}:</span>
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 9 }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`w-2 h-2 rounded-full ${
+                          i < aiDifficulty ? 'bg-yellow-300' : 'bg-gray-500'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="font-semibold">({aiDifficulty}/9)</span>
                 </div>
-                <span className="font-semibold">({aiDifficulty}/9)</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* 游戏信息 */}
-        <div className="bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg mb-4">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-6 h-6 rounded-full ${
-                  currentPlayer === 'black' ? 'bg-black' : 'bg-white border border-gray-400'
-                }`}
-              />
-              <span className="font-semibold">
-                {currentPlayer === 'black' ? t('ui.blackSide') : t('ui.whiteSide')}
-                {t('ui.placeStone')}
-              </span>
-            </div>
-            <div className="text-sm text-gray-300">
-              {t('ui.moveCount')}: {moveCount}
-            </div>
-            <div className="text-sm text-gray-300">
-              {t('ui.boardSize')}: {size}
-              {t('ui.road')}
-            </div>
-            <div className="text-sm text-gray-300">
-              {t('ui.captured')}: {t('situation.black')}
-              {capturedCount.black} {t('situation.white')}
-              {capturedCount.white}
-            </div>
-            <div className="text-sm text-gray-300">
-              {t('ui.qi')}: {playerQi ?? '--'}/{playerMaxQi ?? '--'}
+          {/* 游戏信息 */}
+          <div className="bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-6 h-6 rounded-full ${
+                    currentPlayer === 'black' ? 'bg-black' : 'bg-white border border-gray-400'
+                  }`}
+                />
+                <span className="font-semibold">
+                  {currentPlayer === 'black' ? t('ui.blackSide') : t('ui.whiteSide')}
+                  {t('ui.placeStone')}
+                </span>
+              </div>
+              <div className="text-sm text-gray-300 space-y-1">
+                <div>
+                  {t('ui.moveCount')}: {moveCount}
+                </div>
+                <div>
+                  {t('ui.boardSize')}: {size}
+                  {t('ui.road')}
+                </div>
+                <div>
+                  {t('ui.captured')}: {t('situation.black')} {capturedCount.black} /{' '}
+                  {t('situation.white')} {capturedCount.white}
+                </div>
+                <div>
+                  {t('ui.qi')}: {playerQi ?? '--'}/{playerMaxQi ?? '--'}
+                </div>
+              </div>
+              {lastMessage && <div className="mt-2 text-sm text-yellow-300">{lastMessage}</div>}
             </div>
           </div>
-          {lastMessage && <div className="mt-2 text-sm text-yellow-300">{lastMessage}</div>}
-        </div>
 
-        {/* 棋盘Canvas */}
-        <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl relative max-w-full">
-          <canvas
-            ref={canvasRef}
-            className={`border-2 border-yellow-800 rounded max-w-full`}
-            style={{ pointerEvents: isAIThinking ? 'none' : 'auto' }}
-          />
-        </div>
-
-        {/* 控制按钮 */}
-        <div className="flex gap-3 justify-center max-w-full flex-wrap mt-4">
-          <button
-            onClick={handlePass}
-            disabled={isAIThinking}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t('buttons.pass')}
-          </button>
-          <button
-            onClick={handleResign}
-            disabled={isAIThinking}
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t('buttons.resign')}
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={isAIThinking}
-            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t('buttons.reset')}
-          </button>
-          {/* 测试按钮：只在对战洪七公时显示 */}
-          {npcId === 'hong_qigong' && (
-            <button
-              onClick={() => handleGameEnd('black', 'score')}
-              disabled={isAIThinking}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400"
-              data-testid="go-test-win"
-            >
-              {t('buttons.testWin')}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* 右侧：技能区域 */}
-      <div className="w-[480px] bg-gray-800/50 backdrop-blur-sm overflow-y-auto">
-        <div className="p-6 flex flex-col gap-6 min-h-full">
-          {/* 武侠技能快捷栏 */}
+          {/* 技能区域 */}
           <div className="w-full" key={skillsRefreshKey}>
-            <h3 className="text-center font-bold text-lg text-amber-300 mb-3">⚔️ 武侠技能 ⚔️</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <h3 className="text-center font-bold text-base text-amber-300 mb-2">⚔️ 武侠技能 ⚔️</h3>
+            <div className="grid grid-cols-2 gap-2 overflow-y-auto max-h-96 pr-1">
               {/* 技能1：亢龙有悔 */}
               {learnedSkills.includes('kanglong_youhui') &&
                 (() => {
@@ -2200,7 +2164,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useKangLongYouHui}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-orange-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2240,7 +2204,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useDuGuJiuJian}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-green-600 to-green-800 border-green-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2280,7 +2244,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useFuYuChuanYin}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-purple-600 to-purple-800 border-purple-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2322,7 +2286,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useJiGuanSuanJin}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2366,7 +2330,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useQiZiAnQi}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-red-600 to-red-800 border-red-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2410,7 +2374,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useQianKunDaNuo}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-indigo-600 to-indigo-800 border-indigo-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2453,7 +2417,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useYiYangZhi}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-yellow-600 to-amber-800 border-yellow-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2499,7 +2463,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useZuoYouHuBo}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-pink-600 to-rose-800 border-pink-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2545,7 +2509,7 @@ export default function GoBoardGame({
                     <button
                       onClick={useBeiMingShenGong}
                       disabled={!canUse}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
                         canUse
                           ? 'bg-gradient-to-br from-cyan-600 to-blue-800 border-cyan-400 hover:scale-105 cursor-pointer shadow-lg'
                           : 'bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed'
@@ -2634,6 +2598,53 @@ export default function GoBoardGame({
                 ))}
               </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* 右侧：棋盘区域 */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto gap-4">
+        <div className="bg-yellow-900 p-4 rounded-lg shadow-2xl">
+          <canvas
+            ref={canvasRef}
+            className="border-2 border-yellow-800 rounded"
+            style={{ pointerEvents: isAIThinking ? 'none' : 'auto' }}
+          />
+        </div>
+
+        {/* 控制按钮 */}
+        <div className="flex gap-3">
+          <button
+            onClick={handlePass}
+            disabled={isAIThinking}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-lg"
+          >
+            {t('buttons.pass')}
+          </button>
+          <button
+            onClick={handleResign}
+            disabled={isAIThinking}
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-lg"
+          >
+            {t('buttons.resign')}
+          </button>
+          <button
+            onClick={handleReset}
+            disabled={isAIThinking}
+            className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-lg"
+          >
+            {t('buttons.reset')}
+          </button>
+          {/* 测试按钮：只在对战洪七公时显示 */}
+          {npcId === 'hong_qigong' && (
+            <button
+              onClick={() => handleGameEnd('black', 'score')}
+              disabled={isAIThinking}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-green-400 text-sm font-semibold shadow-lg"
+              data-testid="go-test-win"
+            >
+              {t('buttons.testWin')}
+            </button>
           )}
         </div>
       </div>
