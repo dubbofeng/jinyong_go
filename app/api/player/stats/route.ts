@@ -135,6 +135,7 @@ export async function POST(request: NextRequest) {
         qiRegenRate: 2,
         coins: 0,
         silver: 100,
+        goSkillRating: 5, // 默认18k水平
       })
       .returning();
 

@@ -15,6 +15,7 @@ export default async function Register({ params }: { params: Promise<{ locale: s
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const username = formData.get('username') as string;
+    const goLevel = formData.get('goLevel') as string;
 
     try {
       // 检查用户是否已存在
@@ -30,7 +31,7 @@ export default async function Register({ params }: { params: Promise<{ locale: s
       }
 
       // 创建用户和初始游戏进度
-      await createUser(email, password, username);
+      await createUser(email, password, username, goLevel);
     } catch (error: any) {
       console.error('注册错误:', error);
 
