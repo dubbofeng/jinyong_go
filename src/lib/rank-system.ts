@@ -84,12 +84,14 @@ export function rankToLevel(rank: string): number {
  *
  * 经验公式：
  * level^1.2 * 1000
+ * 测试阶段升级经验是正常的1/10，后续根据实际情况调整
+ * level^1.2 * 10 * 10
  */
 export function getExperienceForLevel(level: number): number {
   if (level <= 0) return 0;
   if (level > 27) return 0; // 已达最高等级
 
-  return Math.round(Math.pow(level, 1.2) * 10) * 100;
+  return Math.round(Math.pow(level, 1.2) * 10) * 10;
 }
 
 /**

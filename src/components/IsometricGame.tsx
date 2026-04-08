@@ -55,6 +55,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(initialMap || null);
+  const [mapChapter, setMapChapter] = useState<number>(0);
   const [showInfo, setShowInfo] = useState(false);
   const [playerPosition, setPlayerPosition] = useState<{ x: number; y: number } | null>(null);
 
@@ -736,12 +737,17 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
         items: data.items || [],
       };
 
+      // 提取地图的章节信息
+      const chapter = typeof data.chapter === 'number' ? data.chapter : 0;
+      setMapChapter(chapter);
+
       // 对于传送门和建筑，查找关联地图的等距图
       await enrichItemsWithMapImages(mapData.items);
 
       console.log('🗺️ 加载地图数据:', {
         id: mapData.id,
         name: mapData.name,
+        chapter: chapter,
         itemsCount: mapData.items.length,
         firstItem: mapData.items[0],
       });
@@ -1214,26 +1220,28 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
           }
         }
 
-        // 处理特殊建筑的NPC对局挑战
-        const buildingToNpcMap: Record<
-          string,
-          { tier: string; difficultyRange: [number, number] }
-        > = {
-          small_2stories: { tier: 'tier1', difficultyRange: [8, 9] },
-          old_house: { tier: 'tier2', difficultyRange: [6, 7] },
-          stable: { tier: 'tier3', difficultyRange: [4, 5] },
-          house: { tier: 'tier4', difficultyRange: [1, 3] },
-          repair_building: { tier: 'special', difficultyRange: [1, 9] },
-        };
-
-        const buildingConfig = item.itemId ? buildingToNpcMap[item.itemId] : undefined;
-        if (buildingConfig) {
+        // 处理建筑的NPC对局挑战 - 根据地图的chapter确定NPC等级范围
+        if (item.itemType === 'building') {
           setLoading(true, '寻找NPC...');
           try {
-            // 直接使用导入的NPC数据
-            const npcs = (otherNpcsData as any)[buildingConfig.tier] || [];
+            // 根据地图章节计算难度范围：chapter 到 chapter+4
+            const minDifficulty = Math.max(1, mapChapter);
+            const maxDifficulty = Math.min(9, mapChapter + 4);
 
-            if (npcs.length === 0) {
+            // 收集所有NPC数据
+            const allNpcs: any[] = [];
+            Object.values(otherNpcsData).forEach((tier: any) => {
+              if (Array.isArray(tier)) {
+                allNpcs.push(...tier);
+              }
+            });
+
+            // 过滤出难度范围内的NPC
+            const matchingNpcs = allNpcs.filter(
+              (npc) => npc.difficulty >= minDifficulty && npc.difficulty <= maxDifficulty
+            );
+
+            if (matchingNpcs.length === 0) {
               await showAlert(
                 locale === 'en' ? 'There seems to be no one here...' : '这里似乎没有人...',
                 'info'
@@ -1241,11 +1249,11 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
               return;
             }
 
-            // 随机选择一个NPC
-            const randomNpc = npcs[Math.floor(Math.random() * npcs.length)];
+            // 随机选择一个符合范围的NPC
+            const randomNpc = matchingNpcs[Math.floor(Math.random() * matchingNpcs.length)];
+            let npcDifficulty = randomNpc.difficulty;
 
             // 处理动态难度NPC（如小亮）
-            let npcDifficulty = randomNpc.difficulty;
             if (randomNpc.dynamicDifficulty) {
               try {
                 const statsResponse = await fetch('/api/player/stats');
@@ -1256,7 +1264,7 @@ export default function IsometricGame({ mapId, initialMap, userId }: IsometricGa
                 }
               } catch (error) {
                 console.warn('获取玩家等级失败，使用默认难度:', error);
-                npcDifficulty = 1;
+                npcDifficulty = randomNpc.difficulty;
               }
             }
 
