@@ -4,7 +4,7 @@
 
 > **A unique RPG game that combines Jin Yong's Wuxia world with Go gameplay. Play Go against martial arts masters, learn special skills, and become a grandmaster!**
 
----
+## 查看demo：https://go.dubbofeng.com
 
 ## ✨ 特色功能 | Features
 
@@ -22,35 +22,40 @@
 
 ### 环境要求 | Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm (推荐) 或 npm
 - PostgreSQL 数据库
 
 ### 安装步骤 | Installation
 
 1. **克隆项目 | Clone the repository**
+
 ```bash
 git clone https://github.com/yourusername/jinyong_go.git
 cd jinyong_go
 ```
 
 2. **安装依赖 | Install dependencies**
+
 ```bash
 pnpm install
 ```
 
 3. **配置环境变量 | Configure environment variables**
+
 ```bash
 cp .env.example .env.local
 ```
 
 编辑 `.env.local`，填入你的数据库连接信息：
+
 ```env
 POSTGRES_URL="your-postgres-connection-string"
 AUTH_SECRET="your-auth-secret"
 ```
 
 4. **初始化数据库 | Initialize database**
+
 ```bash
 # 推送数据库结构
 pnpm db:push
@@ -60,6 +65,7 @@ pnpm seed:all
 ```
 
 5. **启动开发服务器 | Start dev server**
+
 ```bash
 pnpm dev
 ```
@@ -73,6 +79,7 @@ pnpm dev
 本项目采用 **混合数据源策略**：JSON 文件用于静态配置，数据库用于动态数据。
 
 ### 常用命令
+
 ```bash
 pnpm seed:all    # 加载所有初始数据（NPC、任务、地图）
 pnpm db:reset    # 重置数据库到初始状态
@@ -85,8 +92,8 @@ pnpm db:studio   # 打开数据库可视化界面
 
 ## 🎯 开发进度 | Development Status
 
-✅ **核心系统** - 游戏引擎、双地图系统、NPC对话、多语言、数据管理  
-🔄 **开发中** - 后台管理、围棋对战、技能系统  
+✅ **核心系统** - 游戏引擎、双地图系统、NPC对话、多语言、数据管理
+🔄 **开发中** - 后台管理、围棋对战、技能系统
 📅 **计划中** - 排行榜、棋谱分享、更多内容
 
 详见：[开发进度总览](./docs/开发进度总览.md) | [MVP开发计划](./docs/MVP开发计划.md)
@@ -96,6 +103,7 @@ pnpm db:studio   # 打开数据库可视化界面
 ## 📚 技术栈 | Tech Stack
 
 ### 前端 | Frontend
+
 - **Next.js 14.0.4** - React框架，App Router
 - **TypeScript 5.3.3** - 类型安全
 - **Tailwind CSS 3.4.0** - 样式框架
@@ -103,6 +111,7 @@ pnpm db:studio   # 打开数据库可视化界面
 - **自定义Canvas 2D引擎** - 游戏渲染
 
 ### 后端 | Backend
+
 - **Vercel Postgres** - 数据库（开发环境可使用本地PostgreSQL）
 - **Drizzle ORM 0.45.1** - ORM框架
 - **NextAuth.js 5.0.0-beta.4** - 身份认证
@@ -120,6 +129,7 @@ pnpm db:studio   # 打开数据库可视化界面
 6. **完成任务** - 完成主线和支线任务提升等级（开发中）
 
 ### 键盘快捷键 | Keyboard Shortcuts
+
 - **WASD / 方向键** - 角色移动
 - **空格** - 交互/传送/继续对话
 - **1-9** - 对话选项快捷选择
