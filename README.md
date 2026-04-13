@@ -31,7 +31,7 @@
 1. **克隆项目 | Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/jinyong_go.git
+git clone https://github.com/dubbofeng/jinyong_go.git
 cd jinyong_go
 ```
 
@@ -214,8 +214,8 @@ MIT License - 详见 [LICENSE](./LICENSE) 文件
 
 ## 📞 联系方式 | Contact
 
-- **项目主页**: https://github.com/yourusername/jinyong_go
-- **问题反馈**: https://github.com/yourusername/jinyong_go/issues
+- **项目主页**: https://github.com/dubbofeng/jinyong_go
+- **问题反馈**: https://github.com/dubbofeng/jinyong_go/issues
 
 ---
 
